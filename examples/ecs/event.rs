@@ -4,15 +4,15 @@
 use bevy::prelude::*;
 
 fn main() {
-	App::new()
-		.add_plugins(DefaultPlugins)
-		.add_event::<MyEvent>()
-		.add_event::<PlaySound>()
-		.init_resource::<EventTriggerState>()
-		.add_system(event_trigger)
-		.add_system(event_listener)
-		.add_system(sound_player)
-		.run();
+	let mut app = App::new();
+	app.add_plugins(DefaultPlugins);
+	app.add_event::<MyEvent>();
+	app.add_event::<PlaySound>();
+	app.init_resource::<EventTriggerState>();
+	app.add_system(event_trigger);
+	app.add_system(event_listener);
+	app.add_system(sound_player);
+	app.run();
 }
 
 struct MyEvent {

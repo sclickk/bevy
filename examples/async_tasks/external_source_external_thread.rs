@@ -7,14 +7,14 @@ use rand::Rng;
 use std::time::{Duration, Instant};
 
 fn main() {
-	App::new()
-		.add_event::<StreamEvent>()
-		.add_plugins(DefaultPlugins)
-		.add_startup_system(setup)
-		.add_system(read_stream)
-		.add_system(spawn_text)
-		.add_system(move_text)
-		.run();
+	let mut app = App::new();
+	app.add_event::<StreamEvent>();
+	app.add_plugins(DefaultPlugins);
+	app.add_startup_system(setup);
+	app.add_system(read_stream);
+	app.add_system(spawn_text);
+	app.add_system(move_text);
+	app.run();
 }
 
 #[derive(Deref)]

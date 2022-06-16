@@ -71,9 +71,9 @@ impl Default for App {
 		#[cfg(feature = "bevy_reflect")]
 		app.init_resource::<bevy_reflect::TypeRegistryArc>();
 
-		app.add_default_stages()
-			.add_event::<AppExit>()
-			.add_system_to_stage(CoreStage::Last, World::clear_trackers.exclusive_system());
+		app.add_default_stages();
+		app.add_event::<AppExit>();
+		app.add_system_to_stage(CoreStage::Last, World::clear_trackers.exclusive_system());
 
 		#[cfg(feature = "bevy_ci_testing")]
 		{
@@ -620,7 +620,7 @@ impl App {
 	/// #
 	/// app.add_event::<MyEvent>();
 	/// ```
-	pub fn add_event<T>(&mut self) -> &mut Self
+	pub fn add_event<T>(&mut self)
 	where
 		T: Event,
 	{
@@ -628,7 +628,6 @@ impl App {
 			self.init_resource::<Events<T>>()
 				.add_system_to_stage(CoreStage::First, Events::<T>::update_system);
 		}
-		self
 	}
 
 	/// Inserts a [`Resource`] to the current [`App`] and overwrites any [`Resource`] previously added of the same type.

@@ -61,22 +61,22 @@ impl Default for WindowPlugin {
 
 impl Plugin for WindowPlugin {
 	fn build(&self, app: &mut App) {
-		app.add_event::<WindowResized>()
-			.add_event::<CreateWindow>()
-			.add_event::<WindowCreated>()
-			.add_event::<WindowClosed>()
-			.add_event::<WindowCloseRequested>()
-			.add_event::<RequestRedraw>()
-			.add_event::<CursorMoved>()
-			.add_event::<CursorEntered>()
-			.add_event::<CursorLeft>()
-			.add_event::<ReceivedCharacter>()
-			.add_event::<WindowFocused>()
-			.add_event::<WindowScaleFactorChanged>()
-			.add_event::<WindowBackendScaleFactorChanged>()
-			.add_event::<FileDragAndDrop>()
-			.add_event::<WindowMoved>()
-			.init_resource::<Windows>();
+		app.add_event::<WindowResized>();
+		app.add_event::<CreateWindow>();
+		app.add_event::<WindowCreated>();
+		app.add_event::<WindowClosed>();
+		app.add_event::<WindowCloseRequested>();
+		app.add_event::<RequestRedraw>();
+		app.add_event::<CursorMoved>();
+		app.add_event::<CursorEntered>();
+		app.add_event::<CursorLeft>();
+		app.add_event::<ReceivedCharacter>();
+		app.add_event::<WindowFocused>();
+		app.add_event::<WindowScaleFactorChanged>();
+		app.add_event::<WindowBackendScaleFactorChanged>();
+		app.add_event::<FileDragAndDrop>();
+		app.add_event::<WindowMoved>();
+		app.init_resource::<Windows>();
 
 		if self.add_primary_window {
 			let window_descriptor = app

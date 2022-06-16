@@ -295,11 +295,12 @@ impl AddAsset for App {
 			asset_server.register_asset_type::<T>()
 		};
 
-		self.insert_resource(assets)
-			.add_system_to_stage(AssetStage::AssetEvents, Assets::<T>::asset_event_system)
-			.add_system_to_stage(AssetStage::LoadAssets, update_asset_storage_system::<T>)
-			.register_type::<Handle<T>>()
-			.add_event::<AssetEvent<T>>()
+		self.insert_resource(assets);
+		self.add_system_to_stage(AssetStage::AssetEvents, Assets::<T>::asset_event_system);
+		self.add_system_to_stage(AssetStage::LoadAssets, update_asset_storage_system::<T>);
+		self.register_type::<Handle<T>>();
+		self.add_event::<AssetEvent<T>>();
+		self
 	}
 
 	fn add_debug_asset<T: Clone>(&mut self) -> &mut Self
