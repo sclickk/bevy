@@ -31,20 +31,20 @@ fn setup(
 			mesh: meshes.add(Mesh::from(shape::Cube { size: 1.0 })),
 			material: materials.add(Color::WHITE.into()),
 			transform: Transform::from_translation(Vec3::ZERO),
-			..default()
+			..Default::default()
 		})
 		.insert(Rotatable { speed: 0.3 });
 
 	// Spawn a camera looking at the entities to show what's happening in this example.
 	commands.spawn_bundle(Camera3dBundle {
 		transform: Transform::from_xyz(0.0, 10.0, 20.0).looking_at(Vec3::ZERO, Vec3::Y),
-		..default()
+		..Default::default()
 	});
 
 	// Add a light source for better 3d visibility.
 	commands.spawn_bundle(PointLightBundle {
 		transform: Transform::from_translation(Vec3::ONE * 3.0),
-		..default()
+		..Default::default()
 	});
 }
 

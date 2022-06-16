@@ -152,13 +152,13 @@ impl WallBundle {
 					// or their ordering will be affected in surprising ways.
 					// See https://github.com/bevyengine/bevy/issues/4149
 					scale: location.size().extend(1.0),
-					..default()
+					..Default::default()
 				},
 				sprite: Sprite {
 					color: WALL_COLOR,
-					..default()
+					..Default::default()
 				},
-				..default()
+				..Default::default()
 			},
 			collider: Collider,
 		}
@@ -189,13 +189,13 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
 			transform: Transform {
 				translation: Vec3::new(0.0, paddle_y, 0.0),
 				scale: PADDLE_SIZE,
-				..default()
+				..Default::default()
 			},
 			sprite: Sprite {
 				color: PADDLE_COLOR,
-				..default()
+				..Default::default()
 			},
-			..default()
+			..Default::default()
 		})
 		.insert(Collider);
 
@@ -207,13 +207,13 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
 			transform: Transform {
 				scale: BALL_SIZE,
 				translation: BALL_STARTING_POSITION,
-				..default()
+				..Default::default()
 			},
 			sprite: Sprite {
 				color: BALL_COLOR,
-				..default()
+				..Default::default()
 			},
-			..default()
+			..Default::default()
 		})
 		.insert(Velocity(INITIAL_BALL_DIRECTION.normalize() * BALL_SPEED));
 
@@ -238,18 +238,18 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
 					},
 				},
 			],
-			..default()
+			..Default::default()
 		},
 		style: Style {
 			position_type: PositionType::Absolute,
 			position: UiRect {
 				top: SCOREBOARD_TEXT_PADDING,
 				left: SCOREBOARD_TEXT_PADDING,
-				..default()
+				..Default::default()
 			},
-			..default()
+			..Default::default()
 		},
-		..default()
+		..Default::default()
 	});
 
 	// Walls
@@ -304,14 +304,14 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
 				.insert_bundle(SpriteBundle {
 					sprite: Sprite {
 						color: BRICK_COLOR,
-						..default()
+						..Default::default()
 					},
 					transform: Transform {
 						translation: brick_position.extend(0.0),
 						scale: Vec3::new(BRICK_SIZE.x, BRICK_SIZE.y, 1.0),
-						..default()
+						..Default::default()
 					},
-					..default()
+					..Default::default()
 				})
 				.insert(Collider);
 		}

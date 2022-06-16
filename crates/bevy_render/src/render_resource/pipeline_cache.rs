@@ -12,7 +12,7 @@ use crate::{
 use bevy_asset::{AssetEvent, Assets, Handle};
 use bevy_ecs::event::EventReader;
 use bevy_ecs::system::{Res, ResMut};
-use bevy_utils::{default, tracing::error, Entry, HashMap, HashSet};
+use bevy_utils::{tracing::error, Entry, HashMap, HashSet};
 use std::{hash::Hash, iter::FusedIterator, mem, ops::Deref, sync::Arc};
 use thiserror::Error;
 use wgpu::{
@@ -257,7 +257,7 @@ impl LayoutCache {
 				.collect::<Vec<_>>();
 			render_device.create_pipeline_layout(&PipelineLayoutDescriptor {
 				bind_group_layouts: &bind_group_layouts,
-				..default()
+				..Default::default()
 			})
 		})
 	}
@@ -272,16 +272,6 @@ pub struct PipelineCache {
 }
 
 impl PipelineCache {
-	pub fn new(device: RenderDevice) -> Self {
-		Self {
-			device,
-			layout_cache: default(),
-			shader_cache: default(),
-			waiting_pipelines: default(),
-			pipelines: default(),
-		}
-	}
-
 	#[inline]
 	pub fn get_render_pipeline_state(&self, id: CachedRenderPipelineId) -> &CachedPipelineState {
 		&self.pipelines[id.0].state
@@ -560,6 +550,18 @@ impl PipelineCache {
 				}
 				AssetEvent::Removed { handle } => cache.remove_shader(handle),
 			}
+		}
+	}
+}
+
+impl From<RenderDevice> for PipelineCache {
+	fn from(device: RenderDevice) -> Self {
+		Self {
+			device,
+			layout_cache: Default::default(),
+			shader_cache: Default::default(),
+			pipelines: Default::default(),
+			waiting_pipelines: Default::default(),
 		}
 	}
 }

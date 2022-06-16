@@ -15,7 +15,7 @@ fn main() {
 			transparent: true,
 			// Disabling window decorations to make it feel more like a widget than a window
 			decorations: false,
-			..default()
+			..Default::default()
 		})
 		.add_startup_system(setup)
 		.add_plugins(DefaultPlugins)
@@ -26,6 +26,6 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
 	commands.spawn_bundle(Camera2dBundle::default());
 	commands.spawn_bundle(SpriteBundle {
 		texture: asset_server.load("branding/icon.png"),
-		..default()
+		..Default::default()
 	});
 }

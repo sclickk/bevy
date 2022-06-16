@@ -153,7 +153,7 @@ impl Plugin for RenderPlugin {
 				.register_type::<Frustum>()
 				.register_type::<CubemapFrusta>();
 
-			let pipeline_cache = PipelineCache::new(device.clone());
+			let pipeline_cache = PipelineCache::from(device.clone());
 			let asset_server = app.world.resource::<AssetServer>().clone();
 
 			let mut render_app = App::empty();

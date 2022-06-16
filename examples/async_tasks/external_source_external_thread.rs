@@ -74,7 +74,7 @@ fn spawn_text(
 				300.0,
 				0.0,
 			),
-			..default()
+			..Default::default()
 		});
 	}
 }

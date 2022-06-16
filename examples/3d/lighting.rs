@@ -27,9 +27,9 @@ fn setup(
 		material: materials.add(StandardMaterial {
 			base_color: Color::WHITE,
 			perceptual_roughness: 1.0,
-			..default()
+			..Default::default()
 		}),
-		..default()
+		..Default::default()
 	});
 
 	// left wall
@@ -41,9 +41,9 @@ fn setup(
 		material: materials.add(StandardMaterial {
 			base_color: Color::INDIGO,
 			perceptual_roughness: 1.0,
-			..default()
+			..Default::default()
 		}),
-		..default()
+		..Default::default()
 	});
 	// back (right) wall
 	let mut transform = Transform::from_xyz(0.0, 2.5, -2.5);
@@ -54,9 +54,9 @@ fn setup(
 		material: materials.add(StandardMaterial {
 			base_color: Color::INDIGO,
 			perceptual_roughness: 1.0,
-			..default()
+			..Default::default()
 		}),
-		..default()
+		..Default::default()
 	});
 
 	// cube
@@ -65,10 +65,10 @@ fn setup(
 			mesh: meshes.add(Mesh::from(shape::Cube { size: 1.0 })),
 			material: materials.add(StandardMaterial {
 				base_color: Color::PINK,
-				..default()
+				..Default::default()
 			}),
 			transform: Transform::from_xyz(0.0, 0.5, 0.0),
-			..default()
+			..Default::default()
 		})
 		.insert(Movable);
 	// sphere
@@ -76,14 +76,14 @@ fn setup(
 		.spawn_bundle(PbrBundle {
 			mesh: meshes.add(Mesh::from(shape::UVSphere {
 				radius: 0.5,
-				..default()
+				..Default::default()
 			})),
 			material: materials.add(StandardMaterial {
 				base_color: Color::LIME_GREEN,
-				..default()
+				..Default::default()
 			}),
 			transform: Transform::from_xyz(1.5, 1.0, 1.5),
-			..default()
+			..Default::default()
 		})
 		.insert(Movable);
 
@@ -102,22 +102,22 @@ fn setup(
 				intensity: 1600.0, // lumens - roughly a 100W non-halogen incandescent bulb
 				color: Color::RED,
 				shadows_enabled: true,
-				..default()
+				..Default::default()
 			},
-			..default()
+			..Default::default()
 		})
 		.with_children(|builder| {
 			builder.spawn_bundle(PbrBundle {
 				mesh: meshes.add(Mesh::from(shape::UVSphere {
 					radius: 0.1,
-					..default()
+					..Default::default()
 				})),
 				material: materials.add(StandardMaterial {
 					base_color: Color::RED,
 					emissive: Color::rgba_linear(100.0, 0.0, 0.0, 0.0),
-					..default()
+					..Default::default()
 				}),
-				..default()
+				..Default::default()
 			});
 		});
 
@@ -130,22 +130,22 @@ fn setup(
 				intensity: 1600.0, // lumens - roughly a 100W non-halogen incandescent bulb
 				color: Color::GREEN,
 				shadows_enabled: true,
-				..default()
+				..Default::default()
 			},
-			..default()
+			..Default::default()
 		})
 		.with_children(|builder| {
 			builder.spawn_bundle(PbrBundle {
 				mesh: meshes.add(Mesh::from(shape::UVSphere {
 					radius: 0.1,
-					..default()
+					..Default::default()
 				})),
 				material: materials.add(StandardMaterial {
 					base_color: Color::GREEN,
 					emissive: Color::rgba_linear(0.0, 100.0, 0.0, 0.0),
-					..default()
+					..Default::default()
 				}),
-				..default()
+				..Default::default()
 			});
 		});
 
@@ -158,22 +158,22 @@ fn setup(
 				intensity: 1600.0, // lumens - roughly a 100W non-halogen incandescent bulb
 				color: Color::BLUE,
 				shadows_enabled: true,
-				..default()
+				..Default::default()
 			},
-			..default()
+			..Default::default()
 		})
 		.with_children(|builder| {
 			builder.spawn_bundle(PbrBundle {
 				mesh: meshes.add(Mesh::from(shape::UVSphere {
 					radius: 0.1,
-					..default()
+					..Default::default()
 				})),
 				material: materials.add(StandardMaterial {
 					base_color: Color::BLUE,
 					emissive: Color::rgba_linear(0.0, 0.0, 100.0, 0.0),
-					..default()
+					..Default::default()
 				}),
-				..default()
+				..Default::default()
 			});
 		});
 
@@ -189,23 +189,23 @@ fn setup(
 				top: HALF_SIZE,
 				near: -10.0 * HALF_SIZE,
 				far: 10.0 * HALF_SIZE,
-				..default()
+				..Default::default()
 			},
 			shadows_enabled: true,
-			..default()
+			..Default::default()
 		},
 		transform: Transform {
 			translation: Vec3::new(0.0, 2.0, 0.0),
 			rotation: Quat::from_rotation_x(-std::f32::consts::FRAC_PI_4),
-			..default()
+			..Default::default()
 		},
-		..default()
+		..Default::default()
 	});
 
 	// camera
 	commands.spawn_bundle(Camera3dBundle {
 		transform: Transform::from_xyz(-2.0, 2.5, 5.0).looking_at(Vec3::ZERO, Vec3::Y),
-		..default()
+		..Default::default()
 	});
 }
 

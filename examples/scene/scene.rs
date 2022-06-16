@@ -55,7 +55,7 @@ fn load_scene_system(mut commands: Commands, asset_server: Res<AssetServer>) {
 	commands.spawn_bundle(DynamicSceneBundle {
 		// Scenes are loaded just like any other asset.
 		scene: asset_server.load("scenes/load_scene_example.scn.ron"),
-		..default()
+		..Default::default()
 	});
 
 	// This tells the AssetServer to watch for changes to assets.
@@ -108,7 +108,7 @@ fn infotext_system(mut commands: Commands, asset_server: Res<AssetServer>) {
 	commands.spawn_bundle(TextBundle {
 		style: Style {
 			align_self: AlignSelf::FlexEnd,
-			..default()
+			..Default::default()
 		},
 		text: Text::with_section(
 			"Nothing to see in this window! Check the console output!",
@@ -119,6 +119,6 @@ fn infotext_system(mut commands: Commands, asset_server: Res<AssetServer>) {
 			},
 			Default::default(),
 		),
-		..default()
+		..Default::default()
 	});
 }

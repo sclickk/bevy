@@ -7,7 +7,7 @@ fn main() {
 	App::new()
 		.insert_resource(WgpuSettings {
 			backends: None,
-			..default()
+			..Default::default()
 		})
 		.add_plugins(DefaultPlugins)
 		.run();

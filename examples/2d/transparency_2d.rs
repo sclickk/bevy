@@ -17,25 +17,25 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
 
 	commands.spawn_bundle(SpriteBundle {
 		texture: sprite_handle.clone(),
-		..default()
+		..Default::default()
 	});
 	commands.spawn_bundle(SpriteBundle {
 		sprite: Sprite {
 			// Alpha channel of the color controls transparency.
 			color: Color::rgba(0.0, 0.0, 1.0, 0.7),
-			..default()
+			..Default::default()
 		},
 		texture: sprite_handle.clone(),
 		transform: Transform::from_xyz(100.0, 0.0, 0.0),
-		..default()
+		..Default::default()
 	});
 	commands.spawn_bundle(SpriteBundle {
 		sprite: Sprite {
 			color: Color::rgba(0.0, 1.0, 0.0, 0.3),
-			..default()
+			..Default::default()
 		},
 		texture: sprite_handle,
 		transform: Transform::from_xyz(200.0, 0.0, 0.0),
-		..default()
+		..Default::default()
 	});
 }

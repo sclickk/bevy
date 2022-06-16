@@ -34,14 +34,14 @@ fn setup(
 	commands.spawn_bundle(Camera3dBundle {
 		transform: Transform::from_xyz(100.0, 100.0, 150.0)
 			.looking_at(Vec3::new(0.0, 20.0, 0.0), Vec3::Y),
-		..default()
+		..Default::default()
 	});
 
 	// Plane
 	commands.spawn_bundle(PbrBundle {
 		mesh: meshes.add(Mesh::from(shape::Plane { size: 500000.0 })),
 		material: materials.add(Color::rgb(0.3, 0.5, 0.3).into()),
-		..default()
+		..Default::default()
 	});
 
 	// Light
@@ -54,15 +54,15 @@ fn setup(
 		)),
 		directional_light: DirectionalLight {
 			shadows_enabled: true,
-			..default()
+			..Default::default()
 		},
-		..default()
+		..Default::default()
 	});
 
 	// Fox
 	commands.spawn_bundle(SceneBundle {
 		scene: asset_server.load("models/animated/Fox.glb#Scene0"),
-		..default()
+		..Default::default()
 	});
 
 	println!("Animation controls:");

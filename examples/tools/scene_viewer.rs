@@ -49,7 +49,7 @@ Controls:
 	})
 	.insert_resource(WindowDescriptor {
 		title: "bevy scene viewer".to_string(),
-		..default()
+		..Default::default()
 	})
 	.init_resource::<CameraTracker>()
 	.add_plugins(DefaultPlugins)
@@ -246,9 +246,9 @@ fn setup_scene_after_load(
 				.looking_at(Vec3::from(aabb.center), Vec3::Y),
 				camera: Camera {
 					is_active: false,
-					..default()
+					..Default::default()
 				},
-				..default()
+				..Default::default()
 			})
 			.insert(CameraController::default());
 
@@ -272,12 +272,12 @@ fn setup_scene_after_load(
 						top: max.y,
 						near: min.z,
 						far: max.z,
-						..default()
+						..Default::default()
 					},
 					shadows_enabled: false,
-					..default()
+					..Default::default()
 				},
-				..default()
+				..Default::default()
 			});
 
 			scene_handle.has_light = true;

@@ -41,21 +41,21 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
 	commands
 		.spawn_bundle(Text2dBundle {
 			text: Text::with_section("translation", text_style.clone(), text_alignment),
-			..default()
+			..Default::default()
 		})
 		.insert(AnimateTranslation);
 	// Demonstrate changing rotation
 	commands
 		.spawn_bundle(Text2dBundle {
 			text: Text::with_section("rotation", text_style.clone(), text_alignment),
-			..default()
+			..Default::default()
 		})
 		.insert(AnimateRotation);
 	// Demonstrate changing scale
 	commands
 		.spawn_bundle(Text2dBundle {
 			text: Text::with_section("scale", text_style.clone(), text_alignment),
-			..default()
+			..Default::default()
 		})
 		.insert(AnimateScale);
 	// Demonstrate text wrapping
@@ -65,10 +65,10 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
 		sprite: Sprite {
 			color: Color::rgb(0.25, 0.25, 0.75),
 			custom_size: Some(Vec2::new(box_size.x, box_size.y)),
-			..default()
+			..Default::default()
 		},
 		transform: Transform::from_translation(box_position.extend(0.0)),
-		..default()
+		..Default::default()
 	});
 	let text_alignment_topleft = TextAlignment {
 		vertical: VerticalAlign::Top,
@@ -92,7 +92,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
 			box_position.y + box_size.y / 2.0,
 			1.0,
 		),
-		..default()
+		..Default::default()
 	});
 }
 

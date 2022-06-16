@@ -38,11 +38,11 @@ fn setup(
 	let white_handle = materials.add(StandardMaterial {
 		base_color: Color::WHITE,
 		perceptual_roughness: 1.0,
-		..default()
+		..Default::default()
 	});
 	let sphere_handle = meshes.add(Mesh::from(shape::Icosphere {
 		radius: sphere_radius,
-		..default()
+		..Default::default()
 	}));
 
 	println!("Using DirectionalLight");
@@ -56,9 +56,9 @@ fn setup(
 			shadow_depth_bias: 0.0,
 			shadow_normal_bias: 0.0,
 			shadows_enabled: true,
-			..default()
+			..Default::default()
 		},
-		..default()
+		..Default::default()
 	});
 
 	let theta = std::f32::consts::FRAC_PI_4;
@@ -73,15 +73,15 @@ fn setup(
 				top: 5.0,
 				near: -5.0,
 				far: 5.0,
-				..default()
+				..Default::default()
 			},
 			shadow_depth_bias: 0.0,
 			shadow_normal_bias: 0.0,
 			shadows_enabled: true,
-			..default()
+			..Default::default()
 		},
 		transform: Transform::from_matrix(light_transform),
-		..default()
+		..Default::default()
 	});
 
 	// camera
@@ -89,7 +89,7 @@ fn setup(
 		.spawn_bundle(Camera3dBundle {
 			transform: Transform::from_xyz(-1.0, 1.0, 1.0)
 				.looking_at(Vec3::new(-1.0, 1.0, 0.0), Vec3::Y),
-			..default()
+			..Default::default()
 		})
 		.insert(CameraController::default());
 
@@ -98,7 +98,7 @@ fn setup(
 			mesh: sphere_handle.clone(),
 			material: white_handle.clone(),
 			transform: Transform::from_xyz(0.0, spawn_height, z_i32 as f32),
-			..default()
+			..Default::default()
 		});
 	}
 
@@ -108,7 +108,7 @@ fn setup(
 			size: 2.0 * spawn_plane_depth,
 		})),
 		material: white_handle,
-		..default()
+		..Default::default()
 	});
 }
 

@@ -31,10 +31,10 @@ fn setup(
 					// vary key PBR parameters on a grid of spheres to show the effect
 					metallic: y01,
 					perceptual_roughness: x01,
-					..default()
+					..Default::default()
 				}),
 				transform: Transform::from_xyz(x as f32, y as f32 + 0.5, 0.0),
-				..default()
+				..Default::default()
 			});
 		}
 	}
@@ -48,10 +48,10 @@ fn setup(
 			base_color: Color::hex("ffd891").unwrap(),
 			// vary key PBR parameters on a grid of spheres to show the effect
 			unlit: true,
-			..default()
+			..Default::default()
 		}),
 		transform: Transform::from_xyz(-5.0, -2.5, 0.0),
-		..default()
+		..Default::default()
 	});
 	// light
 	commands.spawn_bundle(PointLightBundle {
@@ -59,18 +59,18 @@ fn setup(
 		point_light: PointLight {
 			intensity: 600000.,
 			range: 100.,
-			..default()
+			..Default::default()
 		},
-		..default()
+		..Default::default()
 	});
 	// camera
 	commands.spawn_bundle(Camera3dBundle {
 		transform: Transform::from_xyz(0.0, 0.0, 8.0).looking_at(Vec3::default(), Vec3::Y),
 		projection: OrthographicProjection {
 			scale: 0.01,
-			..default()
+			..Default::default()
 		}
 		.into(),
-		..default()
+		..Default::default()
 	});
 }

@@ -49,10 +49,10 @@ fn setup_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
 				justify_content: JustifyContent::Center,
 				// vertically center child text
 				align_items: AlignItems::Center,
-				..default()
+				..Default::default()
 			},
 			color: NORMAL_BUTTON.into(),
-			..default()
+			..Default::default()
 		})
 		.with_children(|parent| {
 			parent.spawn_bundle(TextBundle {
@@ -65,7 +65,7 @@ fn setup_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
 					},
 					Default::default(),
 				),
-				..default()
+				..Default::default()
 			});
 		})
 		.id();
@@ -102,7 +102,7 @@ fn cleanup_menu(mut commands: Commands, menu_data: Res<MenuData>) {
 fn setup_game(mut commands: Commands, asset_server: Res<AssetServer>) {
 	commands.spawn_bundle(SpriteBundle {
 		texture: asset_server.load("branding/icon.png"),
-		..default()
+		..Default::default()
 	});
 }
 

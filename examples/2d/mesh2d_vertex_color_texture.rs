@@ -35,6 +35,6 @@ fn setup(
 		mesh: meshes.add(mesh).into(),
 		transform: Transform::default().with_scale(Vec3::splat(128.)),
 		material: materials.add(ColorMaterial::from(texture_handle)),
-		..default()
+		..Default::default()
 	});
 }

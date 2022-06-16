@@ -1,15 +1,11 @@
-pub mod prelude {
-	pub use crate::default;
-}
+pub mod prelude {}
 
 pub mod futures;
 pub mod label;
 
-mod default;
 mod float_ord;
 
 pub use ahash::AHasher;
-pub use default::default;
 pub use float_ord::*;
 pub use hashbrown;
 pub use instant::{Duration, Instant};

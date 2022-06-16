@@ -38,7 +38,7 @@ fn setup(
 	let size = Extent3d {
 		width: 512,
 		height: 512,
-		..default()
+		..Default::default()
 	};
 
 	// This is the texture that will be rendered to.
@@ -54,7 +54,7 @@ fn setup(
 				| TextureUsages::COPY_DST
 				| TextureUsages::RENDER_ATTACHMENT,
 		},
-		..default()
+		..Default::default()
 	};
 
 	// fill image.data with zeroes
@@ -67,7 +67,7 @@ fn setup(
 		base_color: Color::rgb(0.8, 0.7, 0.6),
 		reflectance: 0.02,
 		unlit: false,
-		..default()
+		..Default::default()
 	});
 
 	// This specifies the layer used for the first pass, which will be attached to the first pass camera and cube.
@@ -79,7 +79,7 @@ fn setup(
 			mesh: cube_handle,
 			material: cube_material_handle,
 			transform: Transform::from_translation(Vec3::new(0.0, 0.0, 1.0)),
-			..default()
+			..Default::default()
 		})
 		.insert(FirstPassCube)
 		.insert(first_pass_layer);
@@ -88,24 +88,24 @@ fn setup(
 	// NOTE: Currently lights are shared between passes - see https://github.com/bevyengine/bevy/issues/3462
 	commands.spawn_bundle(PointLightBundle {
 		transform: Transform::from_translation(Vec3::new(0.0, 0.0, 10.0)),
-		..default()
+		..Default::default()
 	});
 
 	commands
 		.spawn_bundle(Camera3dBundle {
 			camera_3d: Camera3d {
 				clear_color: ClearColorConfig::Custom(Color::WHITE),
-				..default()
+				..Default::default()
 			},
 			camera: Camera {
 				// render before the "main pass" camera
 				priority: -1,
 				target: RenderTarget::Image(image_handle.clone()),
-				..default()
+				..Default::default()
 			},
 			transform: Transform::from_translation(Vec3::new(0.0, 0.0, 15.0))
 				.looking_at(Vec3::default(), Vec3::Y),
-			..default()
+			..Default::default()
 		})
 		.insert(first_pass_layer);
 
@@ -117,7 +117,7 @@ fn setup(
 		base_color_texture: Some(image_handle),
 		reflectance: 0.02,
 		unlit: false,
-		..default()
+		..Default::default()
 	});
 
 	// Main pass cube, with material containing the rendered first pass texture.
@@ -128,9 +128,9 @@ fn setup(
 			transform: Transform {
 				translation: Vec3::new(0.0, 0.0, 1.5),
 				rotation: Quat::from_rotation_x(-std::f32::consts::PI / 5.0),
-				..default()
+				..Default::default()
 			},
-			..default()
+			..Default::default()
 		})
 		.insert(MainPassCube);
 
@@ -138,7 +138,7 @@ fn setup(
 	commands.spawn_bundle(Camera3dBundle {
 		transform: Transform::from_translation(Vec3::new(0.0, 0.0, 15.0))
 			.looking_at(Vec3::default(), Vec3::Y),
-		..default()
+		..Default::default()
 	});
 }
 

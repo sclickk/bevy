@@ -7,7 +7,7 @@ use crate::{
 	},
 };
 use bevy_utils::{
-	default, hashbrown::hash_map::RawEntryMut, tracing::error, Entry, HashMap, PreHashMap,
+	hashbrown::hash_map::RawEntryMut, tracing::error, Entry, HashMap, PreHashMap,
 	PreHashMapExt,
 };
 use std::{fmt::Debug, hash::Hash};
@@ -24,7 +24,7 @@ pub struct SpecializedRenderPipelines<S: SpecializedRenderPipeline> {
 
 impl<S: SpecializedRenderPipeline> Default for SpecializedRenderPipelines<S> {
 	fn default() -> Self {
-		Self { cache: default() }
+		Self { cache: Default::default() }
 	}
 }
 
@@ -53,7 +53,7 @@ pub struct SpecializedComputePipelines<S: SpecializedComputePipeline> {
 
 impl<S: SpecializedComputePipeline> Default for SpecializedComputePipelines<S> {
 	fn default() -> Self {
-		Self { cache: default() }
+		Self { cache: Default::default() }
 	}
 }
 

@@ -7,7 +7,7 @@ fn main() {
 		.insert_resource(WindowDescriptor {
 			resizable: false,
 			mode: WindowMode::BorderlessFullscreen,
-			..default()
+			..Default::default()
 		})
 		.add_plugins(DefaultPlugins)
 		.add_startup_system(setup_scene)
@@ -52,14 +52,14 @@ fn setup_scene(
 	commands.spawn_bundle(PbrBundle {
 		mesh: meshes.add(Mesh::from(shape::Plane { size: 5.0 })),
 		material: materials.add(Color::rgb(0.1, 0.2, 0.1).into()),
-		..default()
+		..Default::default()
 	});
 	// cube
 	commands.spawn_bundle(PbrBundle {
 		mesh: meshes.add(Mesh::from(shape::Cube { size: 1.0 })),
 		material: materials.add(Color::rgb(0.5, 0.4, 0.3).into()),
 		transform: Transform::from_xyz(0.0, 0.5, 0.0),
-		..default()
+		..Default::default()
 	});
 	// sphere
 	commands.spawn_bundle(PbrBundle {
@@ -69,7 +69,7 @@ fn setup_scene(
 		})),
 		material: materials.add(Color::rgb(0.1, 0.4, 0.8).into()),
 		transform: Transform::from_xyz(1.5, 1.5, 1.5),
-		..default()
+		..Default::default()
 	});
 	// light
 	commands.spawn_bundle(PointLightBundle {
@@ -77,14 +77,14 @@ fn setup_scene(
 		point_light: PointLight {
 			intensity: 5000.0,
 			shadows_enabled: true,
-			..default()
+			..Default::default()
 		},
-		..default()
+		..Default::default()
 	});
 	// camera
 	commands.spawn_bundle(Camera3dBundle {
 		transform: Transform::from_xyz(-2.0, 2.5, 5.0).looking_at(Vec3::ZERO, Vec3::Y),
-		..default()
+		..Default::default()
 	});
 }
 

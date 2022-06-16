@@ -24,7 +24,7 @@ fn setup(
 	// Camera
 	commands.spawn_bundle(Camera3dBundle {
 		transform: Transform::from_xyz(-2.0, 2.5, 5.0).looking_at(Vec3::ZERO, Vec3::Y),
-		..default()
+		..Default::default()
 	});
 
 	// The animation API uses the `Name` component to target entities
@@ -119,13 +119,13 @@ fn setup(
 		.spawn_bundle(PbrBundle {
 			mesh: meshes.add(Mesh::from(shape::Icosphere::default())),
 			material: materials.add(Color::rgb(0.8, 0.7, 0.6).into()),
-			..default()
+			..Default::default()
 		})
 		// Add the Name component, and the animation player
 		.insert_bundle((planet, player))
 		.with_children(|p| {
 			// This entity is just used for animation, but doesn't display anything
-			p.spawn_bundle(TransformBundle { ..default() })
+			p.spawn_bundle(TransformBundle { ..Default::default() })
 				// Add the Name component
 				.insert(orbit_controller)
 				.with_children(|p| {
@@ -134,7 +134,7 @@ fn setup(
 						transform: Transform::from_xyz(1.5, 0.0, 0.0),
 						mesh: meshes.add(Mesh::from(shape::Cube { size: 0.5 })),
 						material: materials.add(Color::rgb(0.3, 0.9, 0.3).into()),
-						..default()
+						..Default::default()
 					})
 					// Add the Name component
 					.insert(satellite);

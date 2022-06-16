@@ -33,11 +33,11 @@ fn setup(
 	let white_handle = materials.add(StandardMaterial {
 		base_color: Color::WHITE,
 		perceptual_roughness: 1.0,
-		..default()
+		..Default::default()
 	});
 	let sphere_handle = meshes.add(Mesh::from(shape::Icosphere {
 		radius: sphere_radius,
-		..default()
+		..Default::default()
 	}));
 
 	// sphere - initially a caster
@@ -45,7 +45,7 @@ fn setup(
 		mesh: sphere_handle.clone(),
 		material: materials.add(Color::RED.into()),
 		transform: Transform::from_xyz(-1.0, spawn_height, 0.0),
-		..default()
+		..Default::default()
 	});
 
 	// sphere - initially not a caster
@@ -54,7 +54,7 @@ fn setup(
 			mesh: sphere_handle,
 			material: materials.add(Color::BLUE.into()),
 			transform: Transform::from_xyz(1.0, spawn_height, 0.0),
-			..default()
+			..Default::default()
 		})
 		.insert(NotShadowCaster);
 
@@ -64,7 +64,7 @@ fn setup(
 			mesh: meshes.add(Mesh::from(shape::Plane { size: 20.0 })),
 			material: materials.add(Color::GREEN.into()),
 			transform: Transform::from_xyz(0.0, 1.0, -10.0),
-			..default()
+			..Default::default()
 		})
 		.insert_bundle((NotShadowCaster, NotShadowReceiver));
 
@@ -72,7 +72,7 @@ fn setup(
 	commands.spawn_bundle(PbrBundle {
 		mesh: meshes.add(Mesh::from(shape::Plane { size: 20.0 })),
 		material: white_handle,
-		..default()
+		..Default::default()
 	});
 
 	println!("Using DirectionalLight");
@@ -84,9 +84,9 @@ fn setup(
 			range: spawn_plane_depth,
 			color: Color::WHITE,
 			shadows_enabled: true,
-			..default()
+			..Default::default()
 		},
-		..default()
+		..Default::default()
 	});
 
 	let theta = std::f32::consts::FRAC_PI_4;
@@ -101,20 +101,20 @@ fn setup(
 				top: 10.0,
 				near: -50.0,
 				far: 50.0,
-				..default()
+				..Default::default()
 			},
 			shadows_enabled: true,
-			..default()
+			..Default::default()
 		},
 		transform: Transform::from_matrix(light_transform),
-		..default()
+		..Default::default()
 	});
 
 	// camera
 	commands.spawn_bundle(Camera3dBundle {
 		transform: Transform::from_xyz(-5.0, 5.0, 5.0)
 			.looking_at(Vec3::new(-1.0, 1.0, 0.0), Vec3::Y),
-		..default()
+		..Default::default()
 	});
 }
 

@@ -49,7 +49,7 @@ fn setup(
 	let size = Extent3d {
 		width: window.physical_width(),
 		height: window.physical_height(),
-		..default()
+		..Default::default()
 	};
 
 	// This is the texture that will be rendered to.
@@ -65,7 +65,7 @@ fn setup(
 				| TextureUsages::COPY_DST
 				| TextureUsages::RENDER_ATTACHMENT,
 		},
-		..default()
+		..Default::default()
 	};
 
 	// fill image.data with zeroes
@@ -78,7 +78,7 @@ fn setup(
 		base_color: Color::rgb(0.8, 0.7, 0.6),
 		reflectance: 0.02,
 		unlit: false,
-		..default()
+		..Default::default()
 	});
 
 	// The cube that will be rendered to the texture.
@@ -87,7 +87,7 @@ fn setup(
 			mesh: cube_handle,
 			material: cube_material_handle,
 			transform: Transform::from_translation(Vec3::new(0.0, 0.0, 1.0)),
-			..default()
+			..Default::default()
 		})
 		.insert(MainCube);
 
@@ -95,22 +95,22 @@ fn setup(
 	// NOTE: Currently lights are ignoring render layers - see https://github.com/bevyengine/bevy/issues/3462
 	commands.spawn_bundle(PointLightBundle {
 		transform: Transform::from_translation(Vec3::new(0.0, 0.0, 10.0)),
-		..default()
+		..Default::default()
 	});
 
 	// Main camera, first to render
 	commands.spawn_bundle(Camera3dBundle {
 		camera_3d: Camera3d {
 			clear_color: ClearColorConfig::Custom(Color::WHITE),
-			..default()
+			..Default::default()
 		},
 		camera: Camera {
 			target: RenderTarget::Image(image_handle.clone()),
-			..default()
+			..Default::default()
 		},
 		transform: Transform::from_translation(Vec3::new(0.0, 0.0, 15.0))
 			.looking_at(Vec3::default(), Vec3::Y),
-		..default()
+		..Default::default()
 	});
 
 	// This specifies the layer used for the post processing camera, which will be attached to the post processing camera and 2d quad.
@@ -133,9 +133,9 @@ fn setup(
 			material: material_handle,
 			transform: Transform {
 				translation: Vec3::new(0.0, 0.0, 1.5),
-				..default()
+				..Default::default()
 			},
-			..default()
+			..Default::default()
 		})
 		.insert(post_processing_pass_layer);
 
@@ -145,7 +145,7 @@ fn setup(
 			camera: Camera {
 				// renders after the first main camera which has default value: 0.
 				priority: 1,
-				..default()
+				..Default::default()
 			},
 			..Camera2dBundle::default()
 		})

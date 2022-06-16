@@ -19,7 +19,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
 		.spawn_bundle(SpriteBundle {
 			transform: Transform::from_scale(Vec3::splat(0.75)),
 			texture: texture.clone(),
-			..default()
+			..Default::default()
 		})
 		// With that entity as a parent, run a lambda that spawns its children
 		.with_children(|parent| {
@@ -28,14 +28,14 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
 				transform: Transform {
 					translation: Vec3::new(250.0, 0.0, 0.0),
 					scale: Vec3::splat(0.75),
-					..default()
+					..Default::default()
 				},
 				texture: texture.clone(),
 				sprite: Sprite {
 					color: Color::BLUE,
-					..default()
+					..Default::default()
 				},
-				..default()
+				..Default::default()
 			});
 		})
 		// Store parent entity for next sections
@@ -50,14 +50,14 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
 			transform: Transform {
 				translation: Vec3::new(-250.0, 0.0, 0.0),
 				scale: Vec3::splat(0.75),
-				..default()
+				..Default::default()
 			},
 			texture: texture.clone(),
 			sprite: Sprite {
 				color: Color::RED,
-				..default()
+				..Default::default()
 			},
-			..default()
+			..Default::default()
 		})
 		// Using the entity from the previous section as the parent:
 		.insert(Parent(parent));
@@ -69,14 +69,14 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
 			transform: Transform {
 				translation: Vec3::new(0.0, 250.0, 0.0),
 				scale: Vec3::splat(0.75),
-				..default()
+				..Default::default()
 			},
 			texture,
 			sprite: Sprite {
 				color: Color::GREEN,
-				..default()
+				..Default::default()
 			},
-			..default()
+			..Default::default()
 		})
 		.id();
 

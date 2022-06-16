@@ -16,7 +16,7 @@ fn main() {
 	App::new()
 		.insert_resource(WindowDescriptor {
 			title: "🦊🦊🦊 Many Foxes! 🦊🦊🦊".to_string(),
-			..default()
+			..Default::default()
 		})
 		.add_plugins(DefaultPlugins)
 		.add_plugin(FrameTimeDiagnosticsPlugin)
@@ -125,7 +125,7 @@ fn setup(
 					transform: Transform::from_xyz(x as f32, 0.0, z as f32)
 						.with_scale(Vec3::splat(0.01))
 						.with_rotation(base_rotation * Quat::from_rotation_y(-fox_angle)),
-					..default()
+					..Default::default()
 				});
 			});
 		}
@@ -145,14 +145,14 @@ fn setup(
 	commands.spawn_bundle(Camera3dBundle {
 		transform: Transform::from_translation(translation)
 			.looking_at(0.2 * Vec3::new(translation.x, 0.0, translation.z), Vec3::Y),
-		..default()
+		..Default::default()
 	});
 
 	// Plane
 	commands.spawn_bundle(PbrBundle {
 		mesh: meshes.add(Mesh::from(shape::Plane { size: 500000.0 })),
 		material: materials.add(Color::rgb(0.3, 0.5, 0.3).into()),
-		..default()
+		..Default::default()
 	});
 
 	// Light
@@ -165,9 +165,9 @@ fn setup(
 		)),
 		directional_light: DirectionalLight {
 			shadows_enabled: true,
-			..default()
+			..Default::default()
 		},
-		..default()
+		..Default::default()
 	});
 
 	println!("Animation controls:");

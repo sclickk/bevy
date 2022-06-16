@@ -28,7 +28,7 @@ fn setup(
 ) {
 	let debug_material = materials.add(StandardMaterial {
 		base_color_texture: Some(images.add(uv_debug_texture())),
-		..default()
+		..Default::default()
 	});
 
 	let shapes = [
@@ -53,9 +53,9 @@ fn setup(
 						2.0,
 						0.0,
 					),
-					..default()
+					..Default::default()
 				},
-				..default()
+				..Default::default()
 			})
 			.insert(Shape);
 	}
@@ -65,22 +65,22 @@ fn setup(
 			intensity: 9000.0,
 			range: 100.,
 			shadows_enabled: true,
-			..default()
+			..Default::default()
 		},
 		transform: Transform::from_xyz(8.0, 16.0, 8.0),
-		..default()
+		..Default::default()
 	});
 
 	// ground plane
 	commands.spawn_bundle(PbrBundle {
 		mesh: meshes.add(shape::Plane { size: 50. }.into()),
 		material: materials.add(Color::SILVER.into()),
-		..default()
+		..Default::default()
 	});
 
 	commands.spawn_bundle(Camera3dBundle {
 		transform: Transform::from_xyz(0.0, 6., 12.0).looking_at(Vec3::new(0., 1., 0.), Vec3::Y),
-		..default()
+		..Default::default()
 	});
 }
 

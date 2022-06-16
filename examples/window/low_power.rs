@@ -23,12 +23,12 @@ fn main() {
 			unfocused_mode: bevy::winit::UpdateMode::ReactiveLowPower {
 				max_wait: Duration::from_millis(10),
 			},
-			..default()
+			..Default::default()
 		})
 		// Turn off vsync to maximize CPU/GPU usage
 		.insert_resource(WindowDescriptor {
 			present_mode: PresentMode::Immediate,
-			..default()
+			..Default::default()
 		})
 		.insert_resource(ExampleMode::Game)
 		.add_plugins(DefaultPlugins)
@@ -148,21 +148,21 @@ pub(crate) mod test_setup {
 			.spawn_bundle(PbrBundle {
 				mesh: meshes.add(Mesh::from(shape::Cube { size: 0.5 })),
 				material: materials.add(Color::rgb(0.8, 0.7, 0.6).into()),
-				..default()
+				..Default::default()
 			})
 			.insert(Rotator);
 		commands.spawn_bundle(PointLightBundle {
 			point_light: PointLight {
 				intensity: 1500.0,
 				shadows_enabled: true,
-				..default()
+				..Default::default()
 			},
 			transform: Transform::from_xyz(4.0, 8.0, 4.0),
-			..default()
+			..Default::default()
 		});
 		commands.spawn_bundle(Camera3dBundle {
 			transform: Transform::from_xyz(-2.0, 2.0, 2.0).looking_at(Vec3::ZERO, Vec3::Y),
-			..default()
+			..Default::default()
 		});
 		event.send(RequestRedraw);
 		commands
@@ -173,9 +173,9 @@ pub(crate) mod test_setup {
 					position: UiRect {
 						top: Val::Px(5.0),
 						left: Val::Px(5.0),
-						..default()
+						..Default::default()
 					},
-					..default()
+					..Default::default()
 				},
 				text: Text {
 					sections: vec![
@@ -214,7 +214,7 @@ pub(crate) mod test_setup {
 					],
 					alignment: TextAlignment::default(),
 				},
-				..default()
+				..Default::default()
 			})
 			.insert(ModeText);
 	}

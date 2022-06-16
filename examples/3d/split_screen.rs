@@ -26,12 +26,12 @@ fn setup(
 	commands.spawn_bundle(PbrBundle {
 		mesh: meshes.add(Mesh::from(shape::Plane { size: 100.0 })),
 		material: materials.add(Color::rgb(0.3, 0.5, 0.3).into()),
-		..default()
+		..Default::default()
 	});
 
 	commands.spawn_bundle(SceneBundle {
 		scene: asset_server.load("models/animated/Fox.glb#Scene0"),
-		..default()
+		..Default::default()
 	});
 
 	// Light
@@ -44,16 +44,16 @@ fn setup(
 		)),
 		directional_light: DirectionalLight {
 			shadows_enabled: true,
-			..default()
+			..Default::default()
 		},
-		..default()
+		..Default::default()
 	});
 
 	// Left Camera
 	commands
 		.spawn_bundle(Camera3dBundle {
 			transform: Transform::from_xyz(0.0, 200.0, -100.0).looking_at(Vec3::ZERO, Vec3::Y),
-			..default()
+			..Default::default()
 		})
 		.insert(LeftCamera);
 
@@ -64,14 +64,14 @@ fn setup(
 			camera: Camera {
 				// Renders the right camera after the left camera, which has a default priority of 0
 				priority: 1,
-				..default()
+				..Default::default()
 			},
 			camera_3d: Camera3d {
 				// dont clear on the second camera because the first camera already cleared the window
 				clear_color: ClearColorConfig::None,
-				..default()
+				..Default::default()
 			},
-			..default()
+			..Default::default()
 		})
 		.insert(RightCamera);
 }
@@ -98,14 +98,14 @@ fn set_camera_viewports(
 			left_camera.viewport = Some(Viewport {
 				physical_position: UVec2::new(0, 0),
 				physical_size: UVec2::new(window.physical_width() / 2, window.physical_height()),
-				..default()
+				..Default::default()
 			});
 
 			let mut right_camera = right_camera.single_mut();
 			right_camera.viewport = Some(Viewport {
 				physical_position: UVec2::new(window.physical_width() / 2, 0),
 				physical_size: UVec2::new(window.physical_width() / 2, window.physical_height()),
-				..default()
+				..Default::default()
 			});
 		}
 	}

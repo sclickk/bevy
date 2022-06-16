@@ -34,7 +34,7 @@ fn main() {
 			height: 600.,
 			present_mode: PresentMode::Immediate,
 			resizable: true,
-			..default()
+			..Default::default()
 		})
 		.add_plugins(DefaultPlugins)
 		.add_plugin(FrameTimeDiagnosticsPlugin::default())
@@ -130,18 +130,18 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
 						},
 					},
 				],
-				..default()
+				..Default::default()
 			},
 			style: Style {
 				position_type: PositionType::Absolute,
 				position: UiRect {
 					top: Val::Px(5.0),
 					left: Val::Px(5.0),
-					..default()
+					..Default::default()
 				},
-				..default()
+				..Default::default()
 			},
-			..default()
+			..Default::default()
 		})
 		.insert(StatsText);
 
@@ -203,13 +203,13 @@ fn spawn_birds(
 				transform: Transform {
 					translation: Vec3::new(bird_x, bird_y, bird_z),
 					scale: Vec3::splat(BIRD_SCALE),
-					..default()
+					..Default::default()
 				},
 				sprite: Sprite {
 					color: counter.color,
-					..default()
+					..Default::default()
 				},
-				..default()
+				..Default::default()
 			})
 			.insert(Bird {
 				velocity: Vec3::new(
