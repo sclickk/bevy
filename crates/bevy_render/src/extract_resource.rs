@@ -11,10 +11,10 @@ use crate::{RenderApp, RenderStage};
 /// Therefore the resource is transferred from the "main world" into the "render world"
 /// in the [`RenderStage::Extract`](crate::RenderStage::Extract) step.
 pub trait ExtractResource: Resource {
-    type Source: Resource;
+	type Source: Resource;
 
-    /// Defines how the resource is transferred into the "render world".
-    fn extract_resource(source: &Self::Source) -> Self;
+	/// Defines how the resource is transferred into the "render world".
+	fn extract_resource(source: &Self::Source) -> Self;
 }
 
 /// This plugin extracts the resources into the "render world".
@@ -24,23 +24,23 @@ pub trait ExtractResource: Resource {
 pub struct ExtractResourcePlugin<R: ExtractResource>(PhantomData<R>);
 
 impl<R: ExtractResource> Default for ExtractResourcePlugin<R> {
-    fn default() -> Self {
-        Self(PhantomData)
-    }
+	fn default() -> Self {
+		Self(PhantomData)
+	}
 }
 
 impl<R: ExtractResource> Plugin for ExtractResourcePlugin<R> {
-    fn build(&self, app: &mut App) {
-        if let Ok(render_app) = app.get_sub_app_mut(RenderApp) {
-            render_app.add_system_to_stage(RenderStage::Extract, extract_resource::<R>);
-        }
-    }
+	fn build(&self, app: &mut App) {
+		if let Ok(render_app) = app.get_sub_app_mut(RenderApp) {
+			render_app.add_system_to_stage(RenderStage::Extract, extract_resource::<R>);
+		}
+	}
 }
 
 /// This system extracts the resource of the corresponding [`Resource`] type
 /// by cloning it.
 pub fn extract_resource<R: ExtractResource>(mut commands: Commands, resource: Res<R::Source>) {
-    if resource.is_changed() {
-        commands.insert_resource(R::extract_resource(resource.into_inner()));
-    }
+	if resource.is_changed() {
+		commands.insert_resource(R::extract_resource(resource.into_inner()));
+	}
 }

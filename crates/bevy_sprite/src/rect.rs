@@ -6,22 +6,22 @@ use bevy_reflect::Reflect;
 #[repr(C)]
 #[derive(Default, Clone, Copy, Debug, Reflect)]
 pub struct Rect {
-    /// The beginning point of the rect
-    pub min: Vec2,
-    /// The ending point of the rect
-    pub max: Vec2,
+	/// The beginning point of the rect
+	pub min: Vec2,
+	/// The ending point of the rect
+	pub max: Vec2,
 }
 
 impl Rect {
-    pub fn width(&self) -> f32 {
-        self.max.x - self.min.x
-    }
+	pub fn width(&self) -> f32 {
+		self.max.x - self.min.x
+	}
 
-    pub fn height(&self) -> f32 {
-        self.max.y - self.min.y
-    }
+	pub fn height(&self) -> f32 {
+		self.max.y - self.min.y
+	}
 
-    pub fn size(&self) -> Vec2 {
-        Vec2::new(self.width(), self.height())
-    }
+	pub fn size(&self) -> Vec2 {
+		Vec2::new(self.width(), self.height())
+	}
 }

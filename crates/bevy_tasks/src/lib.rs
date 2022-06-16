@@ -25,12 +25,12 @@ pub use iter::ParallelIterator;
 
 #[allow(missing_docs)]
 pub mod prelude {
-    #[doc(hidden)]
-    pub use crate::{
-        iter::ParallelIterator,
-        slice::{ParallelSlice, ParallelSliceMut},
-        usages::{AsyncComputeTaskPool, ComputeTaskPool, IoTaskPool},
-    };
+	#[doc(hidden)]
+	pub use crate::{
+		iter::ParallelIterator,
+		slice::{ParallelSlice, ParallelSliceMut},
+		usages::{AsyncComputeTaskPool, ComputeTaskPool, IoTaskPool},
+	};
 }
 
 pub use num_cpus::get as logical_core_count;

@@ -12,8 +12,8 @@ pub use scene_loader::*;
 pub use scene_spawner::*;
 
 pub mod prelude {
-    #[doc(hidden)]
-    pub use crate::{DynamicScene, DynamicSceneBundle, Scene, SceneBundle, SceneSpawner};
+	#[doc(hidden)]
+	pub use crate::{DynamicScene, DynamicSceneBundle, Scene, SceneBundle, SceneSpawner};
 }
 
 use bevy_app::prelude::*;
@@ -24,16 +24,16 @@ use bevy_ecs::{schedule::ExclusiveSystemDescriptorCoercion, system::IntoExclusiv
 pub struct ScenePlugin;
 
 impl Plugin for ScenePlugin {
-    fn build(&self, app: &mut App) {
-        app.add_asset::<DynamicScene>()
-            .add_asset::<Scene>()
-            .init_asset_loader::<SceneLoader>()
-            .init_resource::<SceneSpawner>()
-            .add_system_to_stage(
-                CoreStage::PreUpdate,
-                scene_spawner_system.exclusive_system().at_end(),
-            )
-            // Systems `*_bundle_spawner` must run before `scene_spawner_system`
-            .add_system_to_stage(CoreStage::PreUpdate, scene_spawner);
-    }
+	fn build(&self, app: &mut App) {
+		app.add_asset::<DynamicScene>()
+			.add_asset::<Scene>()
+			.init_asset_loader::<SceneLoader>()
+			.init_resource::<SceneSpawner>()
+			.add_system_to_stage(
+				CoreStage::PreUpdate,
+				scene_spawner_system.exclusive_system().at_end(),
+			)
+			// Systems `*_bundle_spawner` must run before `scene_spawner_system`
+			.add_system_to_stage(CoreStage::PreUpdate, scene_spawner);
+	}
 }

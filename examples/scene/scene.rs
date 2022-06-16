@@ -3,15 +3,15 @@
 use bevy::{prelude::*, reflect::TypeRegistry, utils::Duration};
 
 fn main() {
-    App::new()
-        .add_plugins(DefaultPlugins)
-        .register_type::<ComponentA>()
-        .register_type::<ComponentB>()
-        .add_startup_system(save_scene_system.exclusive_system())
-        .add_startup_system(load_scene_system)
-        .add_startup_system(infotext_system)
-        .add_system(log_system)
-        .run();
+	App::new()
+		.add_plugins(DefaultPlugins)
+		.register_type::<ComponentA>()
+		.register_type::<ComponentB>()
+		.add_startup_system(save_scene_system.exclusive_system())
+		.add_startup_system(load_scene_system)
+		.add_startup_system(infotext_system)
+		.add_system(log_system)
+		.run();
 }
 
 // Registered components must implement the `Reflect` and `FromWorld` traits.
@@ -23,8 +23,8 @@ fn main() {
 #[derive(Component, Reflect, Default)]
 #[reflect(Component)] // this tells the reflect derive to also reflect component behaviors
 struct ComponentA {
-    pub x: f32,
-    pub y: f32,
+	pub x: f32,
+	pub y: f32,
 }
 
 // Some components have fields that cannot (or should not) be written to scene files. These can be
@@ -34,91 +34,91 @@ struct ComponentA {
 #[derive(Component, Reflect)]
 #[reflect(Component)]
 struct ComponentB {
-    pub value: String,
-    #[reflect(ignore)]
-    pub _time_since_startup: Duration,
+	pub value: String,
+	#[reflect(ignore)]
+	pub _time_since_startup: Duration,
 }
 
 impl FromWorld for ComponentB {
-    fn from_world(world: &mut World) -> Self {
-        let time = world.resource::<Time>();
-        ComponentB {
-            _time_since_startup: time.time_since_startup(),
-            value: "Default Value".to_string(),
-        }
-    }
+	fn from_world(world: &mut World) -> Self {
+		let time = world.resource::<Time>();
+		ComponentB {
+			_time_since_startup: time.time_since_startup(),
+			value: "Default Value".to_string(),
+		}
+	}
 }
 
 fn load_scene_system(mut commands: Commands, asset_server: Res<AssetServer>) {
-    // "Spawning" a scene bundle creates a new entity and spawns new instances
-    // of the given scene's entities as children of that entity.
-    commands.spawn_bundle(DynamicSceneBundle {
-        // Scenes are loaded just like any other asset.
-        scene: asset_server.load("scenes/load_scene_example.scn.ron"),
-        ..default()
-    });
+	// "Spawning" a scene bundle creates a new entity and spawns new instances
+	// of the given scene's entities as children of that entity.
+	commands.spawn_bundle(DynamicSceneBundle {
+		// Scenes are loaded just like any other asset.
+		scene: asset_server.load("scenes/load_scene_example.scn.ron"),
+		..default()
+	});
 
-    // This tells the AssetServer to watch for changes to assets.
-    // It enables our scenes to automatically reload in game when we modify their files
-    asset_server.watch_for_changes().unwrap();
+	// This tells the AssetServer to watch for changes to assets.
+	// It enables our scenes to automatically reload in game when we modify their files
+	asset_server.watch_for_changes().unwrap();
 }
 
 // This system logs all ComponentA components in our world. Try making a change to a ComponentA in
 // load_scene_example.scn. You should immediately see the changes appear in the console.
 fn log_system(query: Query<(Entity, &ComponentA), Changed<ComponentA>>) {
-    for (entity, component_a) in query.iter() {
-        info!("  Entity({})", entity.id());
-        info!(
-            "    ComponentA: {{ x: {} y: {} }}\n",
-            component_a.x, component_a.y
-        );
-    }
+	for (entity, component_a) in query.iter() {
+		info!("  Entity({})", entity.id());
+		info!(
+			"    ComponentA: {{ x: {} y: {} }}\n",
+			component_a.x, component_a.y
+		);
+	}
 }
 
 fn save_scene_system(world: &mut World) {
-    // Scenes can be created from any ECS World. You can either create a new one for the scene or
-    // use the current World.
-    let mut scene_world = World::new();
-    let mut component_b = ComponentB::from_world(world);
-    component_b.value = "hello".to_string();
-    scene_world.spawn().insert_bundle((
-        component_b,
-        ComponentA { x: 1.0, y: 2.0 },
-        Transform::identity(),
-    ));
-    scene_world
-        .spawn()
-        .insert_bundle((ComponentA { x: 3.0, y: 4.0 },));
+	// Scenes can be created from any ECS World. You can either create a new one for the scene or
+	// use the current World.
+	let mut scene_world = World::new();
+	let mut component_b = ComponentB::from_world(world);
+	component_b.value = "hello".to_string();
+	scene_world.spawn().insert_bundle((
+		component_b,
+		ComponentA { x: 1.0, y: 2.0 },
+		Transform::identity(),
+	));
+	scene_world
+		.spawn()
+		.insert_bundle((ComponentA { x: 3.0, y: 4.0 },));
 
-    // The TypeRegistry resource contains information about all registered types (including
-    // components). This is used to construct scenes.
-    let type_registry = world.resource::<TypeRegistry>();
-    let scene = DynamicScene::from_world(&scene_world, type_registry);
+	// The TypeRegistry resource contains information about all registered types (including
+	// components). This is used to construct scenes.
+	let type_registry = world.resource::<TypeRegistry>();
+	let scene = DynamicScene::from_world(&scene_world, type_registry);
 
-    // Scenes can be serialized like this:
-    info!("{}", scene.serialize_ron(type_registry).unwrap());
+	// Scenes can be serialized like this:
+	info!("{}", scene.serialize_ron(type_registry).unwrap());
 
-    // TODO: save scene
+	// TODO: save scene
 }
 
 // This is only necessary for the info message in the UI. See examples/ui/text.rs for a standalone
 // text example.
 fn infotext_system(mut commands: Commands, asset_server: Res<AssetServer>) {
-    commands.spawn_bundle(Camera2dBundle::default());
-    commands.spawn_bundle(TextBundle {
-        style: Style {
-            align_self: AlignSelf::FlexEnd,
-            ..default()
-        },
-        text: Text::with_section(
-            "Nothing to see in this window! Check the console output!",
-            TextStyle {
-                font: asset_server.load("fonts/FiraSans-Bold.ttf"),
-                font_size: 50.0,
-                color: Color::WHITE,
-            },
-            Default::default(),
-        ),
-        ..default()
-    });
+	commands.spawn_bundle(Camera2dBundle::default());
+	commands.spawn_bundle(TextBundle {
+		style: Style {
+			align_self: AlignSelf::FlexEnd,
+			..default()
+		},
+		text: Text::with_section(
+			"Nothing to see in this window! Check the console output!",
+			TextStyle {
+				font: asset_server.load("fonts/FiraSans-Bold.ttf"),
+				font_size: 50.0,
+				color: Color::WHITE,
+			},
+			Default::default(),
+		),
+		..default()
+	});
 }

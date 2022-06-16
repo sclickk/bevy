@@ -28,108 +28,108 @@ use std::slice::Iter;
 /// # }
 /// ```
 pub trait TupleStruct: Reflect {
-    /// Returns a reference to the value of the field with index `index` as a
-    /// `&dyn Reflect`.
-    fn field(&self, index: usize) -> Option<&dyn Reflect>;
+	/// Returns a reference to the value of the field with index `index` as a
+	/// `&dyn Reflect`.
+	fn field(&self, index: usize) -> Option<&dyn Reflect>;
 
-    /// Returns a mutable reference to the value of the field with index `index`
-    /// as a `&mut dyn Reflect`.
-    fn field_mut(&mut self, index: usize) -> Option<&mut dyn Reflect>;
+	/// Returns a mutable reference to the value of the field with index `index`
+	/// as a `&mut dyn Reflect`.
+	fn field_mut(&mut self, index: usize) -> Option<&mut dyn Reflect>;
 
-    /// Returns the number of fields in the tuple struct.
-    fn field_len(&self) -> usize;
+	/// Returns the number of fields in the tuple struct.
+	fn field_len(&self) -> usize;
 
-    /// Returns an iterator over the values of the tuple struct's fields.
-    fn iter_fields(&self) -> TupleStructFieldIter;
+	/// Returns an iterator over the values of the tuple struct's fields.
+	fn iter_fields(&self) -> TupleStructFieldIter;
 
-    /// Clones the struct into a [`DynamicTupleStruct`].
-    fn clone_dynamic(&self) -> DynamicTupleStruct;
+	/// Clones the struct into a [`DynamicTupleStruct`].
+	fn clone_dynamic(&self) -> DynamicTupleStruct;
 }
 
 /// A container for compile-time tuple struct info.
 #[derive(Clone, Debug)]
 pub struct TupleStructInfo {
-    type_name: &'static str,
-    type_id: TypeId,
-    fields: Box<[UnnamedField]>,
+	type_name: &'static str,
+	type_id: TypeId,
+	fields: Box<[UnnamedField]>,
 }
 
 impl TupleStructInfo {
-    /// Create a new [`TupleStructInfo`].
-    ///
-    /// # Arguments
-    ///
-    /// * `fields`: The fields of this struct in the order they are defined
-    ///
-    pub fn new<T: Reflect>(fields: &[UnnamedField]) -> Self {
-        Self {
-            type_name: std::any::type_name::<T>(),
-            type_id: TypeId::of::<T>(),
-            fields: fields.to_vec().into_boxed_slice(),
-        }
-    }
+	/// Create a new [`TupleStructInfo`].
+	///
+	/// # Arguments
+	///
+	/// * `fields`: The fields of this struct in the order they are defined
+	///
+	pub fn new<T: Reflect>(fields: &[UnnamedField]) -> Self {
+		Self {
+			type_name: std::any::type_name::<T>(),
+			type_id: TypeId::of::<T>(),
+			fields: fields.to_vec().into_boxed_slice(),
+		}
+	}
 
-    /// Get the field at the given index.
-    pub fn field_at(&self, index: usize) -> Option<&UnnamedField> {
-        self.fields.get(index)
-    }
+	/// Get the field at the given index.
+	pub fn field_at(&self, index: usize) -> Option<&UnnamedField> {
+		self.fields.get(index)
+	}
 
-    /// Iterate over the fields of this struct.
-    pub fn iter(&self) -> Iter<'_, UnnamedField> {
-        self.fields.iter()
-    }
+	/// Iterate over the fields of this struct.
+	pub fn iter(&self) -> Iter<'_, UnnamedField> {
+		self.fields.iter()
+	}
 
-    /// The total number of fields in this struct.
-    pub fn field_len(&self) -> usize {
-        self.fields.len()
-    }
+	/// The total number of fields in this struct.
+	pub fn field_len(&self) -> usize {
+		self.fields.len()
+	}
 
-    /// The [type name] of the tuple struct.
-    ///
-    /// [type name]: std::any::type_name
-    pub fn type_name(&self) -> &'static str {
-        self.type_name
-    }
+	/// The [type name] of the tuple struct.
+	///
+	/// [type name]: std::any::type_name
+	pub fn type_name(&self) -> &'static str {
+		self.type_name
+	}
 
-    /// The [`TypeId`] of the tuple struct.
-    pub fn type_id(&self) -> TypeId {
-        self.type_id
-    }
+	/// The [`TypeId`] of the tuple struct.
+	pub fn type_id(&self) -> TypeId {
+		self.type_id
+	}
 
-    /// Check if the given type matches the tuple struct type.
-    pub fn is<T: Any>(&self) -> bool {
-        TypeId::of::<T>() == self.type_id
-    }
+	/// Check if the given type matches the tuple struct type.
+	pub fn is<T: Any>(&self) -> bool {
+		TypeId::of::<T>() == self.type_id
+	}
 }
 
 /// An iterator over the field values of a tuple struct.
 pub struct TupleStructFieldIter<'a> {
-    pub(crate) tuple_struct: &'a dyn TupleStruct,
-    pub(crate) index: usize,
+	pub(crate) tuple_struct: &'a dyn TupleStruct,
+	pub(crate) index: usize,
 }
 
 impl<'a> TupleStructFieldIter<'a> {
-    pub fn new(value: &'a dyn TupleStruct) -> Self {
-        TupleStructFieldIter {
-            tuple_struct: value,
-            index: 0,
-        }
-    }
+	pub fn new(value: &'a dyn TupleStruct) -> Self {
+		TupleStructFieldIter {
+			tuple_struct: value,
+			index: 0,
+		}
+	}
 }
 
 impl<'a> Iterator for TupleStructFieldIter<'a> {
-    type Item = &'a dyn Reflect;
+	type Item = &'a dyn Reflect;
 
-    fn next(&mut self) -> Option<Self::Item> {
-        let value = self.tuple_struct.field(self.index);
-        self.index += 1;
-        value
-    }
+	fn next(&mut self) -> Option<Self::Item> {
+		let value = self.tuple_struct.field(self.index);
+		self.index += 1;
+		value
+	}
 
-    fn size_hint(&self) -> (usize, Option<usize>) {
-        let size = self.tuple_struct.field_len();
-        (size, Some(size))
-    }
+	fn size_hint(&self) -> (usize, Option<usize>) {
+		let size = self.tuple_struct.field_len();
+		(size, Some(size))
+	}
 }
 
 impl<'a> ExactSizeIterator for TupleStructFieldIter<'a> {}
@@ -153,190 +153,190 @@ impl<'a> ExactSizeIterator for TupleStructFieldIter<'a> {}
 /// # }
 /// ```
 pub trait GetTupleStructField {
-    /// Returns a reference to the value of the field with index `index`,
-    /// downcast to `T`.
-    fn get_field<T: Reflect>(&self, index: usize) -> Option<&T>;
+	/// Returns a reference to the value of the field with index `index`,
+	/// downcast to `T`.
+	fn get_field<T: Reflect>(&self, index: usize) -> Option<&T>;
 
-    /// Returns a mutable reference to the value of the field with index
-    /// `index`, downcast to `T`.
-    fn get_field_mut<T: Reflect>(&mut self, index: usize) -> Option<&mut T>;
+	/// Returns a mutable reference to the value of the field with index
+	/// `index`, downcast to `T`.
+	fn get_field_mut<T: Reflect>(&mut self, index: usize) -> Option<&mut T>;
 }
 
 impl<S: TupleStruct> GetTupleStructField for S {
-    fn get_field<T: Reflect>(&self, index: usize) -> Option<&T> {
-        self.field(index)
-            .and_then(|value| value.downcast_ref::<T>())
-    }
+	fn get_field<T: Reflect>(&self, index: usize) -> Option<&T> {
+		self.field(index)
+			.and_then(|value| value.downcast_ref::<T>())
+	}
 
-    fn get_field_mut<T: Reflect>(&mut self, index: usize) -> Option<&mut T> {
-        self.field_mut(index)
-            .and_then(|value| value.downcast_mut::<T>())
-    }
+	fn get_field_mut<T: Reflect>(&mut self, index: usize) -> Option<&mut T> {
+		self.field_mut(index)
+			.and_then(|value| value.downcast_mut::<T>())
+	}
 }
 
 impl GetTupleStructField for dyn TupleStruct {
-    fn get_field<T: Reflect>(&self, index: usize) -> Option<&T> {
-        self.field(index)
-            .and_then(|value| value.downcast_ref::<T>())
-    }
+	fn get_field<T: Reflect>(&self, index: usize) -> Option<&T> {
+		self.field(index)
+			.and_then(|value| value.downcast_ref::<T>())
+	}
 
-    fn get_field_mut<T: Reflect>(&mut self, index: usize) -> Option<&mut T> {
-        self.field_mut(index)
-            .and_then(|value| value.downcast_mut::<T>())
-    }
+	fn get_field_mut<T: Reflect>(&mut self, index: usize) -> Option<&mut T> {
+		self.field_mut(index)
+			.and_then(|value| value.downcast_mut::<T>())
+	}
 }
 
 /// A tuple struct which allows fields to be added at runtime.
 #[derive(Default)]
 pub struct DynamicTupleStruct {
-    name: String,
-    fields: Vec<Box<dyn Reflect>>,
+	name: String,
+	fields: Vec<Box<dyn Reflect>>,
 }
 
 impl DynamicTupleStruct {
-    /// Returns the type name of the tuple struct.
-    pub fn name(&self) -> &str {
-        &self.name
-    }
+	/// Returns the type name of the tuple struct.
+	pub fn name(&self) -> &str {
+		&self.name
+	}
 
-    /// Sets the type name of the tuple struct.
-    pub fn set_name(&mut self, name: String) {
-        self.name = name;
-    }
+	/// Sets the type name of the tuple struct.
+	pub fn set_name(&mut self, name: String) {
+		self.name = name;
+	}
 
-    /// Appends an element with value `value` to the tuple struct.
-    pub fn insert_boxed(&mut self, value: Box<dyn Reflect>) {
-        self.fields.push(value);
-    }
+	/// Appends an element with value `value` to the tuple struct.
+	pub fn insert_boxed(&mut self, value: Box<dyn Reflect>) {
+		self.fields.push(value);
+	}
 
-    /// Appends a typed element with value `value` to the tuple struct.
-    pub fn insert<T: Reflect>(&mut self, value: T) {
-        self.insert_boxed(Box::new(value));
-    }
+	/// Appends a typed element with value `value` to the tuple struct.
+	pub fn insert<T: Reflect>(&mut self, value: T) {
+		self.insert_boxed(Box::new(value));
+	}
 }
 
 impl TupleStruct for DynamicTupleStruct {
-    #[inline]
-    fn field(&self, index: usize) -> Option<&dyn Reflect> {
-        self.fields.get(index).map(|field| &**field)
-    }
+	#[inline]
+	fn field(&self, index: usize) -> Option<&dyn Reflect> {
+		self.fields.get(index).map(|field| &**field)
+	}
 
-    #[inline]
-    fn field_mut(&mut self, index: usize) -> Option<&mut dyn Reflect> {
-        self.fields.get_mut(index).map(|field| &mut **field)
-    }
+	#[inline]
+	fn field_mut(&mut self, index: usize) -> Option<&mut dyn Reflect> {
+		self.fields.get_mut(index).map(|field| &mut **field)
+	}
 
-    #[inline]
-    fn field_len(&self) -> usize {
-        self.fields.len()
-    }
+	#[inline]
+	fn field_len(&self) -> usize {
+		self.fields.len()
+	}
 
-    #[inline]
-    fn iter_fields(&self) -> TupleStructFieldIter {
-        TupleStructFieldIter {
-            tuple_struct: self,
-            index: 0,
-        }
-    }
+	#[inline]
+	fn iter_fields(&self) -> TupleStructFieldIter {
+		TupleStructFieldIter {
+			tuple_struct: self,
+			index: 0,
+		}
+	}
 
-    fn clone_dynamic(&self) -> DynamicTupleStruct {
-        DynamicTupleStruct {
-            name: self.name.clone(),
-            fields: self
-                .fields
-                .iter()
-                .map(|value| value.clone_value())
-                .collect(),
-        }
-    }
+	fn clone_dynamic(&self) -> DynamicTupleStruct {
+		DynamicTupleStruct {
+			name: self.name.clone(),
+			fields: self
+				.fields
+				.iter()
+				.map(|value| value.clone_value())
+				.collect(),
+		}
+	}
 }
 
 // SAFE: any and any_mut both return self
 unsafe impl Reflect for DynamicTupleStruct {
-    #[inline]
-    fn type_name(&self) -> &str {
-        self.name.as_str()
-    }
+	#[inline]
+	fn type_name(&self) -> &str {
+		self.name.as_str()
+	}
 
-    #[inline]
-    fn get_type_info(&self) -> &'static TypeInfo {
-        <Self as Typed>::type_info()
-    }
+	#[inline]
+	fn get_type_info(&self) -> &'static TypeInfo {
+		<Self as Typed>::type_info()
+	}
 
-    #[inline]
-    fn any(&self) -> &dyn Any {
-        self
-    }
+	#[inline]
+	fn any(&self) -> &dyn Any {
+		self
+	}
 
-    #[inline]
-    fn any_mut(&mut self) -> &mut dyn Any {
-        self
-    }
+	#[inline]
+	fn any_mut(&mut self) -> &mut dyn Any {
+		self
+	}
 
-    #[inline]
-    fn as_reflect(&self) -> &dyn Reflect {
-        self
-    }
+	#[inline]
+	fn as_reflect(&self) -> &dyn Reflect {
+		self
+	}
 
-    #[inline]
-    fn as_reflect_mut(&mut self) -> &mut dyn Reflect {
-        self
-    }
+	#[inline]
+	fn as_reflect_mut(&mut self) -> &mut dyn Reflect {
+		self
+	}
 
-    #[inline]
-    fn clone_value(&self) -> Box<dyn Reflect> {
-        Box::new(self.clone_dynamic())
-    }
+	#[inline]
+	fn clone_value(&self) -> Box<dyn Reflect> {
+		Box::new(self.clone_dynamic())
+	}
 
-    #[inline]
-    fn reflect_ref(&self) -> ReflectRef {
-        ReflectRef::TupleStruct(self)
-    }
+	#[inline]
+	fn reflect_ref(&self) -> ReflectRef {
+		ReflectRef::TupleStruct(self)
+	}
 
-    #[inline]
-    fn reflect_mut(&mut self) -> ReflectMut {
-        ReflectMut::TupleStruct(self)
-    }
+	#[inline]
+	fn reflect_mut(&mut self) -> ReflectMut {
+		ReflectMut::TupleStruct(self)
+	}
 
-    fn apply(&mut self, value: &dyn Reflect) {
-        if let ReflectRef::TupleStruct(tuple_struct) = value.reflect_ref() {
-            for (i, value) in tuple_struct.iter_fields().enumerate() {
-                if let Some(v) = self.field_mut(i) {
-                    v.apply(value);
-                }
-            }
-        } else {
-            panic!("Attempted to apply non-TupleStruct type to TupleStruct type.");
-        }
-    }
+	fn apply(&mut self, value: &dyn Reflect) {
+		if let ReflectRef::TupleStruct(tuple_struct) = value.reflect_ref() {
+			for (i, value) in tuple_struct.iter_fields().enumerate() {
+				if let Some(v) = self.field_mut(i) {
+					v.apply(value);
+				}
+			}
+		} else {
+			panic!("Attempted to apply non-TupleStruct type to TupleStruct type.");
+		}
+	}
 
-    fn set(&mut self, value: Box<dyn Reflect>) -> Result<(), Box<dyn Reflect>> {
-        *self = value.take()?;
-        Ok(())
-    }
+	fn set(&mut self, value: Box<dyn Reflect>) -> Result<(), Box<dyn Reflect>> {
+		*self = value.take()?;
+		Ok(())
+	}
 
-    fn reflect_partial_eq(&self, value: &dyn Reflect) -> Option<bool> {
-        tuple_struct_partial_eq(self, value)
-    }
+	fn reflect_partial_eq(&self, value: &dyn Reflect) -> Option<bool> {
+		tuple_struct_partial_eq(self, value)
+	}
 
-    fn debug(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "DynamicTupleStruct(")?;
-        tuple_struct_debug(self, f)?;
-        write!(f, ")")
-    }
+	fn debug(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+		write!(f, "DynamicTupleStruct(")?;
+		tuple_struct_debug(self, f)?;
+		write!(f, ")")
+	}
 }
 
 impl Debug for DynamicTupleStruct {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        self.debug(f)
-    }
+	fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+		self.debug(f)
+	}
 }
 
 impl Typed for DynamicTupleStruct {
-    fn type_info() -> &'static TypeInfo {
-        static CELL: NonGenericTypeInfoCell = NonGenericTypeInfoCell::new();
-        CELL.get_or_set(|| TypeInfo::Dynamic(DynamicInfo::new::<Self>()))
-    }
+	fn type_info() -> &'static TypeInfo {
+		static CELL: NonGenericTypeInfoCell = NonGenericTypeInfoCell::new();
+		CELL.get_or_set(|| TypeInfo::Dynamic(DynamicInfo::new::<Self>()))
+	}
 }
 
 /// Compares a [`TupleStruct`] with a [`Reflect`] value.
@@ -347,27 +347,27 @@ impl Typed for DynamicTupleStruct {
 /// - [`Reflect::reflect_partial_eq`] returns `Some(true)` for pairwise fields of `a` and `b`.
 #[inline]
 pub fn tuple_struct_partial_eq<S: TupleStruct>(a: &S, b: &dyn Reflect) -> Option<bool> {
-    let tuple_struct = if let ReflectRef::TupleStruct(tuple_struct) = b.reflect_ref() {
-        tuple_struct
-    } else {
-        return Some(false);
-    };
+	let tuple_struct = if let ReflectRef::TupleStruct(tuple_struct) = b.reflect_ref() {
+		tuple_struct
+	} else {
+		return Some(false);
+	};
 
-    if a.field_len() != tuple_struct.field_len() {
-        return Some(false);
-    }
+	if a.field_len() != tuple_struct.field_len() {
+		return Some(false);
+	}
 
-    for (i, value) in tuple_struct.iter_fields().enumerate() {
-        if let Some(field_value) = a.field(i) {
-            if let Some(false) | None = field_value.reflect_partial_eq(value) {
-                return Some(false);
-            }
-        } else {
-            return Some(false);
-        }
-    }
+	for (i, value) in tuple_struct.iter_fields().enumerate() {
+		if let Some(field_value) = a.field(i) {
+			if let Some(false) | None = field_value.reflect_partial_eq(value) {
+				return Some(false);
+			}
+		} else {
+			return Some(false);
+		}
+	}
 
-    Some(true)
+	Some(true)
 }
 
 /// The default debug formatter for [`TupleStruct`] types.
@@ -389,12 +389,12 @@ pub fn tuple_struct_partial_eq<S: TupleStruct>(a: &S, b: &dyn Reflect) -> Option
 /// ```
 #[inline]
 pub fn tuple_struct_debug(
-    dyn_tuple_struct: &dyn TupleStruct,
-    f: &mut std::fmt::Formatter<'_>,
+	dyn_tuple_struct: &dyn TupleStruct,
+	f: &mut std::fmt::Formatter<'_>,
 ) -> std::fmt::Result {
-    let mut debug = f.debug_tuple(dyn_tuple_struct.type_name());
-    for field in dyn_tuple_struct.iter_fields() {
-        debug.field(&field as &dyn Debug);
-    }
-    debug.finish()
+	let mut debug = f.debug_tuple(dyn_tuple_struct.type_name());
+	for field in dyn_tuple_struct.iter_fields() {
+		debug.field(&field as &dyn Debug);
+	}
+	debug.finish()
 }

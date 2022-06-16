@@ -18,10 +18,10 @@ pub use schedule_runner::*;
 
 #[allow(missing_docs)]
 pub mod prelude {
-    #[doc(hidden)]
-    pub use crate::{
-        app::App, CoreStage, DynamicPlugin, Plugin, PluginGroup, StartupSchedule, StartupStage,
-    };
+	#[doc(hidden)]
+	pub use crate::{
+		app::App, CoreStage, DynamicPlugin, Plugin, PluginGroup, StartupSchedule, StartupStage,
+	};
 }
 
 use bevy_ecs::schedule::StageLabel;
@@ -31,16 +31,16 @@ use bevy_ecs::schedule::StageLabel;
 /// The relative [`Stages`](bevy_ecs::schedule::Stage) are added by [`App::add_default_stages`].
 #[derive(Debug, Hash, PartialEq, Eq, Clone, StageLabel)]
 pub enum CoreStage {
-    /// The [`Stage`](bevy_ecs::schedule::Stage) that runs before all other app stages.
-    First,
-    /// The [`Stage`](bevy_ecs::schedule::Stage) that runs before [`CoreStage::Update`].
-    PreUpdate,
-    /// The [`Stage`](bevy_ecs::schedule::Stage) responsible for doing most app logic. Systems should be registered here by default.
-    Update,
-    /// The [`Stage`](bevy_ecs::schedule::Stage) that runs after [`CoreStage::Update`].
-    PostUpdate,
-    /// The [`Stage`](bevy_ecs::schedule::Stage) that runs after all other app stages.
-    Last,
+	/// The [`Stage`](bevy_ecs::schedule::Stage) that runs before all other app stages.
+	First,
+	/// The [`Stage`](bevy_ecs::schedule::Stage) that runs before [`CoreStage::Update`].
+	PreUpdate,
+	/// The [`Stage`](bevy_ecs::schedule::Stage) responsible for doing most app logic. Systems should be registered here by default.
+	Update,
+	/// The [`Stage`](bevy_ecs::schedule::Stage) that runs after [`CoreStage::Update`].
+	PostUpdate,
+	/// The [`Stage`](bevy_ecs::schedule::Stage) that runs after all other app stages.
+	Last,
 }
 
 /// The label for the startup [`Schedule`](bevy_ecs::schedule::Schedule),
@@ -54,10 +54,10 @@ pub struct StartupSchedule;
 /// The names of the default [`App`] startup stages.
 #[derive(Debug, Hash, PartialEq, Eq, Clone, StageLabel)]
 pub enum StartupStage {
-    /// The [`Stage`](bevy_ecs::schedule::Stage) that runs once before [`StartupStage::Startup`].
-    PreStartup,
-    /// The [`Stage`](bevy_ecs::schedule::Stage) that runs once when an [`App`] starts up.
-    Startup,
-    /// The [`Stage`](bevy_ecs::schedule::Stage) that runs once after [`StartupStage::Startup`].
-    PostStartup,
+	/// The [`Stage`](bevy_ecs::schedule::Stage) that runs once before [`StartupStage::Startup`].
+	PreStartup,
+	/// The [`Stage`](bevy_ecs::schedule::Stage) that runs once when an [`App`] starts up.
+	Startup,
+	/// The [`Stage`](bevy_ecs::schedule::Stage) that runs once after [`StartupStage::Startup`].
+	PostStartup,
 }

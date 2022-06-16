@@ -14,9 +14,9 @@ use bevy_app::prelude::*;
 pub struct DiagnosticsPlugin;
 
 impl Plugin for DiagnosticsPlugin {
-    fn build(&self, app: &mut App) {
-        app.init_resource::<Diagnostics>();
-    }
+	fn build(&self, app: &mut App) {
+		app.init_resource::<Diagnostics>();
+	}
 }
 
 /// The width which diagnostic names will be printed as

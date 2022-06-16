@@ -1,7 +1,7 @@
 use crate::utility::NonGenericTypeInfoCell;
 use crate::{
-    DynamicInfo, FromReflect, FromType, GetTypeRegistration, Reflect, ReflectDeserialize,
-    ReflectMut, ReflectRef, TypeInfo, TypeRegistration, Typed, UnnamedField,
+	DynamicInfo, FromReflect, FromType, GetTypeRegistration, Reflect, ReflectDeserialize,
+	ReflectMut, ReflectRef, TypeInfo, TypeRegistration, Typed, UnnamedField,
 };
 use serde::Deserialize;
 use std::any::{Any, TypeId};
@@ -27,52 +27,52 @@ use std::slice::Iter;
 /// # }
 /// ```
 pub trait Tuple: Reflect {
-    /// Returns a reference to the value of the field with index `index` as a
-    /// `&dyn Reflect`.
-    fn field(&self, index: usize) -> Option<&dyn Reflect>;
+	/// Returns a reference to the value of the field with index `index` as a
+	/// `&dyn Reflect`.
+	fn field(&self, index: usize) -> Option<&dyn Reflect>;
 
-    /// Returns a mutable reference to the value of the field with index `index`
-    /// as a `&mut dyn Reflect`.
-    fn field_mut(&mut self, index: usize) -> Option<&mut dyn Reflect>;
+	/// Returns a mutable reference to the value of the field with index `index`
+	/// as a `&mut dyn Reflect`.
+	fn field_mut(&mut self, index: usize) -> Option<&mut dyn Reflect>;
 
-    /// Returns the number of fields in the tuple.
-    fn field_len(&self) -> usize;
+	/// Returns the number of fields in the tuple.
+	fn field_len(&self) -> usize;
 
-    /// Returns an iterator over the values of the tuple's fields.
-    fn iter_fields(&self) -> TupleFieldIter;
+	/// Returns an iterator over the values of the tuple's fields.
+	fn iter_fields(&self) -> TupleFieldIter;
 
-    /// Clones the struct into a [`DynamicTuple`].
-    fn clone_dynamic(&self) -> DynamicTuple;
+	/// Clones the struct into a [`DynamicTuple`].
+	fn clone_dynamic(&self) -> DynamicTuple;
 }
 
 /// An iterator over the field values of a tuple.
 pub struct TupleFieldIter<'a> {
-    pub(crate) tuple: &'a dyn Tuple,
-    pub(crate) index: usize,
+	pub(crate) tuple: &'a dyn Tuple,
+	pub(crate) index: usize,
 }
 
 impl<'a> TupleFieldIter<'a> {
-    pub fn new(value: &'a dyn Tuple) -> Self {
-        TupleFieldIter {
-            tuple: value,
-            index: 0,
-        }
-    }
+	pub fn new(value: &'a dyn Tuple) -> Self {
+		TupleFieldIter {
+			tuple: value,
+			index: 0,
+		}
+	}
 }
 
 impl<'a> Iterator for TupleFieldIter<'a> {
-    type Item = &'a dyn Reflect;
+	type Item = &'a dyn Reflect;
 
-    fn next(&mut self) -> Option<Self::Item> {
-        let value = self.tuple.field(self.index);
-        self.index += 1;
-        value
-    }
+	fn next(&mut self) -> Option<Self::Item> {
+		let value = self.tuple.field(self.index);
+		self.index += 1;
+		value
+	}
 
-    fn size_hint(&self) -> (usize, Option<usize>) {
-        let size = self.tuple.field_len();
-        (size, Some(size))
-    }
+	fn size_hint(&self) -> (usize, Option<usize>) {
+		let size = self.tuple.field_len();
+		(size, Some(size))
+	}
 }
 
 impl<'a> ExactSizeIterator for TupleFieldIter<'a> {}
@@ -93,252 +93,252 @@ impl<'a> ExactSizeIterator for TupleFieldIter<'a> {}
 /// # }
 /// ```
 pub trait GetTupleField {
-    /// Returns a reference to the value of the field with index `index`,
-    /// downcast to `T`.
-    fn get_field<T: Reflect>(&self, index: usize) -> Option<&T>;
+	/// Returns a reference to the value of the field with index `index`,
+	/// downcast to `T`.
+	fn get_field<T: Reflect>(&self, index: usize) -> Option<&T>;
 
-    /// Returns a mutable reference to the value of the field with index
-    /// `index`, downcast to `T`.
-    fn get_field_mut<T: Reflect>(&mut self, index: usize) -> Option<&mut T>;
+	/// Returns a mutable reference to the value of the field with index
+	/// `index`, downcast to `T`.
+	fn get_field_mut<T: Reflect>(&mut self, index: usize) -> Option<&mut T>;
 }
 
 impl<S: Tuple> GetTupleField for S {
-    fn get_field<T: Reflect>(&self, index: usize) -> Option<&T> {
-        self.field(index)
-            .and_then(|value| value.downcast_ref::<T>())
-    }
+	fn get_field<T: Reflect>(&self, index: usize) -> Option<&T> {
+		self.field(index)
+			.and_then(|value| value.downcast_ref::<T>())
+	}
 
-    fn get_field_mut<T: Reflect>(&mut self, index: usize) -> Option<&mut T> {
-        self.field_mut(index)
-            .and_then(|value| value.downcast_mut::<T>())
-    }
+	fn get_field_mut<T: Reflect>(&mut self, index: usize) -> Option<&mut T> {
+		self.field_mut(index)
+			.and_then(|value| value.downcast_mut::<T>())
+	}
 }
 
 impl GetTupleField for dyn Tuple {
-    fn get_field<T: Reflect>(&self, index: usize) -> Option<&T> {
-        self.field(index)
-            .and_then(|value| value.downcast_ref::<T>())
-    }
+	fn get_field<T: Reflect>(&self, index: usize) -> Option<&T> {
+		self.field(index)
+			.and_then(|value| value.downcast_ref::<T>())
+	}
 
-    fn get_field_mut<T: Reflect>(&mut self, index: usize) -> Option<&mut T> {
-        self.field_mut(index)
-            .and_then(|value| value.downcast_mut::<T>())
-    }
+	fn get_field_mut<T: Reflect>(&mut self, index: usize) -> Option<&mut T> {
+		self.field_mut(index)
+			.and_then(|value| value.downcast_mut::<T>())
+	}
 }
 
 /// A container for compile-time tuple info.
 #[derive(Clone, Debug)]
 pub struct TupleInfo {
-    type_name: &'static str,
-    type_id: TypeId,
-    fields: Box<[UnnamedField]>,
+	type_name: &'static str,
+	type_id: TypeId,
+	fields: Box<[UnnamedField]>,
 }
 
 impl TupleInfo {
-    /// Create a new [`TupleInfo`].
-    ///
-    /// # Arguments
-    ///
-    /// * `fields`: The fields of this tuple in the order they are defined
-    ///
-    pub fn new<T: Reflect>(fields: &[UnnamedField]) -> Self {
-        Self {
-            type_name: std::any::type_name::<T>(),
-            type_id: TypeId::of::<T>(),
-            fields: fields.to_vec().into_boxed_slice(),
-        }
-    }
+	/// Create a new [`TupleInfo`].
+	///
+	/// # Arguments
+	///
+	/// * `fields`: The fields of this tuple in the order they are defined
+	///
+	pub fn new<T: Reflect>(fields: &[UnnamedField]) -> Self {
+		Self {
+			type_name: std::any::type_name::<T>(),
+			type_id: TypeId::of::<T>(),
+			fields: fields.to_vec().into_boxed_slice(),
+		}
+	}
 
-    /// Get the field at the given index.
-    pub fn field_at(&self, index: usize) -> Option<&UnnamedField> {
-        self.fields.get(index)
-    }
+	/// Get the field at the given index.
+	pub fn field_at(&self, index: usize) -> Option<&UnnamedField> {
+		self.fields.get(index)
+	}
 
-    /// Iterate over the fields of this tuple.
-    pub fn iter(&self) -> Iter<'_, UnnamedField> {
-        self.fields.iter()
-    }
+	/// Iterate over the fields of this tuple.
+	pub fn iter(&self) -> Iter<'_, UnnamedField> {
+		self.fields.iter()
+	}
 
-    /// The total number of fields in this tuple.
-    pub fn field_len(&self) -> usize {
-        self.fields.len()
-    }
+	/// The total number of fields in this tuple.
+	pub fn field_len(&self) -> usize {
+		self.fields.len()
+	}
 
-    /// The [type name] of the tuple.
-    ///
-    /// [type name]: std::any::type_name
-    pub fn type_name(&self) -> &'static str {
-        self.type_name
-    }
+	/// The [type name] of the tuple.
+	///
+	/// [type name]: std::any::type_name
+	pub fn type_name(&self) -> &'static str {
+		self.type_name
+	}
 
-    /// The [`TypeId`] of the tuple.
-    pub fn type_id(&self) -> TypeId {
-        self.type_id
-    }
+	/// The [`TypeId`] of the tuple.
+	pub fn type_id(&self) -> TypeId {
+		self.type_id
+	}
 
-    /// Check if the given type matches the tuple type.
-    pub fn is<T: Any>(&self) -> bool {
-        TypeId::of::<T>() == self.type_id
-    }
+	/// Check if the given type matches the tuple type.
+	pub fn is<T: Any>(&self) -> bool {
+		TypeId::of::<T>() == self.type_id
+	}
 }
 
 /// A tuple which allows fields to be added at runtime.
 #[derive(Default)]
 pub struct DynamicTuple {
-    name: String,
-    fields: Vec<Box<dyn Reflect>>,
+	name: String,
+	fields: Vec<Box<dyn Reflect>>,
 }
 
 impl DynamicTuple {
-    /// Returns the type name of the tuple.
-    ///
-    /// The tuple's name is automatically generated from its element types.
-    pub fn name(&self) -> &str {
-        &self.name
-    }
+	/// Returns the type name of the tuple.
+	///
+	/// The tuple's name is automatically generated from its element types.
+	pub fn name(&self) -> &str {
+		&self.name
+	}
 
-    /// Manually sets the type name of the tuple.
-    ///
-    /// Note that the tuple name will be overwritten when elements are added.
-    pub fn set_name(&mut self, name: String) {
-        self.name = name;
-    }
+	/// Manually sets the type name of the tuple.
+	///
+	/// Note that the tuple name will be overwritten when elements are added.
+	pub fn set_name(&mut self, name: String) {
+		self.name = name;
+	}
 
-    /// Appends an element with value `value` to the tuple.
-    pub fn insert_boxed(&mut self, value: Box<dyn Reflect>) {
-        self.fields.push(value);
-        self.generate_name();
-    }
+	/// Appends an element with value `value` to the tuple.
+	pub fn insert_boxed(&mut self, value: Box<dyn Reflect>) {
+		self.fields.push(value);
+		self.generate_name();
+	}
 
-    /// Appends a typed element with value `value` to the tuple.
-    pub fn insert<T: Reflect>(&mut self, value: T) {
-        self.insert_boxed(Box::new(value));
-        self.generate_name();
-    }
+	/// Appends a typed element with value `value` to the tuple.
+	pub fn insert<T: Reflect>(&mut self, value: T) {
+		self.insert_boxed(Box::new(value));
+		self.generate_name();
+	}
 
-    fn generate_name(&mut self) {
-        let name = &mut self.name;
-        name.clear();
-        name.push('(');
-        for (i, field) in self.fields.iter().enumerate() {
-            if i > 0 {
-                name.push_str(", ");
-            }
-            name.push_str(field.type_name());
-        }
-        name.push(')');
-    }
+	fn generate_name(&mut self) {
+		let name = &mut self.name;
+		name.clear();
+		name.push('(');
+		for (i, field) in self.fields.iter().enumerate() {
+			if i > 0 {
+				name.push_str(", ");
+			}
+			name.push_str(field.type_name());
+		}
+		name.push(')');
+	}
 }
 
 impl Tuple for DynamicTuple {
-    #[inline]
-    fn field(&self, index: usize) -> Option<&dyn Reflect> {
-        self.fields.get(index).map(|field| &**field)
-    }
+	#[inline]
+	fn field(&self, index: usize) -> Option<&dyn Reflect> {
+		self.fields.get(index).map(|field| &**field)
+	}
 
-    #[inline]
-    fn field_mut(&mut self, index: usize) -> Option<&mut dyn Reflect> {
-        self.fields.get_mut(index).map(|field| &mut **field)
-    }
+	#[inline]
+	fn field_mut(&mut self, index: usize) -> Option<&mut dyn Reflect> {
+		self.fields.get_mut(index).map(|field| &mut **field)
+	}
 
-    #[inline]
-    fn field_len(&self) -> usize {
-        self.fields.len()
-    }
+	#[inline]
+	fn field_len(&self) -> usize {
+		self.fields.len()
+	}
 
-    #[inline]
-    fn iter_fields(&self) -> TupleFieldIter {
-        TupleFieldIter {
-            tuple: self,
-            index: 0,
-        }
-    }
+	#[inline]
+	fn iter_fields(&self) -> TupleFieldIter {
+		TupleFieldIter {
+			tuple: self,
+			index: 0,
+		}
+	}
 
-    #[inline]
-    fn clone_dynamic(&self) -> DynamicTuple {
-        DynamicTuple {
-            name: self.name.clone(),
-            fields: self
-                .fields
-                .iter()
-                .map(|value| value.clone_value())
-                .collect(),
-        }
-    }
+	#[inline]
+	fn clone_dynamic(&self) -> DynamicTuple {
+		DynamicTuple {
+			name: self.name.clone(),
+			fields: self
+				.fields
+				.iter()
+				.map(|value| value.clone_value())
+				.collect(),
+		}
+	}
 }
 
 // SAFE: any and any_mut both return self
 unsafe impl Reflect for DynamicTuple {
-    #[inline]
-    fn type_name(&self) -> &str {
-        self.name()
-    }
+	#[inline]
+	fn type_name(&self) -> &str {
+		self.name()
+	}
 
-    #[inline]
-    fn get_type_info(&self) -> &'static TypeInfo {
-        <Self as Typed>::type_info()
-    }
+	#[inline]
+	fn get_type_info(&self) -> &'static TypeInfo {
+		<Self as Typed>::type_info()
+	}
 
-    #[inline]
-    fn any(&self) -> &dyn Any {
-        self
-    }
+	#[inline]
+	fn any(&self) -> &dyn Any {
+		self
+	}
 
-    #[inline]
-    fn any_mut(&mut self) -> &mut dyn Any {
-        self
-    }
+	#[inline]
+	fn any_mut(&mut self) -> &mut dyn Any {
+		self
+	}
 
-    #[inline]
-    fn as_reflect(&self) -> &dyn Reflect {
-        self
-    }
+	#[inline]
+	fn as_reflect(&self) -> &dyn Reflect {
+		self
+	}
 
-    #[inline]
-    fn as_reflect_mut(&mut self) -> &mut dyn Reflect {
-        self
-    }
+	#[inline]
+	fn as_reflect_mut(&mut self) -> &mut dyn Reflect {
+		self
+	}
 
-    #[inline]
-    fn clone_value(&self) -> Box<dyn Reflect> {
-        Box::new(self.clone_dynamic())
-    }
+	#[inline]
+	fn clone_value(&self) -> Box<dyn Reflect> {
+		Box::new(self.clone_dynamic())
+	}
 
-    #[inline]
-    fn reflect_ref(&self) -> ReflectRef {
-        ReflectRef::Tuple(self)
-    }
+	#[inline]
+	fn reflect_ref(&self) -> ReflectRef {
+		ReflectRef::Tuple(self)
+	}
 
-    #[inline]
-    fn reflect_mut(&mut self) -> ReflectMut {
-        ReflectMut::Tuple(self)
-    }
+	#[inline]
+	fn reflect_mut(&mut self) -> ReflectMut {
+		ReflectMut::Tuple(self)
+	}
 
-    fn apply(&mut self, value: &dyn Reflect) {
-        tuple_apply(self, value);
-    }
+	fn apply(&mut self, value: &dyn Reflect) {
+		tuple_apply(self, value);
+	}
 
-    fn set(&mut self, value: Box<dyn Reflect>) -> Result<(), Box<dyn Reflect>> {
-        *self = value.take()?;
-        Ok(())
-    }
+	fn set(&mut self, value: Box<dyn Reflect>) -> Result<(), Box<dyn Reflect>> {
+		*self = value.take()?;
+		Ok(())
+	}
 
-    fn reflect_partial_eq(&self, value: &dyn Reflect) -> Option<bool> {
-        tuple_partial_eq(self, value)
-    }
+	fn reflect_partial_eq(&self, value: &dyn Reflect) -> Option<bool> {
+		tuple_partial_eq(self, value)
+	}
 
-    fn debug(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "DynamicTuple(")?;
-        tuple_debug(self, f)?;
-        write!(f, ")")
-    }
+	fn debug(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+		write!(f, "DynamicTuple(")?;
+		tuple_debug(self, f)?;
+		write!(f, ")")
+	}
 }
 
 impl Typed for DynamicTuple {
-    fn type_info() -> &'static TypeInfo {
-        static CELL: NonGenericTypeInfoCell = NonGenericTypeInfoCell::new();
-        CELL.get_or_set(|| TypeInfo::Dynamic(DynamicInfo::new::<Self>()))
-    }
+	fn type_info() -> &'static TypeInfo {
+		static CELL: NonGenericTypeInfoCell = NonGenericTypeInfoCell::new();
+		CELL.get_or_set(|| TypeInfo::Dynamic(DynamicInfo::new::<Self>()))
+	}
 }
 
 /// Applies the elements of `b` to the corresponding elements of `a`.
@@ -348,15 +348,15 @@ impl Typed for DynamicTuple {
 /// This function panics if `b` is not a tuple.
 #[inline]
 pub fn tuple_apply<T: Tuple>(a: &mut T, b: &dyn Reflect) {
-    if let ReflectRef::Tuple(tuple) = b.reflect_ref() {
-        for (i, value) in tuple.iter_fields().enumerate() {
-            if let Some(v) = a.field_mut(i) {
-                v.apply(value);
-            }
-        }
-    } else {
-        panic!("Attempted to apply non-Tuple type to Tuple type.");
-    }
+	if let ReflectRef::Tuple(tuple) = b.reflect_ref() {
+		for (i, value) in tuple.iter_fields().enumerate() {
+			if let Some(v) = a.field_mut(i) {
+				v.apply(value);
+			}
+		}
+	} else {
+		panic!("Attempted to apply non-Tuple type to Tuple type.");
+	}
 }
 
 /// Compares a [`Tuple`] with a [`Reflect`] value.
@@ -367,24 +367,24 @@ pub fn tuple_apply<T: Tuple>(a: &mut T, b: &dyn Reflect) {
 /// - [`Reflect::reflect_partial_eq`] returns `Some(true)` for pairwise elements of `a` and `b`.
 #[inline]
 pub fn tuple_partial_eq<T: Tuple>(a: &T, b: &dyn Reflect) -> Option<bool> {
-    let b = if let ReflectRef::Tuple(tuple) = b.reflect_ref() {
-        tuple
-    } else {
-        return Some(false);
-    };
+	let b = if let ReflectRef::Tuple(tuple) = b.reflect_ref() {
+		tuple
+	} else {
+		return Some(false);
+	};
 
-    if a.field_len() != b.field_len() {
-        return Some(false);
-    }
+	if a.field_len() != b.field_len() {
+		return Some(false);
+	}
 
-    for (a_field, b_field) in a.iter_fields().zip(b.iter_fields()) {
-        match a_field.reflect_partial_eq(b_field) {
-            Some(false) | None => return Some(false),
-            Some(true) => {}
-        }
-    }
+	for (a_field, b_field) in a.iter_fields().zip(b.iter_fields()) {
+		match a_field.reflect_partial_eq(b_field) {
+			Some(false) | None => return Some(false),
+			Some(true) => {}
+		}
+	}
 
-    Some(true)
+	Some(true)
 }
 
 /// The default debug formatter for [`Tuple`] types.
@@ -406,11 +406,11 @@ pub fn tuple_partial_eq<T: Tuple>(a: &T, b: &dyn Reflect) -> Option<bool> {
 /// ```
 #[inline]
 pub fn tuple_debug(dyn_tuple: &dyn Tuple, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-    let mut debug = f.debug_tuple("");
-    for field in dyn_tuple.iter_fields() {
-        debug.field(&field as &dyn Debug);
-    }
-    debug.finish()
+	let mut debug = f.debug_tuple("");
+	for field in dyn_tuple.iter_fields() {
+		debug.field(&field as &dyn Debug);
+	}
+	debug.finish()
 }
 
 macro_rules! impl_reflect_tuple {

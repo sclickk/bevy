@@ -26,5 +26,5 @@
 /// ```
 #[inline]
 pub fn default<T: Default>() -> T {
-    std::default::Default::default()
+	std::default::Default::default()
 }

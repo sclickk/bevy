@@ -8,8 +8,8 @@ pub use crate::systems::transform_propagate_system;
 
 #[doc(hidden)]
 pub mod prelude {
-    #[doc(hidden)]
-    pub use crate::{components::*, TransformBundle, TransformPlugin};
+	#[doc(hidden)]
+	pub use crate::{components::*, TransformBundle, TransformPlugin};
 }
 
 use bevy_app::prelude::*;
@@ -40,48 +40,48 @@ use prelude::{GlobalTransform, Transform};
 /// before the [`GlobalTransform`] is updated.
 #[derive(Bundle, Clone, Copy, Debug, Default)]
 pub struct TransformBundle {
-    /// The transform of the entity.
-    pub local: Transform,
-    /// The global transform of the entity.
-    pub global: GlobalTransform,
+	/// The transform of the entity.
+	pub local: Transform,
+	/// The global transform of the entity.
+	pub global: GlobalTransform,
 }
 
 impl TransformBundle {
-    /// Creates a new [`TransformBundle`] from a [`Transform`].
-    ///
-    /// This initializes [`GlobalTransform`] as identity, to be updated later by the
-    /// [`CoreStage::PostUpdate`](crate::CoreStage::PostUpdate) stage.
-    #[inline]
-    pub const fn from_transform(transform: Transform) -> Self {
-        TransformBundle {
-            local: transform,
-            // Note: `..Default::default()` cannot be used here, because it isn't const
-            ..Self::identity()
-        }
-    }
+	/// Creates a new [`TransformBundle`] from a [`Transform`].
+	///
+	/// This initializes [`GlobalTransform`] as identity, to be updated later by the
+	/// [`CoreStage::PostUpdate`](crate::CoreStage::PostUpdate) stage.
+	#[inline]
+	pub const fn from_transform(transform: Transform) -> Self {
+		TransformBundle {
+			local: transform,
+			// Note: `..Default::default()` cannot be used here, because it isn't const
+			..Self::identity()
+		}
+	}
 
-    /// Creates a new identity [`TransformBundle`], with no translation, rotation, and a scale of 1
-    /// on all axes.
-    #[inline]
-    pub const fn identity() -> Self {
-        TransformBundle {
-            local: Transform::identity(),
-            global: GlobalTransform::identity(),
-        }
-    }
+	/// Creates a new identity [`TransformBundle`], with no translation, rotation, and a scale of 1
+	/// on all axes.
+	#[inline]
+	pub const fn identity() -> Self {
+		TransformBundle {
+			local: Transform::identity(),
+			global: GlobalTransform::identity(),
+		}
+	}
 }
 
 impl From<Transform> for TransformBundle {
-    #[inline]
-    fn from(transform: Transform) -> Self {
-        Self::from_transform(transform)
-    }
+	#[inline]
+	fn from(transform: Transform) -> Self {
+		Self::from_transform(transform)
+	}
 }
 /// Label enum for the systems relating to transform propagation
 #[derive(Debug, Hash, PartialEq, Eq, Clone, SystemLabel)]
 pub enum TransformSystem {
-    /// Propagates changes in transform to childrens' [`GlobalTransform`](crate::components::GlobalTransform)
-    TransformPropagate,
+	/// Propagates changes in transform to childrens' [`GlobalTransform`](crate::components::GlobalTransform)
+	TransformPropagate,
 }
 
 /// The base plugin for handling [`Transform`] components
@@ -89,21 +89,21 @@ pub enum TransformSystem {
 pub struct TransformPlugin;
 
 impl Plugin for TransformPlugin {
-    fn build(&self, app: &mut App) {
-        app.register_type::<Transform>()
-            .register_type::<GlobalTransform>()
-            // Adding these to startup ensures the first update is "correct"
-            .add_startup_system_to_stage(
-                StartupStage::PostStartup,
-                systems::transform_propagate_system
-                    .label(TransformSystem::TransformPropagate)
-                    .after(HierarchySystem::ParentUpdate),
-            )
-            .add_system_to_stage(
-                CoreStage::PostUpdate,
-                systems::transform_propagate_system
-                    .label(TransformSystem::TransformPropagate)
-                    .after(HierarchySystem::ParentUpdate),
-            );
-    }
+	fn build(&self, app: &mut App) {
+		app.register_type::<Transform>()
+			.register_type::<GlobalTransform>()
+			// Adding these to startup ensures the first update is "correct"
+			.add_startup_system_to_stage(
+				StartupStage::PostStartup,
+				systems::transform_propagate_system
+					.label(TransformSystem::TransformPropagate)
+					.after(HierarchySystem::ParentUpdate),
+			)
+			.add_system_to_stage(
+				CoreStage::PostUpdate,
+				systems::transform_propagate_system
+					.label(TransformSystem::TransformPropagate)
+					.after(HierarchySystem::ParentUpdate),
+			);
+	}
 }

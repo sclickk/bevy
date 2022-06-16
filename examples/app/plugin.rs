@@ -7,41 +7,41 @@
 use bevy::{prelude::*, utils::Duration};
 
 fn main() {
-    App::new()
-        .add_plugins(DefaultPlugins)
-        // plugins are registered as part of the "app building" process
-        .add_plugin(PrintMessagePlugin {
-            wait_duration: Duration::from_secs(1),
-            message: "This is an example plugin".to_string(),
-        })
-        .run();
+	App::new()
+		.add_plugins(DefaultPlugins)
+		// plugins are registered as part of the "app building" process
+		.add_plugin(PrintMessagePlugin {
+			wait_duration: Duration::from_secs(1),
+			message: "This is an example plugin".to_string(),
+		})
+		.run();
 }
 
 // This "print message plugin" prints a `message` every `wait_duration`
 pub struct PrintMessagePlugin {
-    // Put your plugin configuration here
-    wait_duration: Duration,
-    message: String,
+	// Put your plugin configuration here
+	wait_duration: Duration,
+	message: String,
 }
 
 impl Plugin for PrintMessagePlugin {
-    // this is where we set up our plugin
-    fn build(&self, app: &mut App) {
-        let state = PrintMessageState {
-            message: self.message.clone(),
-            timer: Timer::new(self.wait_duration, true),
-        };
-        app.insert_resource(state).add_system(print_message_system);
-    }
+	// this is where we set up our plugin
+	fn build(&self, app: &mut App) {
+		let state = PrintMessageState {
+			message: self.message.clone(),
+			timer: Timer::new(self.wait_duration, true),
+		};
+		app.insert_resource(state).add_system(print_message_system);
+	}
 }
 
 struct PrintMessageState {
-    message: String,
-    timer: Timer,
+	message: String,
+	timer: Timer,
 }
 
 fn print_message_system(mut state: ResMut<PrintMessageState>, time: Res<Time>) {
-    if state.timer.tick(time.delta()).finished() {
-        info!("{}", state.message);
-    }
+	if state.timer.tick(time.delta()).finished() {
+		info!("{}", state.message);
+	}
 }

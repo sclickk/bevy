@@ -62,10 +62,10 @@ use std::any::{Any, TypeId};
 ///
 /// [utility]: crate::utility
 pub trait Typed: Reflect {
-    /// Returns the compile-time [info] for the underlying type.
-    ///
-    /// [info]: TypeInfo
-    fn type_info() -> &'static TypeInfo;
+	/// Returns the compile-time [info] for the underlying type.
+	///
+	/// [info]: TypeInfo
+	fn type_info() -> &'static TypeInfo;
 }
 
 /// Compile-time type information for various reflected types.
@@ -92,54 +92,54 @@ pub trait Typed: Reflect {
 /// [type name]: std::any::type_name
 #[derive(Debug, Clone)]
 pub enum TypeInfo {
-    Struct(StructInfo),
-    TupleStruct(TupleStructInfo),
-    Tuple(TupleInfo),
-    List(ListInfo),
-    Array(ArrayInfo),
-    Map(MapInfo),
-    Value(ValueInfo),
-    /// Type information for "dynamic" types whose metadata can't be known at compile-time.
-    ///
-    /// This includes structs like [`DynamicStruct`](crate::DynamicStruct) and [`DynamicList`](crate::DynamicList).
-    Dynamic(DynamicInfo),
+	Struct(StructInfo),
+	TupleStruct(TupleStructInfo),
+	Tuple(TupleInfo),
+	List(ListInfo),
+	Array(ArrayInfo),
+	Map(MapInfo),
+	Value(ValueInfo),
+	/// Type information for "dynamic" types whose metadata can't be known at compile-time.
+	///
+	/// This includes structs like [`DynamicStruct`](crate::DynamicStruct) and [`DynamicList`](crate::DynamicList).
+	Dynamic(DynamicInfo),
 }
 
 impl TypeInfo {
-    /// The [`TypeId`] of the underlying type.
-    pub fn type_id(&self) -> TypeId {
-        match self {
-            Self::Struct(info) => info.type_id(),
-            Self::TupleStruct(info) => info.type_id(),
-            Self::Tuple(info) => info.type_id(),
-            Self::List(info) => info.type_id(),
-            Self::Array(info) => info.type_id(),
-            Self::Map(info) => info.type_id(),
-            Self::Value(info) => info.type_id(),
-            Self::Dynamic(info) => info.type_id(),
-        }
-    }
+	/// The [`TypeId`] of the underlying type.
+	pub fn type_id(&self) -> TypeId {
+		match self {
+			Self::Struct(info) => info.type_id(),
+			Self::TupleStruct(info) => info.type_id(),
+			Self::Tuple(info) => info.type_id(),
+			Self::List(info) => info.type_id(),
+			Self::Array(info) => info.type_id(),
+			Self::Map(info) => info.type_id(),
+			Self::Value(info) => info.type_id(),
+			Self::Dynamic(info) => info.type_id(),
+		}
+	}
 
-    /// The [name] of the underlying type.
-    ///
-    /// [name]: std::any::type_name
-    pub fn type_name(&self) -> &'static str {
-        match self {
-            Self::Struct(info) => info.type_name(),
-            Self::TupleStruct(info) => info.type_name(),
-            Self::Tuple(info) => info.type_name(),
-            Self::List(info) => info.type_name(),
-            Self::Array(info) => info.type_name(),
-            Self::Map(info) => info.type_name(),
-            Self::Value(info) => info.type_name(),
-            Self::Dynamic(info) => info.type_name(),
-        }
-    }
+	/// The [name] of the underlying type.
+	///
+	/// [name]: std::any::type_name
+	pub fn type_name(&self) -> &'static str {
+		match self {
+			Self::Struct(info) => info.type_name(),
+			Self::TupleStruct(info) => info.type_name(),
+			Self::Tuple(info) => info.type_name(),
+			Self::List(info) => info.type_name(),
+			Self::Array(info) => info.type_name(),
+			Self::Map(info) => info.type_name(),
+			Self::Value(info) => info.type_name(),
+			Self::Dynamic(info) => info.type_name(),
+		}
+	}
 
-    /// Check if the given type matches the underlying type.
-    pub fn is<T: Any>(&self) -> bool {
-        TypeId::of::<T>() == self.type_id()
-    }
+	/// Check if the given type matches the underlying type.
+	pub fn is<T: Any>(&self) -> bool {
+		TypeId::of::<T>() == self.type_id()
+	}
 }
 
 /// A container for compile-time info related to general value types, including primitives.
@@ -152,34 +152,34 @@ impl TypeInfo {
 /// it _as_ a struct. It therefore makes more sense to represent it as a [`ValueInfo`].
 #[derive(Debug, Clone)]
 pub struct ValueInfo {
-    type_name: &'static str,
-    type_id: TypeId,
+	type_name: &'static str,
+	type_id: TypeId,
 }
 
 impl ValueInfo {
-    pub fn new<T: Reflect + ?Sized>() -> Self {
-        Self {
-            type_name: std::any::type_name::<T>(),
-            type_id: TypeId::of::<T>(),
-        }
-    }
+	pub fn new<T: Reflect + ?Sized>() -> Self {
+		Self {
+			type_name: std::any::type_name::<T>(),
+			type_id: TypeId::of::<T>(),
+		}
+	}
 
-    /// The [type name] of the value.
-    ///
-    /// [type name]: std::any::type_name
-    pub fn type_name(&self) -> &'static str {
-        self.type_name
-    }
+	/// The [type name] of the value.
+	///
+	/// [type name]: std::any::type_name
+	pub fn type_name(&self) -> &'static str {
+		self.type_name
+	}
 
-    /// The [`TypeId`] of the value.
-    pub fn type_id(&self) -> TypeId {
-        self.type_id
-    }
+	/// The [`TypeId`] of the value.
+	pub fn type_id(&self) -> TypeId {
+		self.type_id
+	}
 
-    /// Check if the given type matches the value type.
-    pub fn is<T: Any>(&self) -> bool {
-        TypeId::of::<T>() == self.type_id
-    }
+	/// Check if the given type matches the value type.
+	pub fn is<T: Any>(&self) -> bool {
+		TypeId::of::<T>() == self.type_id
+	}
 }
 
 /// A container for compile-time info related to Bevy's _dynamic_ types, including primitives.
@@ -192,32 +192,32 @@ impl ValueInfo {
 /// [`DynamicList`]: crate::DynamicList
 #[derive(Debug, Clone)]
 pub struct DynamicInfo {
-    type_name: &'static str,
-    type_id: TypeId,
+	type_name: &'static str,
+	type_id: TypeId,
 }
 
 impl DynamicInfo {
-    pub fn new<T: Reflect>() -> Self {
-        Self {
-            type_name: std::any::type_name::<T>(),
-            type_id: TypeId::of::<T>(),
-        }
-    }
+	pub fn new<T: Reflect>() -> Self {
+		Self {
+			type_name: std::any::type_name::<T>(),
+			type_id: TypeId::of::<T>(),
+		}
+	}
 
-    /// The [type name] of the dynamic value.
-    ///
-    /// [type name]: std::any::type_name
-    pub fn type_name(&self) -> &'static str {
-        self.type_name
-    }
+	/// The [type name] of the dynamic value.
+	///
+	/// [type name]: std::any::type_name
+	pub fn type_name(&self) -> &'static str {
+		self.type_name
+	}
 
-    /// The [`TypeId`] of the dynamic value.
-    pub fn type_id(&self) -> TypeId {
-        self.type_id
-    }
+	/// The [`TypeId`] of the dynamic value.
+	pub fn type_id(&self) -> TypeId {
+		self.type_id
+	}
 
-    /// Check if the given type matches the dynamic value type.
-    pub fn is<T: Any>(&self) -> bool {
-        TypeId::of::<T>() == self.type_id
-    }
+	/// Check if the given type matches the dynamic value type.
+	pub fn is<T: Any>(&self) -> bool {
+		TypeId::of::<T>() == self.type_id
+	}
 }

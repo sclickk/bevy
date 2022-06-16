@@ -9,19 +9,19 @@ use raw_window_handle::{HasRawWindowHandle, RawWindowHandle};
 pub struct RawWindowHandleWrapper(RawWindowHandle);
 
 impl RawWindowHandleWrapper {
-    pub(crate) fn new(handle: RawWindowHandle) -> Self {
-        Self(handle)
-    }
+	pub(crate) fn new(handle: RawWindowHandle) -> Self {
+		Self(handle)
+	}
 
-    /// Returns a [`HasRawWindowHandle`] impl, which exposes [`RawWindowHandle`].
-    ///
-    /// # Safety
-    ///
-    /// Some platforms have constraints on where/how this handle can be used. For example, some platforms don't support doing window
-    /// operations off of the main thread. The caller must ensure the [`RawWindowHandle`] is only used in valid contexts.
-    pub unsafe fn get_handle(&self) -> ThreadLockedRawWindowHandleWrapper {
-        ThreadLockedRawWindowHandleWrapper(self.0)
-    }
+	/// Returns a [`HasRawWindowHandle`] impl, which exposes [`RawWindowHandle`].
+	///
+	/// # Safety
+	///
+	/// Some platforms have constraints on where/how this handle can be used. For example, some platforms don't support doing window
+	/// operations off of the main thread. The caller must ensure the [`RawWindowHandle`] is only used in valid contexts.
+	pub unsafe fn get_handle(&self) -> ThreadLockedRawWindowHandleWrapper {
+		ThreadLockedRawWindowHandleWrapper(self.0)
+	}
 }
 
 // SAFE: RawWindowHandle is just a normal "raw pointer", which doesn't impl Send/Sync. However the pointer is only
@@ -48,7 +48,7 @@ pub struct ThreadLockedRawWindowHandleWrapper(RawWindowHandle);
 // of this method are correct (as it may be off the main thread on an incompatible platform),
 // and so exposing a safe method to get a `RawWindowHandle` directly would be UB.
 unsafe impl HasRawWindowHandle for ThreadLockedRawWindowHandleWrapper {
-    fn raw_window_handle(&self) -> RawWindowHandle {
-        self.0
-    }
+	fn raw_window_handle(&self) -> RawWindowHandle {
+		self.0
+	}
 }

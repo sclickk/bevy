@@ -5,19 +5,19 @@ use crate::{FromType, Reflect};
 /// A [`ReflectDefault`] for type `T` can be obtained via [`FromType::from_type`].
 #[derive(Clone)]
 pub struct ReflectDefault {
-    default: fn() -> Box<dyn Reflect>,
+	default: fn() -> Box<dyn Reflect>,
 }
 
 impl ReflectDefault {
-    pub fn default(&self) -> Box<dyn Reflect> {
-        (self.default)()
-    }
+	pub fn default(&self) -> Box<dyn Reflect> {
+		(self.default)()
+	}
 }
 
 impl<T: Reflect + Default> FromType<T> for ReflectDefault {
-    fn from_type() -> Self {
-        ReflectDefault {
-            default: || Box::new(T::default()),
-        }
-    }
+	fn from_type() -> Self {
+		ReflectDefault {
+			default: || Box::new(T::default()),
+		}
+	}
 }

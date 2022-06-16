@@ -3,8 +3,8 @@ use std::fmt::{Debug, Formatter};
 
 use crate::utility::NonGenericTypeInfoCell;
 use crate::{
-    serde::Serializable, Array, ArrayIter, DynamicArray, DynamicInfo, FromReflect, Reflect,
-    ReflectMut, ReflectRef, TypeInfo, Typed,
+	serde::Serializable, Array, ArrayIter, DynamicArray, DynamicInfo, FromReflect, Reflect,
+	ReflectMut, ReflectRef, TypeInfo, Typed,
 };
 
 /// An ordered, mutable list of [Reflect] items. This corresponds to types like [`std::vec::Vec`].
@@ -12,254 +12,254 @@ use crate::{
 /// This is a sub-trait of [`Array`] as it implements a [`push`](List::push) function, allowing
 /// it's internal size to grow.
 pub trait List: Reflect + Array {
-    /// Appends an element to the list.
-    fn push(&mut self, value: Box<dyn Reflect>);
+	/// Appends an element to the list.
+	fn push(&mut self, value: Box<dyn Reflect>);
 
-    /// Clones the list, producing a [`DynamicList`].
-    fn clone_dynamic(&self) -> DynamicList {
-        DynamicList {
-            name: self.type_name().to_string(),
-            values: self.iter().map(|value| value.clone_value()).collect(),
-        }
-    }
+	/// Clones the list, producing a [`DynamicList`].
+	fn clone_dynamic(&self) -> DynamicList {
+		DynamicList {
+			name: self.type_name().to_string(),
+			values: self.iter().map(|value| value.clone_value()).collect(),
+		}
+	}
 }
 
 /// A container for compile-time list info.
 #[derive(Clone, Debug)]
 pub struct ListInfo {
-    type_name: &'static str,
-    type_id: TypeId,
-    item_type_name: &'static str,
-    item_type_id: TypeId,
+	type_name: &'static str,
+	type_id: TypeId,
+	item_type_name: &'static str,
+	item_type_id: TypeId,
 }
 
 impl ListInfo {
-    /// Create a new [`ListInfo`].
-    pub fn new<TList: List, TItem: FromReflect>() -> Self {
-        Self {
-            type_name: std::any::type_name::<TList>(),
-            type_id: TypeId::of::<TList>(),
-            item_type_name: std::any::type_name::<TItem>(),
-            item_type_id: TypeId::of::<TItem>(),
-        }
-    }
+	/// Create a new [`ListInfo`].
+	pub fn new<TList: List, TItem: FromReflect>() -> Self {
+		Self {
+			type_name: std::any::type_name::<TList>(),
+			type_id: TypeId::of::<TList>(),
+			item_type_name: std::any::type_name::<TItem>(),
+			item_type_id: TypeId::of::<TItem>(),
+		}
+	}
 
-    /// The [type name] of the list.
-    ///
-    /// [type name]: std::any::type_name
-    pub fn type_name(&self) -> &'static str {
-        self.type_name
-    }
+	/// The [type name] of the list.
+	///
+	/// [type name]: std::any::type_name
+	pub fn type_name(&self) -> &'static str {
+		self.type_name
+	}
 
-    /// The [`TypeId`] of the list.
-    pub fn type_id(&self) -> TypeId {
-        self.type_id
-    }
+	/// The [`TypeId`] of the list.
+	pub fn type_id(&self) -> TypeId {
+		self.type_id
+	}
 
-    /// Check if the given type matches the list type.
-    pub fn is<T: Any>(&self) -> bool {
-        TypeId::of::<T>() == self.type_id
-    }
+	/// Check if the given type matches the list type.
+	pub fn is<T: Any>(&self) -> bool {
+		TypeId::of::<T>() == self.type_id
+	}
 
-    /// The [type name] of the list item.
-    ///
-    /// [type name]: std::any::type_name
-    pub fn item_type_name(&self) -> &'static str {
-        self.item_type_name
-    }
+	/// The [type name] of the list item.
+	///
+	/// [type name]: std::any::type_name
+	pub fn item_type_name(&self) -> &'static str {
+		self.item_type_name
+	}
 
-    /// The [`TypeId`] of the list item.
-    pub fn item_type_id(&self) -> TypeId {
-        self.item_type_id
-    }
+	/// The [`TypeId`] of the list item.
+	pub fn item_type_id(&self) -> TypeId {
+		self.item_type_id
+	}
 
-    /// Check if the given type matches the list item type.
-    pub fn item_is<T: Any>(&self) -> bool {
-        TypeId::of::<T>() == self.item_type_id
-    }
+	/// Check if the given type matches the list item type.
+	pub fn item_is<T: Any>(&self) -> bool {
+		TypeId::of::<T>() == self.item_type_id
+	}
 }
 
 /// A list of reflected values.
 #[derive(Default)]
 pub struct DynamicList {
-    name: String,
-    values: Vec<Box<dyn Reflect>>,
+	name: String,
+	values: Vec<Box<dyn Reflect>>,
 }
 
 impl DynamicList {
-    /// Returns the type name of the list.
-    ///
-    /// The value returned by this method is the same value returned by
-    /// [`Reflect::type_name`].
-    pub fn name(&self) -> &str {
-        &self.name
-    }
+	/// Returns the type name of the list.
+	///
+	/// The value returned by this method is the same value returned by
+	/// [`Reflect::type_name`].
+	pub fn name(&self) -> &str {
+		&self.name
+	}
 
-    /// Sets the type name of the list.
-    ///
-    /// The value set by this method is the value returned by
-    /// [`Reflect::type_name`].
-    pub fn set_name(&mut self, name: String) {
-        self.name = name;
-    }
+	/// Sets the type name of the list.
+	///
+	/// The value set by this method is the value returned by
+	/// [`Reflect::type_name`].
+	pub fn set_name(&mut self, name: String) {
+		self.name = name;
+	}
 
-    /// Appends a typed value to the list.
-    pub fn push<T: Reflect>(&mut self, value: T) {
-        self.values.push(Box::new(value));
-    }
+	/// Appends a typed value to the list.
+	pub fn push<T: Reflect>(&mut self, value: T) {
+		self.values.push(Box::new(value));
+	}
 
-    /// Appends a [`Reflect`] trait object to the list.
-    pub fn push_box(&mut self, value: Box<dyn Reflect>) {
-        self.values.push(value);
-    }
+	/// Appends a [`Reflect`] trait object to the list.
+	pub fn push_box(&mut self, value: Box<dyn Reflect>) {
+		self.values.push(value);
+	}
 }
 
 impl Array for DynamicList {
-    fn get(&self, index: usize) -> Option<&dyn Reflect> {
-        self.values.get(index).map(|value| &**value)
-    }
+	fn get(&self, index: usize) -> Option<&dyn Reflect> {
+		self.values.get(index).map(|value| &**value)
+	}
 
-    fn get_mut(&mut self, index: usize) -> Option<&mut dyn Reflect> {
-        self.values.get_mut(index).map(|value| &mut **value)
-    }
+	fn get_mut(&mut self, index: usize) -> Option<&mut dyn Reflect> {
+		self.values.get_mut(index).map(|value| &mut **value)
+	}
 
-    fn len(&self) -> usize {
-        self.values.len()
-    }
+	fn len(&self) -> usize {
+		self.values.len()
+	}
 
-    fn iter(&self) -> ArrayIter {
-        ArrayIter {
-            array: self,
-            index: 0,
-        }
-    }
+	fn iter(&self) -> ArrayIter {
+		ArrayIter {
+			array: self,
+			index: 0,
+		}
+	}
 
-    fn clone_dynamic(&self) -> DynamicArray {
-        DynamicArray {
-            name: self.name.clone(),
-            values: self
-                .values
-                .iter()
-                .map(|value| value.clone_value())
-                .collect(),
-        }
-    }
+	fn clone_dynamic(&self) -> DynamicArray {
+		DynamicArray {
+			name: self.name.clone(),
+			values: self
+				.values
+				.iter()
+				.map(|value| value.clone_value())
+				.collect(),
+		}
+	}
 }
 
 impl List for DynamicList {
-    fn push(&mut self, value: Box<dyn Reflect>) {
-        DynamicList::push_box(self, value);
-    }
+	fn push(&mut self, value: Box<dyn Reflect>) {
+		DynamicList::push_box(self, value);
+	}
 
-    fn clone_dynamic(&self) -> DynamicList {
-        DynamicList {
-            name: self.name.clone(),
-            values: self
-                .values
-                .iter()
-                .map(|value| value.clone_value())
-                .collect(),
-        }
-    }
+	fn clone_dynamic(&self) -> DynamicList {
+		DynamicList {
+			name: self.name.clone(),
+			values: self
+				.values
+				.iter()
+				.map(|value| value.clone_value())
+				.collect(),
+		}
+	}
 }
 
 // SAFE: any and any_mut both return self
 unsafe impl Reflect for DynamicList {
-    #[inline]
-    fn type_name(&self) -> &str {
-        self.name.as_str()
-    }
+	#[inline]
+	fn type_name(&self) -> &str {
+		self.name.as_str()
+	}
 
-    #[inline]
-    fn get_type_info(&self) -> &'static TypeInfo {
-        <Self as Typed>::type_info()
-    }
+	#[inline]
+	fn get_type_info(&self) -> &'static TypeInfo {
+		<Self as Typed>::type_info()
+	}
 
-    #[inline]
-    fn any(&self) -> &dyn Any {
-        self
-    }
+	#[inline]
+	fn any(&self) -> &dyn Any {
+		self
+	}
 
-    #[inline]
-    fn any_mut(&mut self) -> &mut dyn Any {
-        self
-    }
+	#[inline]
+	fn any_mut(&mut self) -> &mut dyn Any {
+		self
+	}
 
-    #[inline]
-    fn as_reflect(&self) -> &dyn Reflect {
-        self
-    }
+	#[inline]
+	fn as_reflect(&self) -> &dyn Reflect {
+		self
+	}
 
-    #[inline]
-    fn as_reflect_mut(&mut self) -> &mut dyn Reflect {
-        self
-    }
+	#[inline]
+	fn as_reflect_mut(&mut self) -> &mut dyn Reflect {
+		self
+	}
 
-    fn apply(&mut self, value: &dyn Reflect) {
-        list_apply(self, value);
-    }
+	fn apply(&mut self, value: &dyn Reflect) {
+		list_apply(self, value);
+	}
 
-    #[inline]
-    fn set(&mut self, value: Box<dyn Reflect>) -> Result<(), Box<dyn Reflect>> {
-        *self = value.take()?;
-        Ok(())
-    }
+	#[inline]
+	fn set(&mut self, value: Box<dyn Reflect>) -> Result<(), Box<dyn Reflect>> {
+		*self = value.take()?;
+		Ok(())
+	}
 
-    #[inline]
-    fn reflect_ref(&self) -> ReflectRef {
-        ReflectRef::List(self)
-    }
+	#[inline]
+	fn reflect_ref(&self) -> ReflectRef {
+		ReflectRef::List(self)
+	}
 
-    #[inline]
-    fn reflect_mut(&mut self) -> ReflectMut {
-        ReflectMut::List(self)
-    }
+	#[inline]
+	fn reflect_mut(&mut self) -> ReflectMut {
+		ReflectMut::List(self)
+	}
 
-    #[inline]
-    fn clone_value(&self) -> Box<dyn Reflect> {
-        Box::new(List::clone_dynamic(self))
-    }
+	#[inline]
+	fn clone_value(&self) -> Box<dyn Reflect> {
+		Box::new(List::clone_dynamic(self))
+	}
 
-    #[inline]
-    fn reflect_hash(&self) -> Option<u64> {
-        crate::array_hash(self)
-    }
+	#[inline]
+	fn reflect_hash(&self) -> Option<u64> {
+		crate::array_hash(self)
+	}
 
-    fn reflect_partial_eq(&self, value: &dyn Reflect) -> Option<bool> {
-        list_partial_eq(self, value)
-    }
+	fn reflect_partial_eq(&self, value: &dyn Reflect) -> Option<bool> {
+		list_partial_eq(self, value)
+	}
 
-    fn serializable(&self) -> Option<Serializable> {
-        None
-    }
+	fn serializable(&self) -> Option<Serializable> {
+		None
+	}
 
-    fn debug(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "DynamicList(")?;
-        list_debug(self, f)?;
-        write!(f, ")")
-    }
+	fn debug(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+		write!(f, "DynamicList(")?;
+		list_debug(self, f)?;
+		write!(f, ")")
+	}
 }
 
 impl Debug for DynamicList {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        self.debug(f)
-    }
+	fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+		self.debug(f)
+	}
 }
 
 impl Typed for DynamicList {
-    fn type_info() -> &'static TypeInfo {
-        static CELL: NonGenericTypeInfoCell = NonGenericTypeInfoCell::new();
-        CELL.get_or_set(|| TypeInfo::Dynamic(DynamicInfo::new::<Self>()))
-    }
+	fn type_info() -> &'static TypeInfo {
+		static CELL: NonGenericTypeInfoCell = NonGenericTypeInfoCell::new();
+		CELL.get_or_set(|| TypeInfo::Dynamic(DynamicInfo::new::<Self>()))
+	}
 }
 
 impl IntoIterator for DynamicList {
-    type Item = Box<dyn Reflect>;
-    type IntoIter = std::vec::IntoIter<Self::Item>;
+	type Item = Box<dyn Reflect>;
+	type IntoIter = std::vec::IntoIter<Self::Item>;
 
-    fn into_iter(self) -> Self::IntoIter {
-        self.values.into_iter()
-    }
+	fn into_iter(self) -> Self::IntoIter {
+		self.values.into_iter()
+	}
 }
 
 /// Applies the elements of `b` to the corresponding elements of `a`.
@@ -272,19 +272,19 @@ impl IntoIterator for DynamicList {
 /// This function panics if `b` is not a list.
 #[inline]
 pub fn list_apply<L: List>(a: &mut L, b: &dyn Reflect) {
-    if let ReflectRef::List(list_value) = b.reflect_ref() {
-        for (i, value) in list_value.iter().enumerate() {
-            if i < a.len() {
-                if let Some(v) = a.get_mut(i) {
-                    v.apply(value);
-                }
-            } else {
-                List::push(a, value.clone_value());
-            }
-        }
-    } else {
-        panic!("Attempted to apply a non-list type to a list type.");
-    }
+	if let ReflectRef::List(list_value) = b.reflect_ref() {
+		for (i, value) in list_value.iter().enumerate() {
+			if i < a.len() {
+				if let Some(v) = a.get_mut(i) {
+					v.apply(value);
+				}
+			} else {
+				List::push(a, value.clone_value());
+			}
+		}
+	} else {
+		panic!("Attempted to apply a non-list type to a list type.");
+	}
 }
 
 /// Compares a [`List`] with a [`Reflect`] value.
@@ -295,23 +295,23 @@ pub fn list_apply<L: List>(a: &mut L, b: &dyn Reflect) {
 /// - [`Reflect::reflect_partial_eq`] returns `Some(true)` for pairwise elements of `a` and `b`.
 #[inline]
 pub fn list_partial_eq<L: List>(a: &L, b: &dyn Reflect) -> Option<bool> {
-    let list = if let ReflectRef::List(list) = b.reflect_ref() {
-        list
-    } else {
-        return Some(false);
-    };
+	let list = if let ReflectRef::List(list) = b.reflect_ref() {
+		list
+	} else {
+		return Some(false);
+	};
 
-    if a.len() != list.len() {
-        return Some(false);
-    }
+	if a.len() != list.len() {
+		return Some(false);
+	}
 
-    for (a_value, b_value) in a.iter().zip(list.iter()) {
-        if let Some(false) | None = a_value.reflect_partial_eq(b_value) {
-            return Some(false);
-        }
-    }
+	for (a_value, b_value) in a.iter().zip(list.iter()) {
+		if let Some(false) | None = a_value.reflect_partial_eq(b_value) {
+			return Some(false);
+		}
+	}
 
-    Some(true)
+	Some(true)
 }
 
 /// The default debug formatter for [`List`] types.
@@ -333,28 +333,28 @@ pub fn list_partial_eq<L: List>(a: &L, b: &dyn Reflect) -> Option<bool> {
 /// ```
 #[inline]
 pub fn list_debug(dyn_list: &dyn List, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-    let mut debug = f.debug_list();
-    for item in dyn_list.iter() {
-        debug.entry(&item as &dyn Debug);
-    }
-    debug.finish()
+	let mut debug = f.debug_list();
+	for item in dyn_list.iter() {
+		debug.entry(&item as &dyn Debug);
+	}
+	debug.finish()
 }
 
 #[cfg(test)]
 mod tests {
-    use super::DynamicList;
-    use std::assert_eq;
+	use super::DynamicList;
+	use std::assert_eq;
 
-    #[test]
-    fn test_into_iter() {
-        let mut list = DynamicList::default();
-        list.push(0usize);
-        list.push(1usize);
-        list.push(2usize);
-        let items = list.into_iter();
-        for (index, item) in items.into_iter().enumerate() {
-            let value = item.take::<usize>().expect("couldn't downcast to usize");
-            assert_eq!(index, value);
-        }
-    }
+	#[test]
+	fn test_into_iter() {
+		let mut list = DynamicList::default();
+		list.push(0usize);
+		list.push(1usize);
+		list.push(2usize);
+		let items = list.into_iter();
+		for (index, item) in items.into_iter().enumerate() {
+			let value = item.take::<usize>().expect("couldn't downcast to usize");
+			assert_eq!(index, value);
+		}
+	}
 }

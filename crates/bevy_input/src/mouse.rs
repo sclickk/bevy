@@ -12,10 +12,10 @@ use bevy_math::Vec2;
 /// to update the [`Input<MouseButton>`](crate::Input<MouseButton>) resource.
 #[derive(Debug, Clone)]
 pub struct MouseButtonInput {
-    /// The mouse button assigned to the event.
-    pub button: MouseButton,
-    /// The pressed state of the button.
-    pub state: ButtonState,
+	/// The mouse button assigned to the event.
+	pub button: MouseButton,
+	/// The pressed state of the button.
+	pub state: ButtonState,
 }
 
 /// A button on a mouse device.
@@ -31,14 +31,14 @@ pub struct MouseButtonInput {
 #[derive(Debug, Hash, PartialEq, Eq, Clone, Copy)]
 #[cfg_attr(feature = "serialize", derive(serde::Serialize, serde::Deserialize))]
 pub enum MouseButton {
-    /// The left mouse button.
-    Left,
-    /// The right mouse button.
-    Right,
-    /// The middle mouse button.
-    Middle,
-    /// Another mouse button with the associated number.
-    Other(u16),
+	/// The left mouse button.
+	Left,
+	/// The right mouse button.
+	Right,
+	/// The middle mouse button.
+	Middle,
+	/// Another mouse button with the associated number.
+	Other(u16),
 }
 
 /// A mouse motion event.
@@ -46,8 +46,8 @@ pub enum MouseButton {
 /// This event is the translated version of the `DeviceEvent::MouseMotion` from the `winit` crate.
 #[derive(Debug, Clone)]
 pub struct MouseMotion {
-    /// The delta of the previous and current mouse positions.
-    pub delta: Vec2,
+	/// The delta of the previous and current mouse positions.
+	pub delta: Vec2,
 }
 
 /// The scroll unit.
@@ -58,16 +58,16 @@ pub struct MouseMotion {
 /// to scroll.
 #[derive(Debug, Clone, Copy)]
 pub enum MouseScrollUnit {
-    /// The line scroll unit.
-    ///
-    /// The delta of the associated [`MouseWheel`](crate::mouse::MouseWheel) event corresponds
-    /// to the amount of lines or rows to scroll.
-    Line,
-    /// The pixel scroll unit.
-    ///
-    /// The delta of the associated [`MouseWheel`](crate::mouse::MouseWheel) event corresponds
-    /// to the amount of pixels to scroll.
-    Pixel,
+	/// The line scroll unit.
+	///
+	/// The delta of the associated [`MouseWheel`](crate::mouse::MouseWheel) event corresponds
+	/// to the amount of lines or rows to scroll.
+	Line,
+	/// The pixel scroll unit.
+	///
+	/// The delta of the associated [`MouseWheel`](crate::mouse::MouseWheel) event corresponds
+	/// to the amount of pixels to scroll.
+	Pixel,
 }
 
 /// A mouse wheel event.
@@ -75,12 +75,12 @@ pub enum MouseScrollUnit {
 /// This event is the translated version of the `WindowEvent::MouseWheel` from the `winit` crate.
 #[derive(Debug, Clone)]
 pub struct MouseWheel {
-    /// The mouse scroll unit.
-    pub unit: MouseScrollUnit,
-    /// The horizontal scroll value.
-    pub x: f32,
-    /// The vertical scroll value.
-    pub y: f32,
+	/// The mouse scroll unit.
+	pub unit: MouseScrollUnit,
+	/// The horizontal scroll value.
+	pub x: f32,
+	/// The vertical scroll value.
+	pub y: f32,
 }
 
 /// Updates the [`Input<MouseButton>`] resource with the latest [`MouseButtonInput`] events.
@@ -90,14 +90,14 @@ pub struct MouseWheel {
 /// The main difference between the [`MouseButtonInput`] event and the [`Input<MouseButton>`] resource is that
 /// the latter has convenient functions like [`Input::pressed`], [`Input::just_pressed`] and [`Input::just_released`].
 pub fn mouse_button_input_system(
-    mut mouse_button_input: ResMut<Input<MouseButton>>,
-    mut mouse_button_input_events: EventReader<MouseButtonInput>,
+	mut mouse_button_input: ResMut<Input<MouseButton>>,
+	mut mouse_button_input_events: EventReader<MouseButtonInput>,
 ) {
-    mouse_button_input.clear();
-    for event in mouse_button_input_events.iter() {
-        match event.state {
-            ButtonState::Pressed => mouse_button_input.press(event.button),
-            ButtonState::Released => mouse_button_input.release(event.button),
-        }
-    }
+	mouse_button_input.clear();
+	for event in mouse_button_input_events.iter() {
+		match event.state {
+			ButtonState::Pressed => mouse_button_input.press(event.button),
+			ButtonState::Released => mouse_button_input.release(event.button),
+		}
+	}
 }

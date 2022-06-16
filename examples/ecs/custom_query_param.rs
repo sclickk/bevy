@@ -13,19 +13,19 @@
 //! For more details on the `WorldQuery` derive macro, see the trait documentation.
 
 use bevy::{
-    ecs::{component::Component, query::WorldQuery},
-    prelude::*,
+	ecs::{component::Component, query::WorldQuery},
+	prelude::*,
 };
 use std::fmt::Debug;
 
 fn main() {
-    App::new()
-        .add_startup_system(spawn)
-        .add_system(print_components_read_only)
-        .add_system(print_components_iter_mut.after(print_components_read_only))
-        .add_system(print_components_iter.after(print_components_iter_mut))
-        .add_system(print_components_tuple.after(print_components_iter))
-        .run();
+	App::new()
+		.add_startup_system(spawn)
+		.add_system(print_components_read_only)
+		.add_system(print_components_iter_mut.after(print_components_read_only))
+		.add_system(print_components_iter.after(print_components_iter_mut))
+		.add_system(print_components_tuple.after(print_components_iter))
+		.run();
 }
 
 #[derive(Component, Debug)]
@@ -42,30 +42,30 @@ struct ComponentZ;
 #[derive(WorldQuery)]
 #[world_query(derive(Debug))]
 struct ReadOnlyCustomQuery<T: Component + Debug, P: Component + Debug> {
-    entity: Entity,
-    a: &'static ComponentA,
-    b: Option<&'static ComponentB>,
-    nested: NestedQuery,
-    optional_nested: Option<NestedQuery>,
-    optional_tuple: Option<(&'static ComponentB, &'static ComponentZ)>,
-    generic: GenericQuery<T, P>,
-    empty: EmptyQuery,
+	entity: Entity,
+	a: &'static ComponentA,
+	b: Option<&'static ComponentB>,
+	nested: NestedQuery,
+	optional_nested: Option<NestedQuery>,
+	optional_tuple: Option<(&'static ComponentB, &'static ComponentZ)>,
+	generic: GenericQuery<T, P>,
+	empty: EmptyQuery,
 }
 
 fn print_components_read_only(
-    query: Query<ReadOnlyCustomQuery<ComponentC, ComponentD>, QueryFilter<ComponentC, ComponentD>>,
+	query: Query<ReadOnlyCustomQuery<ComponentC, ComponentD>, QueryFilter<ComponentC, ComponentD>>,
 ) {
-    println!("Print components (read_only):");
-    for e in query.iter() {
-        println!("Entity: {:?}", e.entity);
-        println!("A: {:?}", e.a);
-        println!("B: {:?}", e.b);
-        println!("Nested: {:?}", e.nested);
-        println!("Optional nested: {:?}", e.optional_nested);
-        println!("Optional tuple: {:?}", e.optional_tuple);
-        println!("Generic: {:?}", e.generic);
-    }
-    println!();
+	println!("Print components (read_only):");
+	for e in query.iter() {
+		println!("Entity: {:?}", e.entity);
+		println!("A: {:?}", e.a);
+		println!("B: {:?}", e.b);
+		println!("Nested: {:?}", e.nested);
+		println!("Optional nested: {:?}", e.optional_nested);
+		println!("Optional tuple: {:?}", e.optional_tuple);
+		println!("Generic: {:?}", e.generic);
+	}
+	println!();
 }
 
 // If you are going to mutate the data in a query, you must mark it with the `mutable` attribute.
@@ -76,112 +76,112 @@ fn print_components_read_only(
 #[derive(WorldQuery)]
 #[world_query(mutable, derive(Debug))]
 struct CustomQuery<T: Component + Debug, P: Component + Debug> {
-    entity: Entity,
-    a: &'static mut ComponentA,
-    b: Option<&'static mut ComponentB>,
-    nested: NestedQuery,
-    optional_nested: Option<NestedQuery>,
-    optional_tuple: Option<(NestedQuery, &'static mut ComponentZ)>,
-    generic: GenericQuery<T, P>,
-    empty: EmptyQuery,
+	entity: Entity,
+	a: &'static mut ComponentA,
+	b: Option<&'static mut ComponentB>,
+	nested: NestedQuery,
+	optional_nested: Option<NestedQuery>,
+	optional_tuple: Option<(NestedQuery, &'static mut ComponentZ)>,
+	generic: GenericQuery<T, P>,
+	empty: EmptyQuery,
 }
 
 // This is a valid query as well, which would iterate over every entity.
 #[derive(WorldQuery)]
 #[world_query(derive(Debug))]
 struct EmptyQuery {
-    empty: (),
+	empty: (),
 }
 
 #[derive(WorldQuery)]
 #[world_query(derive(Debug))]
 struct NestedQuery {
-    c: &'static ComponentC,
-    d: Option<&'static ComponentD>,
+	c: &'static ComponentC,
+	d: Option<&'static ComponentD>,
 }
 
 #[derive(WorldQuery)]
 #[world_query(derive(Debug))]
 struct GenericQuery<T: Component, P: Component> {
-    generic: (&'static T, &'static P),
+	generic: (&'static T, &'static P),
 }
 
 #[derive(WorldQuery)]
 struct QueryFilter<T: Component, P: Component> {
-    _c: With<ComponentC>,
-    _d: With<ComponentD>,
-    _or: Or<(Added<ComponentC>, Changed<ComponentD>, Without<ComponentZ>)>,
-    _generic_tuple: (With<T>, With<P>),
+	_c: With<ComponentC>,
+	_d: With<ComponentD>,
+	_or: Or<(Added<ComponentC>, Changed<ComponentD>, Without<ComponentZ>)>,
+	_generic_tuple: (With<T>, With<P>),
 }
 
 fn spawn(mut commands: Commands) {
-    commands
-        .spawn()
-        .insert(ComponentA)
-        .insert(ComponentB)
-        .insert(ComponentC)
-        .insert(ComponentD);
+	commands
+		.spawn()
+		.insert(ComponentA)
+		.insert(ComponentB)
+		.insert(ComponentC)
+		.insert(ComponentD);
 }
 
 fn print_components_iter_mut(
-    mut query: Query<CustomQuery<ComponentC, ComponentD>, QueryFilter<ComponentC, ComponentD>>,
+	mut query: Query<CustomQuery<ComponentC, ComponentD>, QueryFilter<ComponentC, ComponentD>>,
 ) {
-    println!("Print components (iter_mut):");
-    for e in query.iter_mut() {
-        // Re-declaring the variable to illustrate the type of the actual iterator item.
-        let e: CustomQueryItem<'_, _, _> = e;
-        println!("Entity: {:?}", e.entity);
-        println!("A: {:?}", e.a);
-        println!("B: {:?}", e.b);
-        println!("Optional nested: {:?}", e.optional_nested);
-        println!("Optional tuple: {:?}", e.optional_tuple);
-        println!("Nested: {:?}", e.nested);
-        println!("Generic: {:?}", e.generic);
-    }
-    println!();
+	println!("Print components (iter_mut):");
+	for e in query.iter_mut() {
+		// Re-declaring the variable to illustrate the type of the actual iterator item.
+		let e: CustomQueryItem<'_, _, _> = e;
+		println!("Entity: {:?}", e.entity);
+		println!("A: {:?}", e.a);
+		println!("B: {:?}", e.b);
+		println!("Optional nested: {:?}", e.optional_nested);
+		println!("Optional tuple: {:?}", e.optional_tuple);
+		println!("Nested: {:?}", e.nested);
+		println!("Generic: {:?}", e.generic);
+	}
+	println!();
 }
 
 fn print_components_iter(
-    query: Query<CustomQuery<ComponentC, ComponentD>, QueryFilter<ComponentC, ComponentD>>,
+	query: Query<CustomQuery<ComponentC, ComponentD>, QueryFilter<ComponentC, ComponentD>>,
 ) {
-    println!("Print components (iter):");
-    for e in query.iter() {
-        // Re-declaring the variable to illustrate the type of the actual iterator item.
-        let e: CustomQueryReadOnlyItem<'_, _, _> = e;
-        println!("Entity: {:?}", e.entity);
-        println!("A: {:?}", e.a);
-        println!("B: {:?}", e.b);
-        println!("Nested: {:?}", e.nested);
-        println!("Generic: {:?}", e.generic);
-    }
-    println!();
+	println!("Print components (iter):");
+	for e in query.iter() {
+		// Re-declaring the variable to illustrate the type of the actual iterator item.
+		let e: CustomQueryReadOnlyItem<'_, _, _> = e;
+		println!("Entity: {:?}", e.entity);
+		println!("A: {:?}", e.a);
+		println!("B: {:?}", e.b);
+		println!("Nested: {:?}", e.nested);
+		println!("Generic: {:?}", e.generic);
+	}
+	println!();
 }
 
 type NestedTupleQuery<'w> = (&'w ComponentC, &'w ComponentD);
 type GenericTupleQuery<'w, T, P> = (&'w T, &'w P);
 
 fn print_components_tuple(
-    query: Query<
-        (
-            Entity,
-            &ComponentA,
-            &ComponentB,
-            NestedTupleQuery,
-            GenericTupleQuery<ComponentC, ComponentD>,
-        ),
-        (
-            With<ComponentC>,
-            With<ComponentD>,
-            Or<(Added<ComponentC>, Changed<ComponentD>, Without<ComponentZ>)>,
-        ),
-    >,
+	query: Query<
+		(
+			Entity,
+			&ComponentA,
+			&ComponentB,
+			NestedTupleQuery,
+			GenericTupleQuery<ComponentC, ComponentD>,
+		),
+		(
+			With<ComponentC>,
+			With<ComponentD>,
+			Or<(Added<ComponentC>, Changed<ComponentD>, Without<ComponentZ>)>,
+		),
+	>,
 ) {
-    println!("Print components (tuple):");
-    for (entity, a, b, nested, (generic_c, generic_d)) in query.iter() {
-        println!("Entity: {:?}", entity);
-        println!("A: {:?}", a);
-        println!("B: {:?}", b);
-        println!("Nested: {:?} {:?}", nested.0, nested.1);
-        println!("Generic: {:?} {:?}", generic_c, generic_d);
-    }
+	println!("Print components (tuple):");
+	for (entity, a, b, nested, (generic_c, generic_d)) in query.iter() {
+		println!("Entity: {:?}", entity);
+		println!("A: {:?}", a);
+		println!("B: {:?}", b);
+		println!("Nested: {:?} {:?}", nested.0, nested.1);
+		println!("Generic: {:?} {:?}", generic_c, generic_d);
+	}
 }

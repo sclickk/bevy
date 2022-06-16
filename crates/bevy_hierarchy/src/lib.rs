@@ -18,8 +18,8 @@ pub use systems::*;
 
 #[doc(hidden)]
 pub mod prelude {
-    #[doc(hidden)]
-    pub use crate::{child_builder::*, components::*, hierarchy::*, HierarchyPlugin};
+	#[doc(hidden)]
+	pub use crate::{child_builder::*, components::*, hierarchy::*, HierarchyPlugin};
 }
 
 use bevy_app::prelude::*;
@@ -32,22 +32,22 @@ pub struct HierarchyPlugin;
 /// Label enum for the systems relating to hierarchy upkeep
 #[derive(Debug, Hash, PartialEq, Eq, Clone, SystemLabel)]
 pub enum HierarchySystem {
-    /// Updates [`Parent`] when changes in the hierarchy occur
-    ParentUpdate,
+	/// Updates [`Parent`] when changes in the hierarchy occur
+	ParentUpdate,
 }
 
 impl Plugin for HierarchyPlugin {
-    fn build(&self, app: &mut App) {
-        app.register_type::<Children>()
-            .register_type::<Parent>()
-            .register_type::<PreviousParent>()
-            .add_startup_system_to_stage(
-                StartupStage::PostStartup,
-                parent_update_system.label(HierarchySystem::ParentUpdate),
-            )
-            .add_system_to_stage(
-                CoreStage::PostUpdate,
-                parent_update_system.label(HierarchySystem::ParentUpdate),
-            );
-    }
+	fn build(&self, app: &mut App) {
+		app.register_type::<Children>()
+			.register_type::<Parent>()
+			.register_type::<PreviousParent>()
+			.add_startup_system_to_stage(
+				StartupStage::PostStartup,
+				parent_update_system.label(HierarchySystem::ParentUpdate),
+			)
+			.add_system_to_stage(
+				CoreStage::PostUpdate,
+				parent_update_system.label(HierarchySystem::ParentUpdate),
+			);
+	}
 }

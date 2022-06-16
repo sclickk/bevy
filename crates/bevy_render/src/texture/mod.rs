@@ -25,9 +25,9 @@ pub use image_texture_loader::*;
 pub use texture_cache::*;
 
 use crate::{
-    render_asset::{PrepareAssetLabel, RenderAssetPlugin},
-    renderer::RenderDevice,
-    RenderApp, RenderStage,
+	render_asset::{PrepareAssetLabel, RenderAssetPlugin},
+	renderer::RenderDevice,
+	RenderApp, RenderStage,
 };
 use bevy_app::{App, Plugin};
 use bevy_asset::{AddAsset, Assets};
@@ -37,90 +37,90 @@ use bevy_asset::{AddAsset, Assets};
 pub struct ImagePlugin;
 
 impl Plugin for ImagePlugin {
-    fn build(&self, app: &mut App) {
-        #[cfg(any(
-            feature = "png",
-            feature = "dds",
-            feature = "tga",
-            feature = "jpeg",
-            feature = "bmp",
-            feature = "basis-universal",
-            feature = "ktx2",
-        ))]
-        {
-            app.init_asset_loader::<ImageTextureLoader>();
-        }
+	fn build(&self, app: &mut App) {
+		#[cfg(any(
+			feature = "png",
+			feature = "dds",
+			feature = "tga",
+			feature = "jpeg",
+			feature = "bmp",
+			feature = "basis-universal",
+			feature = "ktx2",
+		))]
+		{
+			app.init_asset_loader::<ImageTextureLoader>();
+		}
 
-        #[cfg(feature = "hdr")]
-        {
-            app.init_asset_loader::<HdrTextureLoader>();
-        }
+		#[cfg(feature = "hdr")]
+		{
+			app.init_asset_loader::<HdrTextureLoader>();
+		}
 
-        app.add_plugin(RenderAssetPlugin::<Image>::with_prepare_asset_label(
-            PrepareAssetLabel::PreAssetPrepare,
-        ))
-        .add_asset::<Image>();
-        app.world
-            .resource_mut::<Assets<Image>>()
-            .set_untracked(DEFAULT_IMAGE_HANDLE, Image::default());
+		app.add_plugin(RenderAssetPlugin::<Image>::with_prepare_asset_label(
+			PrepareAssetLabel::PreAssetPrepare,
+		))
+		.add_asset::<Image>();
+		app.world
+			.resource_mut::<Assets<Image>>()
+			.set_untracked(DEFAULT_IMAGE_HANDLE, Image::default());
 
-        let default_sampler = app
-            .world
-            .get_resource_or_insert_with(ImageSettings::default)
-            .default_sampler
-            .clone();
-        if let Ok(render_app) = app.get_sub_app_mut(RenderApp) {
-            let default_sampler = {
-                let device = render_app.world.resource::<RenderDevice>();
-                device.create_sampler(&default_sampler)
-            };
-            render_app
-                .insert_resource(DefaultImageSampler(default_sampler))
-                .init_resource::<TextureCache>()
-                .add_system_to_stage(RenderStage::Cleanup, update_texture_cache_system);
-        }
-    }
+		let default_sampler = app
+			.world
+			.get_resource_or_insert_with(ImageSettings::default)
+			.default_sampler
+			.clone();
+		if let Ok(render_app) = app.get_sub_app_mut(RenderApp) {
+			let default_sampler = {
+				let device = render_app.world.resource::<RenderDevice>();
+				device.create_sampler(&default_sampler)
+			};
+			render_app
+				.insert_resource(DefaultImageSampler(default_sampler))
+				.init_resource::<TextureCache>()
+				.add_system_to_stage(RenderStage::Cleanup, update_texture_cache_system);
+		}
+	}
 }
 
 /// [`ImagePlugin`] settings.
 pub struct ImageSettings {
-    /// The default image sampler to use when [`ImageSampler`] is set to `Default`.
-    pub default_sampler: wgpu::SamplerDescriptor<'static>,
+	/// The default image sampler to use when [`ImageSampler`] is set to `Default`.
+	pub default_sampler: wgpu::SamplerDescriptor<'static>,
 }
 
 impl Default for ImageSettings {
-    fn default() -> Self {
-        ImageSettings::default_linear()
-    }
+	fn default() -> Self {
+		ImageSettings::default_linear()
+	}
 }
 
 impl ImageSettings {
-    /// Creates image settings with default linear sampling.
-    pub fn default_linear() -> ImageSettings {
-        ImageSettings {
-            default_sampler: ImageSampler::linear_descriptor(),
-        }
-    }
+	/// Creates image settings with default linear sampling.
+	pub fn default_linear() -> ImageSettings {
+		ImageSettings {
+			default_sampler: ImageSampler::linear_descriptor(),
+		}
+	}
 
-    /// Creates image settings with default nearest sampling.
-    pub fn default_nearest() -> ImageSettings {
-        ImageSettings {
-            default_sampler: ImageSampler::nearest_descriptor(),
-        }
-    }
+	/// Creates image settings with default nearest sampling.
+	pub fn default_nearest() -> ImageSettings {
+		ImageSettings {
+			default_sampler: ImageSampler::nearest_descriptor(),
+		}
+	}
 }
 
 pub trait BevyDefault {
-    fn bevy_default() -> Self;
+	fn bevy_default() -> Self;
 }
 
 impl BevyDefault for wgpu::TextureFormat {
-    fn bevy_default() -> Self {
-        if cfg!(target_os = "android") || cfg!(target_arch = "wasm32") {
-            // Bgra8UnormSrgb texture missing on some Android devices
-            wgpu::TextureFormat::Rgba8UnormSrgb
-        } else {
-            wgpu::TextureFormat::Bgra8UnormSrgb
-        }
-    }
+	fn bevy_default() -> Self {
+		if cfg!(target_os = "android") || cfg!(target_arch = "wasm32") {
+			// Bgra8UnormSrgb texture missing on some Android devices
+			wgpu::TextureFormat::Rgba8UnormSrgb
+		} else {
+			wgpu::TextureFormat::Bgra8UnormSrgb
+		}
+	}
 }

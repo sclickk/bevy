@@ -9,35 +9,35 @@
 use bevy::{app::ScheduleRunnerSettings, prelude::*, utils::Duration};
 
 fn main() {
-    // this app runs once
-    App::new()
-        .insert_resource(ScheduleRunnerSettings::run_once())
-        .add_plugins(MinimalPlugins)
-        .add_system(hello_world_system)
-        .run();
+	// this app runs once
+	App::new()
+		.insert_resource(ScheduleRunnerSettings::run_once())
+		.add_plugins(MinimalPlugins)
+		.add_system(hello_world_system)
+		.run();
 
-    // this app loops forever at 60 fps
-    App::new()
-        .insert_resource(ScheduleRunnerSettings::run_loop(Duration::from_secs_f64(
-            1.0 / 60.0,
-        )))
-        .add_plugins(MinimalPlugins)
-        .add_system(counter)
-        .run();
+	// this app loops forever at 60 fps
+	App::new()
+		.insert_resource(ScheduleRunnerSettings::run_loop(Duration::from_secs_f64(
+			1.0 / 60.0,
+		)))
+		.add_plugins(MinimalPlugins)
+		.add_system(counter)
+		.run();
 }
 
 fn hello_world_system() {
-    println!("hello world");
+	println!("hello world");
 }
 
 fn counter(mut state: Local<CounterState>) {
-    if state.count % 60 == 0 {
-        println!("{}", state.count);
-    }
-    state.count += 1;
+	if state.count % 60 == 0 {
+		println!("{}", state.count);
+	}
+	state.count += 1;
 }
 
 #[derive(Default)]
 struct CounterState {
-    count: u32,
+	count: u32,
 }

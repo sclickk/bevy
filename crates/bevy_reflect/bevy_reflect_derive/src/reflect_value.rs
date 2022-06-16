@@ -19,36 +19,36 @@ use syn::{parenthesized, Generics};
 /// foo<T1, T2> where T1: Bar (TraitA, TraitB)
 /// ```
 pub(crate) struct ReflectValueDef {
-    pub type_name: Ident,
-    pub generics: Generics,
-    pub traits: Option<ReflectTraits>,
+	pub type_name: Ident,
+	pub generics: Generics,
+	pub traits: Option<ReflectTraits>,
 }
 
 impl Parse for ReflectValueDef {
-    fn parse(input: ParseStream) -> syn::Result<Self> {
-        let type_ident = input.parse::<Ident>()?;
-        let generics = input.parse::<Generics>()?;
-        let mut lookahead = input.lookahead1();
-        let mut where_clause = None;
-        if lookahead.peek(Where) {
-            where_clause = Some(input.parse()?);
-            lookahead = input.lookahead1();
-        }
+	fn parse(input: ParseStream) -> syn::Result<Self> {
+		let type_ident = input.parse::<Ident>()?;
+		let generics = input.parse::<Generics>()?;
+		let mut lookahead = input.lookahead1();
+		let mut where_clause = None;
+		if lookahead.peek(Where) {
+			where_clause = Some(input.parse()?);
+			lookahead = input.lookahead1();
+		}
 
-        let mut traits = None;
-        if lookahead.peek(Paren) {
-            let content;
-            parenthesized!(content in input);
-            traits = Some(content.parse::<ReflectTraits>()?);
-        }
+		let mut traits = None;
+		if lookahead.peek(Paren) {
+			let content;
+			parenthesized!(content in input);
+			traits = Some(content.parse::<ReflectTraits>()?);
+		}
 
-        Ok(ReflectValueDef {
-            type_name: type_ident,
-            generics: Generics {
-                where_clause,
-                ..generics
-            },
-            traits,
-        })
-    }
+		Ok(ReflectValueDef {
+			type_name: type_ident,
+			generics: Generics {
+				where_clause,
+				..generics
+			},
+			traits,
+		})
+	}
 }

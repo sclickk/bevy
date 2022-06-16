@@ -43,28 +43,28 @@ pub const MAX_CHANGE_AGE: u32 = u32::MAX - (2 * CHECK_TICK_THRESHOLD - 1);
 /// ```
 ///
 pub trait DetectChanges {
-    /// Returns `true` if this value was added after the system last ran.
-    fn is_added(&self) -> bool;
+	/// Returns `true` if this value was added after the system last ran.
+	fn is_added(&self) -> bool;
 
-    /// Returns `true` if this value was added or mutably dereferenced after the system last ran.
-    fn is_changed(&self) -> bool;
+	/// Returns `true` if this value was added or mutably dereferenced after the system last ran.
+	fn is_changed(&self) -> bool;
 
-    /// Flags this value as having been changed.
-    ///
-    /// Mutably accessing this smart pointer will automatically flag this value as having been changed.
-    /// However, mutation through interior mutability requires manual reporting.
-    ///
-    /// **Note**: This operation cannot be undone.
-    fn set_changed(&mut self);
+	/// Flags this value as having been changed.
+	///
+	/// Mutably accessing this smart pointer will automatically flag this value as having been changed.
+	/// However, mutation through interior mutability requires manual reporting.
+	///
+	/// **Note**: This operation cannot be undone.
+	fn set_changed(&mut self);
 
-    /// Returns the change tick recording the previous time this component (or resource) was changed.
-    ///
-    /// Note that components and resources are also marked as changed upon insertion.
-    ///
-    /// For comparison, the previous change tick of a system can be read using the
-    /// [`SystemChangeTick`](crate::system::SystemChangeTick)
-    /// [`SystemParam`](crate::system::SystemParam).
-    fn last_changed(&self) -> u32;
+	/// Returns the change tick recording the previous time this component (or resource) was changed.
+	///
+	/// Note that components and resources are also marked as changed upon insertion.
+	///
+	/// For comparison, the previous change tick of a system can be read using the
+	/// [`SystemChangeTick`](crate::system::SystemChangeTick)
+	/// [`SystemParam`](crate::system::SystemParam).
+	fn last_changed(&self) -> u32;
 }
 
 macro_rules! change_detection_impl {
@@ -160,9 +160,9 @@ macro_rules! impl_debug {
 }
 
 pub(crate) struct Ticks<'a> {
-    pub(crate) component_ticks: &'a mut ComponentTicks,
-    pub(crate) last_change_tick: u32,
-    pub(crate) change_tick: u32,
+	pub(crate) component_ticks: &'a mut ComponentTicks,
+	pub(crate) last_change_tick: u32,
+	pub(crate) change_tick: u32,
 }
 
 /// Unique mutable borrow of a resource.
@@ -177,8 +177,8 @@ pub(crate) struct Ticks<'a> {
 ///
 /// Use `Option<ResMut<T>>` instead if the resource might not always exist.
 pub struct ResMut<'a, T: Resource> {
-    pub(crate) value: &'a mut T,
-    pub(crate) ticks: Ticks<'a>,
+	pub(crate) value: &'a mut T,
+	pub(crate) ticks: Ticks<'a>,
 }
 
 change_detection_impl!(ResMut<'a, T>, T, Resource);
@@ -198,8 +198,8 @@ impl_debug!(ResMut<'a, T>, Resource);
 ///
 /// Use `Option<NonSendMut<T>>` instead if the resource might not always exist.
 pub struct NonSendMut<'a, T: 'static> {
-    pub(crate) value: &'a mut T,
-    pub(crate) ticks: Ticks<'a>,
+	pub(crate) value: &'a mut T,
+	pub(crate) ticks: Ticks<'a>,
 }
 
 change_detection_impl!(NonSendMut<'a, T>, T,);
@@ -208,8 +208,8 @@ impl_debug!(NonSendMut<'a, T>,);
 
 /// Unique mutable borrow of an entity's component
 pub struct Mut<'a, T> {
-    pub(crate) value: &'a mut T,
-    pub(crate) ticks: Ticks<'a>,
+	pub(crate) value: &'a mut T,
+	pub(crate) ticks: Ticks<'a>,
 }
 
 change_detection_impl!(Mut<'a, T>, T,);
@@ -219,8 +219,8 @@ impl_debug!(Mut<'a, T>,);
 /// Unique mutable borrow of a Reflected component
 #[cfg(feature = "bevy_reflect")]
 pub struct ReflectMut<'a> {
-    pub(crate) value: &'a mut dyn Reflect,
-    pub(crate) ticks: Ticks<'a>,
+	pub(crate) value: &'a mut dyn Reflect,
+	pub(crate) ticks: Ticks<'a>,
 }
 
 #[cfg(feature = "bevy_reflect")]
@@ -237,149 +237,149 @@ impl_into_inner!(ReflectMut<'a>, dyn Reflect,);
 /// [`Mut`], but in situations where the types are not known at compile time
 /// or are defined outside of rust this can be used.
 pub struct MutUntyped<'a> {
-    pub(crate) value: PtrMut<'a>,
-    pub(crate) ticks: Ticks<'a>,
+	pub(crate) value: PtrMut<'a>,
+	pub(crate) ticks: Ticks<'a>,
 }
 
 impl<'a> MutUntyped<'a> {
-    /// Returns the pointer to the value, without marking it as changed.
-    ///
-    /// In order to mark the value as changed, you need to call [`set_changed`](DetectChanges::set_changed) manually.
-    pub fn into_inner(self) -> PtrMut<'a> {
-        self.value
-    }
+	/// Returns the pointer to the value, without marking it as changed.
+	///
+	/// In order to mark the value as changed, you need to call [`set_changed`](DetectChanges::set_changed) manually.
+	pub fn into_inner(self) -> PtrMut<'a> {
+		self.value
+	}
 }
 
 impl DetectChanges for MutUntyped<'_> {
-    fn is_added(&self) -> bool {
-        self.ticks
-            .component_ticks
-            .is_added(self.ticks.last_change_tick, self.ticks.change_tick)
-    }
+	fn is_added(&self) -> bool {
+		self.ticks
+			.component_ticks
+			.is_added(self.ticks.last_change_tick, self.ticks.change_tick)
+	}
 
-    fn is_changed(&self) -> bool {
-        self.ticks
-            .component_ticks
-            .is_changed(self.ticks.last_change_tick, self.ticks.change_tick)
-    }
+	fn is_changed(&self) -> bool {
+		self.ticks
+			.component_ticks
+			.is_changed(self.ticks.last_change_tick, self.ticks.change_tick)
+	}
 
-    fn set_changed(&mut self) {
-        self.ticks
-            .component_ticks
-            .set_changed(self.ticks.change_tick);
-    }
+	fn set_changed(&mut self) {
+		self.ticks
+			.component_ticks
+			.set_changed(self.ticks.change_tick);
+	}
 
-    fn last_changed(&self) -> u32 {
-        self.ticks.last_change_tick
-    }
+	fn last_changed(&self) -> u32 {
+		self.ticks.last_change_tick
+	}
 }
 
 impl std::fmt::Debug for MutUntyped<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_tuple("MutUntyped")
-            .field(&self.value.as_ptr())
-            .finish()
-    }
+	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+		f.debug_tuple("MutUntyped")
+			.field(&self.value.as_ptr())
+			.finish()
+	}
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::{
-        self as bevy_ecs,
-        change_detection::{CHECK_TICK_THRESHOLD, MAX_CHANGE_AGE},
-        component::Component,
-        query::ChangeTrackers,
-        system::{IntoSystem, Query, System},
-        world::World,
-    };
+	use crate::{
+		self as bevy_ecs,
+		change_detection::{CHECK_TICK_THRESHOLD, MAX_CHANGE_AGE},
+		component::Component,
+		query::ChangeTrackers,
+		system::{IntoSystem, Query, System},
+		world::World,
+	};
 
-    #[derive(Component)]
-    struct C;
+	#[derive(Component)]
+	struct C;
 
-    #[test]
-    fn change_expiration() {
-        fn change_detected(query: Query<ChangeTrackers<C>>) -> bool {
-            query.single().is_changed()
-        }
+	#[test]
+	fn change_expiration() {
+		fn change_detected(query: Query<ChangeTrackers<C>>) -> bool {
+			query.single().is_changed()
+		}
 
-        fn change_expired(query: Query<ChangeTrackers<C>>) -> bool {
-            query.single().is_changed()
-        }
+		fn change_expired(query: Query<ChangeTrackers<C>>) -> bool {
+			query.single().is_changed()
+		}
 
-        let mut world = World::new();
+		let mut world = World::new();
 
-        // component added: 1, changed: 1
-        world.spawn().insert(C);
+		// component added: 1, changed: 1
+		world.spawn().insert(C);
 
-        let mut change_detected_system = IntoSystem::into_system(change_detected);
-        let mut change_expired_system = IntoSystem::into_system(change_expired);
-        change_detected_system.initialize(&mut world);
-        change_expired_system.initialize(&mut world);
+		let mut change_detected_system = IntoSystem::into_system(change_detected);
+		let mut change_expired_system = IntoSystem::into_system(change_expired);
+		change_detected_system.initialize(&mut world);
+		change_expired_system.initialize(&mut world);
 
-        // world: 1, system last ran: 0, component changed: 1
-        // The spawn will be detected since it happened after the system "last ran".
-        assert!(change_detected_system.run((), &mut world));
+		// world: 1, system last ran: 0, component changed: 1
+		// The spawn will be detected since it happened after the system "last ran".
+		assert!(change_detected_system.run((), &mut world));
 
-        // world: 1 + MAX_CHANGE_AGE
-        let change_tick = world.change_tick.get_mut();
-        *change_tick = change_tick.wrapping_add(MAX_CHANGE_AGE);
+		// world: 1 + MAX_CHANGE_AGE
+		let change_tick = world.change_tick.get_mut();
+		*change_tick = change_tick.wrapping_add(MAX_CHANGE_AGE);
 
-        // Both the system and component appeared `MAX_CHANGE_AGE` ticks ago.
-        // Since we clamp things to `MAX_CHANGE_AGE` for determinism,
-        // `ComponentTicks::is_changed` will now see `MAX_CHANGE_AGE > MAX_CHANGE_AGE`
-        // and return `false`.
-        assert!(!change_expired_system.run((), &mut world));
-    }
+		// Both the system and component appeared `MAX_CHANGE_AGE` ticks ago.
+		// Since we clamp things to `MAX_CHANGE_AGE` for determinism,
+		// `ComponentTicks::is_changed` will now see `MAX_CHANGE_AGE > MAX_CHANGE_AGE`
+		// and return `false`.
+		assert!(!change_expired_system.run((), &mut world));
+	}
 
-    #[test]
-    fn change_tick_wraparound() {
-        fn change_detected(query: Query<ChangeTrackers<C>>) -> bool {
-            query.single().is_changed()
-        }
+	#[test]
+	fn change_tick_wraparound() {
+		fn change_detected(query: Query<ChangeTrackers<C>>) -> bool {
+			query.single().is_changed()
+		}
 
-        let mut world = World::new();
-        world.last_change_tick = u32::MAX;
-        *world.change_tick.get_mut() = 0;
+		let mut world = World::new();
+		world.last_change_tick = u32::MAX;
+		*world.change_tick.get_mut() = 0;
 
-        // component added: 0, changed: 0
-        world.spawn().insert(C);
+		// component added: 0, changed: 0
+		world.spawn().insert(C);
 
-        // system last ran: u32::MAX
-        let mut change_detected_system = IntoSystem::into_system(change_detected);
-        change_detected_system.initialize(&mut world);
+		// system last ran: u32::MAX
+		let mut change_detected_system = IntoSystem::into_system(change_detected);
+		change_detected_system.initialize(&mut world);
 
-        // Since the world is always ahead, as long as changes can't get older than `u32::MAX` (which we ensure),
-        // the wrapping difference will always be positive, so wraparound doesn't matter.
-        assert!(change_detected_system.run((), &mut world));
-    }
+		// Since the world is always ahead, as long as changes can't get older than `u32::MAX` (which we ensure),
+		// the wrapping difference will always be positive, so wraparound doesn't matter.
+		assert!(change_detected_system.run((), &mut world));
+	}
 
-    #[test]
-    fn change_tick_scan() {
-        let mut world = World::new();
+	#[test]
+	fn change_tick_scan() {
+		let mut world = World::new();
 
-        // component added: 1, changed: 1
-        world.spawn().insert(C);
+		// component added: 1, changed: 1
+		world.spawn().insert(C);
 
-        // a bunch of stuff happens, the component is now older than `MAX_CHANGE_AGE`
-        *world.change_tick.get_mut() += MAX_CHANGE_AGE + CHECK_TICK_THRESHOLD;
-        let change_tick = world.change_tick();
+		// a bunch of stuff happens, the component is now older than `MAX_CHANGE_AGE`
+		*world.change_tick.get_mut() += MAX_CHANGE_AGE + CHECK_TICK_THRESHOLD;
+		let change_tick = world.change_tick();
 
-        let mut query = world.query::<ChangeTrackers<C>>();
-        for tracker in query.iter(&world) {
-            let ticks_since_insert = change_tick.wrapping_sub(tracker.component_ticks.added);
-            let ticks_since_change = change_tick.wrapping_sub(tracker.component_ticks.changed);
-            assert!(ticks_since_insert > MAX_CHANGE_AGE);
-            assert!(ticks_since_change > MAX_CHANGE_AGE);
-        }
+		let mut query = world.query::<ChangeTrackers<C>>();
+		for tracker in query.iter(&world) {
+			let ticks_since_insert = change_tick.wrapping_sub(tracker.component_ticks.added);
+			let ticks_since_change = change_tick.wrapping_sub(tracker.component_ticks.changed);
+			assert!(ticks_since_insert > MAX_CHANGE_AGE);
+			assert!(ticks_since_change > MAX_CHANGE_AGE);
+		}
 
-        // scan change ticks and clamp those at risk of overflow
-        world.check_change_ticks();
+		// scan change ticks and clamp those at risk of overflow
+		world.check_change_ticks();
 
-        for tracker in query.iter(&world) {
-            let ticks_since_insert = change_tick.wrapping_sub(tracker.component_ticks.added);
-            let ticks_since_change = change_tick.wrapping_sub(tracker.component_ticks.changed);
-            assert!(ticks_since_insert == MAX_CHANGE_AGE);
-            assert!(ticks_since_change == MAX_CHANGE_AGE);
-        }
-    }
+		for tracker in query.iter(&world) {
+			let ticks_since_insert = change_tick.wrapping_sub(tracker.component_ticks.added);
+			let ticks_since_change = change_tick.wrapping_sub(tracker.component_ticks.changed);
+			assert!(ticks_since_insert == MAX_CHANGE_AGE);
+			assert!(ticks_since_change == MAX_CHANGE_AGE);
+		}
+	}
 }

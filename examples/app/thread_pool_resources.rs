@@ -4,8 +4,8 @@
 use bevy::prelude::*;
 
 fn main() {
-    App::new()
-        .insert_resource(DefaultTaskPoolOptions::with_num_threads(4))
-        .add_plugins(DefaultPlugins)
-        .run();
+	App::new()
+		.insert_resource(DefaultTaskPoolOptions::with_num_threads(4))
+		.add_plugins(DefaultPlugins)
+		.run();
 }

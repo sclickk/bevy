@@ -12,144 +12,144 @@ use bevy_utils::HashMap;
 #[derive(Debug, Clone, TypeUuid)]
 #[uuid = "7233c597-ccfa-411f-bd59-9af349432ada"]
 pub struct TextureAtlas {
-    /// The handle to the texture in which the sprites are stored
-    pub texture: Handle<Image>,
-    // TODO: add support to Uniforms derive to write dimensions and sprites to the same buffer
-    pub size: Vec2,
-    /// The specific areas of the atlas where each texture can be found
-    pub textures: Vec<Rect>,
-    pub texture_handles: Option<HashMap<Handle<Image>, usize>>,
+	/// The handle to the texture in which the sprites are stored
+	pub texture: Handle<Image>,
+	// TODO: add support to Uniforms derive to write dimensions and sprites to the same buffer
+	pub size: Vec2,
+	/// The specific areas of the atlas where each texture can be found
+	pub textures: Vec<Rect>,
+	pub texture_handles: Option<HashMap<Handle<Image>, usize>>,
 }
 
 #[derive(Component, Debug, Clone, Reflect)]
 pub struct TextureAtlasSprite {
-    pub color: Color,
-    pub index: usize,
-    pub flip_x: bool,
-    pub flip_y: bool,
-    /// An optional custom size for the sprite that will be used when rendering, instead of the size
-    /// of the sprite's image in the atlas
-    pub custom_size: Option<Vec2>,
-    pub anchor: Anchor,
+	pub color: Color,
+	pub index: usize,
+	pub flip_x: bool,
+	pub flip_y: bool,
+	/// An optional custom size for the sprite that will be used when rendering, instead of the size
+	/// of the sprite's image in the atlas
+	pub custom_size: Option<Vec2>,
+	pub anchor: Anchor,
 }
 
 impl Default for TextureAtlasSprite {
-    fn default() -> Self {
-        Self {
-            index: 0,
-            color: Color::WHITE,
-            flip_x: false,
-            flip_y: false,
-            custom_size: None,
-            anchor: Anchor::default(),
-        }
-    }
+	fn default() -> Self {
+		Self {
+			index: 0,
+			color: Color::WHITE,
+			flip_x: false,
+			flip_y: false,
+			custom_size: None,
+			anchor: Anchor::default(),
+		}
+	}
 }
 
 impl TextureAtlasSprite {
-    pub fn new(index: usize) -> TextureAtlasSprite {
-        Self {
-            index,
-            ..Default::default()
-        }
-    }
+	pub fn new(index: usize) -> TextureAtlasSprite {
+		Self {
+			index,
+			..Default::default()
+		}
+	}
 }
 
 impl TextureAtlas {
-    /// Create a new `TextureAtlas` that has a texture, but does not have
-    /// any individual sprites specified
-    pub fn new_empty(texture: Handle<Image>, dimensions: Vec2) -> Self {
-        Self {
-            texture,
-            size: dimensions,
-            texture_handles: None,
-            textures: Vec::new(),
-        }
-    }
+	/// Create a new `TextureAtlas` that has a texture, but does not have
+	/// any individual sprites specified
+	pub fn new_empty(texture: Handle<Image>, dimensions: Vec2) -> Self {
+		Self {
+			texture,
+			size: dimensions,
+			texture_handles: None,
+			textures: Vec::new(),
+		}
+	}
 
-    /// Generate a `TextureAtlas` by splitting a texture into a grid where each
-    /// `tile_size` by `tile_size` grid-cell is one of the textures in the atlas
-    pub fn from_grid(
-        texture: Handle<Image>,
-        tile_size: Vec2,
-        columns: usize,
-        rows: usize,
-    ) -> TextureAtlas {
-        Self::from_grid_with_padding(texture, tile_size, columns, rows, Vec2::ZERO, Vec2::ZERO)
-    }
+	/// Generate a `TextureAtlas` by splitting a texture into a grid where each
+	/// `tile_size` by `tile_size` grid-cell is one of the textures in the atlas
+	pub fn from_grid(
+		texture: Handle<Image>,
+		tile_size: Vec2,
+		columns: usize,
+		rows: usize,
+	) -> TextureAtlas {
+		Self::from_grid_with_padding(texture, tile_size, columns, rows, Vec2::ZERO, Vec2::ZERO)
+	}
 
-    /// Generate a `TextureAtlas` by splitting a texture into a grid where each
-    /// `tile_size` by `tile_size` grid-cell is one of the textures in the
-    /// atlas. Grid cells are separated by some `padding`, and the grid starts
-    /// at `offset` pixels from the top left corner.
-    pub fn from_grid_with_padding(
-        texture: Handle<Image>,
-        tile_size: Vec2,
-        columns: usize,
-        rows: usize,
-        padding: Vec2,
-        offset: Vec2,
-    ) -> TextureAtlas {
-        let mut sprites = Vec::new();
-        let mut x_padding = 0.0;
-        let mut y_padding = 0.0;
+	/// Generate a `TextureAtlas` by splitting a texture into a grid where each
+	/// `tile_size` by `tile_size` grid-cell is one of the textures in the
+	/// atlas. Grid cells are separated by some `padding`, and the grid starts
+	/// at `offset` pixels from the top left corner.
+	pub fn from_grid_with_padding(
+		texture: Handle<Image>,
+		tile_size: Vec2,
+		columns: usize,
+		rows: usize,
+		padding: Vec2,
+		offset: Vec2,
+	) -> TextureAtlas {
+		let mut sprites = Vec::new();
+		let mut x_padding = 0.0;
+		let mut y_padding = 0.0;
 
-        for y in 0..rows {
-            if y > 0 {
-                y_padding = padding.y;
-            }
-            for x in 0..columns {
-                if x > 0 {
-                    x_padding = padding.x;
-                }
+		for y in 0..rows {
+			if y > 0 {
+				y_padding = padding.y;
+			}
+			for x in 0..columns {
+				if x > 0 {
+					x_padding = padding.x;
+				}
 
-                let rect_min = Vec2::new(
-                    (tile_size.x + x_padding) * x as f32 + offset.x,
-                    (tile_size.y + y_padding) * y as f32 + offset.y,
-                );
+				let rect_min = Vec2::new(
+					(tile_size.x + x_padding) * x as f32 + offset.x,
+					(tile_size.y + y_padding) * y as f32 + offset.y,
+				);
 
-                sprites.push(Rect {
-                    min: rect_min,
-                    max: Vec2::new(rect_min.x + tile_size.x, rect_min.y + tile_size.y),
-                });
-            }
-        }
+				sprites.push(Rect {
+					min: rect_min,
+					max: Vec2::new(rect_min.x + tile_size.x, rect_min.y + tile_size.y),
+				});
+			}
+		}
 
-        TextureAtlas {
-            size: Vec2::new(
-                ((tile_size.x + x_padding) * columns as f32) - x_padding,
-                ((tile_size.y + y_padding) * rows as f32) - y_padding,
-            ),
-            textures: sprites,
-            texture,
-            texture_handles: None,
-        }
-    }
+		TextureAtlas {
+			size: Vec2::new(
+				((tile_size.x + x_padding) * columns as f32) - x_padding,
+				((tile_size.y + y_padding) * rows as f32) - y_padding,
+			),
+			textures: sprites,
+			texture,
+			texture_handles: None,
+		}
+	}
 
-    /// Add a sprite to the list of textures in the `TextureAtlas`
-    /// returns an index to the texture which can be used with `TextureAtlasSprite`
-    ///
-    /// # Arguments
-    ///
-    /// * `rect` - The section of the atlas that contains the texture to be added,
-    /// from the top-left corner of the texture to the bottom-right corner
-    pub fn add_texture(&mut self, rect: Rect) -> usize {
-        self.textures.push(rect);
-        self.textures.len() - 1
-    }
+	/// Add a sprite to the list of textures in the `TextureAtlas`
+	/// returns an index to the texture which can be used with `TextureAtlasSprite`
+	///
+	/// # Arguments
+	///
+	/// * `rect` - The section of the atlas that contains the texture to be added,
+	/// from the top-left corner of the texture to the bottom-right corner
+	pub fn add_texture(&mut self, rect: Rect) -> usize {
+		self.textures.push(rect);
+		self.textures.len() - 1
+	}
 
-    /// How many textures are in the `TextureAtlas`
-    pub fn len(&self) -> usize {
-        self.textures.len()
-    }
+	/// How many textures are in the `TextureAtlas`
+	pub fn len(&self) -> usize {
+		self.textures.len()
+	}
 
-    pub fn is_empty(&self) -> bool {
-        self.textures.is_empty()
-    }
+	pub fn is_empty(&self) -> bool {
+		self.textures.is_empty()
+	}
 
-    pub fn get_texture_index(&self, texture: &Handle<Image>) -> Option<usize> {
-        self.texture_handles
-            .as_ref()
-            .and_then(|texture_handles| texture_handles.get(texture).cloned())
-    }
+	pub fn get_texture_index(&self, texture: &Handle<Image>) -> Option<usize> {
+		self.texture_handles
+			.as_ref()
+			.and_then(|texture_handles| texture_handles.get(texture).cloned())
+	}
 }

@@ -5,27 +5,27 @@ use bevy_tasks::TaskPoolBuilder;
 // for small workloads.
 
 fn main() {
-    let pool = TaskPoolBuilder::new()
-        .thread_name("Idle Behavior ThreadPool".to_string())
-        .build();
+	let pool = TaskPoolBuilder::new()
+		.thread_name("Idle Behavior ThreadPool".to_string())
+		.build();
 
-    pool.scope(|s| {
-        for i in 0..1 {
-            s.spawn(async move {
-                println!("Blocking for 10 seconds");
-                let now = instant::Instant::now();
-                while instant::Instant::now() - now < instant::Duration::from_millis(10000) {
-                    // spin, simulating work being done
-                }
+	pool.scope(|s| {
+		for i in 0..1 {
+			s.spawn(async move {
+				println!("Blocking for 10 seconds");
+				let now = instant::Instant::now();
+				while instant::Instant::now() - now < instant::Duration::from_millis(10000) {
+					// spin, simulating work being done
+				}
 
-                println!(
-                    "Thread {:?} index {} finished",
-                    std::thread::current().id(),
-                    i
-                );
-            });
-        }
-    });
+				println!(
+					"Thread {:?} index {} finished",
+					std::thread::current().id(),
+					i
+				);
+			});
+		}
+	});
 
-    println!("all tasks finished");
+	println!("all tasks finished");
 }

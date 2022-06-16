@@ -1,9 +1,9 @@
 use crate::{
-    archetype::ArchetypeComponentId,
-    component::ComponentId,
-    query::Access,
-    system::{IntoSystem, System},
-    world::World,
+	archetype::ArchetypeComponentId,
+	component::ComponentId,
+	query::Access,
+	system::{IntoSystem, System},
+	world::World,
 };
 use std::borrow::Cow;
 
@@ -45,66 +45,66 @@ use std::borrow::Cow;
 /// }
 /// ```
 pub struct ChainSystem<SystemA, SystemB> {
-    system_a: SystemA,
-    system_b: SystemB,
-    name: Cow<'static, str>,
-    component_access: Access<ComponentId>,
-    archetype_component_access: Access<ArchetypeComponentId>,
+	system_a: SystemA,
+	system_b: SystemB,
+	name: Cow<'static, str>,
+	component_access: Access<ComponentId>,
+	archetype_component_access: Access<ArchetypeComponentId>,
 }
 
 impl<SystemA: System, SystemB: System<In = SystemA::Out>> System for ChainSystem<SystemA, SystemB> {
-    type In = SystemA::In;
-    type Out = SystemB::Out;
+	type In = SystemA::In;
+	type Out = SystemB::Out;
 
-    fn name(&self) -> Cow<'static, str> {
-        self.name.clone()
-    }
+	fn name(&self) -> Cow<'static, str> {
+		self.name.clone()
+	}
 
-    fn archetype_component_access(&self) -> &Access<ArchetypeComponentId> {
-        &self.archetype_component_access
-    }
+	fn archetype_component_access(&self) -> &Access<ArchetypeComponentId> {
+		&self.archetype_component_access
+	}
 
-    fn component_access(&self) -> &Access<ComponentId> {
-        &self.component_access
-    }
+	fn component_access(&self) -> &Access<ComponentId> {
+		&self.component_access
+	}
 
-    fn is_send(&self) -> bool {
-        self.system_a.is_send() && self.system_b.is_send()
-    }
+	fn is_send(&self) -> bool {
+		self.system_a.is_send() && self.system_b.is_send()
+	}
 
-    unsafe fn run_unsafe(&mut self, input: Self::In, world: &World) -> Self::Out {
-        let out = self.system_a.run_unsafe(input, world);
-        self.system_b.run_unsafe(out, world)
-    }
+	unsafe fn run_unsafe(&mut self, input: Self::In, world: &World) -> Self::Out {
+		let out = self.system_a.run_unsafe(input, world);
+		self.system_b.run_unsafe(out, world)
+	}
 
-    fn apply_buffers(&mut self, world: &mut World) {
-        self.system_a.apply_buffers(world);
-        self.system_b.apply_buffers(world);
-    }
+	fn apply_buffers(&mut self, world: &mut World) {
+		self.system_a.apply_buffers(world);
+		self.system_b.apply_buffers(world);
+	}
 
-    fn initialize(&mut self, world: &mut World) {
-        self.system_a.initialize(world);
-        self.system_b.initialize(world);
-        self.component_access
-            .extend(self.system_a.component_access());
-        self.component_access
-            .extend(self.system_b.component_access());
-    }
+	fn initialize(&mut self, world: &mut World) {
+		self.system_a.initialize(world);
+		self.system_b.initialize(world);
+		self.component_access
+			.extend(self.system_a.component_access());
+		self.component_access
+			.extend(self.system_b.component_access());
+	}
 
-    fn update_archetype_component_access(&mut self, world: &World) {
-        self.system_a.update_archetype_component_access(world);
-        self.system_b.update_archetype_component_access(world);
+	fn update_archetype_component_access(&mut self, world: &World) {
+		self.system_a.update_archetype_component_access(world);
+		self.system_b.update_archetype_component_access(world);
 
-        self.archetype_component_access
-            .extend(self.system_a.archetype_component_access());
-        self.archetype_component_access
-            .extend(self.system_b.archetype_component_access());
-    }
+		self.archetype_component_access
+			.extend(self.system_a.archetype_component_access());
+		self.archetype_component_access
+			.extend(self.system_b.archetype_component_access());
+	}
 
-    fn check_change_tick(&mut self, change_tick: u32) {
-        self.system_a.check_change_tick(change_tick);
-        self.system_b.check_change_tick(change_tick);
-    }
+	fn check_change_tick(&mut self, change_tick: u32) {
+		self.system_a.check_change_tick(change_tick);
+		self.system_b.check_change_tick(change_tick);
+	}
 }
 
 /// An extension trait providing the [`IntoChainSystem::chain`] method for convenient [`System`]
@@ -114,30 +114,30 @@ impl<SystemA: System, SystemB: System<In = SystemA::Out>> System for ChainSystem
 ///
 /// See [`ChainSystem`].
 pub trait IntoChainSystem<ParamA, Payload, SystemB, ParamB, Out>:
-    IntoSystem<(), Payload, ParamA> + Sized
+	IntoSystem<(), Payload, ParamA> + Sized
 where
-    SystemB: IntoSystem<Payload, Out, ParamB>,
+	SystemB: IntoSystem<Payload, Out, ParamB>,
 {
-    /// Chain this system `A` with another system `B` creating a new system that feeds system A's
-    /// output into system `B`, returning the output of system `B`.
-    fn chain(self, system: SystemB) -> ChainSystem<Self::System, SystemB::System>;
+	/// Chain this system `A` with another system `B` creating a new system that feeds system A's
+	/// output into system `B`, returning the output of system `B`.
+	fn chain(self, system: SystemB) -> ChainSystem<Self::System, SystemB::System>;
 }
 
 impl<SystemA, ParamA, Payload, SystemB, ParamB, Out>
-    IntoChainSystem<ParamA, Payload, SystemB, ParamB, Out> for SystemA
+	IntoChainSystem<ParamA, Payload, SystemB, ParamB, Out> for SystemA
 where
-    SystemA: IntoSystem<(), Payload, ParamA>,
-    SystemB: IntoSystem<Payload, Out, ParamB>,
+	SystemA: IntoSystem<(), Payload, ParamA>,
+	SystemB: IntoSystem<Payload, Out, ParamB>,
 {
-    fn chain(self, system: SystemB) -> ChainSystem<SystemA::System, SystemB::System> {
-        let system_a = IntoSystem::into_system(self);
-        let system_b = IntoSystem::into_system(system);
-        ChainSystem {
-            name: Cow::Owned(format!("Chain({}, {})", system_a.name(), system_b.name())),
-            system_a,
-            system_b,
-            archetype_component_access: Default::default(),
-            component_access: Default::default(),
-        }
-    }
+	fn chain(self, system: SystemB) -> ChainSystem<SystemA::System, SystemB::System> {
+		let system_a = IntoSystem::into_system(self);
+		let system_b = IntoSystem::into_system(system);
+		ChainSystem {
+			name: Cow::Owned(format!("Chain({}, {})", system_a.name(), system_b.name())),
+			system_a,
+			system_b,
+			archetype_component_access: Default::default(),
+			component_access: Default::default(),
+		}
+	}
 }

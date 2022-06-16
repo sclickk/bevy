@@ -19,11 +19,11 @@ pub use text::*;
 pub use text2d::*;
 
 pub mod prelude {
-    #[doc(hidden)]
-    pub use crate::{
-        Font, HorizontalAlign, Text, Text2dBundle, TextAlignment, TextError, TextSection,
-        TextStyle, VerticalAlign,
-    };
+	#[doc(hidden)]
+	pub use crate::{
+		Font, HorizontalAlign, Text, Text2dBundle, TextAlignment, TextError, TextSection,
+		TextStyle, VerticalAlign,
+	};
 }
 
 use bevy_app::prelude::*;
@@ -39,24 +39,24 @@ pub type DefaultTextPipeline = TextPipeline<Entity>;
 pub struct TextPlugin;
 
 impl Plugin for TextPlugin {
-    fn build(&self, app: &mut App) {
-        app.add_asset::<Font>()
-            .add_asset::<FontAtlasSet>()
-            .register_type::<Text>()
-            .register_type::<VerticalAlign>()
-            .register_type::<HorizontalAlign>()
-            .init_asset_loader::<FontLoader>()
-            .insert_resource(DefaultTextPipeline::default())
-            .add_system_to_stage(
-                CoreStage::PostUpdate,
-                update_text2d_layout.after(ModifiesWindows),
-            );
+	fn build(&self, app: &mut App) {
+		app.add_asset::<Font>()
+			.add_asset::<FontAtlasSet>()
+			.register_type::<Text>()
+			.register_type::<VerticalAlign>()
+			.register_type::<HorizontalAlign>()
+			.init_asset_loader::<FontLoader>()
+			.insert_resource(DefaultTextPipeline::default())
+			.add_system_to_stage(
+				CoreStage::PostUpdate,
+				update_text2d_layout.after(ModifiesWindows),
+			);
 
-        if let Ok(render_app) = app.get_sub_app_mut(RenderApp) {
-            render_app.add_system_to_stage(
-                RenderStage::Extract,
-                extract_text2d_sprite.after(SpriteSystem::ExtractSprites),
-            );
-        }
-    }
+		if let Ok(render_app) = app.get_sub_app_mut(RenderApp) {
+			render_app.add_system_to_stage(
+				RenderStage::Extract,
+				extract_text2d_sprite.after(SpriteSystem::ExtractSprites),
+			);
+		}
+	}
 }

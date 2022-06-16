@@ -7,15 +7,15 @@ use serde::{Deserialize, Serialize};
 #[derive(Reflect, Serialize, Deserialize, Clone, Debug)]
 #[reflect_value(Serialize, Deserialize)]
 pub enum ClearColorConfig {
-    Default,
-    Custom(Color),
-    None,
+	Default,
+	Custom(Color),
+	None,
 }
 
 impl Default for ClearColorConfig {
-    fn default() -> Self {
-        ClearColorConfig::Default
-    }
+	fn default() -> Self {
+		ClearColorConfig::Default
+	}
 }
 
 /// When used as a resource, sets the color that is used to clear the screen between frames.
@@ -26,7 +26,7 @@ impl Default for ClearColorConfig {
 pub struct ClearColor(pub Color);
 
 impl Default for ClearColor {
-    fn default() -> Self {
-        Self(Color::rgb(0.4, 0.4, 0.4))
-    }
+	fn default() -> Self {
+		Self(Color::rgb(0.4, 0.4, 0.4))
+	}
 }

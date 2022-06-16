@@ -34,8 +34,8 @@ mod audio_source;
 
 #[allow(missing_docs)]
 pub mod prelude {
-    #[doc(hidden)]
-    pub use crate::{Audio, AudioOutput, AudioSource, Decodable, PlaybackSettings};
+	#[doc(hidden)]
+	pub use crate::{Audio, AudioOutput, AudioSource, Decodable, PlaybackSettings};
 }
 
 pub use audio::*;
@@ -52,17 +52,17 @@ use bevy_asset::AddAsset;
 pub struct AudioPlugin;
 
 impl Plugin for AudioPlugin {
-    fn build(&self, app: &mut App) {
-        app.init_non_send_resource::<AudioOutput<AudioSource>>()
-            .add_asset::<AudioSource>()
-            .add_asset::<AudioSink>()
-            .init_resource::<Audio<AudioSource>>()
-            .add_system_to_stage(
-                CoreStage::PostUpdate,
-                play_queued_audio_system::<AudioSource>,
-            );
+	fn build(&self, app: &mut App) {
+		app.init_non_send_resource::<AudioOutput<AudioSource>>()
+			.add_asset::<AudioSource>()
+			.add_asset::<AudioSink>()
+			.init_resource::<Audio<AudioSource>>()
+			.add_system_to_stage(
+				CoreStage::PostUpdate,
+				play_queued_audio_system::<AudioSource>,
+			);
 
-        #[cfg(any(feature = "mp3", feature = "flac", feature = "wav", feature = "vorbis"))]
-        app.init_asset_loader::<AudioLoader>();
-    }
+		#[cfg(any(feature = "mp3", feature = "flac", feature = "wav", feature = "vorbis"))]
+		app.init_asset_loader::<AudioLoader>();
+	}
 }

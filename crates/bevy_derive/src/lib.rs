@@ -12,7 +12,7 @@ use quote::format_ident;
 /// Generates a dynamic plugin entry point function for the given `Plugin` type.
 #[proc_macro_derive(DynamicPlugin)]
 pub fn derive_dynamic_plugin(input: TokenStream) -> TokenStream {
-    app_plugin::derive_dynamic_plugin(input)
+	app_plugin::derive_dynamic_plugin(input)
 }
 
 /// Implements [`Deref`] for _single-item_ structs. This is especially useful when
@@ -39,7 +39,7 @@ pub fn derive_dynamic_plugin(input: TokenStream) -> TokenStream {
 /// [derive]: crate::derive_deref_mut
 #[proc_macro_derive(Deref)]
 pub fn derive_deref(input: TokenStream) -> TokenStream {
-    derefs::derive_deref(input)
+	derefs::derive_deref(input)
 }
 
 /// Implements [`DerefMut`] for _single-item_ structs. This is especially useful when
@@ -67,23 +67,23 @@ pub fn derive_deref(input: TokenStream) -> TokenStream {
 /// [derive]: crate::derive_deref
 #[proc_macro_derive(DerefMut)]
 pub fn derive_deref_mut(input: TokenStream) -> TokenStream {
-    derefs::derive_deref_mut(input)
+	derefs::derive_deref_mut(input)
 }
 
 #[proc_macro_attribute]
 pub fn bevy_main(attr: TokenStream, item: TokenStream) -> TokenStream {
-    bevy_main::bevy_main(attr, item)
+	bevy_main::bevy_main(attr, item)
 }
 
 #[proc_macro_derive(EnumVariantMeta)]
 pub fn derive_enum_variant_meta(input: TokenStream) -> TokenStream {
-    enum_variant_meta::derive_enum_variant_meta(input)
+	enum_variant_meta::derive_enum_variant_meta(input)
 }
 
 #[proc_macro_derive(AppLabel)]
 pub fn derive_app_label(input: TokenStream) -> TokenStream {
-    let input = syn::parse_macro_input!(input as syn::DeriveInput);
-    let mut trait_path = BevyManifest::default().get_path("bevy_app");
-    trait_path.segments.push(format_ident!("AppLabel").into());
-    derive_label(input, &trait_path)
+	let input = syn::parse_macro_input!(input as syn::DeriveInput);
+	let mut trait_path = BevyManifest::default().get_path("bevy_app");
+	trait_path.segments.push(format_ident!("AppLabel").into());
+	derive_label(input, &trait_path)
 }
