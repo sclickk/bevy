@@ -200,17 +200,20 @@ pub fn get_fitting_videomode(
 ) -> winit::monitor::VideoMode {
 	let mut modes = monitor.video_modes().collect::<Vec<_>>();
 
-	fn abs_diff(a: u32, b: u32) -> u32 {
-		if a > b {
-			return a - b;
-		}
-		b - a
-	}
-
 	modes.sort_by(|a, b| {
 		use std::cmp::Ordering::*;
-		match abs_diff(a.size().width, width).cmp(&abs_diff(b.size().width, width)) {
-			Equal => match abs_diff(a.size().height, height).cmp(&abs_diff(b.size().height, height)) {
+		match a
+			.size()
+			.width
+			.abs_diff(width)
+			.cmp(&b.size().width.abs_diff(width))
+		{
+			Equal => match a
+				.size()
+				.height
+				.abs_diff(height)
+				.cmp(&b.size().height.abs_diff(height))
+			{
 				Equal => b.refresh_rate().cmp(&a.refresh_rate()),
 				default => default,
 			},
