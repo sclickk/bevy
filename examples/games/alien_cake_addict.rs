@@ -265,12 +265,12 @@ fn focus_camera(
 				.translation
 				.lerp(bonus_transform.translation, 0.5);
 		}
-		// otherwise, if there is only a player, target the player
+	// otherwise, if there is only a player, target the player
 	} else if let Some(player_entity) = game.player.entity {
 		if let Ok(player_transform) = transforms.p1().get(player_entity) {
 			game.camera_should_focus = player_transform.translation;
 		}
-		// otherwise, target the middle
+	// otherwise, target the middle
 	} else {
 		game.camera_should_focus = Vec3::from(RESET_FOCUS);
 	}

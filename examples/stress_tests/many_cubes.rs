@@ -124,7 +124,9 @@ fn setup(
 		..Default::default()
 	});
 
-	commands.spawn_bundle(DirectionalLightBundle { ..Default::default() });
+	commands.spawn_bundle(DirectionalLightBundle {
+		..Default::default()
+	});
 }
 
 // NOTE: This epsilon value is apparently optimal for optimizing for the average

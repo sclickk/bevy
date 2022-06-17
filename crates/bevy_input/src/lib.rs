@@ -43,14 +43,14 @@ pub struct InputSystem;
 
 impl Plugin for InputPlugin {
 	fn build(&self, app: &mut App) {
-			// keyboard
+		// keyboard
 		app.add_event::<KeyboardInput>();
 		app.init_resource::<Input<KeyCode>>();
 		app.add_system_to_stage(
-				CoreStage::PreUpdate,
-				keyboard_input_system.label(InputSystem),
-			);
-			// mouse
+			CoreStage::PreUpdate,
+			keyboard_input_system.label(InputSystem),
+		);
+		// mouse
 		app.add_event::<MouseButtonInput>();
 		app.add_event::<MouseMotion>();
 		app.add_event::<MouseWheel>();
@@ -59,7 +59,7 @@ impl Plugin for InputPlugin {
 				CoreStage::PreUpdate,
 				mouse_button_input_system.label(InputSystem),
 			);
-			// gamepad
+		// gamepad
 		app.add_event::<GamepadEvent>();
 		app.add_event::<GamepadEventRaw>();
 		app.init_resource::<GamepadSettings>()
@@ -75,13 +75,12 @@ impl Plugin for InputPlugin {
 				CoreStage::PreUpdate,
 				gamepad_connection_system.after(InputSystem),
 			);
-			// touch
+		// touch
 		app.add_event::<TouchInput>();
-		app.init_resource::<Touches>()
-			.add_system_to_stage(
-				CoreStage::PreUpdate,
-				touch_screen_input_system.label(InputSystem),
-			);
+		app.init_resource::<Touches>().add_system_to_stage(
+			CoreStage::PreUpdate,
+			touch_screen_input_system.label(InputSystem),
+		);
 	}
 }
 
