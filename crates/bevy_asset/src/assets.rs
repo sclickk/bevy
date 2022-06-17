@@ -284,19 +284,18 @@ impl AddAsset for App {
 	where
 		T: Asset,
 	{
-		if self.world.contains_resource::<Assets<T>>() {
-			return self;
+		if !self.world.contains_resource::<Assets<T>>() {
+			let assets = {
+				let asset_server = self.world.resource::<AssetServer>();
+				asset_server.register_asset_type::<T>()
+			};
+	
+			self.insert_resource(assets);
+			self.add_system_to_stage(AssetStage::AssetEvents, Assets::<T>::asset_event_system);
+			self.add_system_to_stage(AssetStage::LoadAssets, update_asset_storage_system::<T>);
+			self.register_type::<Handle<T>>();
+			self.add_event::<AssetEvent<T>>();
 		}
-		let assets = {
-			let asset_server = self.world.resource::<AssetServer>();
-			asset_server.register_asset_type::<T>()
-		};
-
-		self.insert_resource(assets);
-		self.add_system_to_stage(AssetStage::AssetEvents, Assets::<T>::asset_event_system);
-		self.add_system_to_stage(AssetStage::LoadAssets, update_asset_storage_system::<T>);
-		self.register_type::<Handle<T>>();
-		self.add_event::<AssetEvent<T>>();
 		self
 	}
 
