@@ -950,6 +950,7 @@ fn generate_tangents_for_mesh(mesh: &Mesh) -> Result<Vec<[f32; 4]>, GenerateTang
 			))
 		}
 	};
+
 	let normals = match mesh.attribute(Mesh::ATTRIBUTE_NORMAL).ok_or(
 		GenerateTangentsError::MissingVertexAttribute(Mesh::ATTRIBUTE_NORMAL.name),
 	)? {
@@ -961,6 +962,7 @@ fn generate_tangents_for_mesh(mesh: &Mesh) -> Result<Vec<[f32; 4]>, GenerateTang
 			))
 		}
 	};
+
 	let uvs = match mesh.attribute(Mesh::ATTRIBUTE_UV_0).ok_or(
 		GenerateTangentsError::MissingVertexAttribute(Mesh::ATTRIBUTE_UV_0.name),
 	)? {
@@ -972,28 +974,24 @@ fn generate_tangents_for_mesh(mesh: &Mesh) -> Result<Vec<[f32; 4]>, GenerateTang
 			))
 		}
 	};
-	let indices = mesh
-		.indices()
-		.ok_or(GenerateTangentsError::MissingIndices)?;
 
-	let len = positions.len();
-	let tangents = vec![[0., 0., 0., 0.]; len];
 	let mut mikktspace_mesh = MikktspaceGeometryHelper {
-		indices,
+		indices: mesh
+			.indices()
+			.ok_or(GenerateTangentsError::MissingIndices)?,
 		positions,
 		normals,
 		uvs,
-		tangents,
+		tangents: vec![[0., 0., 0., 0.]; positions.len()],
 	};
-	let success = bevy_mikktspace::generate_tangents(&mut mikktspace_mesh);
-	if !success {
-		return Err(GenerateTangentsError::MikktspaceError);
-	}
 
-	// mikktspace seems to assume left-handedness so we can flip the sign to correct for this
-	for tangent in &mut mikktspace_mesh.tangents {
-		tangent[3] = -tangent[3];
-	}
-
-	Ok(mikktspace_mesh.tangents)
+	bevy_mikktspace::generate_tangents(&mut mikktspace_mesh)
+		.then(|| {
+			// mikktspace seems to assume left-handedness so we can flip the sign to correct for this
+			for tangent in &mut mikktspace_mesh.tangents {
+				tangent[3] = -tangent[3];
+			}
+			mikktspace_mesh.tangents
+		})
+		.ok_or(GenerateTangentsError::MikktspaceError)
 }
