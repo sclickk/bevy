@@ -663,20 +663,6 @@ bitflags::bitflags! {
 }
 
 impl CompressedImageFormats {
-	pub fn from_features(features: wgpu::Features) -> Self {
-		let mut supported_compressed_formats = Self::default();
-		if features.contains(wgpu::Features::TEXTURE_COMPRESSION_ASTC_LDR) {
-			supported_compressed_formats |= Self::ASTC_LDR;
-		}
-		if features.contains(wgpu::Features::TEXTURE_COMPRESSION_BC) {
-			supported_compressed_formats |= Self::BC;
-		}
-		if features.contains(wgpu::Features::TEXTURE_COMPRESSION_ETC2) {
-			supported_compressed_formats |= Self::ETC2;
-		}
-		supported_compressed_formats
-	}
-
 	pub fn supports(&self, format: TextureFormat) -> bool {
 		match format {
 			TextureFormat::Bc1RgbaUnorm
@@ -733,6 +719,22 @@ impl CompressedImageFormats {
 			| TextureFormat::Astc12x12RgbaUnormSrgb => self.contains(CompressedImageFormats::ASTC_LDR),
 			_ => true,
 		}
+	}
+}
+
+impl From<wgpu::Features> for CompressedImageFormats {
+	fn from(features: wgpu::Features) -> Self {
+		let mut supported_compressed_formats = Self::default();
+		if features.contains(wgpu::Features::TEXTURE_COMPRESSION_ASTC_LDR) {
+			supported_compressed_formats |= Self::ASTC_LDR;
+		}
+		if features.contains(wgpu::Features::TEXTURE_COMPRESSION_BC) {
+			supported_compressed_formats |= Self::BC;
+		}
+		if features.contains(wgpu::Features::TEXTURE_COMPRESSION_ETC2) {
+			supported_compressed_formats |= Self::ETC2;
+		}
+		supported_compressed_formats
 	}
 }
 
