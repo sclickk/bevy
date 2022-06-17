@@ -7,15 +7,15 @@ use bevy::{
 };
 
 fn main() {
-	App::new()
-		.insert_resource(WgpuSettings {
-			features: WgpuFeatures::POLYGON_MODE_LINE,
-			..Default::default()
-		})
-		.add_plugins(DefaultPlugins)
-		.add_plugin(WireframePlugin)
-		.add_startup_system(setup)
-		.run();
+	let mut app = App::new();
+	app.insert_resource(WgpuSettings {
+		features: WgpuFeatures::POLYGON_MODE_LINE,
+		..Default::default()
+	});
+	app.add_plugins(DefaultPlugins);
+	app.add_plugin(WireframePlugin);
+	app.add_startup_system(setup);
+	app.run();
 }
 
 /// set up a simple 3D scene

@@ -7,16 +7,16 @@ use bevy::{
 };
 
 fn main() {
-	App::new()
-		.insert_resource(WindowDescriptor {
-			present_mode: PresentMode::Immediate,
-			..Default::default()
-		})
-		.add_plugins(DefaultPlugins)
-		.add_plugin(FrameTimeDiagnosticsPlugin)
-		.add_startup_system(infotext_system)
-		.add_system(change_text_system)
-		.run();
+	let mut app = App::new();
+	app.insert_resource(WindowDescriptor {
+		present_mode: PresentMode::Immediate,
+		..Default::default()
+	});
+	app.add_plugins(DefaultPlugins);
+	app.add_plugin(FrameTimeDiagnosticsPlugin);
+	app.add_startup_system(infotext_system);
+	app.add_system(change_text_system);
+	app.run();
 }
 
 #[derive(Component)]

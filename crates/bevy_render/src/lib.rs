@@ -163,26 +163,26 @@ impl Plugin for RenderPlugin {
 			// don't apply buffers when the stage finishes running
 			// extract stage runs on the app world, but the buffers are applied to the render world
 			extract_stage.set_apply_buffers(false);
-			render_app
-				.add_stage(RenderStage::Extract, extract_stage)
-				.add_stage(RenderStage::Prepare, SystemStage::parallel())
-				.add_stage(RenderStage::Queue, SystemStage::parallel())
-				.add_stage(RenderStage::PhaseSort, SystemStage::parallel())
-				.add_stage(
+
+			render_app.add_stage(RenderStage::Extract, extract_stage);
+			render_app.add_stage(RenderStage::Prepare, SystemStage::parallel());
+			render_app.add_stage(RenderStage::Queue, SystemStage::parallel());
+			render_app.add_stage(RenderStage::PhaseSort, SystemStage::parallel());
+			render_app.add_stage(
 					RenderStage::Render,
 					SystemStage::parallel()
 						.with_system(PipelineCache::process_pipeline_queue_system)
 						.with_system(render_system.exclusive_system().at_end()),
-				)
-				.add_stage(RenderStage::Cleanup, SystemStage::parallel())
-				.init_resource::<RenderGraph>()
-				.insert_resource(instance)
-				.insert_resource(device)
-				.insert_resource(queue)
-				.insert_resource(adapter_info)
-				.insert_resource(pipeline_cache)
-				.insert_resource(asset_server)
-				.init_resource::<RenderGraph>();
+				);
+			render_app.add_stage(RenderStage::Cleanup, SystemStage::parallel());
+			render_app.init_resource::<RenderGraph>();
+			render_app.insert_resource(instance);
+			render_app.insert_resource(device);
+			render_app.insert_resource(queue);
+			render_app.insert_resource(adapter_info);
+			render_app.insert_resource(pipeline_cache);
+			render_app.insert_resource(asset_server);
+			render_app.init_resource::<RenderGraph>();
 
 			app.add_sub_app(RenderApp, render_app, move |app_world, render_app| {
 				#[cfg(feature = "trace")]
@@ -281,14 +281,13 @@ impl Plugin for RenderPlugin {
 			});
 		}
 
-		app
-			.add_plugin(WindowRenderPlugin)
-			.add_plugin(CameraPlugin)
-			.add_plugin(ViewPlugin)
-			.add_plugin(MeshPlugin)
-			// NOTE: Load this after renderer initialization so that it knows about the supported
-			// compressed texture formats
-			.add_plugin(ImagePlugin);
+		app.add_plugin(WindowRenderPlugin);
+		app.add_plugin(CameraPlugin);
+		app.add_plugin(ViewPlugin);
+		app.add_plugin(MeshPlugin);
+		// NOTE: Load this after renderer initialization so that it knows about the supported
+		// compressed texture formats
+		app.add_plugin(ImagePlugin);
 	}
 }
 

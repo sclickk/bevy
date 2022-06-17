@@ -35,11 +35,11 @@ impl Plugin for IsRedPlugin {
 }
 
 fn main() {
-	App::new()
-		.add_plugins(DefaultPlugins)
-		.add_plugin(IsRedPlugin)
-		.add_startup_system(setup)
-		.run();
+	let mut app = App::new();
+	app.add_plugins(DefaultPlugins);
+	app.add_plugin(IsRedPlugin);
+	app.add_startup_system(setup);
+	app.run();
 }
 
 #[derive(Component, Hash, PartialEq, Eq, Copy, Clone)]

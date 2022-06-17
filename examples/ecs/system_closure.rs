@@ -24,24 +24,24 @@ fn main() {
 
 	let outside_variable = "bar".to_string();
 
-	App::new()
-		.add_plugin(LogPlugin)
-		// we can use a closure as a system
-		.add_system(simple_closure)
-		// or we can use a more complex closure, and pass an argument to initialize a Local variable.
-		.add_system(complex_closure("foo".into()))
-		// we can also inline a closure
-		.add_system(|| {
-			info!("Hello from an inlined closure!");
-		})
-		// or use variables outside a closure
-		.add_system(move || {
-			info!(
-				"Hello from an inlined closure that captured the 'outside_variable'! {:?}",
-				outside_variable
-			);
-			// you can use outside_variable, or any other variables inside this closure.
-			// their states will be saved.
-		})
-		.run();
+	let mut app = App::new();
+	app.add_plugin(LogPlugin);
+	// we can use a closure as a system
+	app.add_system(simple_closure);
+	// or we can use a more complex closure, and pass an argument to initialize a Local variable.
+	app.add_system(complex_closure("foo".into()));
+	// we can also inline a closure
+	app.add_system(|| {
+		info!("Hello from an inlined closure!");
+	});
+	// or use variables outside a closure
+	app.add_system(move || {
+		info!(
+			"Hello from an inlined closure that captured the 'outside_variable'! {:?}",
+			outside_variable
+		);
+		// you can use outside_variable, or any other variables inside this closure.
+		// their states will be saved.
+	});
+	app.run();
 }

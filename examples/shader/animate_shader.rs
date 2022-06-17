@@ -24,11 +24,11 @@ use bevy::{
 };
 
 fn main() {
-	App::new()
-		.add_plugins(DefaultPlugins)
-		.add_plugin(CustomMaterialPlugin)
-		.add_startup_system(setup)
-		.run();
+	let mut app = App::new();
+	app.add_plugins(DefaultPlugins);
+	app.add_plugin(CustomMaterialPlugin);
+	app.add_startup_system(setup);
+	app.run();
 }
 
 fn setup(mut commands: Commands, mut meshes: ResMut<Assets<Mesh>>) {

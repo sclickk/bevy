@@ -21,17 +21,17 @@ const SIZE: (u32, u32) = (1280, 720);
 const WORKGROUP_SIZE: u32 = 8;
 
 fn main() {
-	App::new()
-		.insert_resource(ClearColor(Color::BLACK))
-		.insert_resource(WindowDescriptor {
-			// uncomment for unthrottled FPS
-			// present_mode: bevy::window::PresentMode::Immediate,
-			..Default::default()
-		})
-		.add_plugins(DefaultPlugins)
-		.add_plugin(GameOfLifeComputePlugin)
-		.add_startup_system(setup)
-		.run();
+	let mut app = App::new();
+	app.insert_resource(ClearColor(Color::BLACK));
+	app.insert_resource(WindowDescriptor {
+		// uncomment for unthrottled FPS
+		// present_mode: bevy::window::PresentMode::Immediate,
+		..Default::default()
+	});
+	app.add_plugins(DefaultPlugins);
+	app.add_plugin(GameOfLifeComputePlugin);
+	app.add_startup_system(setup);
+	app.run();
 }
 
 fn setup(mut commands: Commands, mut images: ResMut<Assets<Image>>) {

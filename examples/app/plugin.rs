@@ -7,14 +7,14 @@
 use bevy::{prelude::*, utils::Duration};
 
 fn main() {
-	App::new()
-		.add_plugins(DefaultPlugins)
-		// plugins are registered as part of the "app building" process
-		.add_plugin(PrintMessagePlugin {
-			wait_duration: Duration::from_secs(1),
-			message: "This is an example plugin".to_string(),
-		})
-		.run();
+	let mut app = App::new();
+	app.add_plugins(DefaultPlugins);
+	// plugins are registered as part of the "app building" process
+	app.add_plugin(PrintMessagePlugin {
+		wait_duration: Duration::from_secs(1),
+		message: "This is an example plugin".to_string(),
+	});
+	app.run();
 }
 
 // This "print message plugin" prints a `message` every `wait_duration`

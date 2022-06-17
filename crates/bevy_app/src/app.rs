@@ -142,9 +142,8 @@ impl App {
 	/// #
 	/// app.add_stage("my_stage", SystemStage::parallel());
 	/// ```
-	pub fn add_stage<S: Stage>(&mut self, label: impl StageLabel, stage: S) -> &mut Self {
+	pub fn add_stage<S: Stage>(&mut self, label: impl StageLabel, stage: S) {
 		self.schedule.add_stage(label, stage);
-		self
 	}
 
 	/// Adds a [`Stage`] with the given `label` to the app's [`Schedule`], located
@@ -600,20 +599,20 @@ impl App {
 	/// let app = App::empty().add_default_stages();
 	/// ```
 	pub fn add_default_stages(&mut self) -> &mut Self {
-		self
-			.add_stage(CoreStage::First, SystemStage::parallel())
-			.add_stage(
+		self.add_stage(CoreStage::First, SystemStage::parallel());
+		self.add_stage(
 				StartupSchedule,
 				Schedule::default()
 					.with_run_criteria(ShouldRun::once)
 					.with_stage(StartupStage::PreStartup, SystemStage::parallel())
 					.with_stage(StartupStage::Startup, SystemStage::parallel())
 					.with_stage(StartupStage::PostStartup, SystemStage::parallel()),
-			)
-			.add_stage(CoreStage::PreUpdate, SystemStage::parallel())
-			.add_stage(CoreStage::Update, SystemStage::parallel())
-			.add_stage(CoreStage::PostUpdate, SystemStage::parallel())
-			.add_stage(CoreStage::Last, SystemStage::parallel())
+			);
+		self.add_stage(CoreStage::PreUpdate, SystemStage::parallel());
+		self.add_stage(CoreStage::Update, SystemStage::parallel());
+		self.add_stage(CoreStage::PostUpdate, SystemStage::parallel());
+		self.add_stage(CoreStage::Last, SystemStage::parallel());
+		self
 	}
 
 	/// Setup the application to manage events of type `T`.
@@ -686,9 +685,8 @@ impl App {
 	/// App::new()
 	///     .insert_non_send_resource(MyCounter { counter: 0 });
 	/// ```
-	pub fn insert_non_send_resource<R: 'static>(&mut self, resource: R) -> &mut Self {
+	pub fn insert_non_send_resource<R: 'static>(&mut self, resource: R) {
 		self.world.insert_non_send_resource(resource);
-		self
 	}
 
 	/// Initialize a [`Resource`] with standard starting values by adding it to the [`World`].
@@ -729,9 +727,8 @@ impl App {
 	/// The [`Resource`] must implement the [`FromWorld`] trait.
 	/// If the [`Default`] trait is implemented, the [`FromWorld`] trait will use
 	/// the [`Default::default`] method to initialize the [`Resource`].
-	pub fn init_non_send_resource<R: 'static + FromWorld>(&mut self) -> &mut Self {
+	pub fn init_non_send_resource<R: 'static + FromWorld>(&mut self) {
 		self.world.init_non_send_resource::<R>();
-		self
 	}
 
 	/// Sets the function that will be called when the app is run.
@@ -758,9 +755,8 @@ impl App {
 	/// App::new()
 	///     .set_runner(my_runner);
 	/// ```
-	pub fn set_runner(&mut self, run_fn: impl Fn(App) + 'static) -> &mut Self {
+	pub fn set_runner(&mut self, run_fn: impl Fn(App) + 'static) {
 		self.runner = Box::new(run_fn);
-		self
 	}
 
 	/// Adds a single [`Plugin`].
@@ -777,13 +773,12 @@ impl App {
 	/// #
 	/// App::new().add_plugin(bevy_log::LogPlugin::default());
 	/// ```
-	pub fn add_plugin<T>(&mut self, plugin: T) -> &mut Self
+	pub fn add_plugin<T>(&mut self, plugin: T)
 	where
 		T: Plugin,
 	{
 		debug!("added plugin: {}", plugin.name());
 		plugin.build(self);
-		self
 	}
 
 	/// Adds a group of [`Plugin`]s.
@@ -880,7 +875,7 @@ impl App {
 		label: impl AppLabel,
 		app: App,
 		sub_app_runner: impl Fn(&mut World, &mut App) + 'static,
-	) -> &mut Self {
+	) {
 		self.sub_apps.insert(
 			Box::new(label),
 			SubApp {
@@ -888,7 +883,6 @@ impl App {
 				runner: Box::new(sub_app_runner),
 			},
 		);
-		self
 	}
 
 	/// Retrieves a `SubApp` stored inside this [`App`].

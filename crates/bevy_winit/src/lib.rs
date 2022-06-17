@@ -41,11 +41,10 @@ pub struct WinitPlugin;
 
 impl Plugin for WinitPlugin {
 	fn build(&self, app: &mut App) {
-		app
-			.init_non_send_resource::<WinitWindows>()
-			.init_resource::<WinitSettings>()
-			.set_runner(winit_runner)
-			.add_system_to_stage(CoreStage::PostUpdate, change_window.label(ModifiesWindows));
+		app.init_non_send_resource::<WinitWindows>();
+		app.init_resource::<WinitSettings>();
+		app.set_runner(winit_runner);
+		app.add_system_to_stage(CoreStage::PostUpdate, change_window.label(ModifiesWindows));
 		#[cfg(target_arch = "wasm32")]
 		app.add_plugin(web_resize::CanvasParentResizePlugin);
 		let event_loop = EventLoop::new();
@@ -53,9 +52,8 @@ impl Plugin for WinitPlugin {
 		// Note that we create a window here "early" because WASM/WebGL requires the window to exist prior to initializing
 		// the renderer.
 		handle_create_window_events(&mut app.world, &event_loop, &mut create_window_reader.0);
-		app
-			.insert_resource(create_window_reader)
-			.insert_non_send_resource(event_loop);
+		app.insert_resource(create_window_reader);
+		app.insert_non_send_resource(event_loop);
 	}
 }
 

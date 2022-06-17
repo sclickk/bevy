@@ -29,11 +29,11 @@ use bevy::{
 };
 
 fn main() {
-	App::new()
-		.add_plugins(DefaultPlugins)
-		.add_plugin(ColoredMesh2dPlugin)
-		.add_startup_system(star)
-		.run();
+	let mut app = App::new();
+	app.add_plugins(DefaultPlugins);
+	app.add_plugin(ColoredMesh2dPlugin);
+	app.add_startup_system(star);
+	app.run();
 }
 
 fn star(

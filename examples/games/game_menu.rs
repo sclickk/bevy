@@ -27,19 +27,19 @@ enum DisplayQuality {
 struct Volume(u32);
 
 fn main() {
-	App::new()
-		.add_plugins(DefaultPlugins)
-		// Insert as resource the initial value for the settings resources
-		.insert_resource(DisplayQuality::Medium)
-		.insert_resource(Volume(7))
-		.add_startup_system(setup)
-		// Declare the game state, and set its startup value
-		.add_state(GameState::Splash)
-		// Adds the plugins for each state
-		.add_plugin(splash::SplashPlugin)
-		.add_plugin(menu::MenuPlugin)
-		.add_plugin(game::GamePlugin)
-		.run();
+	let mut app = App::new();
+	app.add_plugins(DefaultPlugins);
+	// Insert as resource the initial value for the settings resources
+	app.insert_resource(DisplayQuality::Medium);
+	app.insert_resource(Volume(7));
+	app.add_startup_system(setup);
+	// Declare the game state, and set its startup value
+	app.add_state(GameState::Splash);
+	// Adds the plugins for each state
+	app.add_plugin(splash::SplashPlugin);
+	app.add_plugin(menu::MenuPlugin);
+	app.add_plugin(game::GamePlugin);
+	app.run();
 }
 
 fn setup(mut commands: Commands) {

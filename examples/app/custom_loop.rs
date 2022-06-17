@@ -22,9 +22,9 @@ fn print_system(input: Res<Input>) {
 }
 
 fn main() {
-	App::new()
-		.insert_resource(Input(String::new()))
-		.set_runner(my_runner)
-		.add_system(print_system)
-		.run();
+	let mut app = App::new();
+	app.insert_resource(Input(String::new()));
+	app.set_runner(my_runner);
+	app.add_system(print_system);
+	app.run();
 }
