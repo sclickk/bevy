@@ -45,20 +45,6 @@ impl<T: Asset> LoadedAsset<T> {
 	pub fn add_dependency(&mut self, asset_path: AssetPath) {
 		self.dependencies.push(asset_path.to_owned());
 	}
-
-	#[must_use]
-	pub fn with_dependency(mut self, asset_path: AssetPath) -> Self {
-		self.add_dependency(asset_path);
-		self
-	}
-
-	#[must_use]
-	pub fn with_dependencies(mut self, mut asset_paths: Vec<AssetPath<'static>>) -> Self {
-		for asset_path in asset_paths.drain(..) {
-			self.add_dependency(asset_path);
-		}
-		self
-	}
 }
 
 pub(crate) struct BoxedLoadedAsset {
