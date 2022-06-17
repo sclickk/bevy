@@ -301,7 +301,9 @@ pub fn extract_text_uinodes(
 			let alignment_offset = (uinode.size / -2.0).extend(0.0);
 
 			for text_glyph in text_glyphs {
-				let color = text.sections[text_glyph.section_index].style.color;
+				let color = text.sections[text_glyph.section_index]
+					.style
+					.color;
 				let atlas = texture_atlases
 					.get(&text_glyph.atlas_info.texture_atlas)
 					.unwrap();
@@ -310,12 +312,11 @@ pub fn extract_text_uinodes(
 				let rect = atlas.textures[index];
 				let atlas_size = Some(atlas.size);
 
-				let transform =
-					Mat4::from_rotation_translation(transform.rotation, transform.translation)
-						* Mat4::from_scale(transform.scale / scale_factor)
-						* Mat4::from_translation(
-							alignment_offset * scale_factor + text_glyph.position.extend(0.),
-						);
+				let transform = Mat4::from_rotation_translation(transform.rotation, transform.translation)
+					* Mat4::from_scale(transform.scale / scale_factor)
+					* Mat4::from_translation(
+						alignment_offset * scale_factor + text_glyph.position.extend(0.),
+					);
 
 				extracted_uinodes.uinodes.push(ExtractedUiNode {
 					transform,
@@ -438,7 +439,9 @@ pub fn prepare_uinodes(
 			positions[3] + positions_diff[3].extend(0.),
 		];
 
-		let transformed_rect_size = extracted_uinode.transform.transform_vector3(rect_size);
+		let transformed_rect_size = extracted_uinode
+			.transform
+			.transform_vector3(rect_size);
 
 		// Cull nodes that are completely clipped
 		if positions_diff[0].x - positions_diff[1].x >= transformed_rect_size.x
@@ -448,7 +451,9 @@ pub fn prepare_uinodes(
 		}
 
 		// Clip UVs (Note: y is reversed in UV space)
-		let atlas_extent = extracted_uinode.atlas_size.unwrap_or(uinode_rect.max);
+		let atlas_extent = extracted_uinode
+			.atlas_size
+			.unwrap_or(uinode_rect.max);
 		let uvs = [
 			Vec2::new(
 				uinode_rect.min.x + positions_diff[0].x,
@@ -490,7 +495,9 @@ pub fn prepare_uinodes(
 		},));
 	}
 
-	ui_meta.vertices.write_buffer(&render_device, &render_queue);
+	ui_meta
+		.vertices
+		.write_buffer(&render_device, &render_queue);
 }
 
 #[derive(Default)]
@@ -532,7 +539,10 @@ pub fn queue_uinodes(
 			label: Some("ui_view_bind_group"),
 			layout: &ui_pipeline.view_layout,
 		}));
-		let draw_ui_function = draw_functions.read().get_id::<DrawUi>().unwrap();
+		let draw_ui_function = draw_functions
+			.read()
+			.get_id::<DrawUi>()
+			.unwrap();
 		let pipeline = pipelines.specialize(&mut pipeline_cache, &ui_pipeline, UiPipelineKey {});
 		for mut transparent_phase in views.iter_mut() {
 			for (entity, batch) in ui_batches.iter() {

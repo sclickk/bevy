@@ -25,7 +25,8 @@ pub struct ScenePlugin;
 
 impl Plugin for ScenePlugin {
 	fn build(&self, app: &mut App) {
-		app.add_asset::<DynamicScene>()
+		app
+			.add_asset::<DynamicScene>()
 			.add_asset::<Scene>()
 			.init_asset_loader::<SceneLoader>()
 			.init_resource::<SceneSpawner>()

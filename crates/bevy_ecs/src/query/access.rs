@@ -41,14 +41,22 @@ impl<T: SparseSetIndex> Access<T> {
 
 	/// Adds access to the element given by `index`.
 	pub fn add_read(&mut self, index: T) {
-		self.reads_and_writes.grow(index.sparse_set_index() + 1);
-		self.reads_and_writes.insert(index.sparse_set_index());
+		self
+			.reads_and_writes
+			.grow(index.sparse_set_index() + 1);
+		self
+			.reads_and_writes
+			.insert(index.sparse_set_index());
 	}
 
 	/// Adds exclusive access to the element given by `index`.
 	pub fn add_write(&mut self, index: T) {
-		self.reads_and_writes.grow(index.sparse_set_index() + 1);
-		self.reads_and_writes.insert(index.sparse_set_index());
+		self
+			.reads_and_writes
+			.grow(index.sparse_set_index() + 1);
+		self
+			.reads_and_writes
+			.insert(index.sparse_set_index());
 		self.writes.grow(index.sparse_set_index() + 1);
 		self.writes.insert(index.sparse_set_index());
 	}
@@ -58,7 +66,9 @@ impl<T: SparseSetIndex> Access<T> {
 		if self.reads_all {
 			true
 		} else {
-			self.reads_and_writes.contains(index.sparse_set_index())
+			self
+				.reads_and_writes
+				.contains(index.sparse_set_index())
 		}
 	}
 
@@ -87,7 +97,9 @@ impl<T: SparseSetIndex> Access<T> {
 	/// Adds all access from `other`.
 	pub fn extend(&mut self, other: &Access<T>) {
 		self.reads_all = self.reads_all || other.reads_all;
-		self.reads_and_writes.union_with(&other.reads_and_writes);
+		self
+			.reads_and_writes
+			.union_with(&other.reads_and_writes);
 		self.writes.union_with(&other.writes);
 	}
 
@@ -119,8 +131,16 @@ impl<T: SparseSetIndex> Access<T> {
 		if other.reads_all {
 			conflicts.extend(self.writes.ones());
 		}
-		conflicts.extend(self.writes.intersection(&other.reads_and_writes));
-		conflicts.extend(self.reads_and_writes.intersection(&other.writes));
+		conflicts.extend(
+			self
+				.writes
+				.intersection(&other.reads_and_writes),
+		);
+		conflicts.extend(
+			self
+				.reads_and_writes
+				.intersection(&other.writes),
+		);
 		conflicts
 			.ones()
 			.map(SparseSetIndex::get_sparse_set_index)
@@ -129,12 +149,16 @@ impl<T: SparseSetIndex> Access<T> {
 
 	/// Returns the indices of the elements this has access to.
 	pub fn reads_and_writes(&self) -> impl Iterator<Item = T> + '_ {
-		self.reads_and_writes.ones().map(T::get_sparse_set_index)
+		self
+			.reads_and_writes
+			.ones()
+			.map(T::get_sparse_set_index)
 	}
 
 	/// Returns the indices of the elements this has non-exclusive access to.
 	pub fn reads(&self) -> impl Iterator<Item = T> + '_ {
-		self.reads_and_writes
+		self
+			.reads_and_writes
 			.difference(&self.writes)
 			.map(T::get_sparse_set_index)
 	}
@@ -241,8 +265,16 @@ impl<T: SparseSetIndex> FilteredAccess<T> {
 		if self.access.is_compatible(&other.access) {
 			true
 		} else {
-			self.with.intersection(&other.without).next().is_some()
-				|| self.without.intersection(&other.with).next().is_some()
+			self
+				.with
+				.intersection(&other.without)
+				.next()
+				.is_some()
+				|| self
+					.without
+					.intersection(&other.with)
+					.next()
+					.is_some()
 		}
 	}
 
@@ -292,7 +324,10 @@ impl<T: SparseSetIndex> FilteredAccessSet<T> {
 
 	/// Returns `true` if this and `other` can be active at the same time.
 	pub fn is_compatible(&self, other: &FilteredAccessSet<T>) -> bool {
-		if self.combined_access.is_compatible(other.combined_access()) {
+		if self
+			.combined_access
+			.is_compatible(other.combined_access())
+		{
 			return true;
 		}
 		for filtered in &self.filtered_accesses {
@@ -310,10 +345,17 @@ impl<T: SparseSetIndex> FilteredAccessSet<T> {
 	pub fn get_conflicts(&self, other: &FilteredAccessSet<T>) -> Vec<T> {
 		// if the unfiltered access is incompatible, must check each pair
 		let mut conflicts = HashSet::new();
-		if !self.combined_access.is_compatible(other.combined_access()) {
+		if !self
+			.combined_access
+			.is_compatible(other.combined_access())
+		{
 			for filtered in &self.filtered_accesses {
 				for other_filtered in &other.filtered_accesses {
-					conflicts.extend(filtered.get_conflicts(other_filtered).into_iter());
+					conflicts.extend(
+						filtered
+							.get_conflicts(other_filtered)
+							.into_iter(),
+					);
 				}
 			}
 		}
@@ -324,9 +366,16 @@ impl<T: SparseSetIndex> FilteredAccessSet<T> {
 	pub fn get_conflicts_single(&self, filtered_access: &FilteredAccess<T>) -> Vec<T> {
 		// if the unfiltered access is incompatible, must check each pair
 		let mut conflicts = HashSet::new();
-		if !self.combined_access.is_compatible(filtered_access.access()) {
+		if !self
+			.combined_access
+			.is_compatible(filtered_access.access())
+		{
 			for filtered in &self.filtered_accesses {
-				conflicts.extend(filtered.get_conflicts(filtered_access).into_iter());
+				conflicts.extend(
+					filtered
+						.get_conflicts(filtered_access)
+						.into_iter(),
+				);
 			}
 		}
 		conflicts.into_iter().collect()
@@ -334,14 +383,18 @@ impl<T: SparseSetIndex> FilteredAccessSet<T> {
 
 	/// Adds the filtered access to the set.
 	pub fn add(&mut self, filtered_access: FilteredAccess<T>) {
-		self.combined_access.extend(&filtered_access.access);
+		self
+			.combined_access
+			.extend(&filtered_access.access);
 		self.filtered_accesses.push(filtered_access);
 	}
 
 	pub fn extend(&mut self, filtered_access_set: FilteredAccessSet<T>) {
-		self.combined_access
+		self
+			.combined_access
 			.extend(&filtered_access_set.combined_access);
-		self.filtered_accesses
+		self
+			.filtered_accesses
 			.extend(filtered_access_set.filtered_accesses);
 	}
 

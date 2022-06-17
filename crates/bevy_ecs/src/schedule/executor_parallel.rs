@@ -85,20 +85,24 @@ impl ParallelSystemExecutor for ParallelExecutor {
 			let dependencies_total = container.dependencies().len();
 			let system = container.system();
 			let (start_sender, start_receiver) = async_channel::bounded(1);
-			self.system_metadata.push(SystemSchedulingMetadata {
-				start_sender,
-				start_receiver,
-				dependants: vec![],
-				dependencies_total,
-				dependencies_now: 0,
-				is_send: system.is_send(),
-				archetype_component_access: Default::default(),
-			});
+			self
+				.system_metadata
+				.push(SystemSchedulingMetadata {
+					start_sender,
+					start_receiver,
+					dependants: vec![],
+					dependencies_total,
+					dependencies_now: 0,
+					is_send: system.is_send(),
+					archetype_component_access: Default::default(),
+				});
 		}
 		// Populate the dependants lists in the scheduling metadata.
 		for (dependant, container) in systems.iter().enumerate() {
 			for dependency in container.dependencies() {
-				self.system_metadata[*dependency].dependants.push(dependant);
+				self.system_metadata[*dependency]
+					.dependants
+					.push(dependant);
 			}
 		}
 	}
@@ -118,7 +122,8 @@ impl ParallelSystemExecutor for ParallelExecutor {
 				let meta = &mut self.system_metadata[index];
 				let system = container.system_mut();
 				system.update_archetype_component_access(world);
-				meta.archetype_component_access
+				meta
+					.archetype_component_access
 					.extend(system.archetype_component_access());
 			}
 		}
@@ -169,8 +174,11 @@ impl ParallelExecutor {
 		#[cfg(feature = "trace")]
 		let _span = bevy_utils::tracing::info_span!("prepare_systems").entered();
 		self.should_run.clear();
-		for (index, (system_data, system)) in
-			self.system_metadata.iter_mut().zip(systems).enumerate()
+		for (index, (system_data, system)) in self
+			.system_metadata
+			.iter_mut()
+			.zip(systems)
+			.enumerate()
 		{
 			// Spawn the system task.
 			if system.should_run() {
@@ -236,7 +244,9 @@ impl ParallelExecutor {
 			// immediately; otherwise, check for conflicts and signal its task to start.
 			let system_metadata = &self.system_metadata[index];
 			if !self.should_run[index] {
-				self.dependants_scratch.extend(&system_metadata.dependants);
+				self
+					.dependants_scratch
+					.extend(&system_metadata.dependants);
 			} else if self.can_start_now(index) {
 				#[cfg(test)]
 				{
@@ -252,7 +262,8 @@ impl ParallelExecutor {
 					self.non_send_running = true;
 				}
 				// Add this system's access information to the active access information.
-				self.active_archetype_component_access
+				self
+					.active_archetype_component_access
 					.extend(&system_metadata.archetype_component_access);
 			}
 		}
@@ -274,7 +285,9 @@ impl ParallelExecutor {
 			self.non_send_running = false;
 		}
 		self.running.set(index, false);
-		self.dependants_scratch.extend(&system_data.dependants);
+		self
+			.dependants_scratch
+			.extend(&system_data.dependants);
 	}
 
 	/// Discards active access information and builds it again using currently
@@ -282,7 +295,8 @@ impl ParallelExecutor {
 	fn rebuild_active_access(&mut self) {
 		self.active_archetype_component_access.clear();
 		for index in self.running.ones() {
-			self.active_archetype_component_access
+			self
+				.active_archetype_component_access
 				.extend(&self.system_metadata[index].archetype_component_access);
 		}
 	}
@@ -301,7 +315,11 @@ impl ParallelExecutor {
 
 	#[cfg(test)]
 	fn emit_event(&self, event: SchedulingEvent) {
-		let _ = self.events_sender.as_ref().unwrap().try_send(event);
+		let _ = self
+			.events_sender
+			.as_ref()
+			.unwrap()
+			.try_send(event);
 	}
 }
 
@@ -328,7 +346,10 @@ mod tests {
 
 	fn receive_events(world: &World) -> Vec<SchedulingEvent> {
 		let mut events = Vec::new();
-		while let Ok(event) = world.resource::<Receiver<SchedulingEvent>>().try_recv() {
+		while let Ok(event) = world
+			.resource::<Receiver<SchedulingEvent>>()
+			.try_recv()
+		{
 			events.push(event);
 		}
 		events
@@ -407,7 +428,9 @@ mod tests {
 		stage.run(&mut world);
 		assert_eq!(receive_events(&world), vec![StartedSystems(2),]);
 		let mut world = World::new();
-		world.spawn().insert_bundle((W(0usize), W(0u32), W(0f32)));
+		world
+			.spawn()
+			.insert_bundle((W(0usize), W(0u32), W(0f32)));
 		fn wants_mut_usize(_: Query<(&mut W<usize>, &W<f32>)>) {}
 		fn wants_mut_u32(_: Query<(&mut W<u32>, &W<f32>)>) {}
 		let mut stage = SystemStage::parallel()

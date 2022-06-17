@@ -90,10 +90,7 @@ impl<'a> RenderGraphContext<'a> {
 	}
 
 	/// Retrieves the input slot value referenced by the `label` as a [`Sampler`].
-	pub fn get_input_sampler(
-		&self,
-		label: impl Into<SlotLabel>,
-	) -> Result<&Sampler, InputSlotError> {
+	pub fn get_input_sampler(&self, label: impl Into<SlotLabel>) -> Result<&Sampler, InputSlotError> {
 		let label = label.into();
 		match self.get_input(label.clone())? {
 			SlotValue::Sampler(value) => Ok(value),
@@ -193,7 +190,9 @@ impl<'a> RenderGraphContext<'a> {
 			return Err(RunSubGraphError::SubGraphHasNoInputs(name));
 		}
 
-		self.run_sub_graphs.push(RunSubGraph { name, inputs });
+		self
+			.run_sub_graphs
+			.push(RunSubGraph { name, inputs });
 
 		Ok(())
 	}

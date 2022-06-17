@@ -28,7 +28,9 @@ impl DynamicTextureAtlasBuilder {
 			texture.texture_descriptor.size.height as i32 + self.padding,
 		));
 		if let Some(allocation) = allocation {
-			let atlas_texture = textures.get_mut(&texture_atlas.texture).unwrap();
+			let atlas_texture = textures
+				.get_mut(&texture_atlas.texture)
+				.unwrap();
 			self.place_texture(atlas_texture, allocation, texture);
 			let mut rect: Rect = allocation.rectangle.into();
 			rect.max.x -= self.padding as f32;
@@ -62,26 +64,26 @@ impl DynamicTextureAtlasBuilder {
 	//     }
 	// }
 
-	fn place_texture(
-		&mut self,
-		atlas_texture: &mut Image,
-		allocation: Allocation,
-		texture: &Image,
-	) {
+	fn place_texture(&mut self, atlas_texture: &mut Image, allocation: Allocation, texture: &Image) {
 		let mut rect = allocation.rectangle;
 		rect.max.x -= self.padding;
 		rect.max.y -= self.padding;
 		let atlas_width = atlas_texture.texture_descriptor.size.width as usize;
 		let rect_width = rect.width() as usize;
-		let format_size = atlas_texture.texture_descriptor.format.pixel_size();
+		let format_size = atlas_texture
+			.texture_descriptor
+			.format
+			.pixel_size();
 
-		for (texture_y, bound_y) in (rect.min.y..rect.max.y).map(|i| i as usize).enumerate() {
+		for (texture_y, bound_y) in (rect.min.y..rect.max.y)
+			.map(|i| i as usize)
+			.enumerate()
+		{
 			let begin = (bound_y * atlas_width + rect.min.x as usize) * format_size;
 			let end = begin + rect_width * format_size;
 			let texture_begin = texture_y * rect_width * format_size;
 			let texture_end = texture_begin + rect_width * format_size;
-			atlas_texture.data[begin..end]
-				.copy_from_slice(&texture.data[texture_begin..texture_end]);
+			atlas_texture.data[begin..end].copy_from_slice(&texture.data[texture_begin..texture_end]);
 		}
 	}
 }

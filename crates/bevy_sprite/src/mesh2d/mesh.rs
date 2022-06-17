@@ -210,10 +210,8 @@ impl FromWorld for Mesh2dPipeline {
 				ImageDataLayout {
 					offset: 0,
 					bytes_per_row: Some(
-						std::num::NonZeroU32::new(
-							image.texture_descriptor.size.width * format_size as u32,
-						)
-						.unwrap(),
+						std::num::NonZeroU32::new(image.texture_descriptor.size.width * format_size as u32)
+							.unwrap(),
 					),
 					rows_per_image: None,
 				},
@@ -418,9 +416,11 @@ pub fn queue_mesh2d_view_bind_groups(
 				layout: &mesh2d_pipeline.view_layout,
 			});
 
-			commands.entity(entity).insert(Mesh2dViewBindGroup {
-				value: view_bind_group,
-			});
+			commands
+				.entity(entity)
+				.insert(Mesh2dViewBindGroup {
+					value: view_bind_group,
+				});
 		}
 	}
 }

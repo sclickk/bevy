@@ -126,17 +126,22 @@ impl GenericTypeInfoCell {
 		F: FnOnce() -> TypeInfo,
 	{
 		let type_id = TypeId::of::<T>();
-		let mapping = self.0.get_or_init(|| Box::new(RwLock::default()));
+		let mapping = self
+			.0
+			.get_or_init(|| Box::new(RwLock::default()));
 		if let Some(info) = mapping.read().get(&type_id) {
 			return info;
 		}
 
-		mapping.write().entry(type_id).or_insert_with(|| {
-			// We leak here in order to obtain a `&'static` reference.
-			// Otherwise, we won't be able to return a reference due to the `RwLock`.
-			// This should be okay, though, since we expect it to remain statically
-			// available over the course of the application.
-			Box::leak(Box::new(f()))
-		})
+		mapping
+			.write()
+			.entry(type_id)
+			.or_insert_with(|| {
+				// We leak here in order to obtain a `&'static` reference.
+				// Otherwise, we won't be able to return a reference due to the `RwLock`.
+				// This should be okay, though, since we expect it to remain statically
+				// available over the course of the application.
+				Box::leak(Box::new(f()))
+			})
 	}
 }

@@ -67,7 +67,10 @@ impl<S: Subscriber + for<'a> LookupSpan<'a>> Layer<S> for AndroidLayer {
 
 	fn on_record(&self, id: &Id, values: &Record<'_>, ctx: Context<'_, S>) {
 		if let Some(span_ref) = ctx.span(id) {
-			if let Some(debug_record) = span_ref.extensions_mut().get_mut::<StringRecorder>() {
+			if let Some(debug_record) = span_ref
+				.extensions_mut()
+				.get_mut::<StringRecorder>()
+			{
 				values.record(debug_record);
 			}
 		}

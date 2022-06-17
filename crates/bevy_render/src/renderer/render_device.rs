@@ -1,6 +1,6 @@
 use crate::render_resource::{
-	BindGroup, BindGroupLayout, Buffer, ComputePipeline, RawRenderPipelineDescriptor,
-	RenderPipeline, Sampler, Texture,
+	BindGroup, BindGroupLayout, Buffer, ComputePipeline, RawRenderPipelineDescriptor, RenderPipeline,
+	Sampler, Texture,
 };
 use futures_lite::future;
 use std::sync::Arc;
@@ -103,10 +103,7 @@ impl RenderDevice {
 
 	/// Creates a [`ComputePipeline`].
 	#[inline]
-	pub fn create_compute_pipeline(
-		&self,
-		desc: &wgpu::ComputePipelineDescriptor,
-	) -> ComputePipeline {
+	pub fn create_compute_pipeline(&self, desc: &wgpu::ComputePipelineDescriptor) -> ComputePipeline {
 		let wgpu_compute_pipeline = self.device.create_compute_pipeline(desc);
 		ComputePipeline::from(wgpu_compute_pipeline)
 	}
@@ -189,7 +186,11 @@ impl RenderDevice {
 		&self,
 		buffers_per_shader_stage: u32,
 	) -> BufferBindingType {
-		if self.limits().max_storage_buffers_per_shader_stage >= buffers_per_shader_stage {
+		if self
+			.limits()
+			.max_storage_buffers_per_shader_stage
+			>= buffers_per_shader_stage
+		{
 			BufferBindingType::Storage { read_only: true }
 		} else {
 			BufferBindingType::Uniform

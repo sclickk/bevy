@@ -39,12 +39,14 @@ pub fn basis_buffer_to_image(
 			basis_texture_format, transcode_format
 		)));
 	}
-	transcoder.prepare_transcoding(buffer).map_err(|_| {
-		TextureError::TranscodeError(format!(
-			"Failed to prepare for transcoding from {:?}",
-			basis_texture_format
-		))
-	})?;
+	transcoder
+		.prepare_transcoding(buffer)
+		.map_err(|_| {
+			TextureError::TranscodeError(format!(
+				"Failed to prepare for transcoding from {:?}",
+				basis_texture_format
+			))
+		})?;
 	let mut transcoded = Vec::new();
 
 	let image_count = transcoder.image_count(buffer);

@@ -1,7 +1,7 @@
 use crate::{
 	render_graph::{
-		Edge, Node, NodeId, NodeLabel, NodeRunError, NodeState, RenderGraphContext,
-		RenderGraphError, SlotInfo, SlotLabel,
+		Edge, Node, NodeId, NodeLabel, NodeRunError, NodeState, RenderGraphContext, RenderGraphError,
+		SlotInfo, SlotLabel,
 	},
 	renderer::RenderContext,
 };
@@ -83,7 +83,9 @@ impl RenderGraph {
 	/// Returns the [`NodeState`] of the input node of this graph..
 	#[inline]
 	pub fn input_node(&self) -> Option<&NodeState> {
-		self.input_node.and_then(|id| self.get_node_state(id).ok())
+		self
+			.input_node
+			.and_then(|id| self.get_node_state(id).ok())
 	}
 
 	/// Adds the `node` with the `name` to the graph.
@@ -120,7 +122,9 @@ impl RenderGraph {
 							output_node,
 						} => {
 							if let Ok(output_node) = self.get_node_state_mut(*output_node) {
-								output_node.edges.remove_output_edge(input_edge.clone())?;
+								output_node
+									.edges
+									.remove_output_edge(input_edge.clone())?;
 							}
 						}
 					}
@@ -140,7 +144,9 @@ impl RenderGraph {
 							input_node,
 						} => {
 							if let Ok(input_node) = self.get_node_state_mut(*input_node) {
-								input_node.edges.remove_input_edge(output_edge.clone())?;
+								input_node
+									.edges
+									.remove_input_edge(output_edge.clone())?;
 							}
 						}
 					}
@@ -158,7 +164,8 @@ impl RenderGraph {
 	) -> Result<&NodeState, RenderGraphError> {
 		let label = label.into();
 		let node_id = self.get_node_id(&label)?;
-		self.nodes
+		self
+			.nodes
 			.get(&node_id)
 			.ok_or(RenderGraphError::InvalidNode(label))
 	}
@@ -170,7 +177,8 @@ impl RenderGraph {
 	) -> Result<&mut NodeState, RenderGraphError> {
 		let label = label.into();
 		let node_id = self.get_node_id(&label)?;
-		self.nodes
+		self
+			.nodes
 			.get_mut(&node_id)
 			.ok_or(RenderGraphError::InvalidNode(label))
 	}
@@ -193,18 +201,19 @@ impl RenderGraph {
 	where
 		T: Node,
 	{
-		self.get_node_state(label).and_then(|n| n.node())
+		self
+			.get_node_state(label)
+			.and_then(|n| n.node())
 	}
 
 	/// Retrieves the [`Node`] referenced by the `label` mutably.
-	pub fn get_node_mut<T>(
-		&mut self,
-		label: impl Into<NodeLabel>,
-	) -> Result<&mut T, RenderGraphError>
+	pub fn get_node_mut<T>(&mut self, label: impl Into<NodeLabel>) -> Result<&mut T, RenderGraphError>
 	where
 		T: Node,
 	{
-		self.get_node_state_mut(label).and_then(|n| n.node_mut())
+		self
+			.get_node_state_mut(label)
+			.and_then(|n| n.node_mut())
 	}
 
 	/// Adds the [`Edge::SlotEdge`] to the graph. This guarantees that the `output_node`
@@ -243,7 +252,9 @@ impl RenderGraph {
 
 		{
 			let output_node = self.get_node_state_mut(output_node_id)?;
-			output_node.edges.add_output_edge(edge.clone())?;
+			output_node
+				.edges
+				.add_output_edge(edge.clone())?;
 		}
 		let input_node = self.get_node_state_mut(input_node_id)?;
 		input_node.edges.add_input_edge(edge)?;
@@ -287,7 +298,9 @@ impl RenderGraph {
 
 		{
 			let output_node = self.get_node_state_mut(output_node_id)?;
-			output_node.edges.remove_output_edge(edge.clone())?;
+			output_node
+				.edges
+				.remove_output_edge(edge.clone())?;
 		}
 		let input_node = self.get_node_state_mut(input_node_id)?;
 		input_node.edges.remove_input_edge(edge)?;
@@ -314,7 +327,9 @@ impl RenderGraph {
 
 		{
 			let output_node = self.get_node_state_mut(output_node_id)?;
-			output_node.edges.add_output_edge(edge.clone())?;
+			output_node
+				.edges
+				.add_output_edge(edge.clone())?;
 		}
 		let input_node = self.get_node_state_mut(input_node_id)?;
 		input_node.edges.add_input_edge(edge)?;
@@ -341,7 +356,9 @@ impl RenderGraph {
 
 		{
 			let output_node = self.get_node_state_mut(output_node_id)?;
-			output_node.edges.remove_output_edge(edge.clone())?;
+			output_node
+				.edges
+				.remove_output_edge(edge.clone())?;
 		}
 		let input_node = self.get_node_state_mut(input_node_id)?;
 		input_node.edges.remove_input_edge(edge)?;
@@ -378,24 +395,31 @@ impl RenderGraph {
 					.ok_or(RenderGraphError::InvalidOutputNodeSlot(SlotLabel::Index(
 						output_index,
 					)))?;
-				let input_slot = input_node_state.input_slots.get_slot(input_index).ok_or(
-					RenderGraphError::InvalidInputNodeSlot(SlotLabel::Index(input_index)),
-				)?;
+				let input_slot = input_node_state
+					.input_slots
+					.get_slot(input_index)
+					.ok_or(RenderGraphError::InvalidInputNodeSlot(SlotLabel::Index(
+						input_index,
+					)))?;
 
 				if let Some(Edge::SlotEdge {
 					output_node: current_output_node,
 					..
-				}) = input_node_state.edges.input_edges().iter().find(|e| {
-					if let Edge::SlotEdge {
-						input_index: current_input_index,
-						..
-					} = e
-					{
-						input_index == *current_input_index
-					} else {
-						false
-					}
-				}) {
+				}) = input_node_state
+					.edges
+					.input_edges()
+					.iter()
+					.find(|e| {
+						if let Edge::SlotEdge {
+							input_index: current_input_index,
+							..
+						} = e
+						{
+							input_index == *current_input_index
+						} else {
+							false
+						}
+					}) {
 					if should_exist == EdgeExistence::DoesNotExist {
 						return Err(RenderGraphError::NodeInputSlotAlreadyOccupied {
 							node: input_node,
@@ -425,9 +449,17 @@ impl RenderGraph {
 		let output_node_state = self.get_node_state(edge.get_output_node());
 		let input_node_state = self.get_node_state(edge.get_input_node());
 		if let Ok(output_node_state) = output_node_state {
-			if output_node_state.edges.output_edges().contains(edge) {
+			if output_node_state
+				.edges
+				.output_edges()
+				.contains(edge)
+			{
 				if let Ok(input_node_state) = input_node_state {
-					if input_node_state.edges.input_edges().contains(edge) {
+					if input_node_state
+						.edges
+						.input_edges()
+						.contains(edge)
+					{
 						return true;
 					}
 				}
@@ -449,14 +481,16 @@ impl RenderGraph {
 
 	/// Returns an iterator over the sub graphs.
 	pub fn iter_sub_graphs(&self) -> impl Iterator<Item = (&str, &RenderGraph)> {
-		self.sub_graphs
+		self
+			.sub_graphs
 			.iter()
 			.map(|(name, graph)| (name.as_ref(), graph))
 	}
 
 	/// Returns an iterator over the sub graphs, that allows modifying each value.
 	pub fn iter_sub_graphs_mut(&mut self) -> impl Iterator<Item = (&str, &mut RenderGraph)> {
-		self.sub_graphs
+		self
+			.sub_graphs
 			.iter_mut()
 			.map(|(name, graph)| (name.as_ref(), graph))
 	}
@@ -468,14 +502,14 @@ impl RenderGraph {
 		label: impl Into<NodeLabel>,
 	) -> Result<impl Iterator<Item = (&Edge, &NodeState)>, RenderGraphError> {
 		let node = self.get_node_state(label)?;
-		Ok(node
-			.edges
-			.input_edges()
-			.iter()
-			.map(|edge| (edge, edge.get_output_node()))
-			.map(move |(edge, output_node_id)| {
-				(edge, self.get_node_state(output_node_id).unwrap())
-			}))
+		Ok(
+			node
+				.edges
+				.input_edges()
+				.iter()
+				.map(|edge| (edge, edge.get_output_node()))
+				.map(move |(edge, output_node_id)| (edge, self.get_node_state(output_node_id).unwrap())),
+		)
 	}
 
 	/// Returns an iterator over a tuple of the output edges and the corresponding input nodes
@@ -485,12 +519,14 @@ impl RenderGraph {
 		label: impl Into<NodeLabel>,
 	) -> Result<impl Iterator<Item = (&Edge, &NodeState)>, RenderGraphError> {
 		let node = self.get_node_state(label)?;
-		Ok(node
-			.edges
-			.output_edges()
-			.iter()
-			.map(|edge| (edge, edge.get_input_node()))
-			.map(move |(edge, input_node_id)| (edge, self.get_node_state(input_node_id).unwrap())))
+		Ok(
+			node
+				.edges
+				.output_edges()
+				.iter()
+				.map(|edge| (edge, edge.get_input_node()))
+				.map(move |(edge, input_node_id)| (edge, self.get_node_state(input_node_id).unwrap())),
+		)
 	}
 
 	/// Adds the `sub_graph` with the `name` to the graph.
@@ -615,7 +651,9 @@ mod tests {
 		let c_id = graph.add_node("C", TestNode::new(1, 1));
 		let d_id = graph.add_node("D", TestNode::new(1, 0));
 
-		graph.add_slot_edge("A", "out_0", "C", "in_0").unwrap();
+		graph
+			.add_slot_edge("A", "out_0", "C", "in_0")
+			.unwrap();
 		graph.add_node_edge("B", "C").unwrap();
 		graph.add_slot_edge("C", 0, "D", 0).unwrap();
 

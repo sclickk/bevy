@@ -35,7 +35,8 @@ impl Plugin for WireframePlugin {
 			Shader::from_wgsl
 		);
 
-		app.init_resource::<WireframeConfig>()
+		app
+			.init_resource::<WireframeConfig>()
 			.add_plugin(ExtractResourcePlugin::<WireframeConfig>::default());
 
 		if let Ok(render_app) = app.get_sub_app_mut(RenderApp) {
@@ -91,7 +92,12 @@ impl SpecializedMeshPipeline for WireframePipeline {
 		descriptor.vertex.shader = self.shader.clone_weak();
 		descriptor.fragment.as_mut().unwrap().shader = self.shader.clone_weak();
 		descriptor.primitive.polygon_mode = PolygonMode::Line;
-		descriptor.depth_stencil.as_mut().unwrap().bias.slope_scale = 1.0;
+		descriptor
+			.depth_stencil
+			.as_mut()
+			.unwrap()
+			.bias
+			.slope_scale = 1.0;
 		Ok(descriptor)
 	}
 }
@@ -123,14 +129,9 @@ fn queue_wireframes(
 		let add_render_phase =
 			|(entity, mesh_handle, mesh_uniform): (Entity, &Handle<Mesh>, &MeshUniform)| {
 				if let Some(mesh) = render_meshes.get(mesh_handle) {
-					let key = msaa_key
-						| MeshPipelineKey::from_primitive_topology(mesh.primitive_topology);
-					let pipeline_id = pipelines.specialize(
-						&mut pipeline_cache,
-						&wireframe_pipeline,
-						key,
-						&mesh.layout,
-					);
+					let key = msaa_key | MeshPipelineKey::from_primitive_topology(mesh.primitive_topology);
+					let pipeline_id =
+						pipelines.specialize(&mut pipeline_cache, &wireframe_pipeline, key, &mesh.layout);
 					let pipeline_id = match pipeline_id {
 						Ok(id) => id,
 						Err(err) => {

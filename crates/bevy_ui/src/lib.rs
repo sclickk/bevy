@@ -50,7 +50,8 @@ pub enum UiSystem {
 
 impl Plugin for UiPlugin {
 	fn build(&self, app: &mut App) {
-		app.add_plugin(ExtractComponentPlugin::<CameraUi>::default())
+		app
+			.add_plugin(ExtractComponentPlugin::<CameraUi>::default())
 			.init_resource::<FlexSurface>()
 			.register_type::<AlignContent>()
 			.register_type::<AlignItems>()
@@ -79,7 +80,9 @@ impl Plugin for UiPlugin {
 			.register_type::<widget::ImageMode>()
 			.add_system_to_stage(
 				CoreStage::PreUpdate,
-				ui_focus_system.label(UiSystem::Focus).after(InputSystem),
+				ui_focus_system
+					.label(UiSystem::Focus)
+					.after(InputSystem),
 			)
 			// add these stages to front because these must run before transform update systems
 			.add_system_to_stage(

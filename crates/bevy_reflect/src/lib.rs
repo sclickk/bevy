@@ -34,8 +34,7 @@ pub mod prelude {
 	pub use crate::std_traits::*;
 	#[doc(hidden)]
 	pub use crate::{
-		reflect_trait, GetField, GetTupleStructField, Reflect, ReflectDeserialize, Struct,
-		TupleStruct,
+		reflect_trait, GetField, GetTupleStructField, Reflect, ReflectDeserialize, Struct, TupleStruct,
 	};
 }
 
@@ -175,10 +174,28 @@ mod tests {
 
 		let mut map = DynamicMap::default();
 		map.insert(key_a, 10u32);
-		assert_eq!(10, *map.get(&key_b).unwrap().downcast_ref::<u32>().unwrap());
+		assert_eq!(
+			10,
+			*map
+				.get(&key_b)
+				.unwrap()
+				.downcast_ref::<u32>()
+				.unwrap()
+		);
 		assert!(map.get(&key_c).is_none());
-		*map.get_mut(&key_b).unwrap().downcast_mut::<u32>().unwrap() = 20;
-		assert_eq!(20, *map.get(&key_b).unwrap().downcast_ref::<u32>().unwrap());
+		*map
+			.get_mut(&key_b)
+			.unwrap()
+			.downcast_mut::<u32>()
+			.unwrap() = 20;
+		assert_eq!(
+			20,
+			*map
+				.get(&key_b)
+				.unwrap()
+				.downcast_ref::<u32>()
+				.unwrap()
+		);
 	}
 
 	#[test]
@@ -194,16 +211,44 @@ mod tests {
 		let mut patch = DynamicTupleStruct::default();
 		patch.insert(3u32);
 		patch.insert(4u64);
-		assert_eq!(3, *patch.field(0).unwrap().downcast_ref::<u32>().unwrap());
-		assert_eq!(4, *patch.field(1).unwrap().downcast_ref::<u64>().unwrap());
+		assert_eq!(
+			3,
+			*patch
+				.field(0)
+				.unwrap()
+				.downcast_ref::<u32>()
+				.unwrap()
+		);
+		assert_eq!(
+			4,
+			*patch
+				.field(1)
+				.unwrap()
+				.downcast_ref::<u64>()
+				.unwrap()
+		);
 
 		foo.apply(&patch);
 		assert_eq!(3, foo.0);
 		assert_eq!(4, foo.1);
 
 		let mut iter = patch.iter_fields();
-		assert_eq!(3, *iter.next().unwrap().downcast_ref::<u32>().unwrap());
-		assert_eq!(4, *iter.next().unwrap().downcast_ref::<u64>().unwrap());
+		assert_eq!(
+			3,
+			*iter
+				.next()
+				.unwrap()
+				.downcast_ref::<u32>()
+				.unwrap()
+		);
+		assert_eq!(
+			4,
+			*iter
+				.next()
+				.unwrap()
+				.downcast_ref::<u64>()
+				.unwrap()
+		);
 	}
 
 	#[test]
@@ -479,7 +524,9 @@ mod tests {
 
 		let mut deserializer = Deserializer::from_str(&serialized).unwrap();
 		let reflect_deserializer = ReflectDeserializer::new(&registry);
-		let value = reflect_deserializer.deserialize(&mut deserializer).unwrap();
+		let value = reflect_deserializer
+			.deserialize(&mut deserializer)
+			.unwrap();
 		let dynamic_struct = value.take::<DynamicStruct>().unwrap();
 
 		assert!(foo.reflect_partial_eq(&dynamic_struct).unwrap());
@@ -928,9 +975,18 @@ bevy_reflect::tests::should_reflect_debug::Test {
 		fn vec3_path_access() {
 			let mut v = vec3(1.0, 2.0, 3.0);
 
-			assert_eq!(*v.path("x").unwrap().downcast_ref::<f32>().unwrap(), 1.0);
+			assert_eq!(
+				*v.path("x")
+					.unwrap()
+					.downcast_ref::<f32>()
+					.unwrap(),
+				1.0
+			);
 
-			*v.path_mut("y").unwrap().downcast_mut::<f32>().unwrap() = 6.0;
+			*v.path_mut("y")
+				.unwrap()
+				.downcast_mut::<f32>()
+				.unwrap() = 6.0;
 
 			assert_eq!(v.y, 6.0);
 		}

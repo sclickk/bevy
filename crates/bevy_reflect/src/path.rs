@@ -66,10 +66,7 @@ pub trait GetPath {
 	) -> Result<&'r mut dyn Reflect, ReflectPathError<'p>>;
 
 	/// Returns a statically typed reference to the value specified by `path`.
-	fn get_path<'r, 'p, T: Reflect>(
-		&'r self,
-		path: &'p str,
-	) -> Result<&'r T, ReflectPathError<'p>> {
+	fn get_path<'r, 'p, T: Reflect>(&'r self, path: &'p str) -> Result<&'r T, ReflectPathError<'p>> {
 		self.path(path).and_then(|p| {
 			p.downcast_ref::<T>()
 				.ok_or(ReflectPathError::InvalidDowncast)
@@ -123,12 +120,13 @@ impl GetPath for dyn Reflect {
 						match current.reflect_ref() {
 							ReflectRef::List(reflect_list) => {
 								let list_index = value.parse::<usize>()?;
-								let list_item = reflect_list.get(list_index).ok_or(
-									ReflectPathError::InvalidListIndex {
-										index: current_index,
-										list_index,
-									},
-								)?;
+								let list_item =
+									reflect_list
+										.get(list_index)
+										.ok_or(ReflectPathError::InvalidListIndex {
+											index: current_index,
+											list_index,
+										})?;
 								current = list_item;
 							}
 							_ => {
@@ -189,12 +187,13 @@ impl GetPath for dyn Reflect {
 						match current.reflect_mut() {
 							ReflectMut::List(reflect_list) => {
 								let list_index = value.parse::<usize>()?;
-								let list_item = reflect_list.get_mut(list_index).ok_or(
-									ReflectPathError::InvalidListIndex {
-										index: current_index,
-										list_index,
-									},
-								)?;
+								let list_item =
+									reflect_list
+										.get_mut(list_index)
+										.ok_or(ReflectPathError::InvalidListIndex {
+											index: current_index,
+											list_index,
+										})?;
 								current = list_item;
 							}
 							_ => {
@@ -239,22 +238,22 @@ fn read_field<'r, 'p>(
 	current_index: usize,
 ) -> Result<&'r dyn Reflect, ReflectPathError<'p>> {
 	match current.reflect_ref() {
-		ReflectRef::Struct(reflect_struct) => {
-			Ok(reflect_struct
-				.field(field)
-				.ok_or(ReflectPathError::InvalidField {
-					index: current_index,
-					field,
-				})?)
-		}
+		ReflectRef::Struct(reflect_struct) => Ok(reflect_struct.field(field).ok_or(
+			ReflectPathError::InvalidField {
+				index: current_index,
+				field,
+			},
+		)?),
 		ReflectRef::TupleStruct(reflect_struct) => {
 			let tuple_index = field.parse::<usize>()?;
-			Ok(reflect_struct.field(tuple_index).ok_or(
-				ReflectPathError::InvalidTupleStructIndex {
-					index: current_index,
-					tuple_struct_index: tuple_index,
-				},
-			)?)
+			Ok(
+				reflect_struct
+					.field(tuple_index)
+					.ok_or(ReflectPathError::InvalidTupleStructIndex {
+						index: current_index,
+						tuple_struct_index: tuple_index,
+					})?,
+			)
 		}
 		_ => Err(ReflectPathError::ExpectedStruct {
 			index: current_index,
@@ -268,14 +267,12 @@ fn read_field_mut<'r, 'p>(
 	current_index: usize,
 ) -> Result<&'r mut dyn Reflect, ReflectPathError<'p>> {
 	match current.reflect_mut() {
-		ReflectMut::Struct(reflect_struct) => {
-			Ok(reflect_struct
-				.field_mut(field)
-				.ok_or(ReflectPathError::InvalidField {
-					index: current_index,
-					field,
-				})?)
-		}
+		ReflectMut::Struct(reflect_struct) => Ok(reflect_struct.field_mut(field).ok_or(
+			ReflectPathError::InvalidField {
+				index: current_index,
+				field,
+			},
+		)?),
 		ReflectMut::TupleStruct(reflect_struct) => {
 			let tuple_index = field.parse::<usize>()?;
 			Ok(reflect_struct.field_mut(tuple_index).ok_or(

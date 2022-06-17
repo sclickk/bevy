@@ -83,7 +83,9 @@ fn setup(type_registry: Res<TypeRegistry>) {
 	// Dynamic properties can be deserialized
 	let reflect_deserializer = ReflectDeserializer::new(&type_registry);
 	let mut deserializer = ron::de::Deserializer::from_str(&ron_string).unwrap();
-	let reflect_value = reflect_deserializer.deserialize(&mut deserializer).unwrap();
+	let reflect_value = reflect_deserializer
+		.deserialize(&mut deserializer)
+		.unwrap();
 
 	// Deserializing returns a Box<dyn Reflect> value. Generally, deserializing a value will return
 	// the "dynamic" variant of a type. For example, deserializing a struct will return the
@@ -93,7 +95,9 @@ fn setup(type_registry: Res<TypeRegistry>) {
 	// Reflect has its own `partial_eq` implementation, named `reflect_partial_eq`. This behaves
 	// like normal `partial_eq`, but it treats "dynamic" and "non-dynamic" types the same. The
 	// `Foo` struct and deserialized `DynamicStruct` are considered equal for this reason:
-	assert!(reflect_value.reflect_partial_eq(&value).unwrap());
+	assert!(reflect_value
+		.reflect_partial_eq(&value)
+		.unwrap());
 
 	// By "patching" `Foo` with the deserialized DynamicStruct, we can "Deserialize" Foo.
 	// This means we can serialize and deserialize with a single `Reflect` derive!

@@ -90,7 +90,8 @@ pub struct TransformPlugin;
 
 impl Plugin for TransformPlugin {
 	fn build(&self, app: &mut App) {
-		app.register_type::<Transform>()
+		app
+			.register_type::<Transform>()
 			.register_type::<GlobalTransform>()
 			// Adding these to startup ensures the first update is "correct"
 			.add_startup_system_to_stage(

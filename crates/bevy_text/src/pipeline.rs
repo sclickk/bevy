@@ -123,7 +123,9 @@ impl<ID: Hash + Eq> TextPipeline<ID> {
 			textures,
 		)?;
 
-		self.glyph_map.insert(id, TextLayoutInfo { glyphs, size });
+		self
+			.glyph_map
+			.insert(id, TextLayoutInfo { glyphs, size });
 
 		Ok(())
 	}

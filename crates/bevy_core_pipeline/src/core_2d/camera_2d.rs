@@ -2,9 +2,7 @@ use crate::clear_color::ClearColorConfig;
 use bevy_ecs::{prelude::*, query::QueryItem};
 use bevy_reflect::Reflect;
 use bevy_render::{
-	camera::{
-		Camera, CameraProjection, CameraRenderGraph, DepthCalculation, OrthographicProjection,
-	},
+	camera::{Camera, CameraProjection, CameraRenderGraph, DepthCalculation, OrthographicProjection},
 	extract_component::ExtractComponent,
 	primitives::Frustum,
 	view::VisibleEntities,
@@ -60,8 +58,7 @@ impl Camera2dBundle {
 			..Default::default()
 		};
 		let transform = Transform::from_xyz(0.0, 0.0, far - 0.1);
-		let view_projection =
-			projection.get_projection_matrix() * transform.compute_matrix().inverse();
+		let view_projection = projection.get_projection_matrix() * transform.compute_matrix().inverse();
 		let frustum = Frustum::from_view_projection(
 			&view_projection,
 			&transform.translation,

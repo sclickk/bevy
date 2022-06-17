@@ -252,19 +252,22 @@ impl<'a> MutUntyped<'a> {
 
 impl DetectChanges for MutUntyped<'_> {
 	fn is_added(&self) -> bool {
-		self.ticks
+		self
+			.ticks
 			.component_ticks
 			.is_added(self.ticks.last_change_tick, self.ticks.change_tick)
 	}
 
 	fn is_changed(&self) -> bool {
-		self.ticks
+		self
+			.ticks
 			.component_ticks
 			.is_changed(self.ticks.last_change_tick, self.ticks.change_tick)
 	}
 
 	fn set_changed(&mut self) {
-		self.ticks
+		self
+			.ticks
 			.component_ticks
 			.set_changed(self.ticks.change_tick);
 	}

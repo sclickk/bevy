@@ -117,22 +117,21 @@ pub struct GameOfLifePipeline {
 
 impl FromWorld for GameOfLifePipeline {
 	fn from_world(world: &mut World) -> Self {
-		let texture_bind_group_layout =
-			world
-				.resource::<RenderDevice>()
-				.create_bind_group_layout(&BindGroupLayoutDescriptor {
-					label: None,
-					entries: &[BindGroupLayoutEntry {
-						binding: 0,
-						visibility: ShaderStages::COMPUTE,
-						ty: BindingType::StorageTexture {
-							access: StorageTextureAccess::ReadWrite,
-							format: TextureFormat::Rgba8Unorm,
-							view_dimension: TextureViewDimension::D2,
-						},
-						count: None,
-					}],
-				});
+		let texture_bind_group_layout = world
+			.resource::<RenderDevice>()
+			.create_bind_group_layout(&BindGroupLayoutDescriptor {
+				label: None,
+				entries: &[BindGroupLayoutEntry {
+					binding: 0,
+					visibility: ShaderStages::COMPUTE,
+					ty: BindingType::StorageTexture {
+						access: StorageTextureAccess::ReadWrite,
+						format: TextureFormat::Rgba8Unorm,
+						view_dimension: TextureViewDimension::D2,
+					},
+					count: None,
+				}],
+			});
 		let shader = world
 			.resource::<AssetServer>()
 			.load("shaders/game_of_life.wgsl");

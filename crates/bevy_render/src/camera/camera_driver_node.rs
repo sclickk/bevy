@@ -55,8 +55,7 @@ impl Node for CameraDriverNode {
 				if let RenderTarget::Window(id) = camera.target {
 					camera_windows.insert(id);
 				}
-				graph
-					.run_sub_graph(camera.render_graph.clone(), vec![SlotValue::Entity(entity)])?;
+				graph.run_sub_graph(camera.render_graph.clone(), vec![SlotValue::Entity(entity)])?;
 			}
 		}
 

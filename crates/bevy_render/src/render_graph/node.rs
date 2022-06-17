@@ -1,7 +1,7 @@
 use crate::{
 	render_graph::{
-		Edge, InputSlotError, OutputSlotError, RenderGraphContext, RenderGraphError,
-		RunSubGraphError, SlotInfo, SlotInfos, SlotType, SlotValue,
+		Edge, InputSlotError, OutputSlotError, RenderGraphContext, RenderGraphError, RunSubGraphError,
+		SlotInfo, SlotInfos, SlotType, SlotValue,
 	},
 	renderer::RenderContext,
 };
@@ -168,7 +168,8 @@ impl Edges {
 	/// Searches the `input_edges` for a [`Edge::SlotEdge`],
 	/// which `input_index` matches the `index`;
 	pub fn get_input_slot_edge(&self, index: usize) -> Result<&Edge, RenderGraphError> {
-		self.input_edges
+		self
+			.input_edges
 			.iter()
 			.find(|e| {
 				if let Edge::SlotEdge { input_index, .. } = e {
@@ -186,7 +187,8 @@ impl Edges {
 	/// Searches the `output_edges` for a [`Edge::SlotEdge`],
 	/// which `output_index` matches the `index`;
 	pub fn get_output_slot_edge(&self, index: usize) -> Result<&Edge, RenderGraphError> {
-		self.output_edges
+		self
+			.output_edges
 			.iter()
 			.find(|e| {
 				if let Edge::SlotEdge { output_index, .. } = e {
@@ -250,7 +252,8 @@ impl NodeState {
 	where
 		T: Node,
 	{
-		self.node
+		self
+			.node
 			.downcast_ref::<T>()
 			.ok_or(RenderGraphError::WrongNodeType)
 	}
@@ -260,7 +263,8 @@ impl NodeState {
 	where
 		T: Node,
 	{
-		self.node
+		self
+			.node
 			.downcast_mut::<T>()
 			.ok_or(RenderGraphError::WrongNodeType)
 	}

@@ -5,9 +5,7 @@ use crate::{
 	change_detection::Ticks,
 	component::{Component, ComponentId, ComponentTicks, Components},
 	entity::{Entities, Entity},
-	query::{
-		Access, FilteredAccess, FilteredAccessSet, QueryState, ReadOnlyWorldQuery, WorldQuery,
-	},
+	query::{Access, FilteredAccess, FilteredAccessSet, QueryState, ReadOnlyWorldQuery, WorldQuery},
 	system::{CommandQueue, Commands, Query, SystemMeta},
 	world::{FromWorld, World},
 };
@@ -199,7 +197,13 @@ fn assert_component_access_compatibility(
 	}
 	let conflicting_components = conflicts
 		.drain(..)
-		.map(|component_id| world.components.get_info(component_id).unwrap().name())
+		.map(|component_id| {
+			world
+				.components
+				.get_info(component_id)
+				.unwrap()
+				.name()
+		})
 		.collect::<Vec<&str>>();
 	let accesses = conflicting_components.join(", ");
 	panic!("error[B0001]: Query<{}, {}> in system {} accesses component(s) {} in a way that conflicts with a previous system parameter. Consider using `Without<T>` to create disjoint Queries or merging conflicting Queries into a `ParamSet`.",
@@ -254,12 +258,15 @@ where
 impl<'w, T: Resource> Res<'w, T> {
 	/// Returns `true` if the resource was added after the system last ran.
 	pub fn is_added(&self) -> bool {
-		self.ticks.is_added(self.last_change_tick, self.change_tick)
+		self
+			.ticks
+			.is_added(self.last_change_tick, self.change_tick)
 	}
 
 	/// Returns `true` if the resource was added or mutably dereferenced after the system last ran.
 	pub fn is_changed(&self) -> bool {
-		self.ticks
+		self
+			.ticks
 			.is_changed(self.last_change_tick, self.change_tick)
 	}
 
@@ -310,7 +317,9 @@ impl<'a, T: Resource> SystemParam for Res<'a, T> {
 unsafe impl<T: Resource> SystemParamState for ResState<T> {
 	fn init(world: &mut World, system_meta: &mut SystemMeta) -> Self {
 		let component_id = world.initialize_resource::<T>();
-		let combined_access = system_meta.component_access_set.combined_access_mut();
+		let combined_access = system_meta
+			.component_access_set
+			.combined_access_mut();
 		assert!(
             !combined_access.has_write(component_id),
             "error[B0002]: Res<{}> in system {} conflicts with a previous ResMut<{0}> access. Consider removing the duplicate access.",
@@ -416,7 +425,9 @@ impl<'a, T: Resource> SystemParam for ResMut<'a, T> {
 unsafe impl<T: Resource> SystemParamState for ResMutState<T> {
 	fn init(world: &mut World, system_meta: &mut SystemMeta) -> Self {
 		let component_id = world.initialize_resource::<T>();
-		let combined_access = system_meta.component_access_set.combined_access_mut();
+		let combined_access = system_meta
+			.component_access_set
+			.combined_access_mut();
 		if combined_access.has_write(component_id) {
 			panic!(
                 "error[B0002]: ResMut<{}> in system {} conflicts with a previous ResMut<{0}> access. Consider removing the duplicate access.",
@@ -563,7 +574,9 @@ unsafe impl SystemParamState for WorldState {
 		{
 			panic!("&World conflicts with a previous mutable system parameter. Allowing this would break Rust's mutability rules");
 		}
-		system_meta.archetype_component_access.extend(&access);
+		system_meta
+			.archetype_component_access
+			.extend(&access);
 
 		let mut filtered_access = FilteredAccess::default();
 
@@ -575,7 +588,9 @@ unsafe impl SystemParamState for WorldState {
 		{
 			panic!("&World conflicts with a previous mutable system parameter. Allowing this would break Rust's mutability rules");
 		}
-		system_meta.component_access_set.add(filtered_access);
+		system_meta
+			.component_access_set
+			.add(filtered_access);
 
 		WorldState
 	}
@@ -811,19 +826,24 @@ where
 	T: Debug,
 {
 	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-		f.debug_tuple("NonSend").field(&self.value).finish()
+		f.debug_tuple("NonSend")
+			.field(&self.value)
+			.finish()
 	}
 }
 
 impl<'w, T: 'static> NonSend<'w, T> {
 	/// Returns `true` if the resource was added after the system last ran.
 	pub fn is_added(&self) -> bool {
-		self.ticks.is_added(self.last_change_tick, self.change_tick)
+		self
+			.ticks
+			.is_added(self.last_change_tick, self.change_tick)
 	}
 
 	/// Returns `true` if the resource was added or mutably dereferenced after the system last ran.
 	pub fn is_changed(&self) -> bool {
-		self.ticks
+		self
+			.ticks
 			.is_changed(self.last_change_tick, self.change_tick)
 	}
 }
@@ -864,7 +884,9 @@ unsafe impl<T: 'static> SystemParamState for NonSendState<T> {
 		system_meta.set_non_send();
 
 		let component_id = world.initialize_non_send_resource::<T>();
-		let combined_access = system_meta.component_access_set.combined_access_mut();
+		let combined_access = system_meta
+			.component_access_set
+			.combined_access_mut();
 		assert!(
             !combined_access.has_write(component_id),
             "error[B0002]: NonSend<{}> in system {} conflicts with a previous mutable resource access ({0}). Consider removing the duplicate access.",
@@ -975,7 +997,9 @@ unsafe impl<T: 'static> SystemParamState for NonSendMutState<T> {
 		system_meta.set_non_send();
 
 		let component_id = world.initialize_non_send_resource::<T>();
-		let combined_access = system_meta.component_access_set.combined_access_mut();
+		let combined_access = system_meta
+			.component_access_set
+			.combined_access_mut();
 		if combined_access.has_write(component_id) {
 			panic!(
                 "error[B0002]: NonSendMut<{}> in system {} conflicts with a previous mutable resource access ({0}). Consider removing the duplicate access.",
@@ -1022,7 +1046,10 @@ impl<'w, 's, T: 'static> SystemParamFetch<'w, 's> for NonSendMutState<T> {
 				)
 			});
 		NonSendMut {
-			value: column.get_data_ptr().assert_unique().deref_mut::<T>(),
+			value: column
+				.get_data_ptr()
+				.assert_unique()
+				.deref_mut::<T>(),
 			ticks: Ticks {
 				component_ticks: column.get_ticks_unchecked(0).deref_mut(),
 				last_change_tick: system_meta.last_change_tick,
@@ -1061,7 +1088,10 @@ impl<'w, 's, T: 'static> SystemParamFetch<'w, 's> for OptionNonSendMutState<T> {
 		world
 			.get_populated_resource_column(state.0.component_id)
 			.map(|column| NonSendMut {
-				value: column.get_data_ptr().assert_unique().deref_mut::<T>(),
+				value: column
+					.get_data_ptr()
+					.assert_unique()
+					.deref_mut::<T>(),
 				ticks: Ticks {
 					component_ticks: column.get_ticks_unchecked(0).deref_mut(),
 					last_change_tick: system_meta.last_change_tick,

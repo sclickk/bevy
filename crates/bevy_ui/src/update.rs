@@ -94,10 +94,14 @@ fn update_clipping(
 	match (clip, calculated_clip) {
 		(None, None) => {}
 		(None, Some(_)) => {
-			commands.entity(entity).remove::<CalculatedClip>();
+			commands
+				.entity(entity)
+				.remove::<CalculatedClip>();
 		}
 		(Some(clip), None) => {
-			commands.entity(entity).insert(CalculatedClip { clip });
+			commands
+				.entity(entity)
+				.insert(CalculatedClip { clip });
 		}
 		(Some(clip), Some(mut old_clip)) => {
 			*old_clip = CalculatedClip { clip };

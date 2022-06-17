@@ -6,7 +6,8 @@ pub fn derive_extract_resource(input: TokenStream) -> TokenStream {
 	let mut ast = parse_macro_input!(input as DeriveInput);
 	let bevy_render_path: Path = crate::bevy_render_path();
 
-	ast.generics
+	ast
+		.generics
 		.make_where_clause()
 		.predicates
 		.push(parse_quote! { Self: Clone });

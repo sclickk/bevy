@@ -112,8 +112,7 @@ impl BlobVec {
 			} else {
 				std::alloc::realloc(
 					self.get_ptr_mut().as_ptr(),
-					array_layout(&self.item_layout, self.capacity)
-						.expect("array layout should be valid"),
+					array_layout(&self.item_layout, self.capacity).expect("array layout should be valid"),
 					new_layout.size(),
 				)
 			};
@@ -226,7 +225,9 @@ impl BlobVec {
 	#[inline]
 	pub unsafe fn get_unchecked(&self, index: usize) -> Ptr<'_> {
 		debug_assert!(index < self.len());
-		self.get_ptr().byte_add(index * self.item_layout.size())
+		self
+			.get_ptr()
+			.byte_add(index * self.item_layout.size())
 	}
 
 	/// # Safety
@@ -272,7 +273,10 @@ impl BlobVec {
 				unsafe {
 					// NOTE: this doesn't use self.get_unchecked(i) because the debug_assert on index
 					// will panic here due to self.len being set to 0
-					let ptr = self.get_ptr_mut().byte_add(i * layout_size).promote();
+					let ptr = self
+						.get_ptr_mut()
+						.byte_add(i * layout_size)
+						.promote();
 					(drop)(ptr);
 				}
 			}
@@ -384,7 +388,9 @@ mod tests {
 	/// value at the given `index`
 	unsafe fn get_mut<T>(blob_vec: &mut BlobVec, index: usize) -> &mut T {
 		assert!(index < blob_vec.len());
-		blob_vec.get_unchecked_mut(index).deref_mut::<T>()
+		blob_vec
+			.get_unchecked_mut(index)
+			.deref_mut::<T>()
 	}
 
 	#[test]

@@ -125,8 +125,7 @@ impl SpecializedRenderPipeline for SpritePipeline {
 			formats.push(VertexFormat::Float32x4);
 		}
 
-		let vertex_layout =
-			VertexBufferLayout::from_vertex_formats(VertexStepMode::Vertex, formats);
+		let vertex_layout = VertexBufferLayout::from_vertex_formats(VertexStepMode::Vertex, formats);
 
 		let mut shader_defs = Vec::new();
 		if key.contains(SpritePipelineKey::COLORED) {
@@ -239,18 +238,21 @@ pub fn extract_sprites(
 			continue;
 		}
 		// PERF: we don't check in this function that the `Image` asset is ready, since it should be in most cases and hashing the handle is expensive
-		extracted_sprites.sprites.alloc().init(ExtractedSprite {
-			color: sprite.color,
-			transform: *transform,
-			// Use the full texture
-			rect: None,
-			// Pass the custom size
-			custom_size: sprite.custom_size,
-			flip_x: sprite.flip_x,
-			flip_y: sprite.flip_y,
-			image_handle_id: handle.id,
-			anchor: sprite.anchor.as_vec(),
-		});
+		extracted_sprites
+			.sprites
+			.alloc()
+			.init(ExtractedSprite {
+				color: sprite.color,
+				transform: *transform,
+				// Use the full texture
+				rect: None,
+				// Pass the custom size
+				custom_size: sprite.custom_size,
+				flip_x: sprite.flip_x,
+				flip_y: sprite.flip_y,
+				image_handle_id: handle.id,
+				anchor: sprite.anchor.as_vec(),
+			});
 	}
 	for (visibility, atlas_sprite, transform, texture_atlas_handle) in atlas_query.iter() {
 		if !visibility.is_visible {
@@ -258,18 +260,21 @@ pub fn extract_sprites(
 		}
 		if let Some(texture_atlas) = texture_atlases.get(texture_atlas_handle) {
 			let rect = Some(texture_atlas.textures[atlas_sprite.index as usize]);
-			extracted_sprites.sprites.alloc().init(ExtractedSprite {
-				color: atlas_sprite.color,
-				transform: *transform,
-				// Select the area in the texture atlas
-				rect,
-				// Pass the custom size
-				custom_size: atlas_sprite.custom_size,
-				flip_x: atlas_sprite.flip_x,
-				flip_y: atlas_sprite.flip_y,
-				image_handle_id: texture_atlas.texture.id,
-				anchor: atlas_sprite.anchor.as_vec(),
-			});
+			extracted_sprites
+				.sprites
+				.alloc()
+				.init(ExtractedSprite {
+					color: atlas_sprite.color,
+					transform: *transform,
+					// Select the area in the texture atlas
+					rect,
+					// Pass the custom size
+					custom_size: atlas_sprite.custom_size,
+					flip_x: atlas_sprite.flip_x,
+					flip_y: atlas_sprite.flip_y,
+					image_handle_id: texture_atlas.texture.id,
+					anchor: atlas_sprite.anchor.as_vec(),
+				});
 		}
 	}
 }
@@ -376,7 +381,10 @@ pub fn queue_sprites(
 			layout: &sprite_pipeline.view_layout,
 		}));
 
-		let draw_sprite_function = draw_functions.read().get_id::<DrawSprite>().unwrap();
+		let draw_sprite_function = draw_functions
+			.read()
+			.get_id::<DrawSprite>()
+			.unwrap();
 		let key = SpritePipelineKey::from_msaa_samples(msaa.samples);
 		let pipeline = pipelines.specialize(&mut pipeline_cache, &sprite_pipeline, key);
 		let colored_pipeline = pipelines.specialize(
@@ -394,7 +402,9 @@ pub fn queue_sprites(
 			let extracted_sprites = &mut extracted_sprites.sprites;
 			let image_bind_groups = &mut *image_bind_groups;
 
-			transparent_phase.items.reserve(extracted_sprites.len());
+			transparent_phase
+				.items
+				.reserve(extracted_sprites.len());
 
 			// Sort sprites by z for correct transparency and then by handle to improve batching
 			extracted_sprites.sort_unstable_by(|a, b| {
@@ -428,9 +438,7 @@ pub fn queue_sprites(
 				};
 				if new_batch != current_batch {
 					// Set-up a new possible batch
-					if let Some(gpu_image) =
-						gpu_images.get(&Handle::weak(new_batch.image_handle_id))
-					{
+					if let Some(gpu_image) = gpu_images.get(&Handle::weak(new_batch.image_handle_id)) {
 						current_batch = new_batch;
 						current_image_size = Vec2::new(gpu_image.size.x, gpu_image.size.y);
 						current_batch_entity = commands.spawn_bundle((current_batch,)).id();
@@ -443,9 +451,7 @@ pub fn queue_sprites(
 									entries: &[
 										BindGroupEntry {
 											binding: 0,
-											resource: BindingResource::TextureView(
-												&gpu_image.texture_view,
-											),
+											resource: BindingResource::TextureView(&gpu_image.texture_view),
 										},
 										BindGroupEntry {
 											binding: 1,
@@ -503,11 +509,13 @@ pub fn queue_sprites(
 				// Store the vertex data and add the item to the render phase
 				if current_batch.colored {
 					for i in QUAD_INDICES {
-						sprite_meta.colored_vertices.push(ColoredSpriteVertex {
-							position: positions[i],
-							uv: uvs[i].into(),
-							color: extracted_sprite.color.as_linear_rgba_f32(),
-						});
+						sprite_meta
+							.colored_vertices
+							.push(ColoredSpriteVertex {
+								position: positions[i],
+								uv: uvs[i].into(),
+								color: extracted_sprite.color.as_linear_rgba_f32(),
+							});
 					}
 					let item_start = colored_index;
 					colored_index += QUAD_INDICES.len() as u32;
@@ -570,7 +578,11 @@ impl<const I: usize> EntityRenderCommand for SetSpriteViewBindGroup<I> {
 		let view_uniform = view_query.get(view).unwrap();
 		pass.set_bind_group(
 			I,
-			sprite_meta.into_inner().view_bind_group.as_ref().unwrap(),
+			sprite_meta
+				.into_inner()
+				.view_bind_group
+				.as_ref()
+				.unwrap(),
 			&[view_uniform.offset],
 		);
 		RenderCommandResult::Success
@@ -614,7 +626,14 @@ impl<P: BatchedPhaseItem> RenderCommand<P> for DrawSpriteBatch {
 		let sprite_batch = query_batch.get(item.entity()).unwrap();
 		let sprite_meta = sprite_meta.into_inner();
 		if sprite_batch.colored {
-			pass.set_vertex_buffer(0, sprite_meta.colored_vertices.buffer().unwrap().slice(..));
+			pass.set_vertex_buffer(
+				0,
+				sprite_meta
+					.colored_vertices
+					.buffer()
+					.unwrap()
+					.slice(..),
+			);
 		} else {
 			pass.set_vertex_buffer(0, sprite_meta.vertices.buffer().unwrap().slice(..));
 		}

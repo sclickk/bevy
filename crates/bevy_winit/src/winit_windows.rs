@@ -52,27 +52,20 @@ impl WinitWindows {
 				if let Some(position) = position {
 					if let Some(sf) = scale_factor_override {
 						winit_window_builder = winit_window_builder.with_position(
-							winit::dpi::LogicalPosition::new(
-								position[0] as f64,
-								position[1] as f64,
-							)
-							.to_physical::<f64>(*sf),
+							winit::dpi::LogicalPosition::new(position[0] as f64, position[1] as f64)
+								.to_physical::<f64>(*sf),
 						);
 					} else {
-						winit_window_builder =
-							winit_window_builder.with_position(winit::dpi::LogicalPosition::new(
-								position[0] as f64,
-								position[1] as f64,
-							));
+						winit_window_builder = winit_window_builder.with_position(
+							winit::dpi::LogicalPosition::new(position[0] as f64, position[1] as f64),
+						);
 					}
 				}
 				if let Some(sf) = scale_factor_override {
-					winit_window_builder.with_inner_size(
-						winit::dpi::LogicalSize::new(*width, *height).to_physical::<f64>(*sf),
-					)
-				} else {
 					winit_window_builder
-						.with_inner_size(winit::dpi::LogicalSize::new(*width, *height))
+						.with_inner_size(winit::dpi::LogicalSize::new(*width, *height).to_physical::<f64>(*sf))
+				} else {
+					winit_window_builder.with_inner_size(winit::dpi::LogicalSize::new(*width, *height))
 				}
 			}
 			.with_resizable(window_descriptor.resizable)
@@ -80,7 +73,9 @@ impl WinitWindows {
 			.with_transparent(window_descriptor.transparent),
 		};
 
-		let constraints = window_descriptor.resize_constraints.check_constraints();
+		let constraints = window_descriptor
+			.resize_constraints
+			.check_constraints();
 		let min_inner_size = LogicalSize {
 			width: constraints.min_width,
 			height: constraints.min_height,
@@ -114,7 +109,9 @@ impl WinitWindows {
 					.query_selector(&selector)
 					.expect("Cannot query for canvas element.");
 				if let Some(canvas) = canvas {
-					let canvas = canvas.dyn_into::<web_sys::HtmlCanvasElement>().ok();
+					let canvas = canvas
+						.dyn_into::<web_sys::HtmlCanvasElement>()
+						.ok();
 					winit_window_builder = winit_window_builder.with_canvas(canvas);
 				} else {
 					panic!("Cannot find element: {}.", selector);
@@ -133,8 +130,12 @@ impl WinitWindows {
 
 		winit_window.set_cursor_visible(window_descriptor.cursor_visible);
 
-		self.window_id_to_winit.insert(window_id, winit_window.id());
-		self.winit_to_window_id.insert(winit_window.id(), window_id);
+		self
+			.window_id_to_winit
+			.insert(window_id, winit_window.id());
+		self
+			.winit_to_window_id
+			.insert(winit_window.id(), window_id);
 
 		#[cfg(target_arch = "wasm32")]
 		{
@@ -147,7 +148,8 @@ impl WinitWindows {
 				let document = window.document().unwrap();
 				let body = document.body().unwrap();
 
-				body.append_child(&canvas)
+				body
+					.append_child(&canvas)
 					.expect("Append canvas to HTML body.");
 			}
 		}
@@ -159,7 +161,9 @@ impl WinitWindows {
 		let inner_size = winit_window.inner_size();
 		let scale_factor = winit_window.scale_factor();
 		let raw_window_handle = winit_window.raw_window_handle();
-		self.windows.insert(winit_window.id(), winit_window);
+		self
+			.windows
+			.insert(winit_window.id(), winit_window);
 		Window::new(
 			window_id,
 			window_descriptor,
@@ -172,7 +176,8 @@ impl WinitWindows {
 	}
 
 	pub fn get_window(&self, id: WindowId) -> Option<&winit::window::Window> {
-		self.window_id_to_winit
+		self
+			.window_id_to_winit
 			.get(&id)
 			.and_then(|id| self.windows.get(id))
 	}
@@ -205,12 +210,10 @@ pub fn get_fitting_videomode(
 	modes.sort_by(|a, b| {
 		use std::cmp::Ordering::*;
 		match abs_diff(a.size().width, width).cmp(&abs_diff(b.size().width, width)) {
-			Equal => {
-				match abs_diff(a.size().height, height).cmp(&abs_diff(b.size().height, height)) {
-					Equal => b.refresh_rate().cmp(&a.refresh_rate()),
-					default => default,
-				}
-			}
+			Equal => match abs_diff(a.size().height, height).cmp(&abs_diff(b.size().height, height)) {
+				Equal => b.refresh_rate().cmp(&a.refresh_rate()),
+				default => default,
+			},
 			default => default,
 		}
 	});

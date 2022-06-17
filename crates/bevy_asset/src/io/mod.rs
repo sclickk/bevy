@@ -39,23 +39,22 @@ pub enum AssetIoError {
 /// Handles load requests from an `AssetServer`
 pub trait AssetIo: Downcast + Send + Sync + 'static {
 	fn load_path<'a>(&'a self, path: &'a Path) -> BoxedFuture<'a, Result<Vec<u8>, AssetIoError>>;
-	fn read_directory(
-		&self,
-		path: &Path,
-	) -> Result<Box<dyn Iterator<Item = PathBuf>>, AssetIoError>;
+	fn read_directory(&self, path: &Path) -> Result<Box<dyn Iterator<Item = PathBuf>>, AssetIoError>;
 	fn get_metadata(&self, path: &Path) -> Result<Metadata, AssetIoError>;
 	fn watch_path_for_changes(&self, path: &Path) -> Result<(), AssetIoError>;
 	fn watch_for_changes(&self) -> Result<(), AssetIoError>;
 
 	fn is_dir(&self, path: &Path) -> bool {
-		self.get_metadata(path)
+		self
+			.get_metadata(path)
 			.as_ref()
 			.map(Metadata::is_dir)
 			.unwrap_or(false)
 	}
 
 	fn is_file(&self, path: &Path) -> bool {
-		self.get_metadata(path)
+		self
+			.get_metadata(path)
 			.as_ref()
 			.map(Metadata::is_file)
 			.unwrap_or(false)

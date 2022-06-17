@@ -34,13 +34,14 @@ where
 	///
 	/// See [`Iterator::count()`](https://doc.rust-lang.org/std/iter/trait.Iterator.html#method.count)
 	fn count(mut self, pool: &TaskPool) -> usize {
-		pool.scope(|s| {
-			while let Some(batch) = self.next_batch() {
-				s.spawn(async move { batch.count() });
-			}
-		})
-		.iter()
-		.sum()
+		pool
+			.scope(|s| {
+				while let Some(batch) = self.next_batch() {
+					s.spawn(async move { batch.count() });
+				}
+			})
+			.iter()
+			.sum()
 	}
 
 	/// Consumes the parallel iterator and returns the last item.
@@ -195,14 +196,15 @@ where
 		C: std::iter::FromIterator<BatchIter::Item>,
 		BatchIter::Item: Send + 'static,
 	{
-		pool.scope(|s| {
-			while let Some(batch) = self.next_batch() {
-				s.spawn(async move { batch.collect::<Vec<_>>() });
-			}
-		})
-		.into_iter()
-		.flatten()
-		.collect()
+		pool
+			.scope(|s| {
+				while let Some(batch) = self.next_batch() {
+					s.spawn(async move { batch.collect::<Vec<_>>() });
+				}
+			})
+			.into_iter()
+			.flatten()
+			.collect()
 	}
 
 	/// Consumes a parallel iterator, creating two collections from it.
@@ -216,17 +218,18 @@ where
 		BatchIter::Item: Send + 'static,
 	{
 		let (mut a, mut b) = <(C, C)>::default();
-		pool.scope(|s| {
-			while let Some(batch) = self.next_batch() {
-				let newf = f.clone();
-				s.spawn(async move { batch.partition::<Vec<_>, F>(newf) });
-			}
-		})
-		.into_iter()
-		.for_each(|(c, d)| {
-			a.extend(c);
-			b.extend(d);
-		});
+		pool
+			.scope(|s| {
+				while let Some(batch) = self.next_batch() {
+					let newf = f.clone();
+					s.spawn(async move { batch.partition::<Vec<_>, F>(newf) });
+				}
+			})
+			.into_iter()
+			.for_each(|(c, d)| {
+				a.extend(c);
+				b.extend(d);
+			});
 		(a, b)
 	}
 
@@ -260,14 +263,15 @@ where
 	where
 		F: FnMut(BatchIter::Item) -> bool + Send + Sync + Clone,
 	{
-		pool.scope(|s| {
-			while let Some(mut batch) = self.next_batch() {
-				let newf = f.clone();
-				s.spawn(async move { batch.all(newf) });
-			}
-		})
-		.into_iter()
-		.all(std::convert::identity)
+		pool
+			.scope(|s| {
+				while let Some(mut batch) = self.next_batch() {
+					let newf = f.clone();
+					s.spawn(async move { batch.all(newf) });
+				}
+			})
+			.into_iter()
+			.all(std::convert::identity)
 	}
 
 	/// Tests if any element of the parallel iterator matches a predicate.
@@ -279,14 +283,15 @@ where
 	where
 		F: FnMut(BatchIter::Item) -> bool + Send + Sync + Clone,
 	{
-		pool.scope(|s| {
-			while let Some(mut batch) = self.next_batch() {
-				let newf = f.clone();
-				s.spawn(async move { batch.any(newf) });
-			}
-		})
-		.into_iter()
-		.any(std::convert::identity)
+		pool
+			.scope(|s| {
+				while let Some(mut batch) = self.next_batch() {
+					let newf = f.clone();
+					s.spawn(async move { batch.any(newf) });
+				}
+			})
+			.into_iter()
+			.any(std::convert::identity)
 	}
 
 	/// Searches for an element in a parallel iterator, returning its index.
@@ -332,14 +337,15 @@ where
 	where
 		BatchIter::Item: Ord + Send + 'static,
 	{
-		pool.scope(|s| {
-			while let Some(batch) = self.next_batch() {
-				s.spawn(async move { batch.max() });
-			}
-		})
-		.into_iter()
-		.flatten()
-		.max()
+		pool
+			.scope(|s| {
+				while let Some(batch) = self.next_batch() {
+					s.spawn(async move { batch.max() });
+				}
+			})
+			.into_iter()
+			.flatten()
+			.max()
 	}
 
 	/// Returns the minimum item of a parallel iterator.
@@ -349,14 +355,15 @@ where
 	where
 		BatchIter::Item: Ord + Send + 'static,
 	{
-		pool.scope(|s| {
-			while let Some(batch) = self.next_batch() {
-				s.spawn(async move { batch.min() });
-			}
-		})
-		.into_iter()
-		.flatten()
-		.min()
+		pool
+			.scope(|s| {
+				while let Some(batch) = self.next_batch() {
+					s.spawn(async move { batch.min() });
+				}
+			})
+			.into_iter()
+			.flatten()
+			.min()
 	}
 
 	/// Returns the item that gives the maximum value from the specified function.
@@ -368,15 +375,16 @@ where
 		F: FnMut(&BatchIter::Item) -> R + Send + Sync + Clone,
 		BatchIter::Item: Send + 'static,
 	{
-		pool.scope(|s| {
-			while let Some(batch) = self.next_batch() {
-				let newf = f.clone();
-				s.spawn(async move { batch.max_by_key(newf) });
-			}
-		})
-		.into_iter()
-		.flatten()
-		.max_by_key(f)
+		pool
+			.scope(|s| {
+				while let Some(batch) = self.next_batch() {
+					let newf = f.clone();
+					s.spawn(async move { batch.max_by_key(newf) });
+				}
+			})
+			.into_iter()
+			.flatten()
+			.max_by_key(f)
 	}
 
 	/// Returns the item that gives the maximum value with respect to the specified comparison
@@ -388,15 +396,16 @@ where
 		F: FnMut(&BatchIter::Item, &BatchIter::Item) -> std::cmp::Ordering + Send + Sync + Clone,
 		BatchIter::Item: Send + 'static,
 	{
-		pool.scope(|s| {
-			while let Some(batch) = self.next_batch() {
-				let newf = f.clone();
-				s.spawn(async move { batch.max_by(newf) });
-			}
-		})
-		.into_iter()
-		.flatten()
-		.max_by(f)
+		pool
+			.scope(|s| {
+				while let Some(batch) = self.next_batch() {
+					let newf = f.clone();
+					s.spawn(async move { batch.max_by(newf) });
+				}
+			})
+			.into_iter()
+			.flatten()
+			.max_by(f)
 	}
 
 	/// Returns the item that gives the minimum value from the specified function.
@@ -408,15 +417,16 @@ where
 		F: FnMut(&BatchIter::Item) -> R + Send + Sync + Clone,
 		BatchIter::Item: Send + 'static,
 	{
-		pool.scope(|s| {
-			while let Some(batch) = self.next_batch() {
-				let newf = f.clone();
-				s.spawn(async move { batch.min_by_key(newf) });
-			}
-		})
-		.into_iter()
-		.flatten()
-		.min_by_key(f)
+		pool
+			.scope(|s| {
+				while let Some(batch) = self.next_batch() {
+					let newf = f.clone();
+					s.spawn(async move { batch.min_by_key(newf) });
+				}
+			})
+			.into_iter()
+			.flatten()
+			.min_by_key(f)
 	}
 
 	/// Returns the item that gives the minimum value with respect to the specified comparison
@@ -428,15 +438,16 @@ where
 		F: FnMut(&BatchIter::Item, &BatchIter::Item) -> std::cmp::Ordering + Send + Sync + Clone,
 		BatchIter::Item: Send + 'static,
 	{
-		pool.scope(|s| {
-			while let Some(batch) = self.next_batch() {
-				let newf = f.clone();
-				s.spawn(async move { batch.min_by(newf) });
-			}
-		})
-		.into_iter()
-		.flatten()
-		.min_by(f)
+		pool
+			.scope(|s| {
+				while let Some(batch) = self.next_batch() {
+					let newf = f.clone();
+					s.spawn(async move { batch.min_by(newf) });
+				}
+			})
+			.into_iter()
+			.flatten()
+			.min_by(f)
 	}
 
 	/// Creates a parallel iterator which copies all of its items.
@@ -482,13 +493,14 @@ where
 		S: std::iter::Sum<BatchIter::Item> + Send + 'static,
 		R: std::iter::Sum<S>,
 	{
-		pool.scope(|s| {
-			while let Some(batch) = self.next_batch() {
-				s.spawn(async move { batch.sum() });
-			}
-		})
-		.into_iter()
-		.sum()
+		pool
+			.scope(|s| {
+				while let Some(batch) = self.next_batch() {
+					s.spawn(async move { batch.sum() });
+				}
+			})
+			.into_iter()
+			.sum()
 	}
 
 	/// Multiplies all the items of a parallel iterator.
@@ -499,12 +511,13 @@ where
 		S: std::iter::Product<BatchIter::Item> + Send + 'static,
 		R: std::iter::Product<S>,
 	{
-		pool.scope(|s| {
-			while let Some(batch) = self.next_batch() {
-				s.spawn(async move { batch.product() });
-			}
-		})
-		.into_iter()
-		.product()
+		pool
+			.scope(|s| {
+				while let Some(batch) = self.next_batch() {
+					s.spawn(async move { batch.product() });
+				}
+			})
+			.into_iter()
+			.product()
 	}
 }

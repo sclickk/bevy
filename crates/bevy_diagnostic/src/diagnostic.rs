@@ -49,7 +49,8 @@ impl Diagnostic {
 		}
 
 		self.sum += value;
-		self.history
+		self
+			.history
 			.push_back(DiagnosticMeasurement { time, value });
 	}
 
@@ -89,7 +90,9 @@ impl Diagnostic {
 	}
 
 	pub fn value(&self) -> Option<f64> {
-		self.measurement().map(|measurement| measurement.value)
+		self
+			.measurement()
+			.map(|measurement| measurement.value)
 	}
 
 	pub fn sum(&self) -> f64 {
@@ -145,7 +148,9 @@ pub struct Diagnostics {
 
 impl Diagnostics {
 	pub fn add(&mut self, diagnostic: Diagnostic) {
-		self.diagnostics.insert(diagnostic.id, diagnostic);
+		self
+			.diagnostics
+			.insert(diagnostic.id, diagnostic);
 	}
 
 	pub fn get(&self, id: DiagnosticId) -> Option<&Diagnostic> {
@@ -157,7 +162,8 @@ impl Diagnostics {
 	}
 
 	pub fn get_measurement(&self, id: DiagnosticId) -> Option<&DiagnosticMeasurement> {
-		self.diagnostics
+		self
+			.diagnostics
 			.get(&id)
 			.and_then(|diagnostic| diagnostic.measurement())
 	}

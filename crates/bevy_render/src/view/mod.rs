@@ -28,7 +28,8 @@ pub struct ViewPlugin;
 
 impl Plugin for ViewPlugin {
 	fn build(&self, app: &mut App) {
-		app.init_resource::<Msaa>()
+		app
+			.init_resource::<Msaa>()
 			// NOTE: windows.is_changed() handles cases where a window was resized
 			.add_plugin(ExtractResourcePlugin::<Msaa>::default())
 			.add_plugin(VisibilityPlugin);
@@ -111,7 +112,10 @@ pub struct ViewTarget {
 impl ViewTarget {
 	pub fn get_color_attachment(&self, ops: Operations<Color>) -> RenderPassColorAttachment {
 		RenderPassColorAttachment {
-			view: self.sampled_target.as_ref().unwrap_or(&self.view),
+			view: self
+				.sampled_target
+				.as_ref()
+				.unwrap_or(&self.view),
 			resolve_target: if self.sampled_target.is_some() {
 				Some(&self.view)
 			} else {
@@ -173,7 +177,10 @@ fn prepare_view_targets(
 	let mut sampled_textures = HashMap::default();
 	for (entity, camera) in cameras.iter() {
 		if let Some(target_size) = camera.physical_target_size {
-			if let Some(texture_view) = camera.target.get_texture_view(&windows, &images) {
+			if let Some(texture_view) = camera
+				.target
+				.get_texture_view(&windows, &images)
+			{
 				let sampled_target = if msaa.samples > 1 {
 					let sampled_texture = sampled_textures
 						.entry(camera.target.clone())

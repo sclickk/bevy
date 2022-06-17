@@ -81,7 +81,8 @@ pub struct CustomMaterialPlugin;
 impl Plugin for CustomMaterialPlugin {
 	fn build(&self, app: &mut App) {
 		app.add_plugin(ExtractComponentPlugin::<InstanceMaterialData>::default());
-		app.sub_app_mut(RenderApp)
+		app
+			.sub_app_mut(RenderApp)
 			.add_render_command::<Transparent3d, DrawCustom>()
 			.init_resource::<CustomPipeline>()
 			.init_resource::<SpecializedMeshPipelines<CustomPipeline>>()
@@ -121,8 +122,7 @@ fn queue_custom(
 		let view_row_2 = view_matrix.row(2);
 		for (entity, mesh_uniform, mesh_handle) in material_meshes.iter() {
 			if let Some(mesh) = meshes.get(mesh_handle) {
-				let key =
-					msaa_key | MeshPipelineKey::from_primitive_topology(mesh.primitive_topology);
+				let key = msaa_key | MeshPipelineKey::from_primitive_topology(mesh.primitive_topology);
 				let pipeline = pipelines
 					.specialize(&mut pipeline_cache, &custom_pipeline, key, &mesh.layout)
 					.unwrap();
@@ -192,22 +192,25 @@ impl SpecializedMeshPipeline for CustomPipeline {
 	) -> Result<RenderPipelineDescriptor, SpecializedMeshPipelineError> {
 		let mut descriptor = self.mesh_pipeline.specialize(key, layout)?;
 		descriptor.vertex.shader = self.shader.clone();
-		descriptor.vertex.buffers.push(VertexBufferLayout {
-			array_stride: std::mem::size_of::<InstanceData>() as u64,
-			step_mode: VertexStepMode::Instance,
-			attributes: vec![
-				VertexAttribute {
-					format: VertexFormat::Float32x4,
-					offset: 0,
-					shader_location: 3, // shader locations 0-2 are taken up by Position, Normal and UV attributes
-				},
-				VertexAttribute {
-					format: VertexFormat::Float32x4,
-					offset: VertexFormat::Float32x4.size(),
-					shader_location: 4,
-				},
-			],
-		});
+		descriptor
+			.vertex
+			.buffers
+			.push(VertexBufferLayout {
+				array_stride: std::mem::size_of::<InstanceData>() as u64,
+				step_mode: VertexStepMode::Instance,
+				attributes: vec![
+					VertexAttribute {
+						format: VertexFormat::Float32x4,
+						offset: 0,
+						shader_location: 3, // shader locations 0-2 are taken up by Position, Normal and UV attributes
+					},
+					VertexAttribute {
+						format: VertexFormat::Float32x4,
+						offset: VertexFormat::Float32x4.size(),
+						shader_location: 4,
+					},
+				],
+			});
 		descriptor.fragment.as_mut().unwrap().shader = self.shader.clone();
 		descriptor.layout = Some(vec![
 			self.mesh_pipeline.view_layout.clone(),

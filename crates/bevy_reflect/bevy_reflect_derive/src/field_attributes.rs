@@ -84,17 +84,18 @@ fn parse_meta(args: &mut ReflectFieldAttr, meta: &Meta) -> Result<(), syn::Error
 		Meta::NameValue(pair) if pair.path.is_ident(DEFAULT_ATTR) => {
 			let lit = &pair.lit;
 			match lit {
-                Lit::Str(lit_str) => {
-                    args.default = DefaultBehavior::Func(lit_str.parse()?);
-                    Ok(())
-                }
-                err => {
-                    Err(syn::Error::new(
-                        err.span(),
-                        format!("expected a string literal containing the name of a function, but found: {}", err.to_token_stream()),
-                    ))
-                }
-            }
+				Lit::Str(lit_str) => {
+					args.default = DefaultBehavior::Func(lit_str.parse()?);
+					Ok(())
+				}
+				err => Err(syn::Error::new(
+					err.span(),
+					format!(
+						"expected a string literal containing the name of a function, but found: {}",
+						err.to_token_stream()
+					),
+				)),
+			}
 		}
 		Meta::NameValue(pair) => {
 			let path = &pair.path;

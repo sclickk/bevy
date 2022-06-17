@@ -43,9 +43,7 @@ fn main() {
 			// Pass in the types your system should operate on using the ::<T> (turbofish) syntax
 			SystemSet::on_exit(AppState::MainMenu).with_system(cleanup_system::<MenuClose>),
 		)
-		.add_system_set(
-			SystemSet::on_exit(AppState::InGame).with_system(cleanup_system::<LevelUnload>),
-		)
+		.add_system_set(SystemSet::on_exit(AppState::InGame).with_system(cleanup_system::<LevelUnload>))
 		.run();
 }
 

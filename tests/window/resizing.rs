@@ -96,10 +96,13 @@ fn change_window_size(
 
 fn sync_dimensions(dim: Res<Dimensions>, mut windows: ResMut<Windows>) {
 	if dim.is_changed() {
-		windows.get_primary_mut().unwrap().set_resolution(
-			dim.width.try_into().unwrap(),
-			dim.height.try_into().unwrap(),
-		);
+		windows
+			.get_primary_mut()
+			.unwrap()
+			.set_resolution(
+				dim.width.try_into().unwrap(),
+				dim.height.try_into().unwrap(),
+			);
 	}
 }
 

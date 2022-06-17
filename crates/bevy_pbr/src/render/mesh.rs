@@ -291,8 +291,8 @@ impl FromWorld for MeshPipeline {
 			Res<RenderQueue>,
 		)> = SystemState::new(world);
 		let (render_device, default_sampler, render_queue) = system_state.get_mut(world);
-		let clustered_forward_buffer_binding_type = render_device
-			.get_supported_read_only_binding_type(CLUSTERED_FORWARD_STORAGE_BUFFER_COUNT);
+		let clustered_forward_buffer_binding_type =
+			render_device.get_supported_read_only_binding_type(CLUSTERED_FORWARD_STORAGE_BUFFER_COUNT);
 
 		let view_layout = render_device.create_bind_group_layout(&BindGroupLayoutDescriptor {
 			entries: &[
@@ -380,11 +380,9 @@ impl FromWorld for MeshPipeline {
 					ty: BindingType::Buffer {
 						ty: clustered_forward_buffer_binding_type,
 						has_dynamic_offset: false,
-						min_binding_size: Some(
-							ViewClusterBindings::min_size_cluster_light_index_lists(
-								clustered_forward_buffer_binding_type,
-							),
-						),
+						min_binding_size: Some(ViewClusterBindings::min_size_cluster_light_index_lists(
+							clustered_forward_buffer_binding_type,
+						)),
 					},
 					count: None,
 				},
@@ -395,11 +393,9 @@ impl FromWorld for MeshPipeline {
 					ty: BindingType::Buffer {
 						ty: clustered_forward_buffer_binding_type,
 						has_dynamic_offset: false,
-						min_binding_size: Some(
-							ViewClusterBindings::min_size_cluster_offsets_and_counts(
-								clustered_forward_buffer_binding_type,
-							),
-						),
+						min_binding_size: Some(ViewClusterBindings::min_size_cluster_offsets_and_counts(
+							clustered_forward_buffer_binding_type,
+						)),
 					},
 					count: None,
 				},
@@ -423,23 +419,22 @@ impl FromWorld for MeshPipeline {
 			label: Some("mesh_layout"),
 		});
 
-		let skinned_mesh_layout =
-			render_device.create_bind_group_layout(&BindGroupLayoutDescriptor {
-				entries: &[
-					mesh_binding,
-					BindGroupLayoutEntry {
-						binding: 1,
-						visibility: ShaderStages::VERTEX,
-						ty: BindingType::Buffer {
-							ty: BufferBindingType::Uniform,
-							has_dynamic_offset: true,
-							min_binding_size: BufferSize::new(JOINT_BUFFER_SIZE as u64),
-						},
-						count: None,
+		let skinned_mesh_layout = render_device.create_bind_group_layout(&BindGroupLayoutDescriptor {
+			entries: &[
+				mesh_binding,
+				BindGroupLayoutEntry {
+					binding: 1,
+					visibility: ShaderStages::VERTEX,
+					ty: BindingType::Buffer {
+						ty: BufferBindingType::Uniform,
+						has_dynamic_offset: true,
+						min_binding_size: BufferSize::new(JOINT_BUFFER_SIZE as u64),
 					},
-				],
-				label: Some("skinned_mesh_layout"),
-			});
+					count: None,
+				},
+			],
+			label: Some("skinned_mesh_layout"),
+		});
 
 		// A 1x1x1 'all 1.0' texture to use as a dummy texture to use in place of optional StandardMaterial textures
 		let dummy_white_gpu_image = {
@@ -467,10 +462,8 @@ impl FromWorld for MeshPipeline {
 				ImageDataLayout {
 					offset: 0,
 					bytes_per_row: Some(
-						std::num::NonZeroU32::new(
-							image.texture_descriptor.size.width * format_size as u32,
-						)
-						.unwrap(),
+						std::num::NonZeroU32::new(image.texture_descriptor.size.width * format_size as u32)
+							.unwrap(),
 					),
 					rows_per_image: None,
 				},
@@ -591,8 +584,7 @@ impl SpecializedMeshPipeline for MeshPipeline {
 		}
 
 		let mut bind_group_layout = vec![self.view_layout.clone()];
-		if layout.contains(Mesh::ATTRIBUTE_JOINT_INDEX)
-			&& layout.contains(Mesh::ATTRIBUTE_JOINT_WEIGHT)
+		if layout.contains(Mesh::ATTRIBUTE_JOINT_INDEX) && layout.contains(Mesh::ATTRIBUTE_JOINT_WEIGHT)
 		{
 			shader_defs.push(String::from("SKINNED"));
 			vertex_attributes.push(Mesh::ATTRIBUTE_JOINT_INDEX.at_shader_location(5));
@@ -812,9 +804,7 @@ pub fn queue_mesh_view_bind_groups(
 					},
 					BindGroupEntry {
 						binding: 5,
-						resource: BindingResource::Sampler(
-							&shadow_pipeline.directional_light_sampler,
-						),
+						resource: BindingResource::Sampler(&shadow_pipeline.directional_light_sampler),
 					},
 					BindGroupEntry {
 						binding: 6,
@@ -822,20 +812,26 @@ pub fn queue_mesh_view_bind_groups(
 					},
 					BindGroupEntry {
 						binding: 7,
-						resource: view_cluster_bindings.light_index_lists_binding().unwrap(),
+						resource: view_cluster_bindings
+							.light_index_lists_binding()
+							.unwrap(),
 					},
 					BindGroupEntry {
 						binding: 8,
-						resource: view_cluster_bindings.offsets_and_counts_binding().unwrap(),
+						resource: view_cluster_bindings
+							.offsets_and_counts_binding()
+							.unwrap(),
 					},
 				],
 				label: Some("mesh_view_bind_group"),
 				layout: &mesh_pipeline.view_layout,
 			});
 
-			commands.entity(entity).insert(MeshViewBindGroup {
-				value: view_bind_group,
-			});
+			commands
+				.entity(entity)
+				.insert(MeshViewBindGroup {
+					value: view_bind_group,
+				});
 		}
 	}
 }
@@ -885,7 +881,11 @@ impl<const I: usize> EntityRenderCommand for SetMeshBindGroup<I> {
 		if let Some(joints) = skinned_mesh_joints {
 			pass.set_bind_group(
 				I,
-				mesh_bind_group.into_inner().skinned.as_ref().unwrap(),
+				mesh_bind_group
+					.into_inner()
+					.skinned
+					.as_ref()
+					.unwrap(),
 				&[mesh_index.index(), joints.index],
 			);
 		} else {

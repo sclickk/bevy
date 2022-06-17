@@ -37,7 +37,10 @@ where
 	F: FnMut(B::Item) -> T + Send + Clone,
 {
 	fn next_batch(&mut self) -> Option<std::iter::Map<B, F>> {
-		self.iter.next_batch().map(|b| b.map(self.f.clone()))
+		self
+			.iter
+			.next_batch()
+			.map(|b| b.map(self.f.clone()))
 	}
 }
 
@@ -54,7 +57,8 @@ where
 	F: FnMut(&B::Item) -> bool + Send + Clone,
 {
 	fn next_batch(&mut self) -> Option<std::iter::Filter<B, F>> {
-		self.iter
+		self
+			.iter
 			.next_batch()
 			.map(|b| b.filter(self.predicate.clone()))
 	}
@@ -73,7 +77,10 @@ where
 	F: FnMut(B::Item) -> Option<R> + Send + Clone,
 {
 	fn next_batch(&mut self) -> Option<std::iter::FilterMap<B, F>> {
-		self.iter.next_batch().map(|b| b.filter_map(self.f.clone()))
+		self
+			.iter
+			.next_batch()
+			.map(|b| b.filter_map(self.f.clone()))
 	}
 }
 
@@ -94,7 +101,10 @@ where
 	// This extends each batch using the flat map. The other option is
 	// to turn each IntoIter into its own batch.
 	fn next_batch(&mut self) -> Option<std::iter::FlatMap<B, U, F>> {
-		self.iter.next_batch().map(|b| b.flat_map(self.f.clone()))
+		self
+			.iter
+			.next_batch()
+			.map(|b| b.flat_map(self.f.clone()))
 	}
 }
 
@@ -151,7 +161,10 @@ where
 	F: FnMut(&B::Item) + Send + Clone,
 {
 	fn next_batch(&mut self) -> Option<std::iter::Inspect<B, F>> {
-		self.iter.next_batch().map(|b| b.inspect(self.f.clone()))
+		self
+			.iter
+			.next_batch()
+			.map(|b| b.inspect(self.f.clone()))
 	}
 }
 
@@ -199,9 +212,13 @@ where
 	P: ParallelIterator<B> + Clone,
 {
 	fn next_batch(&mut self) -> Option<B> {
-		self.curr.as_mut().and_then(|c| c.next_batch()).or_else(|| {
-			self.curr = Some(self.iter.clone());
-			self.next_batch()
-		})
+		self
+			.curr
+			.as_mut()
+			.and_then(|c| c.next_batch())
+			.or_else(|| {
+				self.curr = Some(self.iter.clone());
+				self.next_batch()
+			})
 	}
 }

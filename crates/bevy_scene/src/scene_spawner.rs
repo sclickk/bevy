@@ -55,7 +55,8 @@ pub enum SceneSpawnError {
 impl SceneSpawner {
 	pub fn spawn_dynamic(&mut self, scene_handle: Handle<DynamicScene>) {
 		let instance_id = InstanceId::new();
-		self.dynamic_scenes_to_spawn
+		self
+			.dynamic_scenes_to_spawn
 			.push((scene_handle, instance_id));
 	}
 
@@ -65,22 +66,31 @@ impl SceneSpawner {
 		parent: Entity,
 	) -> InstanceId {
 		let instance_id = InstanceId::new();
-		self.dynamic_scenes_to_spawn
+		self
+			.dynamic_scenes_to_spawn
 			.push((scene_handle, instance_id));
-		self.scenes_with_parent.push((instance_id, parent));
+		self
+			.scenes_with_parent
+			.push((instance_id, parent));
 		instance_id
 	}
 
 	pub fn spawn(&mut self, scene_handle: Handle<Scene>) -> InstanceId {
 		let instance_id = InstanceId::new();
-		self.scenes_to_spawn.push((scene_handle, instance_id));
+		self
+			.scenes_to_spawn
+			.push((scene_handle, instance_id));
 		instance_id
 	}
 
 	pub fn spawn_as_child(&mut self, scene_handle: Handle<Scene>, parent: Entity) -> InstanceId {
 		let instance_id = InstanceId::new();
-		self.scenes_to_spawn.push((scene_handle, instance_id));
-		self.scenes_with_parent.push((instance_id, parent));
+		self
+			.scenes_to_spawn
+			.push((scene_handle, instance_id));
+		self
+			.scenes_with_parent
+			.push((instance_id, parent));
 		instance_id
 	}
 
@@ -97,7 +107,10 @@ impl SceneSpawner {
 		world: &mut World,
 		scene_handle: Handle<DynamicScene>,
 	) -> Result<(), SceneSpawnError> {
-		if let Some(instance_ids) = self.spawned_dynamic_scenes.remove(&scene_handle) {
+		if let Some(instance_ids) = self
+			.spawned_dynamic_scenes
+			.remove(&scene_handle)
+		{
 			for instance_id in instance_ids {
 				self.despawn_instance_sync(world, &instance_id);
 			}
@@ -121,7 +134,8 @@ impl SceneSpawner {
 		let mut entity_map = EntityMap::default();
 		Self::spawn_dynamic_internal(world, scene_handle, &mut entity_map)?;
 		let instance_id = InstanceId::new();
-		self.spawned_instances
+		self
+			.spawned_instances
 			.insert(instance_id, InstanceInfo { entity_map });
 		let spawned = self
 			.spawned_dynamic_scenes
@@ -137,12 +151,11 @@ impl SceneSpawner {
 		entity_map: &mut EntityMap,
 	) -> Result<(), SceneSpawnError> {
 		world.resource_scope(|world, scenes: Mut<Assets<DynamicScene>>| {
-			let scene =
-				scenes
-					.get(scene_handle)
-					.ok_or_else(|| SceneSpawnError::NonExistentScene {
-						handle: scene_handle.clone_weak(),
-					})?;
+			let scene = scenes
+				.get(scene_handle)
+				.ok_or_else(|| SceneSpawnError::NonExistentScene {
+					handle: scene_handle.clone_weak(),
+				})?;
 			scene.write_to_world(world, entity_map)
 		})
 	}
@@ -193,18 +206,13 @@ impl SceneSpawner {
 								type_name: component_info.name().to_string(),
 							})
 							.and_then(|registration| {
-								registration.data::<ReflectComponent>().ok_or_else(|| {
-									SceneSpawnError::UnregisteredComponent {
+								registration
+									.data::<ReflectComponent>()
+									.ok_or_else(|| SceneSpawnError::UnregisteredComponent {
 										type_name: component_info.name().to_string(),
-									}
-								})
+									})
 							})?;
-						reflect_component.copy_component(
-							&scene.world,
-							world,
-							*scene_entity,
-							entity,
-						);
+						reflect_component.copy_component(&scene.world, world, *scene_entity, entity);
 					}
 				}
 			}
@@ -215,7 +223,9 @@ impl SceneSpawner {
 						.unwrap();
 				}
 			}
-			self.spawned_instances.insert(instance_id, instance_info);
+			self
+				.spawned_instances
+				.insert(instance_id, instance_info);
 			let spawned = self
 				.spawned_scenes
 				.entry(scene_handle)
@@ -234,11 +244,7 @@ impl SceneSpawner {
 			if let Some(spawned_instances) = self.spawned_dynamic_scenes.get(scene_handle) {
 				for instance_id in spawned_instances.iter() {
 					if let Some(instance_info) = self.spawned_instances.get_mut(instance_id) {
-						Self::spawn_dynamic_internal(
-							world,
-							scene_handle,
-							&mut instance_info.entity_map,
-						)?;
+						Self::spawn_dynamic_internal(world, scene_handle, &mut instance_info.entity_map)?;
 					}
 				}
 			}
@@ -271,7 +277,8 @@ impl SceneSpawner {
 
 			match Self::spawn_dynamic_internal(world, &scene_handle, &mut entity_map) {
 				Ok(_) => {
-					self.spawned_instances
+					self
+						.spawned_instances
 						.insert(instance_id, InstanceInfo { entity_map });
 					let spawned = self
 						.spawned_dynamic_scenes
@@ -280,7 +287,8 @@ impl SceneSpawner {
 					spawned.push(instance_id);
 				}
 				Err(SceneSpawnError::NonExistentScene { .. }) => {
-					self.dynamic_scenes_to_spawn
+					self
+						.dynamic_scenes_to_spawn
 						.push((scene_handle, instance_id));
 				}
 				Err(err) => return Err(err),
@@ -327,14 +335,18 @@ impl SceneSpawner {
 					}
 				}
 			} else {
-				self.scenes_with_parent.push((instance_id, parent));
+				self
+					.scenes_with_parent
+					.push((instance_id, parent));
 			}
 		}
 	}
 
 	/// Check that an scene instance spawned previously is ready to use
 	pub fn instance_is_ready(&self, instance_id: InstanceId) -> bool {
-		self.spawned_instances.contains_key(&instance_id)
+		self
+			.spawned_instances
+			.contains_key(&instance_id)
 	}
 
 	/// Get an iterator over the entities in an instance, once it's spawned
@@ -342,7 +354,8 @@ impl SceneSpawner {
 		&'_ self,
 		instance_id: InstanceId,
 	) -> Option<impl Iterator<Item = Entity> + '_> {
-		self.spawned_instances
+		self
+			.spawned_instances
 			.get(&instance_id)
 			.map(|instance| instance.entity_map.values())
 	}
@@ -359,13 +372,18 @@ pub fn scene_spawner_system(world: &mut World) {
 			.iter(scene_asset_events)
 		{
 			if let AssetEvent::Modified { handle } = event {
-				if scene_spawner.spawned_dynamic_scenes.contains_key(handle) {
+				if scene_spawner
+					.spawned_dynamic_scenes
+					.contains_key(handle)
+				{
 					updated_spawned_scenes.push(handle.clone_weak());
 				}
 			}
 		}
 
-		scene_spawner.despawn_queued_scenes(world).unwrap();
+		scene_spawner
+			.despawn_queued_scenes(world)
+			.unwrap();
 		scene_spawner.despawn_queued_instances(world);
 		scene_spawner
 			.spawn_queued_scenes(world)

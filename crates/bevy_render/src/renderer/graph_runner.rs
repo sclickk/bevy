@@ -10,8 +10,8 @@ use thiserror::Error;
 
 use crate::{
 	render_graph::{
-		Edge, NodeId, NodeRunError, NodeState, RenderGraph, RenderGraphContext, SlotLabel,
-		SlotType, SlotValue,
+		Edge, NodeId, NodeRunError, NodeState, RenderGraph, RenderGraphContext, SlotLabel, SlotType,
+		SlotValue,
 	},
 	renderer::{RenderContext, RenderDevice},
 };
@@ -122,7 +122,10 @@ impl RenderGraphRunner {
 
 			node_outputs.insert(input_node.id, input_values);
 
-			for (_, node_state) in graph.iter_node_outputs(input_node.id).expect("node exists") {
+			for (_, node_state) in graph
+				.iter_node_outputs(input_node.id)
+				.expect("node exists")
+			{
 				node_queue.push_front(node_state);
 			}
 		}
@@ -146,8 +149,7 @@ impl RenderGraphRunner {
 						..
 					} => {
 						if let Some(outputs) = node_outputs.get(&input_node.id) {
-							slot_indices_and_inputs
-								.push((*input_index, outputs[*output_index].clone()));
+							slot_indices_and_inputs.push((*input_index, outputs[*output_index].clone()));
 						} else {
 							node_queue.push_front(node_state);
 							continue 'handle_node;
@@ -185,7 +187,9 @@ impl RenderGraphRunner {
 					#[cfg(feature = "trace")]
 					let _span = info_span!("node", name = node_state.type_name).entered();
 
-					node_state.node.run(&mut context, render_context, world)?;
+					node_state
+						.node
+						.run(&mut context, render_context, world)?;
 				}
 
 				for run_sub_graph in context.finish() {
@@ -217,7 +221,10 @@ impl RenderGraphRunner {
 			}
 			node_outputs.insert(node_state.id, values);
 
-			for (_, node_state) in graph.iter_node_outputs(node_state.id).expect("node exists") {
+			for (_, node_state) in graph
+				.iter_node_outputs(node_state.id)
+				.expect("node exists")
+			{
 				node_queue.push_front(node_state);
 			}
 		}

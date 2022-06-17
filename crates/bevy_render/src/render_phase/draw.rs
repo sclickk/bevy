@@ -64,7 +64,9 @@ impl<P: PhaseItem> DrawFunctionsInternal<P> {
 
 	/// Adds the [`Draw`] function and associates it to the type `T`
 	pub fn add_with<T: 'static, D: Draw<P>>(&mut self, draw_function: D) -> DrawFunctionId {
-		self.draw_functions.push(Box::new(draw_function));
+		self
+			.draw_functions
+			.push(Box::new(draw_function));
 		let id = DrawFunctionId(self.draw_functions.len() - 1);
 		self.indices.insert(TypeId::of::<T>(), id);
 		id
@@ -72,7 +74,10 @@ impl<P: PhaseItem> DrawFunctionsInternal<P> {
 
 	/// Retrieves the [`Draw`] function corresponding to the `id` mutably.
 	pub fn get_mut(&mut self, id: DrawFunctionId) -> Option<&mut dyn Draw<P>> {
-		self.draw_functions.get_mut(id.0).map(|f| &mut **f)
+		self
+			.draw_functions
+			.get_mut(id.0)
+			.map(|f| &mut **f)
 	}
 
 	/// Retrieves the id of the [`Draw`] function corresponding to their associated type `T`.
@@ -328,7 +333,9 @@ impl AddRenderCommand for App {
 					std::any::type_name::<P>(),
 				);
 			});
-		draw_functions.write().add_with::<C, _>(draw_function);
+		draw_functions
+			.write()
+			.add_with::<C, _>(draw_function);
 		self
 	}
 }

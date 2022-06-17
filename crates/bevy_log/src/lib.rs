@@ -26,8 +26,7 @@ pub mod prelude {
 }
 
 pub use bevy_utils::tracing::{
-	debug, debug_span, error, error_span, info, info_span, trace, trace_span, warn, warn_span,
-	Level,
+	debug, debug_span, error, error_span, info, info_span, trace, trace_span, warn, warn_span, Level,
 };
 
 use bevy_app::{App, Plugin};
@@ -121,7 +120,9 @@ impl Plugin for LogPlugin {
 		}
 
 		let default_filter = {
-			let settings = app.world.get_resource_or_insert_with(LogSettings::default);
+			let settings = app
+				.world
+				.get_resource_or_insert_with(LogSettings::default);
 			format!("{},{}", settings.level, settings.filter)
 		};
 		LogTracer::init().unwrap();
@@ -145,8 +146,9 @@ impl Plugin for LogPlugin {
 					.name_fn(Box::new(|event_or_span| match event_or_span {
 						tracing_chrome::EventOrSpan::Event(event) => event.metadata().name().into(),
 						tracing_chrome::EventOrSpan::Span(span) => {
-							if let Some(fields) =
-								span.extensions().get::<FormattedFields<DefaultFields>>()
+							if let Some(fields) = span
+								.extensions()
+								.get::<FormattedFields<DefaultFields>>()
 							{
 								format!("{}: {}", span.metadata().name(), fields.fields.as_str())
 							} else {
@@ -164,9 +166,8 @@ impl Plugin for LogPlugin {
 
 			let fmt_layer = tracing_subscriber::fmt::Layer::default();
 			#[cfg(feature = "tracing-tracy")]
-			let fmt_layer = fmt_layer.with_filter(
-				tracing_subscriber::filter::Targets::new().with_target("tracy", Level::ERROR),
-			);
+			let fmt_layer = fmt_layer
+				.with_filter(tracing_subscriber::filter::Targets::new().with_target("tracy", Level::ERROR));
 
 			let subscriber = subscriber.with(fmt_layer);
 

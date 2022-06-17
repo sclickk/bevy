@@ -80,7 +80,9 @@ fn setup_scene_once_loaded(
 ) {
 	if !*done {
 		if let Ok(mut player) = player.get_single_mut() {
-			player.play(animations.0[0].clone_weak()).repeat();
+			player
+				.play(animations.0[0].clone_weak())
+				.repeat();
 			*done = true;
 		}
 	}

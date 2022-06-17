@@ -291,7 +291,8 @@ pub struct AnimationPlugin {}
 
 impl Plugin for AnimationPlugin {
 	fn build(&self, app: &mut App) {
-		app.add_asset::<AnimationClip>()
+		app
+			.add_asset::<AnimationClip>()
 			.register_type::<AnimationPlayer>()
 			.add_system_to_stage(
 				CoreStage::PostUpdate,

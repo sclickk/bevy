@@ -156,7 +156,10 @@ impl DynamicMap {
 
 	/// Inserts a key-value pair of [`Reflect`] values into the map.
 	pub fn insert_boxed(&mut self, key: Box<dyn Reflect>, value: Box<dyn Reflect>) {
-		match self.indices.entry(key.reflect_hash().expect(HASH_ERROR)) {
+		match self
+			.indices
+			.entry(key.reflect_hash().expect(HASH_ERROR))
+		{
 			Entry::Occupied(entry) => {
 				self.values[*entry.get()] = (key, value);
 			}
@@ -170,13 +173,15 @@ impl DynamicMap {
 
 impl Map for DynamicMap {
 	fn get(&self, key: &dyn Reflect) -> Option<&dyn Reflect> {
-		self.indices
+		self
+			.indices
 			.get(&key.reflect_hash().expect(HASH_ERROR))
 			.map(|index| &*self.values.get(*index).unwrap().1)
 	}
 
 	fn get_mut(&mut self, key: &dyn Reflect) -> Option<&mut dyn Reflect> {
-		self.indices
+		self
+			.indices
 			.get(&key.reflect_hash().expect(HASH_ERROR))
 			.cloned()
 			.map(move |index| &mut *self.values.get_mut(index).unwrap().1)
@@ -206,7 +211,8 @@ impl Map for DynamicMap {
 	}
 
 	fn get_at(&self, index: usize) -> Option<(&dyn Reflect, &dyn Reflect)> {
-		self.values
+		self
+			.values
 			.get(index)
 			.map(|(key, value)| (&**key, &**value))
 	}
@@ -398,7 +404,10 @@ mod tests {
 		map.insert(2usize, expected[2].to_string());
 
 		for (index, item) in map.into_iter().enumerate() {
-			let key = item.0.take::<usize>().expect("couldn't downcast to usize");
+			let key = item
+				.0
+				.take::<usize>()
+				.expect("couldn't downcast to usize");
 			let value = item
 				.1
 				.take::<String>()

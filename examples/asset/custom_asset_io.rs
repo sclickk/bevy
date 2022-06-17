@@ -22,10 +22,7 @@ impl AssetIo for CustomAssetIo {
 		self.0.load_path(path)
 	}
 
-	fn read_directory(
-		&self,
-		path: &Path,
-	) -> Result<Box<dyn Iterator<Item = PathBuf>>, AssetIoError> {
+	fn read_directory(&self, path: &Path) -> Result<Box<dyn Iterator<Item = PathBuf>>, AssetIoError> {
 		info!("read_directory({:?})", path);
 		self.0.read_directory(path)
 	}

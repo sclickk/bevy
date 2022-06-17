@@ -164,24 +164,28 @@ pub trait GetTupleStructField {
 
 impl<S: TupleStruct> GetTupleStructField for S {
 	fn get_field<T: Reflect>(&self, index: usize) -> Option<&T> {
-		self.field(index)
+		self
+			.field(index)
 			.and_then(|value| value.downcast_ref::<T>())
 	}
 
 	fn get_field_mut<T: Reflect>(&mut self, index: usize) -> Option<&mut T> {
-		self.field_mut(index)
+		self
+			.field_mut(index)
 			.and_then(|value| value.downcast_mut::<T>())
 	}
 }
 
 impl GetTupleStructField for dyn TupleStruct {
 	fn get_field<T: Reflect>(&self, index: usize) -> Option<&T> {
-		self.field(index)
+		self
+			.field(index)
 			.and_then(|value| value.downcast_ref::<T>())
 	}
 
 	fn get_field_mut<T: Reflect>(&mut self, index: usize) -> Option<&mut T> {
-		self.field_mut(index)
+		self
+			.field_mut(index)
 			.and_then(|value| value.downcast_mut::<T>())
 	}
 }
@@ -223,7 +227,10 @@ impl TupleStruct for DynamicTupleStruct {
 
 	#[inline]
 	fn field_mut(&mut self, index: usize) -> Option<&mut dyn Reflect> {
-		self.fields.get_mut(index).map(|field| &mut **field)
+		self
+			.fields
+			.get_mut(index)
+			.map(|field| &mut **field)
 	}
 
 	#[inline]

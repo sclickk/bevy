@@ -23,7 +23,10 @@ pub struct DespawnChildrenRecursive {
 /// Function for despawning an entity and all its children
 pub fn despawn_with_children_recursive(world: &mut World, entity: Entity) {
 	// first, make the entity's own parent forget about it
-	if let Some(parent) = world.get::<Parent>(entity).map(|parent| parent.0) {
+	if let Some(parent) = world
+		.get::<Parent>(entity)
+		.map(|parent| parent.0)
+	{
 		if let Some(mut children) = world.get_mut::<Children>(parent) {
 			children.0.retain(|c| *c != entity);
 		}
@@ -98,7 +101,9 @@ impl<'w, 's, 'a> DespawnRecursiveExt for EntityCommands<'w, 's, 'a> {
 
 	fn despawn_descendants(&mut self) {
 		let entity = self.id();
-		self.commands().add(DespawnChildrenRecursive { entity });
+		self
+			.commands()
+			.add(DespawnChildrenRecursive { entity });
 	}
 }
 
@@ -174,36 +179,41 @@ mod tests {
 			grandparent_entity = commands
 				.spawn_bundle((N("Grandparent".to_owned()), Idx(2)))
 				.id();
-			commands.entity(grandparent_entity).with_children(|parent| {
-				// Add a child to the grandparent (the "parent"), which will get deleted
-				parent
-					.spawn_bundle((N("Parent, to be deleted".to_owned()), Idx(3)))
-					// All descendents of the "parent" should also be deleted.
-					.with_children(|parent| {
-						parent
-							.spawn_bundle((N("First Child, to be deleted".to_owned()), Idx(4)))
-							.with_children(|parent| {
-								// child
-								parent.spawn_bundle((
-									N("First grand child, to be deleted".to_owned()),
-									Idx(5),
-								));
-							});
-						parent.spawn_bundle((N("Second child, to be deleted".to_owned()), Idx(6)));
-					});
-			});
+			commands
+				.entity(grandparent_entity)
+				.with_children(|parent| {
+					// Add a child to the grandparent (the "parent"), which will get deleted
+					parent
+						.spawn_bundle((N("Parent, to be deleted".to_owned()), Idx(3)))
+						// All descendents of the "parent" should also be deleted.
+						.with_children(|parent| {
+							parent
+								.spawn_bundle((N("First Child, to be deleted".to_owned()), Idx(4)))
+								.with_children(|parent| {
+									// child
+									parent.spawn_bundle((N("First grand child, to be deleted".to_owned()), Idx(5)));
+								});
+							parent.spawn_bundle((N("Second child, to be deleted".to_owned()), Idx(6)));
+						});
+				});
 
 			commands.spawn_bundle((N("An innocent bystander".to_owned()), Idx(7)));
 		}
 		queue.apply(&mut world);
 
-		let parent_entity = world.get::<Children>(grandparent_entity).unwrap()[0];
+		let parent_entity = world
+			.get::<Children>(grandparent_entity)
+			.unwrap()[0];
 
 		{
 			let mut commands = Commands::new(&mut queue, &world);
-			commands.entity(parent_entity).despawn_recursive();
+			commands
+				.entity(parent_entity)
+				.despawn_recursive();
 			// despawning the same entity twice should not panic
-			commands.entity(parent_entity).despawn_recursive();
+			commands
+				.entity(parent_entity)
+				.despawn_recursive();
 		}
 		queue.apply(&mut world);
 
@@ -215,7 +225,9 @@ mod tests {
 		results.sort_unstable_by_key(|(_, index)| *index);
 
 		{
-			let children = world.get::<Children>(grandparent_entity).unwrap();
+			let children = world
+				.get::<Children>(grandparent_entity)
+				.unwrap();
 			assert!(
 				!children.iter().any(|&i| i == parent_entity),
 				"grandparent should no longer know about its child which has been removed"

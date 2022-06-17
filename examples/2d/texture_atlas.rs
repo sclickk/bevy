@@ -27,7 +27,9 @@ struct RpgSpriteHandles {
 }
 
 fn load_textures(mut rpg_sprite_handles: ResMut<RpgSpriteHandles>, asset_server: Res<AssetServer>) {
-	rpg_sprite_handles.handles = asset_server.load_folder("textures/rpg").unwrap();
+	rpg_sprite_handles.handles = asset_server
+		.load_folder("textures/rpg")
+		.unwrap();
 }
 
 fn check_textures(
@@ -35,9 +37,12 @@ fn check_textures(
 	rpg_sprite_handles: ResMut<RpgSpriteHandles>,
 	asset_server: Res<AssetServer>,
 ) {
-	if let LoadState::Loaded =
-		asset_server.get_group_load_state(rpg_sprite_handles.handles.iter().map(|handle| handle.id))
-	{
+	if let LoadState::Loaded = asset_server.get_group_load_state(
+		rpg_sprite_handles
+			.handles
+			.iter()
+			.map(|handle| handle.id),
+	) {
 		state.set(AppState::Finished).unwrap();
 	}
 }
@@ -56,10 +61,14 @@ fn setup(
 		texture_atlas_builder.add_texture(handle, texture);
 	}
 
-	let texture_atlas = texture_atlas_builder.finish(&mut textures).unwrap();
+	let texture_atlas = texture_atlas_builder
+		.finish(&mut textures)
+		.unwrap();
 	let texture_atlas_texture = texture_atlas.texture.clone();
 	let vendor_handle = asset_server.get_handle("textures/rpg/chars/vendor/generic-rpg-vendor.png");
-	let vendor_index = texture_atlas.get_texture_index(&vendor_handle).unwrap();
+	let vendor_index = texture_atlas
+		.get_texture_index(&vendor_handle)
+		.unwrap();
 	let atlas_handle = texture_atlases.add(texture_atlas);
 
 	// set up a scene to display our texture atlas

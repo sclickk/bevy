@@ -33,11 +33,7 @@ impl ReflectComponent {
 		(self.remove_component)(world, entity);
 	}
 
-	pub fn reflect_component<'a>(
-		&self,
-		world: &'a World,
-		entity: Entity,
-	) -> Option<&'a dyn Reflect> {
+	pub fn reflect_component<'a>(&self, world: &'a World, entity: Entity) -> Option<&'a dyn Reflect> {
 		(self.reflect_component)(world, entity)
 	}
 

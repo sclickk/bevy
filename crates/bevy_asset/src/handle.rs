@@ -132,7 +132,9 @@ impl Debug for HandleType {
 
 impl<T: Asset> Handle<T> {
 	pub(crate) fn strong(id: HandleId, ref_change_sender: Sender<RefChange>) -> Self {
-		ref_change_sender.send(RefChange::Increment(id)).unwrap();
+		ref_change_sender
+			.send(RefChange::Increment(id))
+			.unwrap();
 		Self {
 			id,
 			handle_type: HandleType::Strong(ref_change_sender),
@@ -174,7 +176,9 @@ impl<T: Asset> Handle<T> {
 			return;
 		}
 		let sender = assets.ref_change_sender.clone();
-		sender.send(RefChange::Increment(self.id)).unwrap();
+		sender
+			.send(RefChange::Increment(self.id))
+			.unwrap();
 		self.handle_type = HandleType::Strong(sender);
 	}
 
@@ -279,7 +283,10 @@ impl<T: Asset> Default for Handle<T> {
 
 impl<T: Asset> Debug for Handle<T> {
 	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
-		let name = std::any::type_name::<T>().split("::").last().unwrap();
+		let name = std::any::type_name::<T>()
+			.split("::")
+			.last()
+			.unwrap();
 		write!(f, "{:?}Handle<{}>({:?})", self.handle_type, name, self.id)
 	}
 }
@@ -314,7 +321,9 @@ impl HandleUntyped {
 	}
 
 	pub(crate) fn strong(id: HandleId, ref_change_sender: Sender<RefChange>) -> Self {
-		ref_change_sender.send(RefChange::Increment(id)).unwrap();
+		ref_change_sender
+			.send(RefChange::Increment(id))
+			.unwrap();
 		Self {
 			id,
 			handle_type: HandleType::Strong(ref_change_sender),

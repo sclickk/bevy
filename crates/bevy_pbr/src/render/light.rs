@@ -123,7 +123,9 @@ impl GpuPointLights {
 	fn set(&mut self, mut lights: Vec<GpuPointLight>) {
 		match self {
 			GpuPointLights::Uniform(buffer) => {
-				let len = lights.len().min(MAX_UNIFORM_BUFFER_POINT_LIGHTS);
+				let len = lights
+					.len()
+					.min(MAX_UNIFORM_BUFFER_POINT_LIGHTS);
 				let src = &lights[..len];
 				let dst = &mut buffer.get_mut().data[..len];
 				dst.copy_from_slice(src);
@@ -314,8 +316,7 @@ impl SpecializedMeshPipeline for ShadowPipeline {
 		let mut bind_group_layout = vec![self.view_layout.clone()];
 		let mut shader_defs = Vec::new();
 
-		if layout.contains(Mesh::ATTRIBUTE_JOINT_INDEX)
-			&& layout.contains(Mesh::ATTRIBUTE_JOINT_WEIGHT)
+		if layout.contains(Mesh::ATTRIBUTE_JOINT_INDEX) && layout.contains(Mesh::ATTRIBUTE_JOINT_WEIGHT)
 		{
 			shader_defs.push(String::from("SKINNED"));
 			vertex_attributes.push(Mesh::ATTRIBUTE_JOINT_INDEX.at_shader_location(4));
@@ -431,10 +432,8 @@ pub fn extract_lights(
 
 	let mut point_lights_values = Vec::with_capacity(*previous_point_lights_len);
 	for entity in global_point_lights.iter().copied() {
-		if let Ok((point_light, cubemap_visible_entities, transform)) = point_lights.get_mut(entity)
-		{
-			let render_cubemap_visible_entities =
-				std::mem::take(cubemap_visible_entities.into_inner());
+		if let Ok((point_light, cubemap_visible_entities, transform)) = point_lights.get_mut(entity) {
+			let render_cubemap_visible_entities = std::mem::take(cubemap_visible_entities.into_inner());
 			point_lights_values.push((
 				entity,
 				(
@@ -451,7 +450,8 @@ pub fn extract_lights(
 						shadow_depth_bias: point_light.shadow_depth_bias,
 						// The factor of SQRT_2 is for the worst-case diagonal offset
 						shadow_normal_bias: point_light.shadow_normal_bias
-							* point_light_texel_size * std::f32::consts::SQRT_2,
+							* point_light_texel_size
+							* std::f32::consts::SQRT_2,
 					},
 					render_cubemap_visible_entities,
 				),
@@ -474,19 +474,17 @@ pub fn extract_lights(
 		// https://catlikecoding.com/unity/tutorials/custom-srp/directional-shadows/
 		let largest_dimension = (directional_light.shadow_projection.right
 			- directional_light.shadow_projection.left)
-			.max(
-				directional_light.shadow_projection.top
-					- directional_light.shadow_projection.bottom,
-			);
-		let directional_light_texel_size =
-			largest_dimension / directional_light_shadow_map.size as f32;
+			.max(directional_light.shadow_projection.top - directional_light.shadow_projection.bottom);
+		let directional_light_texel_size = largest_dimension / directional_light_shadow_map.size as f32;
 		let render_visible_entities = std::mem::take(visible_entities.into_inner());
 		commands.get_or_spawn(entity).insert_bundle((
 			ExtractedDirectionalLight {
 				color: directional_light.color,
 				illuminance: directional_light.illuminance,
 				direction: transform.forward(),
-				projection: directional_light.shadow_projection.get_projection_matrix(),
+				projection: directional_light
+					.shadow_projection
+					.get_projection_matrix(),
 				shadows_enabled: directional_light.shadows_enabled,
 				shadow_depth_bias: directional_light.shadow_depth_bias,
 				// The factor of SQRT_2 is for the worst-case diagonal offset
@@ -650,10 +648,7 @@ pub fn prepare_lights(
 	render_queue: Res<RenderQueue>,
 	mut global_light_meta: ResMut<GlobalLightMeta>,
 	mut light_meta: ResMut<LightMeta>,
-	views: Query<
-		(Entity, &ExtractedView, &ExtractedClusterConfig),
-		With<RenderPhase<Transparent3d>>,
-	>,
+	views: Query<(Entity, &ExtractedView, &ExtractedClusterConfig), With<RenderPhase<Transparent3d>>>,
 	ambient_light: Res<AmbientLight>,
 	point_light_shadow_map: Res<PointLightShadowMap>,
 	directional_light_shadow_map: Res<DirectionalLightShadowMap>,
@@ -723,10 +718,14 @@ pub fn prepare_lights(
 			shadow_depth_bias: light.shadow_depth_bias,
 			shadow_normal_bias: light.shadow_normal_bias,
 		});
-		global_light_meta.entity_to_index.insert(entity, index);
+		global_light_meta
+			.entity_to_index
+			.insert(entity, index);
 	}
 
-	global_light_meta.gpu_point_lights.set(gpu_point_lights);
+	global_light_meta
+		.gpu_point_lights
+		.set(gpu_point_lights);
 	global_light_meta
 		.gpu_point_lights
 		.write_buffer(&render_device, &render_queue);
@@ -867,8 +866,7 @@ pub fn prepare_lights(
 			const APERTURE: f32 = 4.0;
 			const SHUTTER_SPEED: f32 = 1.0 / 250.0;
 			const SENSITIVITY: f32 = 100.0;
-			let ev100 =
-				f32::log2(APERTURE * APERTURE / SHUTTER_SPEED) - f32::log2(SENSITIVITY / 100.0);
+			let ev100 = f32::log2(APERTURE * APERTURE / SHUTTER_SPEED) - f32::log2(SENSITIVITY / 100.0);
 			let exposure = 1.0 / (f32::powf(2.0, ev100) * 1.2);
 			let intensity = light.illuminance * exposure;
 
@@ -896,19 +894,18 @@ pub fn prepare_lights(
 			};
 
 			if light.shadows_enabled {
-				let depth_texture_view =
-					directional_light_depth_texture
-						.texture
-						.create_view(&TextureViewDescriptor {
-							label: Some("directional_light_shadow_map_texture_view"),
-							format: None,
-							dimension: Some(TextureViewDimension::D2),
-							aspect: TextureAspect::All,
-							base_mip_level: 0,
-							mip_level_count: None,
-							base_array_layer: i as u32,
-							array_layer_count: NonZeroU32::new(1),
-						});
+				let depth_texture_view = directional_light_depth_texture
+					.texture
+					.create_view(&TextureViewDescriptor {
+						label: Some("directional_light_shadow_map_texture_view"),
+						format: None,
+						dimension: Some(TextureViewDimension::D2),
+						aspect: TextureAspect::All,
+						base_mip_level: 0,
+						mip_level_count: None,
+						base_array_layer: i as u32,
+						array_layer_count: NonZeroU32::new(1),
+					});
 
 				let view_light_entity = commands
 					.spawn()
@@ -1122,7 +1119,10 @@ impl ViewClusterBindings {
 				..
 			} => {
 				cluster_light_index_lists.get_mut().data.clear();
-				cluster_offsets_and_counts.get_mut().data.clear();
+				cluster_offsets_and_counts
+					.get_mut()
+					.data
+					.clear();
 			}
 		}
 	}
@@ -1179,7 +1179,10 @@ impl ViewClusterBindings {
 				cluster_light_index_lists,
 				..
 			} => {
-				cluster_light_index_lists.get_mut().data.push(index as u32);
+				cluster_light_index_lists
+					.get_mut()
+					.data
+					.push(index as u32);
 			}
 		}
 
@@ -1231,18 +1234,14 @@ impl ViewClusterBindings {
 		}
 	}
 
-	pub fn min_size_cluster_light_index_lists(
-		buffer_binding_type: BufferBindingType,
-	) -> NonZeroU64 {
+	pub fn min_size_cluster_light_index_lists(buffer_binding_type: BufferBindingType) -> NonZeroU64 {
 		match buffer_binding_type {
 			BufferBindingType::Storage { .. } => GpuClusterLightIndexListsStorage::min_size(),
 			BufferBindingType::Uniform => GpuClusterLightIndexListsUniform::min_size(),
 		}
 	}
 
-	pub fn min_size_cluster_offsets_and_counts(
-		buffer_binding_type: BufferBindingType,
-	) -> NonZeroU64 {
+	pub fn min_size_cluster_offsets_and_counts(buffer_binding_type: BufferBindingType) -> NonZeroU64 {
 		match buffer_binding_type {
 			BufferBindingType::Storage { .. } => GpuClusterOffsetsAndCountsStorage::min_size(),
 			BufferBindingType::Uniform => GpuClusterOffsetsAndCountsUniform::min_size(),
@@ -1288,10 +1287,9 @@ pub fn prepare_clusters(
 
 					if !indices_full {
 						for entity in cluster_lights.iter() {
-							if let Some(light_index) = global_light_meta.entity_to_index.get(entity)
-							{
-								if view_clusters_bindings.n_indices()
-									>= ViewClusterBindings::MAX_INDICES && !supports_storage_buffers
+							if let Some(light_index) = global_light_meta.entity_to_index.get(entity) {
+								if view_clusters_bindings.n_indices() >= ViewClusterBindings::MAX_INDICES
+									&& !supports_storage_buffers
 								{
 									warn!("Cluster light index lists is full! The PointLights in the view are affecting too many clusters.");
 									indices_full = true;
@@ -1309,7 +1307,9 @@ pub fn prepare_clusters(
 
 		view_clusters_bindings.write_buffers(render_device, &render_queue);
 
-		commands.get_or_spawn(entity).insert(view_clusters_bindings);
+		commands
+			.get_or_spawn(entity)
+			.insert(view_clusters_bindings);
 	}
 }
 
@@ -1351,8 +1351,9 @@ pub fn queue_shadows(
 			.get_id::<DrawShadowMesh>()
 			.unwrap();
 		for view_light_entity in view_lights.lights.iter().copied() {
-			let (light_entity, mut shadow_phase) =
-				view_light_shadow_phases.get_mut(view_light_entity).unwrap();
+			let (light_entity, mut shadow_phase) = view_light_shadow_phases
+				.get_mut(view_light_entity)
+				.unwrap();
 			let visible_entities = match light_entity {
 				LightEntity::Directional { light_entity } => directional_light_entities
 					.get(*light_entity)
@@ -1370,14 +1371,9 @@ pub fn queue_shadows(
 			for entity in visible_entities.iter().copied() {
 				if let Ok(mesh_handle) = casting_meshes.get(entity) {
 					if let Some(mesh) = render_meshes.get(mesh_handle) {
-						let key =
-							ShadowPipelineKey::from_primitive_topology(mesh.primitive_topology);
-						let pipeline_id = pipelines.specialize(
-							&mut pipeline_cache,
-							&shadow_pipeline,
-							key,
-							&mesh.layout,
-						);
+						let key = ShadowPipelineKey::from_primitive_topology(mesh.primitive_topology);
+						let pipeline_id =
+							pipelines.specialize(&mut pipeline_cache, &shadow_pipeline, key, &mesh.layout);
 
 						let pipeline_id = match pipeline_id {
 							Ok(id) => id,
@@ -1467,7 +1463,10 @@ impl Node for ShadowPassNode {
 		world: &World,
 	) -> Result<(), NodeRunError> {
 		let view_entity = graph.get_input_entity(Self::IN_VIEW)?;
-		if let Ok(view_lights) = self.main_view_query.get_manual(world, view_entity) {
+		if let Ok(view_lights) = self
+			.main_view_query
+			.get_manual(world, view_entity)
+		{
 			for view_light_entity in view_lights.lights.iter().copied() {
 				let (view_light, shadow_phase) = self
 					.view_light_query
@@ -1498,7 +1497,9 @@ impl Node for ShadowPassNode {
 				let mut draw_functions = draw_functions.write();
 				let mut tracked_pass = TrackedRenderPass::new(render_pass);
 				for item in &shadow_phase.items {
-					let draw_function = draw_functions.get_mut(item.draw_function).unwrap();
+					let draw_function = draw_functions
+						.get_mut(item.draw_function)
+						.unwrap();
 					draw_function.draw(world, &mut tracked_pass, view_light_entity, item);
 				}
 			}

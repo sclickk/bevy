@@ -102,15 +102,17 @@ impl TextureAtlasBuilder {
 		let rect_x = packed_location.x() as usize;
 		let rect_y = packed_location.y() as usize;
 		let atlas_width = atlas_texture.texture_descriptor.size.width as usize;
-		let format_size = atlas_texture.texture_descriptor.format.pixel_size();
+		let format_size = atlas_texture
+			.texture_descriptor
+			.format
+			.pixel_size();
 
 		for (texture_y, bound_y) in (rect_y..rect_y + rect_height).enumerate() {
 			let begin = (bound_y * atlas_width + rect_x) * format_size;
 			let end = begin + rect_width * format_size;
 			let texture_begin = texture_y * rect_width * format_size;
 			let texture_end = texture_begin + rect_width * format_size;
-			atlas_texture.data[begin..end]
-				.copy_from_slice(&texture.data[texture_begin..texture_end]);
+			atlas_texture.data[begin..end].copy_from_slice(&texture.data[texture_begin..texture_end]);
 		}
 	}
 
@@ -184,10 +186,7 @@ impl TextureAtlasBuilder {
 							depth_or_array_layers: 1,
 						},
 						TextureDimension::D2,
-						vec![
-							0;
-							self.format.pixel_size() * (current_width * current_height) as usize
-						],
+						vec![0; self.format.pixel_size() * (current_width * current_height) as usize],
 						self.format,
 					);
 					Some(rect_placements)

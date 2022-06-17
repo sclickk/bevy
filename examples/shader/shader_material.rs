@@ -9,9 +9,8 @@ use bevy::{
 		render_asset::{PrepareAssetError, RenderAsset},
 		render_resource::{
 			encase, BindGroup, BindGroupDescriptor, BindGroupEntry, BindGroupLayout,
-			BindGroupLayoutDescriptor, BindGroupLayoutEntry, BindingType, Buffer,
-			BufferBindingType, BufferInitDescriptor, BufferUsages, ShaderSize, ShaderStages,
-			ShaderType,
+			BindGroupLayoutDescriptor, BindGroupLayoutEntry, BindingType, Buffer, BufferBindingType,
+			BufferInitDescriptor, BufferUsages, ShaderSize, ShaderStages, ShaderType,
 		},
 		renderer::RenderDevice,
 	},
@@ -32,14 +31,16 @@ fn setup(
 	mut materials: ResMut<Assets<CustomMaterial>>,
 ) {
 	// cube
-	commands.spawn().insert_bundle(MaterialMeshBundle {
-		mesh: meshes.add(Mesh::from(shape::Cube { size: 1.0 })),
-		transform: Transform::from_xyz(0.0, 0.5, 0.0),
-		material: materials.add(CustomMaterial {
-			color: Color::GREEN,
-		}),
-		..Default::default()
-	});
+	commands
+		.spawn()
+		.insert_bundle(MaterialMeshBundle {
+			mesh: meshes.add(Mesh::from(shape::Cube { size: 1.0 })),
+			transform: Transform::from_xyz(0.0, 0.5, 0.0),
+			material: materials.add(CustomMaterial {
+				color: Color::GREEN,
+			}),
+			..Default::default()
+		});
 
 	// camera
 	commands.spawn_bundle(Camera3dBundle {

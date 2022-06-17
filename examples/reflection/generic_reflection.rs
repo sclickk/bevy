@@ -20,9 +20,13 @@ struct MyType<T: Reflect> {
 fn setup(type_registry: Res<TypeRegistry>) {
 	let type_registry = type_registry.read();
 
-	let registration = type_registry.get(TypeId::of::<MyType<u32>>()).unwrap();
+	let registration = type_registry
+		.get(TypeId::of::<MyType<u32>>())
+		.unwrap();
 	info!("Registration for {} exists", registration.short_name());
 
 	// MyType<String> was not manually registered, so it does not exist
-	assert!(type_registry.get(TypeId::of::<MyType<String>>()).is_none());
+	assert!(type_registry
+		.get(TypeId::of::<MyType<String>>())
+		.is_none());
 }

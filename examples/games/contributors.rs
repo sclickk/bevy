@@ -221,7 +221,9 @@ fn select(
 
 	transform.translation.z = 100.0;
 
-	text.sections[1].value.clone_from(&contributor.name);
+	text.sections[1]
+		.value
+		.clone_from(&contributor.name);
 	text.sections[1].style.color = sprite.color;
 }
 
@@ -326,7 +328,10 @@ fn contributors() -> Result<Contributors, LoadContributorsError> {
 		.spawn()
 		.map_err(LoadContributorsError::IO)?;
 
-	let stdout = cmd.stdout.take().ok_or(LoadContributorsError::Stdout)?;
+	let stdout = cmd
+		.stdout
+		.take()
+		.ok_or(LoadContributorsError::Stdout)?;
 
 	let contributors = BufReader::new(stdout)
 		.lines()

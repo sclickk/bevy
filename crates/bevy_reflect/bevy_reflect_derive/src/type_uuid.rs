@@ -14,16 +14,23 @@ pub(crate) fn type_uuid_derive(input: proc_macro::TokenStream) -> proc_macro::To
 	// Build the trait implementation
 	let name = &ast.ident;
 
-	ast.generics.type_params_mut().for_each(|param| {
-		param
-			.bounds
-			.push(syn::parse_quote!(#bevy_reflect_path::TypeUuid));
-	});
+	ast
+		.generics
+		.type_params_mut()
+		.for_each(|param| {
+			param
+				.bounds
+				.push(syn::parse_quote!(#bevy_reflect_path::TypeUuid));
+		});
 
 	let (impl_generics, type_generics, where_clause) = &ast.generics.split_for_impl();
 
 	let mut uuid = None;
-	for attribute in ast.attrs.iter().filter_map(|attr| attr.parse_meta().ok()) {
+	for attribute in ast
+		.attrs
+		.iter()
+		.filter_map(|attr| attr.parse_meta().ok())
+	{
 		let name_value = if let Meta::NameValue(name_value) = attribute {
 			name_value
 		} else {
@@ -40,9 +47,11 @@ pub(crate) fn type_uuid_derive(input: proc_macro::TokenStream) -> proc_macro::To
 		}
 
 		let uuid_str = match name_value.lit {
-            Lit::Str(lit_str) => lit_str,
-            _ => panic!("`uuid` attribute must take the form `#[uuid = \"xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\"`."),
-        };
+			Lit::Str(lit_str) => lit_str,
+			_ => panic!(
+				"`uuid` attribute must take the form `#[uuid = \"xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\"`."
+			),
+		};
 
 		uuid = Some(
 			Uuid::parse_str(&uuid_str.value())
@@ -50,8 +59,7 @@ pub(crate) fn type_uuid_derive(input: proc_macro::TokenStream) -> proc_macro::To
 		);
 	}
 
-	let uuid =
-		uuid.expect("No `#[uuid = \"xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\"` attribute found.");
+	let uuid = uuid.expect("No `#[uuid = \"xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\"` attribute found.");
 	let bytes = uuid
 		.as_bytes()
 		.iter()

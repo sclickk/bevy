@@ -64,8 +64,7 @@ mod splash {
 				.add_system_set(SystemSet::on_update(GameState::Splash).with_system(countdown))
 				// When exiting the state, despawn everything that was spawned for this screen
 				.add_system_set(
-					SystemSet::on_exit(GameState::Splash)
-						.with_system(despawn_screen::<OnSplashScreen>),
+					SystemSet::on_exit(GameState::Splash).with_system(despawn_screen::<OnSplashScreen>),
 				);
 		}
 	}
@@ -121,7 +120,8 @@ mod game {
 
 	impl Plugin for GamePlugin {
 		fn build(&self, app: &mut App) {
-			app.add_system_set(SystemSet::on_enter(GameState::Game).with_system(game_setup))
+			app
+				.add_system_set(SystemSet::on_enter(GameState::Game).with_system(game_setup))
 				.add_system_set(SystemSet::on_update(GameState::Game).with_system(game))
 				.add_system_set(
 					SystemSet::on_exit(GameState::Game).with_system(despawn_screen::<OnGameScreen>),
@@ -223,11 +223,7 @@ mod game {
 	}
 
 	// Tick the timer, and change state when finished
-	fn game(
-		time: Res<Time>,
-		mut game_state: ResMut<State<GameState>>,
-		mut timer: ResMut<GameTimer>,
-	) {
+	fn game(time: Res<Time>, mut game_state: ResMut<State<GameState>>, mut timer: ResMut<GameTimer>) {
 		if timer.tick(time.delta()).finished() {
 			game_state.set(GameState::Menu).unwrap();
 		}
@@ -256,21 +252,17 @@ mod menu {
 				// Systems to handle the main menu screen
 				.add_system_set(SystemSet::on_enter(MenuState::Main).with_system(main_menu_setup))
 				.add_system_set(
-					SystemSet::on_exit(MenuState::Main)
-						.with_system(despawn_screen::<OnMainMenuScreen>),
+					SystemSet::on_exit(MenuState::Main).with_system(despawn_screen::<OnMainMenuScreen>),
 				)
 				// Systems to handle the settings menu screen
-				.add_system_set(
-					SystemSet::on_enter(MenuState::Settings).with_system(settings_menu_setup),
-				)
+				.add_system_set(SystemSet::on_enter(MenuState::Settings).with_system(settings_menu_setup))
 				.add_system_set(
 					SystemSet::on_exit(MenuState::Settings)
 						.with_system(despawn_screen::<OnSettingsMenuScreen>),
 				)
 				// Systems to handle the display settings screen
 				.add_system_set(
-					SystemSet::on_enter(MenuState::SettingsDisplay)
-						.with_system(display_settings_menu_setup),
+					SystemSet::on_enter(MenuState::SettingsDisplay).with_system(display_settings_menu_setup),
 				)
 				.add_system_set(
 					SystemSet::on_update(MenuState::SettingsDisplay)
@@ -282,12 +274,10 @@ mod menu {
 				)
 				// Systems to handle the sound settings screen
 				.add_system_set(
-					SystemSet::on_enter(MenuState::SettingsSound)
-						.with_system(sound_settings_menu_setup),
+					SystemSet::on_enter(MenuState::SettingsSound).with_system(sound_settings_menu_setup),
 				)
 				.add_system_set(
-					SystemSet::on_update(MenuState::SettingsSound)
-						.with_system(setting_button::<Volume>),
+					SystemSet::on_update(MenuState::SettingsSound).with_system(setting_button::<Volume>),
 				)
 				.add_system_set(
 					SystemSet::on_exit(MenuState::SettingsSound)
@@ -378,7 +368,9 @@ mod menu {
 			if *interaction == Interaction::Clicked && *setting != *button_setting {
 				let (previous_button, mut previous_color) = selected_query.single_mut();
 				*previous_color = NORMAL_BUTTON.into();
-				commands.entity(previous_button).remove::<SelectedOption>();
+				commands
+					.entity(previous_button)
+					.remove::<SelectedOption>();
 				commands.entity(entity).insert(SelectedOption);
 				*setting = *button_setting;
 			}
@@ -468,11 +460,7 @@ mod menu {
 							..Default::default()
 						});
 						parent.spawn_bundle(TextBundle {
-							text: Text::with_section(
-								"New Game",
-								button_text_style.clone(),
-								Default::default(),
-							),
+							text: Text::with_section("New Game", button_text_style.clone(), Default::default()),
 							..Default::default()
 						});
 					});
@@ -491,11 +479,7 @@ mod menu {
 							..Default::default()
 						});
 						parent.spawn_bundle(TextBundle {
-							text: Text::with_section(
-								"Settings",
-								button_text_style.clone(),
-								Default::default(),
-							),
+							text: Text::with_section("Settings", button_text_style.clone(), Default::default()),
 							..Default::default()
 						});
 					});
@@ -558,11 +542,7 @@ mod menu {
 					.insert(MenuButtonAction::SettingsDisplay)
 					.with_children(|parent| {
 						parent.spawn_bundle(TextBundle {
-							text: Text::with_section(
-								"Display",
-								button_text_style.clone(),
-								Default::default(),
-							),
+							text: Text::with_section("Display", button_text_style.clone(), Default::default()),
 							..Default::default()
 						});
 					});
@@ -575,11 +555,7 @@ mod menu {
 					.insert(MenuButtonAction::SettingsSound)
 					.with_children(|parent| {
 						parent.spawn_bundle(TextBundle {
-							text: Text::with_section(
-								"Sound",
-								button_text_style.clone(),
-								Default::default(),
-							),
+							text: Text::with_section("Sound", button_text_style.clone(), Default::default()),
 							..Default::default()
 						});
 					});
@@ -666,16 +642,18 @@ mod menu {
 								color: NORMAL_BUTTON.into(),
 								..Default::default()
 							});
-							entity.insert(quality_setting).with_children(|parent| {
-								parent.spawn_bundle(TextBundle {
-									text: Text::with_section(
-										format!("{:?}", quality_setting),
-										button_text_style.clone(),
-										Default::default(),
-									),
-									..Default::default()
+							entity
+								.insert(quality_setting)
+								.with_children(|parent| {
+									parent.spawn_bundle(TextBundle {
+										text: Text::with_section(
+											format!("{:?}", quality_setting),
+											button_text_style.clone(),
+											Default::default(),
+										),
+										..Default::default()
+									});
 								});
-							});
 							if *display_quality == quality_setting {
 								entity.insert(SelectedOption);
 							}
@@ -740,11 +718,7 @@ mod menu {
 					})
 					.with_children(|parent| {
 						parent.spawn_bundle(TextBundle {
-							text: Text::with_section(
-								"Volume",
-								button_text_style.clone(),
-								Default::default(),
-							),
+							text: Text::with_section("Volume", button_text_style.clone(), Default::default()),
 							..Default::default()
 						});
 						for volume_setting in [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] {
@@ -797,10 +771,14 @@ mod menu {
 					}
 					MenuButtonAction::Settings => menu_state.set(MenuState::Settings).unwrap(),
 					MenuButtonAction::SettingsDisplay => {
-						menu_state.set(MenuState::SettingsDisplay).unwrap();
+						menu_state
+							.set(MenuState::SettingsDisplay)
+							.unwrap();
 					}
 					MenuButtonAction::SettingsSound => {
-						menu_state.set(MenuState::SettingsSound).unwrap();
+						menu_state
+							.set(MenuState::SettingsSound)
+							.unwrap();
 					}
 					MenuButtonAction::BackToMainMenu => menu_state.set(MenuState::Main).unwrap(),
 					MenuButtonAction::BackToSettings => {

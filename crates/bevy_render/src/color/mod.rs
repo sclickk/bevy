@@ -296,18 +296,16 @@ impl Color {
 	/// Get alpha.
 	pub fn a(&self) -> f32 {
 		match self {
-			Color::Rgba { alpha, .. }
-			| Color::RgbaLinear { alpha, .. }
-			| Color::Hsla { alpha, .. } => *alpha,
+			Color::Rgba { alpha, .. } | Color::RgbaLinear { alpha, .. } | Color::Hsla { alpha, .. } => {
+				*alpha
+			}
 		}
 	}
 
 	/// Set alpha.
 	pub fn set_a(&mut self, a: f32) -> &mut Self {
 		match self {
-			Color::Rgba { alpha, .. }
-			| Color::RgbaLinear { alpha, .. }
-			| Color::Hsla { alpha, .. } => {
+			Color::Rgba { alpha, .. } | Color::RgbaLinear { alpha, .. } | Color::Hsla { alpha, .. } => {
 				*alpha = a;
 			}
 		}

@@ -18,8 +18,7 @@ fn gamepad_system(
 	for gamepad in gamepads.iter().cloned() {
 		if button_inputs.just_pressed(GamepadButton::new(gamepad, GamepadButtonType::South)) {
 			info!("{:?} just pressed South", gamepad);
-		} else if button_inputs.just_released(GamepadButton::new(gamepad, GamepadButtonType::South))
-		{
+		} else if button_inputs.just_released(GamepadButton::new(gamepad, GamepadButtonType::South)) {
 			info!("{:?} just released South", gamepad);
 		}
 

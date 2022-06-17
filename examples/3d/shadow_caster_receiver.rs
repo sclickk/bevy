@@ -112,8 +112,7 @@ fn setup(
 
 	// camera
 	commands.spawn_bundle(Camera3dBundle {
-		transform: Transform::from_xyz(-5.0, 5.0, 5.0)
-			.looking_at(Vec3::new(-1.0, 1.0, 0.0), Vec3::Y),
+		transform: Transform::from_xyz(-5.0, 5.0, 5.0).looking_at(Vec3::new(-1.0, 1.0, 0.0), Vec3::Y),
 		..Default::default()
 	});
 }
@@ -156,7 +155,9 @@ fn toggle_shadows(
 	if input.just_pressed(KeyCode::C) {
 		println!("Toggling casters");
 		for entity in queries.p0().iter() {
-			commands.entity(entity).remove::<NotShadowCaster>();
+			commands
+				.entity(entity)
+				.remove::<NotShadowCaster>();
 		}
 		for entity in queries.p2().iter() {
 			commands.entity(entity).insert(NotShadowCaster);
@@ -165,10 +166,14 @@ fn toggle_shadows(
 	if input.just_pressed(KeyCode::R) {
 		println!("Toggling receivers");
 		for entity in queries.p1().iter() {
-			commands.entity(entity).remove::<NotShadowReceiver>();
+			commands
+				.entity(entity)
+				.remove::<NotShadowReceiver>();
 		}
 		for entity in queries.p3().iter() {
-			commands.entity(entity).insert(NotShadowReceiver);
+			commands
+				.entity(entity)
+				.insert(NotShadowReceiver);
 		}
 	}
 }

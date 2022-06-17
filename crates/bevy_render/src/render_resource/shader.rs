@@ -241,7 +241,12 @@ impl AssetLoader for ShaderLoader {
 		load_context: &'a mut LoadContext,
 	) -> BoxedFuture<'a, Result<(), anyhow::Error>> {
 		Box::pin(async move {
-			let ext = load_context.path().extension().unwrap().to_str().unwrap();
+			let ext = load_context
+				.path()
+				.extension()
+				.unwrap()
+				.to_str()
+				.unwrap();
 
 			let mut shader = match ext {
 				"spv" => Shader::from_spirv(Vec::from(bytes)),
@@ -262,7 +267,10 @@ impl AssetLoader for ShaderLoader {
 				shader.import_path = shader_imports.import_path;
 			} else {
 				shader.import_path = Some(ShaderImport::AssetPath(
-					load_context.path().to_string_lossy().to_string(),
+					load_context
+						.path()
+						.to_string_lossy()
+						.to_string(),
 				));
 			}
 			let mut asset = LoadedAsset::new(shader);
@@ -491,8 +499,7 @@ impl ShaderProcessor {
 			.get(import)
 			.and_then(|handle| shaders.get(handle))
 			.ok_or_else(|| ProcessShaderError::UnresolvedImport(import.clone()))?;
-		let imported_processed =
-			self.process(imported_shader, shader_defs, shaders, import_handles)?;
+		let imported_processed = self.process(imported_shader, shader_defs, shaders, import_handles)?;
 
 		match &shader.source {
 			Source::Wgsl(_) => {

@@ -59,7 +59,9 @@ pub fn scene_spawner(
 			scene_spawner.despawn_instance(**old_instance);
 			*old_instance = SceneInstance(new_instance);
 		} else {
-			commands.entity(entity).insert(SceneInstance(new_instance));
+			commands
+				.entity(entity)
+				.insert(SceneInstance(new_instance));
 		}
 	}
 	for (entity, dynamic_scene, instance) in dynamic_scene_to_spawn.iter_mut() {
@@ -68,7 +70,9 @@ pub fn scene_spawner(
 			scene_spawner.despawn_instance(**old_instance);
 			*old_instance = SceneInstance(new_instance);
 		} else {
-			commands.entity(entity).insert(SceneInstance(new_instance));
+			commands
+				.entity(entity)
+				.insert(SceneInstance(new_instance));
 		}
 	}
 }

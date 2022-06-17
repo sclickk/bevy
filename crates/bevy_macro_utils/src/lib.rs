@@ -41,7 +41,8 @@ impl BevyManifest {
 			if dep.as_str().is_some() {
 				None
 			} else {
-				dep.as_table()
+				dep
+					.as_table()
 					.unwrap()
 					.get("package")
 					.map(|name| name.as_str().unwrap())
@@ -75,7 +76,8 @@ impl BevyManifest {
 			.get("dev-dependencies")
 			.map(|deps| deps.as_table().unwrap());
 
-		deps.and_then(find_in_deps)
+		deps
+			.and_then(find_in_deps)
 			.or_else(|| deps_dev.and_then(find_in_deps))
 	}
 
@@ -95,7 +97,8 @@ impl BevyManifest {
 	}
 
 	pub fn get_path(&self, name: &str) -> syn::Path {
-		self.maybe_get_path(name)
+		self
+			.maybe_get_path(name)
 			.unwrap_or_else(|| Self::parse_str(name))
 	}
 
@@ -114,10 +117,12 @@ pub fn derive_label(input: syn::DeriveInput, trait_path: &syn::Path) -> TokenStr
 	let ident = input.ident;
 
 	let (impl_generics, ty_generics, where_clause) = input.generics.split_for_impl();
-	let mut where_clause = where_clause.cloned().unwrap_or_else(|| syn::WhereClause {
-		where_token: Default::default(),
-		predicates: Default::default(),
-	});
+	let mut where_clause = where_clause
+		.cloned()
+		.unwrap_or_else(|| syn::WhereClause {
+			where_token: Default::default(),
+			predicates: Default::default(),
+		});
 	where_clause.predicates.push(
 		syn::parse2(
 			quote! { Self: Eq + ::std::fmt::Debug + ::std::hash::Hash + Clone + Send + Sync + 'static },

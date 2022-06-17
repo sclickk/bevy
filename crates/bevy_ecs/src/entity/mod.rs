@@ -180,13 +180,19 @@ impl<'a> Iterator for ReserveEntitiesIterator<'a> {
 	type Item = Entity;
 
 	fn next(&mut self) -> Option<Self::Item> {
-		self.id_iter
+		self
+			.id_iter
 			.next()
 			.map(|&id| Entity {
 				generation: self.meta[id as usize].generation,
 				id,
 			})
-			.or_else(|| self.id_range.next().map(|id| Entity { generation: 0, id }))
+			.or_else(|| {
+				self
+					.id_range
+					.next()
+					.map(|id| Entity { generation: 0, id })
+			})
 	}
 
 	fn size_hint(&self) -> (usize, Option<usize>) {
@@ -251,7 +257,9 @@ impl Entities {
 		// Use one atomic subtract to grab a range of new IDs. The range might be
 		// entirely nonnegative, meaning all IDs come from the freelist, or entirely
 		// negative, meaning they are all new IDs to allocate, or a mix of both.
-		let range_end = self.free_cursor.fetch_sub(count as i64, Ordering::Relaxed);
+		let range_end = self
+			.free_cursor
+			.fetch_sub(count as i64, Ordering::Relaxed);
 		let range_start = range_end - count as i64;
 
 		let freelist_range = range_start.max(0) as usize..range_end.max(0) as usize;
@@ -345,13 +353,21 @@ impl Entities {
 		self.verify_flushed();
 
 		let loc = if entity.id as usize >= self.meta.len() {
-			self.pending.extend((self.meta.len() as u32)..entity.id);
+			self
+				.pending
+				.extend((self.meta.len() as u32)..entity.id);
 			let new_free_cursor = self.pending.len() as i64;
 			*self.free_cursor.get_mut() = new_free_cursor;
-			self.meta.resize(entity.id as usize + 1, EntityMeta::EMPTY);
+			self
+				.meta
+				.resize(entity.id as usize + 1, EntityMeta::EMPTY);
 			self.len += 1;
 			None
-		} else if let Some(index) = self.pending.iter().position(|item| *item == entity.id) {
+		} else if let Some(index) = self
+			.pending
+			.iter()
+			.position(|item| *item == entity.id)
+		{
 			self.pending.swap_remove(index);
 			let new_free_cursor = self.pending.len() as i64;
 			*self.free_cursor.get_mut() = new_free_cursor;
@@ -376,13 +392,21 @@ impl Entities {
 		self.verify_flushed();
 
 		let result = if entity.id as usize >= self.meta.len() {
-			self.pending.extend((self.meta.len() as u32)..entity.id);
+			self
+				.pending
+				.extend((self.meta.len() as u32)..entity.id);
 			let new_free_cursor = self.pending.len() as i64;
 			*self.free_cursor.get_mut() = new_free_cursor;
-			self.meta.resize(entity.id as usize + 1, EntityMeta::EMPTY);
+			self
+				.meta
+				.resize(entity.id as usize + 1, EntityMeta::EMPTY);
 			self.len += 1;
 			AllocAtWithoutReplacement::DidNotExist
-		} else if let Some(index) = self.pending.iter().position(|item| *item == entity.id) {
+		} else if let Some(index) = self
+			.pending
+			.iter()
+			.position(|item| *item == entity.id)
+		{
 			self.pending.swap_remove(index);
 			let new_free_cursor = self.pending.len() as i64;
 			*self.free_cursor.get_mut() = new_free_cursor;
@@ -440,7 +464,8 @@ impl Entities {
 	// This will return false for entities which have been freed, even if
 	// not reallocated since the generation is incremented in `free`
 	pub fn contains(&self, entity: Entity) -> bool {
-		self.resolve_from_id(entity.id())
+		self
+			.resolve_from_id(entity.id())
 			.map_or(false, |e| e.generation() == entity.generation)
 	}
 
@@ -455,8 +480,7 @@ impl Entities {
 	pub fn get(&self, entity: Entity) -> Option<EntityLocation> {
 		if (entity.id as usize) < self.meta.len() {
 			let meta = &self.meta[entity.id as usize];
-			if meta.generation != entity.generation
-				|| meta.location.archetype_id == ArchetypeId::INVALID
+			if meta.generation != entity.generation || meta.location.archetype_id == ArchetypeId::INVALID
 			{
 				return None;
 			}
@@ -506,9 +530,16 @@ impl Entities {
 		} else {
 			let old_meta_len = self.meta.len();
 			let new_meta_len = old_meta_len + -current_free_cursor as usize;
-			self.meta.resize(new_meta_len, EntityMeta::EMPTY);
+			self
+				.meta
+				.resize(new_meta_len, EntityMeta::EMPTY);
 			self.len += -current_free_cursor as u32;
-			for (id, meta) in self.meta.iter_mut().enumerate().skip(old_meta_len) {
+			for (id, meta) in self
+				.meta
+				.iter_mut()
+				.enumerate()
+				.skip(old_meta_len)
+			{
 				init(
 					Entity {
 						id: id as u32,

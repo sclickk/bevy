@@ -123,11 +123,11 @@ impl Mesh {
 
 	/// Retrieves the data currently set to the vertex attribute with the specified `name`.
 	#[inline]
-	pub fn attribute(
-		&self,
-		id: impl Into<MeshVertexAttributeId>,
-	) -> Option<&VertexAttributeValues> {
-		self.attributes.get(&id.into()).map(|data| &data.values)
+	pub fn attribute(&self, id: impl Into<MeshVertexAttributeId>) -> Option<&VertexAttributeValues> {
+		self
+			.attributes
+			.get(&id.into())
+			.map(|data| &data.values)
 	}
 
 	/// Retrieves the data currently set to the vertex attribute with the specified `name` mutably.
@@ -136,7 +136,8 @@ impl Mesh {
 		&mut self,
 		id: impl Into<MeshVertexAttributeId>,
 	) -> Option<&mut VertexAttributeValues> {
-		self.attributes
+		self
+			.attributes
 			.get_mut(&id.into())
 			.map(|data| &mut data.values)
 	}
@@ -145,14 +146,18 @@ impl Mesh {
 	pub fn attributes(
 		&self,
 	) -> impl Iterator<Item = (MeshVertexAttributeId, &VertexAttributeValues)> {
-		self.attributes.iter().map(|(id, data)| (*id, &data.values))
+		self
+			.attributes
+			.iter()
+			.map(|(id, data)| (*id, &data.values))
 	}
 
 	/// Returns an iterator that yields mutable references to the data of each vertex attribute.
 	pub fn attributes_mut(
 		&mut self,
 	) -> impl Iterator<Item = (MeshVertexAttributeId, &mut VertexAttributeValues)> {
-		self.attributes
+		self
+			.attributes
 			.iter_mut()
 			.map(|(id, data)| (*id, &mut data.values))
 	}
@@ -180,10 +185,13 @@ impl Mesh {
 	/// Computes and returns the index data of the mesh as bytes.
 	/// This is used to transform the index data into a GPU friendly format.
 	pub fn get_index_buffer_bytes(&self) -> Option<&[u8]> {
-		self.indices.as_ref().map(|indices| match &indices {
-			Indices::U16(indices) => cast_slice(&indices[..]),
-			Indices::U32(indices) => cast_slice(&indices[..]),
-		})
+		self
+			.indices
+			.as_ref()
+			.map(|indices| match &indices {
+				Indices::U16(indices) => cast_slice(&indices[..]),
+				Indices::U32(indices) => cast_slice(&indices[..]),
+			})
 	}
 
 	/// For a given `descriptor` returns a [`VertexBufferLayout`] compatible with this mesh. If this
@@ -222,8 +230,11 @@ impl Mesh {
 		for (attribute_id, attribute_data) in &self.attributes {
 			let attribute_len = attribute_data.values.len();
 			if let Some(previous_vertex_count) = vertex_count {
-				assert_eq!(previous_vertex_count, attribute_len,
-                        "{:?} has a different vertex count ({}) than other attributes ({}) in this mesh.", attribute_id, attribute_len, previous_vertex_count);
+				assert_eq!(
+					previous_vertex_count, attribute_len,
+					"{:?} has a different vertex count ({}) than other attributes ({}) in this mesh.",
+					attribute_id, attribute_len, previous_vertex_count
+				);
 			}
 			vertex_count = Some(attribute_len);
 		}
@@ -251,8 +262,9 @@ impl Mesh {
 		for attribute_data in self.attributes.values() {
 			let attribute_size = attribute_data.attribute.format.get_size() as usize;
 			let attributes_bytes = attribute_data.values.get_bytes();
-			for (vertex_index, attribute_bytes) in
-				attributes_bytes.chunks_exact(attribute_size).enumerate()
+			for (vertex_index, attribute_bytes) in attributes_bytes
+				.chunks_exact(attribute_size)
+				.enumerate()
 			{
 				let offset = vertex_index * vertex_size + attribute_offset;
 				attributes_interleaved_buffer[offset..offset + attribute_size]
@@ -356,8 +368,7 @@ impl Mesh {
 
 	/// Compute the Axis-Aligned Bounding Box of the mesh vertices in model space
 	pub fn compute_aabb(&self) -> Option<Aabb> {
-		if let Some(VertexAttributeValues::Float32x3(values)) =
-			self.attribute(Mesh::ATTRIBUTE_POSITION)
+		if let Some(VertexAttributeValues::Float32x3(values)) = self.attribute(Mesh::ATTRIBUTE_POSITION)
 		{
 			let mut minimum = VEC3_MAX;
 			let mut maximum = VEC3_MIN;
@@ -428,7 +439,9 @@ pub struct InnerMeshVertexBufferLayout {
 impl InnerMeshVertexBufferLayout {
 	#[inline]
 	pub fn contains(&self, attribute_id: impl Into<MeshVertexAttributeId>) -> bool {
-		self.attribute_ids.contains(&attribute_id.into())
+		self
+			.attribute_ids
+			.contains(&attribute_id.into())
 	}
 
 	#[inline]

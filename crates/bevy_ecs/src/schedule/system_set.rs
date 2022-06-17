@@ -96,13 +96,17 @@ impl SystemSet {
 
 	#[must_use]
 	pub fn before<Marker>(mut self, label: impl AsSystemLabel<Marker>) -> Self {
-		self.before.push(Box::new(label.as_system_label()));
+		self
+			.before
+			.push(Box::new(label.as_system_label()));
 		self
 	}
 
 	#[must_use]
 	pub fn after<Marker>(mut self, label: impl AsSystemLabel<Marker>) -> Self {
-		self.after.push(Box::new(label.as_system_label()));
+		self
+			.after
+			.push(Box::new(label.as_system_label()));
 		self
 	}
 

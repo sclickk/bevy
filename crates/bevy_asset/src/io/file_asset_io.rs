@@ -56,7 +56,8 @@ impl FileAssetIo {
 		} else {
 			env::current_exe()
 				.map(|path| {
-					path.parent()
+					path
+						.parent()
 						.map(|exe_parent_path| exe_parent_path.to_owned())
 						.unwrap()
 				})
@@ -90,15 +91,15 @@ impl AssetIo for FileAssetIo {
 		})
 	}
 
-	fn read_directory(
-		&self,
-		path: &Path,
-	) -> Result<Box<dyn Iterator<Item = PathBuf>>, AssetIoError> {
+	fn read_directory(&self, path: &Path) -> Result<Box<dyn Iterator<Item = PathBuf>>, AssetIoError> {
 		let root_path = self.root_path.to_owned();
 		Ok(Box::new(fs::read_dir(root_path.join(path))?.map(
 			move |entry| {
 				let path = entry.unwrap().path();
-				path.strip_prefix(&root_path).unwrap().to_owned()
+				path
+					.strip_prefix(&root_path)
+					.unwrap()
+					.to_owned()
 			},
 		)))
 	}
@@ -124,7 +125,9 @@ impl AssetIo for FileAssetIo {
 			*self.filesystem_watcher.write() = Some(FilesystemWatcher::default());
 		}
 		#[cfg(not(feature = "filesystem_watcher"))]
-		bevy_log::warn!("Watching for changes is not supported when the `filesystem_watcher` feature is disabled");
+		bevy_log::warn!(
+			"Watching for changes is not supported when the `filesystem_watcher` feature is disabled"
+		);
 
 		Ok(())
 	}
@@ -150,12 +153,15 @@ impl AssetIo for FileAssetIo {
 ))]
 pub fn filesystem_watcher_system(asset_server: Res<AssetServer>) {
 	let mut changed = HashSet::default();
-	let asset_io =
-		if let Some(asset_io) = asset_server.server.asset_io.downcast_ref::<FileAssetIo>() {
-			asset_io
-		} else {
-			return;
-		};
+	let asset_io = if let Some(asset_io) = asset_server
+		.server
+		.asset_io
+		.downcast_ref::<FileAssetIo>()
+	{
+		asset_io
+	} else {
+		return;
+	};
 	let watcher = asset_io.filesystem_watcher.read();
 	if let Some(ref watcher) = *watcher {
 		loop {

@@ -23,13 +23,16 @@ where
 	Node::Label: Debug + Clone + Eq + Hash,
 {
 	let mut labels = HashMap::<Node::Label, FixedBitSet>::default();
-	for (label, index) in nodes.iter().enumerate().flat_map(|(index, container)| {
-		container
-			.labels()
-			.iter()
-			.cloned()
-			.map(move |label| (label, index))
-	}) {
+	for (label, index) in nodes
+		.iter()
+		.enumerate()
+		.flat_map(|(index, container)| {
+			container
+				.labels()
+				.iter()
+				.cloned()
+				.map(move |label| (label, index))
+		}) {
 		labels
 			.entry(label)
 			.or_insert_with(|| FixedBitSet::with_capacity(nodes.len()))
@@ -37,7 +40,9 @@ where
 	}
 	let mut graph = HashMap::with_capacity_and_hasher(nodes.len(), Default::default());
 	for (index, node) in nodes.iter().enumerate() {
-		let dependencies = graph.entry(index).or_insert_with(HashMap::default);
+		let dependencies = graph
+			.entry(index)
+			.or_insert_with(HashMap::default);
 		for label in node.after() {
 			match labels.get(label) {
 				Some(new_dependencies) => {

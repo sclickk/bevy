@@ -74,7 +74,14 @@ fn did_hurt_enemy() {
 
 	// Check resulting changes
 	assert!(app.world.get::<Enemy>(enemy_id).is_some());
-	assert_eq!(app.world.get::<Enemy>(enemy_id).unwrap().hit_points, 4);
+	assert_eq!(
+		app
+			.world
+			.get::<Enemy>(enemy_id)
+			.unwrap()
+			.hit_points,
+		4
+	);
 }
 
 #[test]
@@ -111,7 +118,10 @@ fn did_despawn_enemy() {
 	// Get `EnemyDied` event reader
 	let enemy_died_events = app.world.resource::<Events<EnemyDied>>();
 	let mut enemy_died_reader = enemy_died_events.get_reader();
-	let enemy_died = enemy_died_reader.iter(enemy_died_events).next().unwrap();
+	let enemy_died = enemy_died_reader
+		.iter(enemy_died_events)
+		.next()
+		.unwrap();
 
 	// Check the event has been sent
 	assert_eq!(enemy_died.0, 1);
@@ -134,16 +144,33 @@ fn spawn_enemy_using_input_resource() {
 	app.update();
 
 	// Check resulting changes, one entity has been spawned with `Enemy` component
-	assert_eq!(app.world.query::<&Enemy>().iter(&app.world).len(), 1);
+	assert_eq!(
+		app
+			.world
+			.query::<&Enemy>()
+			.iter(&app.world)
+			.len(),
+		1
+	);
 
 	// Clear the `just_pressed` status for all `KeyCode`s
-	app.world.resource_mut::<Input<KeyCode>>().clear();
+	app
+		.world
+		.resource_mut::<Input<KeyCode>>()
+		.clear();
 
 	// Run systems
 	app.update();
 
 	// Check resulting changes, no new entity has been spawned
-	assert_eq!(app.world.query::<&Enemy>().iter(&app.world).len(), 1);
+	assert_eq!(
+		app
+			.world
+			.query::<&Enemy>()
+			.iter(&app.world)
+			.len(),
+		1
+	);
 }
 
 #[test]
@@ -161,7 +188,8 @@ fn update_score_on_event() {
 	app.add_system(update_score);
 
 	// Send an `EnemyDied` event
-	app.world
+	app
+		.world
 		.resource_mut::<Events<EnemyDied>>()
 		.send(EnemyDied(3));
 

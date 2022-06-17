@@ -102,7 +102,8 @@ impl StructInfo {
 
 	/// Get the field with the given name.
 	pub fn field(&self, name: &str) -> Option<&NamedField> {
-		self.field_indices
+		self
+			.field_indices
 			.get(name)
 			.map(|index| &self.fields[*index])
 	}
@@ -209,22 +210,28 @@ pub trait GetField {
 
 impl<S: Struct> GetField for S {
 	fn get_field<T: Reflect>(&self, name: &str) -> Option<&T> {
-		self.field(name).and_then(|value| value.downcast_ref::<T>())
+		self
+			.field(name)
+			.and_then(|value| value.downcast_ref::<T>())
 	}
 
 	fn get_field_mut<T: Reflect>(&mut self, name: &str) -> Option<&mut T> {
-		self.field_mut(name)
+		self
+			.field_mut(name)
 			.and_then(|value| value.downcast_mut::<T>())
 	}
 }
 
 impl GetField for dyn Struct {
 	fn get_field<T: Reflect>(&self, name: &str) -> Option<&T> {
-		self.field(name).and_then(|value| value.downcast_ref::<T>())
+		self
+			.field(name)
+			.and_then(|value| value.downcast_ref::<T>())
 	}
 
 	fn get_field_mut<T: Reflect>(&mut self, name: &str) -> Option<&mut T> {
-		self.field_mut(name)
+		self
+			.field_mut(name)
 			.and_then(|value| value.downcast_mut::<T>())
 	}
 }
@@ -281,7 +288,8 @@ impl DynamicStruct {
 impl Struct for DynamicStruct {
 	#[inline]
 	fn field(&self, name: &str) -> Option<&dyn Reflect> {
-		self.field_indices
+		self
+			.field_indices
 			.get(name)
 			.map(|index| &*self.fields[*index])
 	}
@@ -302,12 +310,18 @@ impl Struct for DynamicStruct {
 
 	#[inline]
 	fn field_at_mut(&mut self, index: usize) -> Option<&mut dyn Reflect> {
-		self.fields.get_mut(index).map(|value| &mut **value)
+		self
+			.fields
+			.get_mut(index)
+			.map(|value| &mut **value)
 	}
 
 	#[inline]
 	fn name_at(&self, index: usize) -> Option<&str> {
-		self.field_names.get(index).map(|name| name.as_ref())
+		self
+			.field_names
+			.get(index)
+			.map(|name| name.as_ref())
 	}
 
 	#[inline]

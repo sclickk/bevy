@@ -36,7 +36,8 @@ impl FontAtlasSet {
 	}
 
 	pub fn has_glyph(&self, glyph_id: GlyphId, glyph_position: Point, font_size: f32) -> bool {
-		self.font_atlases
+		self
+			.font_atlases
 			.get(&FloatOrd(font_size))
 			.map_or(false, |font_atlas| {
 				font_atlas
@@ -75,7 +76,10 @@ impl FontAtlasSet {
 				&glyph_texture,
 			)
 		};
-		if !font_atlases.iter_mut().any(add_char_to_font_atlas) {
+		if !font_atlases
+			.iter_mut()
+			.any(add_char_to_font_atlas)
+		{
 			// Find the largest dimension of the glyph, either its width or its height
 			let glyph_max_size: u32 = glyph_texture
 				.texture_descriptor
@@ -100,9 +104,11 @@ impl FontAtlasSet {
 			}
 		}
 
-		Ok(self
-			.get_glyph_atlas_info(font_size, glyph_id, glyph_position)
-			.unwrap())
+		Ok(
+			self
+				.get_glyph_atlas_info(font_size, glyph_id, glyph_position)
+				.unwrap(),
+		)
 	}
 
 	pub fn get_glyph_atlas_info(
@@ -111,7 +117,8 @@ impl FontAtlasSet {
 		glyph_id: GlyphId,
 		position: Point,
 	) -> Option<GlyphAtlasInfo> {
-		self.font_atlases
+		self
+			.font_atlases
 			.get(&FloatOrd(font_size))
 			.and_then(|font_atlases| {
 				font_atlases

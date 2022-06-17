@@ -8,9 +8,9 @@ use bevy::{
 	render::{
 		render_asset::{PrepareAssetError, RenderAsset, RenderAssets},
 		render_resource::{
-			BindGroup, BindGroupDescriptor, BindGroupEntry, BindGroupLayout,
-			BindGroupLayoutDescriptor, BindGroupLayoutEntry, BindingResource, BindingType,
-			SamplerBindingType, ShaderStages, TextureSampleType, TextureViewDimension,
+			BindGroup, BindGroupDescriptor, BindGroupEntry, BindGroupLayout, BindGroupLayoutDescriptor,
+			BindGroupLayoutEntry, BindingResource, BindingType, SamplerBindingType, ShaderStages,
+			TextureSampleType, TextureViewDimension,
 		},
 		renderer::RenderDevice,
 	},
@@ -45,16 +45,17 @@ fn setup(
 		..Default::default()
 	});
 
-	commands.spawn().insert_bundle(MaterialMeshBundle {
-		mesh: meshes.add(Mesh::from(shape::Cube { size: 1.0 })),
-		transform: Transform::from_xyz(0.0, 0.5, 0.0),
-		material: custom_materials.add(CustomMaterial {
-			texture: asset_server.load(
-				"models/FlightHelmet/FlightHelmet_Materials_LensesMat_OcclusionRoughMetal.png",
-			),
-		}),
-		..Default::default()
-	});
+	commands
+		.spawn()
+		.insert_bundle(MaterialMeshBundle {
+			mesh: meshes.add(Mesh::from(shape::Cube { size: 1.0 })),
+			transform: Transform::from_xyz(0.0, 0.5, 0.0),
+			material: custom_materials.add(CustomMaterial {
+				texture: asset_server
+					.load("models/FlightHelmet/FlightHelmet_Materials_LensesMat_OcclusionRoughMetal.png"),
+			}),
+			..Default::default()
+		});
 
 	// camera
 	commands

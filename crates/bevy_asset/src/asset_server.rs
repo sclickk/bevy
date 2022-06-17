@@ -1,8 +1,8 @@
 use crate::{
 	path::{AssetPath, AssetPathId, SourcePathId},
 	Asset, AssetIo, AssetIoError, AssetLifecycle, AssetLifecycleChannel, AssetLifecycleEvent,
-	AssetLoader, Assets, Handle, HandleId, HandleUntyped, LabelId, LoadContext, LoadState,
-	RefChange, RefChangeChannel, SourceInfo, SourceMeta,
+	AssetLoader, Assets, Handle, HandleId, HandleUntyped, LabelId, LoadContext, LoadState, RefChange,
+	RefChangeChannel, SourceInfo, SourceMeta,
 };
 use anyhow::Result;
 use bevy_ecs::system::{Res, ResMut};
@@ -101,7 +101,14 @@ impl AssetServer {
 			panic!("Error while registering new asset type: {:?} with UUID: {:?}. Another type with the same UUID is already registered. Can not register new asset type with the same UUID",
                 std::any::type_name::<T>(), T::TYPE_UUID);
 		}
-		Assets::new(self.server.asset_ref_counter.channel.sender.clone())
+		Assets::new(
+			self
+				.server
+				.asset_ref_counter
+				.channel
+				.sender
+				.clone(),
+		)
 	}
 
 	pub fn add_loader<T>(&self, loader: T)
@@ -111,7 +118,8 @@ impl AssetServer {
 		let mut loaders = self.server.loaders.write();
 		let loader_index = loaders.len();
 		for extension in loader.extensions().iter() {
-			self.server
+			self
+				.server
 				.extension_to_loader_index
 				.write()
 				.insert(extension.to_string(), loader_index);
@@ -127,12 +135,22 @@ impl AssetServer {
 	}
 
 	pub fn get_handle<T: Asset, I: Into<HandleId>>(&self, id: I) -> Handle<T> {
-		let sender = self.server.asset_ref_counter.channel.sender.clone();
+		let sender = self
+			.server
+			.asset_ref_counter
+			.channel
+			.sender
+			.clone();
 		Handle::strong(id.into(), sender)
 	}
 
 	pub fn get_handle_untyped<I: Into<HandleId>>(&self, id: I) -> HandleUntyped {
-		let sender = self.server.asset_ref_counter.channel.sender.clone();
+		let sender = self
+			.server
+			.asset_ref_counter
+			.channel
+			.sender
+			.clone();
 		HandleUntyped::strong(id.into(), sender)
 	}
 
@@ -180,7 +198,8 @@ impl AssetServer {
 	}
 
 	pub fn get_handle_path<H: Into<HandleId>>(&self, handle: H) -> Option<AssetPath<'_>> {
-		self.server
+		self
+			.server
 			.handle_to_path
 			.read()
 			.get(&handle.into())
@@ -299,7 +318,11 @@ impl AssetServer {
 		};
 
 		// load the asset bytes
-		let bytes = match self.asset_io().load_path(asset_path.path()).await {
+		let bytes = match self
+			.asset_io()
+			.load_path(asset_path.path())
+			.await
+		{
 			Ok(bytes) => bytes,
 			Err(err) => {
 				set_asset_failed();
@@ -352,13 +375,16 @@ impl AssetServer {
 		for (label, loaded_asset) in &mut load_context.labeled_assets {
 			let label_id = LabelId::from(label.as_ref().map(|label| label.as_str()));
 			let type_uuid = loaded_asset.value.as_ref().unwrap().type_uuid();
-			source_info.asset_types.insert(label_id, type_uuid);
+			source_info
+				.asset_types
+				.insert(label_id, type_uuid);
 			for dependency in &loaded_asset.dependencies {
 				self.load_untracked(dependency.clone(), false);
 			}
 		}
 
-		self.asset_io()
+		self
+			.asset_io()
 			.watch_path_for_changes(asset_path.path())
 			.unwrap();
 		self.create_assets_in_load_context(&mut load_context);
@@ -383,7 +409,8 @@ impl AssetServer {
 			.detach();
 
 		let handle_id = asset_path.get_id().into();
-		self.server
+		self
+			.server
 			.handle_to_path
 			.write()
 			.entry(handle_id)
@@ -412,8 +439,11 @@ impl AssetServer {
 				if self.get_path_asset_loader(&child_path).is_err() {
 					continue;
 				}
-				let handle =
-					self.load_untyped(child_path.to_str().expect("Path should be a valid string."));
+				let handle = self.load_untyped(
+					child_path
+						.to_str()
+						.expect("Path should be a valid string."),
+				);
 				handles.push(handle);
 			}
 		}
@@ -422,7 +452,11 @@ impl AssetServer {
 	}
 
 	pub fn free_unused_assets(&self) {
-		let mut potential_frees = self.server.asset_ref_counter.mark_unused_assets.lock();
+		let mut potential_frees = self
+			.server
+			.asset_ref_counter
+			.mark_unused_assets
+			.lock();
 
 		if !potential_frees.is_empty() {
 			let ref_counts = self.server.asset_ref_counter.ref_counts.read();
@@ -465,7 +499,11 @@ impl AssetServer {
 					if *entry == 0 {
 						potential_frees
 							.get_or_insert_with(|| {
-								self.server.asset_ref_counter.mark_unused_assets.lock()
+								self
+									.server
+									.asset_ref_counter
+									.mark_unused_assets
+									.lock()
 							})
 							.push(handle_id);
 					}
@@ -482,8 +520,7 @@ impl AssetServer {
 				.take()
 				.expect("Asset should exist at this point.");
 			if let Some(asset_lifecycle) = asset_lifecycles.get(&asset_value.type_uuid()) {
-				let asset_path =
-					AssetPath::new_ref(load_context.path, label.as_ref().map(|l| l.as_str()));
+				let asset_path = AssetPath::new_ref(load_context.path, label.as_ref().map(|l| l.as_str()));
 				asset_lifecycle.create_asset(asset_path.into(), asset_value, load_context.version);
 			} else {
 				panic!(
@@ -512,11 +549,13 @@ impl AssetServer {
 				Ok(AssetLifecycleEvent::Create(result)) => {
 					// update SourceInfo if this asset was loaded from an AssetPath
 					if let HandleId::AssetPathId(id) = result.id {
-						let asset_sources = asset_sources_guard
-							.get_or_insert_with(|| self.server.asset_sources.write());
+						let asset_sources =
+							asset_sources_guard.get_or_insert_with(|| self.server.asset_sources.write());
 						if let Some(source_info) = asset_sources.get_mut(&id.source_path_id()) {
 							if source_info.version == result.version {
-								source_info.committed_assets.insert(id.label_id());
+								source_info
+									.committed_assets
+									.insert(id.label_id());
 								if source_info.is_loaded() {
 									source_info.load_state = LoadState::Loaded;
 								}
@@ -528,10 +567,12 @@ impl AssetServer {
 				}
 				Ok(AssetLifecycleEvent::Free(handle_id)) => {
 					if let HandleId::AssetPathId(id) = handle_id {
-						let asset_sources = asset_sources_guard
-							.get_or_insert_with(|| self.server.asset_sources.write());
+						let asset_sources =
+							asset_sources_guard.get_or_insert_with(|| self.server.asset_sources.write());
 						if let Some(source_info) = asset_sources.get_mut(&id.source_path_id()) {
-							source_info.committed_assets.remove(&id.label_id());
+							source_info
+								.committed_assets
+								.remove(&id.label_id());
 							source_info.load_state = LoadState::Unloaded;
 						}
 					}
@@ -712,8 +753,8 @@ mod test {
 		let path: AssetPath = "file.not-a-real-extension".into();
 		let handle = asset_server.get_handle_untyped(path.get_id());
 
-		let err = futures_lite::future::block_on(asset_server.load_async(path.clone(), true))
-			.unwrap_err();
+		let err =
+			futures_lite::future::block_on(asset_server.load_async(path.clone(), true)).unwrap_err();
 		assert!(match err {
 			AssetServerError::MissingAssetLoader { extensions } => {
 				extensions == ["not-a-real-extension"]
@@ -732,8 +773,8 @@ mod test {
 		let path: AssetPath = "an/invalid/path.png".into();
 		let handle = asset_server.get_handle_untyped(path.get_id());
 
-		let err = futures_lite::future::block_on(asset_server.load_async(path.clone(), true))
-			.unwrap_err();
+		let err =
+			futures_lite::future::block_on(asset_server.load_async(path.clone(), true)).unwrap_err();
 		assert!(matches!(err, AssetServerError::AssetIoError(_)));
 
 		assert_eq!(asset_server.get_load_state(handle), LoadState::Failed);
@@ -748,8 +789,8 @@ mod test {
 		let path: AssetPath = "fake.fail".into();
 		let handle = asset_server.get_handle_untyped(path.get_id());
 
-		let err = futures_lite::future::block_on(asset_server.load_async(path.clone(), true))
-			.unwrap_err();
+		let err =
+			futures_lite::future::block_on(asset_server.load_async(path.clone(), true)).unwrap_err();
 		assert!(matches!(err, AssetServerError::AssetLoaderError(_)));
 
 		assert_eq!(asset_server.get_load_state(handle), LoadState::Failed);
@@ -772,20 +813,18 @@ mod test {
 
 		fn load_asset(path: AssetPath, world: &World) -> HandleUntyped {
 			let asset_server = world.resource::<AssetServer>();
-			let id = futures_lite::future::block_on(asset_server.load_async(path.clone(), true))
-				.unwrap();
+			let id = futures_lite::future::block_on(asset_server.load_async(path.clone(), true)).unwrap();
 			asset_server.get_handle_untyped(id)
 		}
 
-		fn get_asset<'world>(
-			id: &Handle<PngAsset>,
-			world: &'world World,
-		) -> Option<&'world PngAsset> {
+		fn get_asset<'world>(id: &Handle<PngAsset>, world: &'world World) -> Option<&'world PngAsset> {
 			world.resource::<Assets<PngAsset>>().get(id)
 		}
 
 		fn get_load_state(id: impl Into<HandleId>, world: &World) -> LoadState {
-			world.resource::<AssetServer>().get_load_state(id.into())
+			world
+				.resource::<AssetServer>()
+				.get_load_state(id.into())
 		}
 
 		// ---

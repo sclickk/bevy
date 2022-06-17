@@ -19,8 +19,12 @@ pub fn parent_update_system(
 	// them from the `Children` of the `PreviousParent`.
 	for (entity, previous_parent) in removed_parent_query.iter() {
 		if let Ok(mut previous_parent_children) = children_query.get_mut(previous_parent.0) {
-			previous_parent_children.0.retain(|e| *e != entity);
-			commands.entity(entity).remove::<PreviousParent>();
+			previous_parent_children
+				.0
+				.retain(|e| *e != entity);
+			commands
+				.entity(entity)
+				.remove::<PreviousParent>();
 		}
 	}
 
@@ -37,13 +41,17 @@ pub fn parent_update_system(
 
 			// Remove from `PreviousParent.Children`.
 			if let Ok(mut previous_parent_children) = children_query.get_mut(previous_parent.0) {
-				(*previous_parent_children).0.retain(|e| *e != entity);
+				(*previous_parent_children)
+					.0
+					.retain(|e| *e != entity);
 			}
 
 			// Set `PreviousParent = Parent`.
 			*previous_parent = PreviousParent(parent.0);
 		} else {
-			commands.entity(entity).insert(PreviousParent(parent.0));
+			commands
+				.entity(entity)
+				.insert(PreviousParent(parent.0));
 		};
 
 		// Add to the parent's `Children` (either the real component, or

@@ -50,19 +50,28 @@ impl<I: SparseSetIndex, V> SparseArray<I, V> {
 	#[inline]
 	pub fn contains(&self, index: I) -> bool {
 		let index = index.sparse_set_index();
-		self.values.get(index).map(|v| v.is_some()).unwrap_or(false)
+		self
+			.values
+			.get(index)
+			.map(|v| v.is_some())
+			.unwrap_or(false)
 	}
 
 	#[inline]
 	pub fn get(&self, index: I) -> Option<&V> {
 		let index = index.sparse_set_index();
-		self.values.get(index).map(|v| v.as_ref()).unwrap_or(None)
+		self
+			.values
+			.get(index)
+			.map(|v| v.as_ref())
+			.unwrap_or(None)
 	}
 
 	#[inline]
 	pub fn get_mut(&mut self, index: I) -> Option<&mut V> {
 		let index = index.sparse_set_index();
-		self.values
+		self
+			.values
 			.get_mut(index)
 			.map(|v| v.as_mut())
 			.unwrap_or(None)
@@ -71,7 +80,10 @@ impl<I: SparseSetIndex, V> SparseArray<I, V> {
 	#[inline]
 	pub fn remove(&mut self, index: I) -> Option<V> {
 		let index = index.sparse_set_index();
-		self.values.get_mut(index).and_then(|value| value.take())
+		self
+			.values
+			.get_mut(index)
+			.and_then(|value| value.take())
 	}
 
 	#[inline]
@@ -142,11 +154,17 @@ impl ComponentSparseSet {
 		if let Some(&dense_index) = self.sparse.get(entity.id()) {
 			#[cfg(debug_assertions)]
 			assert_eq!(entity, self.entities[dense_index as usize]);
-			self.dense.replace(dense_index as usize, value, change_tick);
+			self
+				.dense
+				.replace(dense_index as usize, value, change_tick);
 		} else {
 			let dense_index = self.dense.len();
-			self.dense.push(value, ComponentTicks::new(change_tick));
-			self.sparse.insert(entity.id(), dense_index as u32);
+			self
+				.dense
+				.push(value, ComponentTicks::new(change_tick));
+			self
+				.sparse
+				.insert(entity.id(), dense_index as u32);
 			#[cfg(debug_assertions)]
 			assert_eq!(self.entities.len(), dense_index);
 			#[cfg(not(debug_assertions))]
@@ -210,24 +228,31 @@ impl ComponentSparseSet {
 	/// it exists).
 	#[must_use = "The returned pointer must be used to drop the removed component."]
 	pub fn remove_and_forget(&mut self, entity: Entity) -> Option<OwningPtr<'_>> {
-		self.sparse.remove(entity.id()).map(|dense_index| {
-			let dense_index = dense_index as usize;
-			#[cfg(debug_assertions)]
-			assert_eq!(entity, self.entities[dense_index]);
-			self.entities.swap_remove(dense_index);
-			let is_last = dense_index == self.dense.len() - 1;
-			// SAFE: dense_index was just removed from `sparse`, which ensures that it is valid
-			let (value, _) = unsafe { self.dense.swap_remove_and_forget_unchecked(dense_index) };
-			if !is_last {
-				let swapped_entity = self.entities[dense_index];
-				#[cfg(not(debug_assertions))]
-				let idx = swapped_entity;
+		self
+			.sparse
+			.remove(entity.id())
+			.map(|dense_index| {
+				let dense_index = dense_index as usize;
 				#[cfg(debug_assertions)]
-				let idx = swapped_entity.id();
-				*self.sparse.get_mut(idx).unwrap() = dense_index as u32;
-			}
-			value
-		})
+				assert_eq!(entity, self.entities[dense_index]);
+				self.entities.swap_remove(dense_index);
+				let is_last = dense_index == self.dense.len() - 1;
+				// SAFE: dense_index was just removed from `sparse`, which ensures that it is valid
+				let (value, _) = unsafe {
+					self
+						.dense
+						.swap_remove_and_forget_unchecked(dense_index)
+				};
+				if !is_last {
+					let swapped_entity = self.entities[dense_index];
+					#[cfg(not(debug_assertions))]
+					let idx = swapped_entity;
+					#[cfg(debug_assertions)]
+					let idx = swapped_entity.id();
+					*self.sparse.get_mut(idx).unwrap() = dense_index as u32;
+				}
+				value
+			})
 	}
 
 	pub fn remove(&mut self, entity: Entity) -> bool {
@@ -304,7 +329,9 @@ impl<I: SparseSetIndex, V> SparseSet<I, V> {
 				*self.dense.get_unchecked_mut(dense_index) = value;
 			}
 		} else {
-			self.sparse.insert(index.clone(), self.dense.len());
+			self
+				.sparse
+				.insert(index.clone(), self.dense.len());
 			self.indices.push(index);
 			self.dense.push(value);
 		}

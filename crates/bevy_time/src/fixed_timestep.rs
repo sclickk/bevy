@@ -123,7 +123,10 @@ impl FixedTimestep {
 		move |time, mut fixed_timesteps| {
 			let should_run = state.update(&time);
 			if let Some(ref label) = state.label {
-				let res_state = fixed_timesteps.fixed_timesteps.get_mut(label).unwrap();
+				let res_state = fixed_timesteps
+					.fixed_timesteps
+					.get_mut(label)
+					.unwrap();
 				res_state.step = state.step;
 				res_state.accumulator = state.accumulator;
 			}
@@ -178,7 +181,9 @@ impl System for FixedTimestep {
 	}
 
 	fn archetype_component_access(&self) -> &Access<ArchetypeComponentId> {
-		self.internal_system.archetype_component_access()
+		self
+			.internal_system
+			.archetype_component_access()
 	}
 
 	fn component_access(&self) -> &Access<ComponentId> {
@@ -217,12 +222,15 @@ impl System for FixedTimestep {
 	}
 
 	fn update_archetype_component_access(&mut self, world: &World) {
-		self.internal_system
+		self
+			.internal_system
 			.update_archetype_component_access(world);
 	}
 
 	fn check_change_tick(&mut self, change_tick: u32) {
-		self.internal_system.check_change_tick(change_tick);
+		self
+			.internal_system
+			.check_change_tick(change_tick);
 	}
 }
 

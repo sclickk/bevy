@@ -373,7 +373,10 @@ where
 
 	#[inline]
 	fn component_access(&self) -> &Access<ComponentId> {
-		self.system_meta.component_access_set.combined_access()
+		self
+			.system_meta
+			.component_access_set
+			.combined_access()
 	}
 
 	#[inline]
@@ -395,7 +398,10 @@ where
 		// in `update_archetype_component_access`.
 		// Our caller upholds the requirements.
 		let params = <Param as SystemParam>::Fetch::get_param(
-			self.param_state.as_mut().expect(Self::PARAM_MESSAGE),
+			self
+				.param_state
+				.as_mut()
+				.expect(Self::PARAM_MESSAGE),
 			&self.system_meta,
 			world,
 			change_tick,
@@ -407,7 +413,10 @@ where
 
 	#[inline]
 	fn apply_buffers(&mut self, world: &mut World) {
-		let param_state = self.param_state.as_mut().expect(Self::PARAM_MESSAGE);
+		let param_state = self
+			.param_state
+			.as_mut()
+			.expect(Self::PARAM_MESSAGE);
 		param_state.apply(world);
 	}
 
@@ -429,10 +438,14 @@ where
 		let archetype_index_range = old_generation.value()..new_generation.value();
 
 		for archetype_index in archetype_index_range {
-			self.param_state.as_mut().unwrap().new_archetype(
-				&archetypes[ArchetypeId::new(archetype_index)],
-				&mut self.system_meta,
-			);
+			self
+				.param_state
+				.as_mut()
+				.unwrap()
+				.new_archetype(
+					&archetypes[ArchetypeId::new(archetype_index)],
+					&mut self.system_meta,
+				);
 		}
 	}
 

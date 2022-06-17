@@ -188,7 +188,12 @@ fn move_player(
 	mut transforms: Query<&mut Transform>,
 	time: Res<Time>,
 ) {
-	if game.player.move_cooldown.tick(time.delta()).finished() {
+	if game
+		.player
+		.move_cooldown
+		.tick(time.delta())
+		.finished()
+	{
 		let mut moved = false;
 		let mut rotation = 0.0;
 
@@ -224,7 +229,9 @@ fn move_player(
 		// move on the board
 		if moved {
 			game.player.move_cooldown.reset();
-			*transforms.get_mut(game.player.entity.unwrap()).unwrap() = Transform {
+			*transforms
+				.get_mut(game.player.entity.unwrap())
+				.unwrap() = Transform {
 				translation: Vec3::new(
 					game.player.i as f32,
 					game.board[game.player.j][game.player.i].height,

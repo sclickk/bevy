@@ -35,7 +35,10 @@ pub trait Array: Reflect {
 	fn clone_dynamic(&self) -> DynamicArray {
 		DynamicArray {
 			name: self.type_name().to_string(),
-			values: self.iter().map(|value| value.clone_value()).collect(),
+			values: self
+				.iter()
+				.map(|value| value.clone_value())
+				.collect(),
 		}
 	}
 }
@@ -231,7 +234,10 @@ impl Array for DynamicArray {
 
 	#[inline]
 	fn get_mut(&mut self, index: usize) -> Option<&mut dyn Reflect> {
-		self.values.get_mut(index).map(|value| &mut **value)
+		self
+			.values
+			.get_mut(index)
+			.map(|value| &mut **value)
 	}
 
 	#[inline]

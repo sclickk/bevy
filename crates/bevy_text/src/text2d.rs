@@ -179,9 +179,9 @@ pub fn update_text2d_layout(
 					panic!("Fatal error when processing text: {}.", e);
 				}
 				Ok(()) => {
-					let text_layout_info = text_pipeline.get_glyphs(&entity).expect(
-						"Failed to get glyphs from the pipeline that have just been computed",
-					);
+					let text_layout_info = text_pipeline
+						.get_glyphs(&entity)
+						.expect("Failed to get glyphs from the pipeline that have just been computed");
 					calculated_size.size = Vec2::new(
 						scale_value(text_layout_info.size.x, 1. / scale_factor),
 						scale_value(text_layout_info.size.y, 1. / scale_factor),

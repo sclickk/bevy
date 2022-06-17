@@ -28,14 +28,16 @@ fn setup(
 	mut materials: ResMut<Assets<CustomMaterial>>,
 ) {
 	// cube
-	commands.spawn().insert_bundle(MaterialMeshBundle {
-		mesh: meshes.add(Mesh::from(shape::Cube { size: 1.0 })),
-		transform: Transform::from_xyz(0.0, 0.5, 0.0),
-		material: materials.add(CustomMaterial {
-			color: Color::GREEN,
-		}),
-		..Default::default()
-	});
+	commands
+		.spawn()
+		.insert_bundle(MaterialMeshBundle {
+			mesh: meshes.add(Mesh::from(shape::Cube { size: 1.0 })),
+			transform: Transform::from_xyz(0.0, 0.5, 0.0),
+			material: materials.add(CustomMaterial {
+				color: Color::GREEN,
+			}),
+			..Default::default()
+		});
 
 	// camera
 	commands.spawn_bundle(Camera3dBundle {
@@ -107,7 +109,11 @@ impl SpecializedMaterial for CustomMaterial {
 		_layout: &MeshVertexBufferLayout,
 	) -> Result<(), SpecializedMeshPipelineError> {
 		descriptor.vertex.entry_point = "main".into();
-		descriptor.fragment.as_mut().unwrap().entry_point = "main".into();
+		descriptor
+			.fragment
+			.as_mut()
+			.unwrap()
+			.entry_point = "main".into();
 		Ok(())
 	}
 

@@ -76,42 +76,41 @@ impl Plugin for ScheduleRunnerPlugin {
 					app.update();
 				}
 				RunMode::Loop { wait } => {
-					let mut tick = move |app: &mut App,
-					                     wait: Option<Duration>|
-					      -> Result<Option<Duration>, AppExit> {
-						let start_time = Instant::now();
+					let mut tick =
+						move |app: &mut App, wait: Option<Duration>| -> Result<Option<Duration>, AppExit> {
+							let start_time = Instant::now();
 
-						if let Some(app_exit_events) =
-							app.world.get_resource_mut::<Events<AppExit>>()
-						{
-							if let Some(exit) = app_exit_event_reader.iter(&app_exit_events).last()
-							{
-								return Err(exit.clone());
+							if let Some(app_exit_events) = app.world.get_resource_mut::<Events<AppExit>>() {
+								if let Some(exit) = app_exit_event_reader
+									.iter(&app_exit_events)
+									.last()
+								{
+									return Err(exit.clone());
+								}
 							}
-						}
 
-						app.update();
+							app.update();
 
-						if let Some(app_exit_events) =
-							app.world.get_resource_mut::<Events<AppExit>>()
-						{
-							if let Some(exit) = app_exit_event_reader.iter(&app_exit_events).last()
-							{
-								return Err(exit.clone());
+							if let Some(app_exit_events) = app.world.get_resource_mut::<Events<AppExit>>() {
+								if let Some(exit) = app_exit_event_reader
+									.iter(&app_exit_events)
+									.last()
+								{
+									return Err(exit.clone());
+								}
 							}
-						}
 
-						let end_time = Instant::now();
+							let end_time = Instant::now();
 
-						if let Some(wait) = wait {
-							let exe_time = end_time - start_time;
-							if exe_time < wait {
-								return Ok(Some(wait - exe_time));
+							if let Some(wait) = wait {
+								let exe_time = end_time - start_time;
+								if exe_time < wait {
+									return Ok(Some(wait - exe_time));
+								}
 							}
-						}
 
-						Ok(None)
-					};
+							Ok(None)
+						};
 
 					#[cfg(not(target_arch = "wasm32"))]
 					{
@@ -143,9 +142,7 @@ impl Plugin for ScheduleRunnerPlugin {
 							let mut app = Rc::get_mut(&mut rc).unwrap();
 							let delay = tick(&mut app, wait);
 							match delay {
-								Ok(delay) => {
-									set_timeout(f.borrow().as_ref().unwrap(), delay.unwrap_or(asap))
-								}
+								Ok(delay) => set_timeout(f.borrow().as_ref().unwrap(), delay.unwrap_or(asap)),
 								Err(_) => {}
 							}
 						};

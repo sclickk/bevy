@@ -78,7 +78,8 @@ fn main() {
 				.with_system(sfx),
 		)
 		.add_system(
-			exit.after(PostPhysics)
+			exit
+				.after(PostPhysics)
 				// Label the run criteria such that the `PostPhysics` set can reference it
 				.with_run_criteria(is_done.label("is_done_label")),
 		)

@@ -230,12 +230,8 @@ pub unsafe fn genTangSpace<I: Geometry>(geometry: &mut I, fAngularThreshold: f32
 	let mut piTriListIn = vec![0i32; 3 * iNrTrianglesIn];
 	let mut pTriInfos = vec![STriInfo::zero(); iNrTrianglesIn];
 
-	iNrTSPaces = GenerateInitialVerticesIndexList(
-		&mut pTriInfos,
-		&mut piTriListIn,
-		geometry,
-		iNrTrianglesIn,
-	);
+	iNrTSPaces =
+		GenerateInitialVerticesIndexList(&mut pTriInfos, &mut piTriListIn, geometry, iNrTrianglesIn);
 	GenerateSharedVerticesIndexList(piTriListIn.as_mut_ptr(), geometry, iNrTrianglesIn);
 	iTotTris = iNrTrianglesIn;
 	iDegenTriangles = 0;
@@ -372,8 +368,7 @@ unsafe fn DegenEpilogue<I: Geometry>(
 				if !bNotFound {
 					let iTri: i32 = j / 3i32;
 					let iVert: i32 = j % 3i32;
-					let iSrcVert: i32 =
-						(*pTriInfos.offset(iTri as isize)).vert_num[iVert as usize] as i32;
+					let iSrcVert: i32 = (*pTriInfos.offset(iTri as isize)).vert_num[iVert as usize] as i32;
 					let iSrcOffs: i32 = (*pTriInfos.offset(iTri as isize)).iTSpacesOffs;
 					let iDstVert: i32 = (*pTriInfos.offset(t as isize)).vert_num[i as usize] as i32;
 					let iDstOffs: i32 = (*pTriInfos.offset(t as isize)).iTSpacesOffs;
@@ -392,7 +387,9 @@ unsafe fn DegenEpilogue<I: Geometry>(
 			let mut iOrgF: i32 = -1i32;
 			let mut i_0: i32 = 0i32;
 			let mut bNotFound_0: bool = false;
-			let mut pV: *mut u8 = (*pTriInfos.offset(t as isize)).vert_num.as_mut_ptr();
+			let mut pV: *mut u8 = (*pTriInfos.offset(t as isize))
+				.vert_num
+				.as_mut_ptr();
 			let mut iFlag: i32 = 1i32 << *pV.offset(0isize) as i32
 				| 1i32 << *pV.offset(1isize) as i32
 				| 1i32 << *pV.offset(2isize) as i32;
@@ -484,19 +481,17 @@ unsafe fn GenerateTSpaces<I: Geometry>(
 			let mut vOt = Vec3::new(0.0, 0.0, 0.0);
 			if (*pTriInfos.offset(f as isize)).AssignedGroup[0usize] == pGroup as *mut SGroup {
 				index = 0i32
-			} else if (*pTriInfos.offset(f as isize)).AssignedGroup[1usize] == pGroup as *mut SGroup
-			{
+			} else if (*pTriInfos.offset(f as isize)).AssignedGroup[1usize] == pGroup as *mut SGroup {
 				index = 1i32
-			} else if (*pTriInfos.offset(f as isize)).AssignedGroup[2usize] == pGroup as *mut SGroup
-			{
+			} else if (*pTriInfos.offset(f as isize)).AssignedGroup[2usize] == pGroup as *mut SGroup {
 				index = 2i32
 			}
 			iVertIndex = *piTriListIn.offset((f * 3i32 + index) as isize);
 			n = get_normal(geometry, iVertIndex as usize);
-			let mut vOs = (*pTriInfos.offset(f as isize)).vOs
-				- (n.dot((*pTriInfos.offset(f as isize)).vOs) * n);
-			let mut vOt = (*pTriInfos.offset(f as isize)).vOt
-				- (n.dot((*pTriInfos.offset(f as isize)).vOt) * n);
+			let mut vOs =
+				(*pTriInfos.offset(f as isize)).vOs - (n.dot((*pTriInfos.offset(f as isize)).vOs) * n);
+			let mut vOt =
+				(*pTriInfos.offset(f as isize)).vOt - (n.dot((*pTriInfos.offset(f as isize)).vOt) * n);
 			if VNotZero(vOs) {
 				vOs = Normalize(vOs)
 			}
@@ -509,10 +504,10 @@ unsafe fn GenerateTSpaces<I: Geometry>(
 			while j < (*pGroup).iNrFaces {
 				let t: i32 = *(*pGroup).pFaceIndices.offset(j as isize);
 				let iOF_2: i32 = (*pTriInfos.offset(t as isize)).iOrgFaceNumber;
-				let mut vOs2 = (*pTriInfos.offset(t as isize)).vOs
-					- (n.dot((*pTriInfos.offset(t as isize)).vOs) * n);
-				let mut vOt2 = (*pTriInfos.offset(t as isize)).vOt
-					- (n.dot((*pTriInfos.offset(t as isize)).vOt) * n);
+				let mut vOs2 =
+					(*pTriInfos.offset(t as isize)).vOs - (n.dot((*pTriInfos.offset(t as isize)).vOs) * n);
+				let mut vOt2 =
+					(*pTriInfos.offset(t as isize)).vOt - (n.dot((*pTriInfos.offset(t as isize)).vOt) * n);
 				if VNotZero(vOs2) {
 					vOs2 = Normalize(vOs2)
 				}
@@ -685,10 +680,10 @@ unsafe fn EvalTspace<I: Geometry>(
 			}
 			index = *piTriListIn.offset((3i32 * f + i) as isize);
 			n = get_normal(geometry, index as usize);
-			let mut vOs = (*pTriInfos.offset(f as isize)).vOs
-				- (n.dot((*pTriInfos.offset(f as isize)).vOs) * n);
-			let mut vOt = (*pTriInfos.offset(f as isize)).vOt
-				- (n.dot((*pTriInfos.offset(f as isize)).vOt) * n);
+			let mut vOs =
+				(*pTriInfos.offset(f as isize)).vOs - (n.dot((*pTriInfos.offset(f as isize)).vOs) * n);
+			let mut vOt =
+				(*pTriInfos.offset(f as isize)).vOt - (n.dot((*pTriInfos.offset(f as isize)).vOt) * n);
 			if VNotZero(vOs) {
 				vOs = Normalize(vOs)
 			}
@@ -831,8 +826,8 @@ unsafe fn Build4RuleGroups(
 				let vert_index: i32 = *piTriListIn.offset((f * 3i32 + i) as isize);
 				let ref mut fresh2 = (*pTriInfos.offset(f as isize)).AssignedGroup[i as usize];
 				*fresh2 = &mut *pGroups.offset(iNrActiveGroups as isize) as *mut SGroup;
-				(*(*pTriInfos.offset(f as isize)).AssignedGroup[i as usize])
-					.iVertexRepresentitive = vert_index;
+				(*(*pTriInfos.offset(f as isize)).AssignedGroup[i as usize]).iVertexRepresentitive =
+					vert_index;
 				(*(*pTriInfos.offset(f as isize)).AssignedGroup[i as usize]).bOrientPreservering =
 					(*pTriInfos.offset(f as isize)).iFlag & 8i32 != 0i32;
 				(*(*pTriInfos.offset(f as isize)).AssignedGroup[i as usize]).iNrFaces = 0i32;
@@ -856,12 +851,11 @@ unsafe fn Build4RuleGroups(
 						neigh_indexL,
 						(*pTriInfos.offset(f as isize)).AssignedGroup[i as usize],
 					);
-					let bOrPre2: bool =
-						if (*pTriInfos.offset(neigh_indexL as isize)).iFlag & 8i32 != 0i32 {
-							true
-						} else {
-							false
-						};
+					let bOrPre2: bool = if (*pTriInfos.offset(neigh_indexL as isize)).iFlag & 8i32 != 0i32 {
+						true
+					} else {
+						false
+					};
 					let bDiff: bool = if bOrPre != bOrPre2 { true } else { false };
 				}
 				if neigh_indexR >= 0i32 {
@@ -871,12 +865,11 @@ unsafe fn Build4RuleGroups(
 						neigh_indexR,
 						(*pTriInfos.offset(f as isize)).AssignedGroup[i as usize],
 					);
-					let bOrPre2_0: bool =
-						if (*pTriInfos.offset(neigh_indexR as isize)).iFlag & 8i32 != 0i32 {
-							true
-						} else {
-							false
-						};
+					let bOrPre2_0: bool = if (*pTriInfos.offset(neigh_indexR as isize)).iFlag & 8i32 != 0i32 {
+						true
+					} else {
+						false
+					};
 					let bDiff_0: bool = if bOrPre != bOrPre2_0 { true } else { false };
 				}
 				iOffset += (*(*pTriInfos.offset(f as isize)).AssignedGroup[i as usize]).iNrFaces
@@ -951,7 +944,9 @@ unsafe fn AssignRecur(
 	return true;
 }
 unsafe fn AddTriToGroup(mut pGroup: *mut SGroup, iTriIndex: i32) {
-	*(*pGroup).pFaceIndices.offset((*pGroup).iNrFaces as isize) = iTriIndex;
+	*(*pGroup)
+		.pFaceIndices
+		.offset((*pGroup).iNrFaces as isize) = iTriIndex;
 	(*pGroup).iNrFaces += 1;
 }
 unsafe fn InitTriInfo<I: Geometry>(
@@ -1067,8 +1062,7 @@ unsafe fn InitTriInfo<I: Geometry>(
 					let t0 = if bChooseOrientFirstTri { t } else { t + 1 };
 					let t1_0 = if bChooseOrientFirstTri { t + 1 } else { t };
 					(*pTriInfos.offset(t1_0 as isize)).iFlag &= !8i32;
-					(*pTriInfos.offset(t1_0 as isize)).iFlag |=
-						(*pTriInfos.offset(t0 as isize)).iFlag & 8i32
+					(*pTriInfos.offset(t1_0 as isize)).iFlag |= (*pTriInfos.offset(t0 as isize)).iFlag & 8i32
 				}
 			}
 			t += 2
@@ -1106,9 +1100,15 @@ unsafe fn BuildNeighborsFast(
 			let i0: i32 = *piTriListIn.offset((f * 3i32 + i) as isize);
 			let i1: i32 =
 				*piTriListIn.offset((f * 3i32 + if i < 2i32 { i + 1i32 } else { 0i32 }) as isize);
-			(*pEdges.offset((f * 3i32 + i) as isize)).unnamed.i0 = if i0 < i1 { i0 } else { i1 };
-			(*pEdges.offset((f * 3i32 + i) as isize)).unnamed.i1 = if !(i0 < i1) { i0 } else { i1 };
-			(*pEdges.offset((f * 3i32 + i) as isize)).unnamed.f = f;
+			(*pEdges.offset((f * 3i32 + i) as isize))
+				.unnamed
+				.i0 = if i0 < i1 { i0 } else { i1 };
+			(*pEdges.offset((f * 3i32 + i) as isize))
+				.unnamed
+				.i1 = if !(i0 < i1) { i0 } else { i1 };
+			(*pEdges.offset((f * 3i32 + i) as isize))
+				.unnamed
+				.f = f;
 			i += 1
 		}
 		f += 1
@@ -1118,8 +1118,9 @@ unsafe fn BuildNeighborsFast(
 	iCurStartIndex = 0i32;
 	i = 1i32;
 	while i < iEntries {
-		if (*pEdges.offset(iCurStartIndex as isize)).unnamed.i0
-			!= (*pEdges.offset(i as isize)).unnamed.i0
+		if (*pEdges.offset(iCurStartIndex as isize))
+			.unnamed
+			.i0 != (*pEdges.offset(i as isize)).unnamed.i0
 		{
 			let iL: i32 = iCurStartIndex;
 			let iR: i32 = i - 1i32;
@@ -1131,10 +1132,12 @@ unsafe fn BuildNeighborsFast(
 	iCurStartIndex = 0i32;
 	i = 1i32;
 	while i < iEntries {
-		if (*pEdges.offset(iCurStartIndex as isize)).unnamed.i0
-			!= (*pEdges.offset(i as isize)).unnamed.i0
-			|| (*pEdges.offset(iCurStartIndex as isize)).unnamed.i1
-				!= (*pEdges.offset(i as isize)).unnamed.i1
+		if (*pEdges.offset(iCurStartIndex as isize))
+			.unnamed
+			.i0 != (*pEdges.offset(i as isize)).unnamed.i0
+			|| (*pEdges.offset(iCurStartIndex as isize))
+				.unnamed
+				.i1 != (*pEdges.offset(i as isize)).unnamed.i1
 		{
 			let iL_0: i32 = iCurStartIndex;
 			let iR_0: i32 = i - 1i32;
@@ -1161,12 +1164,12 @@ unsafe fn BuildNeighborsFast(
 			i0_0,
 			i1_0,
 		);
-		bUnassigned_A =
-			if (*pTriInfos.offset(f_0 as isize)).FaceNeighbors[edgenum_A as usize] == -1i32 {
-				true
-			} else {
-				false
-			};
+		bUnassigned_A = if (*pTriInfos.offset(f_0 as isize)).FaceNeighbors[edgenum_A as usize] == -1i32
+		{
+			true
+		} else {
+			false
+		};
 		if bUnassigned_A {
 			let mut j: i32 = i + 1i32;
 			let mut t: i32 = 0;
@@ -1375,13 +1378,12 @@ unsafe fn DegenPrologue(
 			let mut t1: i32 = 0;
 			let mut bJustADegenerate: bool = true;
 			while bJustADegenerate && iNextGoodTriangleSearchIndex < iTotTris {
-				let bIsGood_0: bool = if (*pTriInfos.offset(iNextGoodTriangleSearchIndex as isize))
-					.iFlag & 1i32 == 0i32
-				{
-					true
-				} else {
-					false
-				};
+				let bIsGood_0: bool =
+					if (*pTriInfos.offset(iNextGoodTriangleSearchIndex as isize)).iFlag & 1i32 == 0i32 {
+						true
+					} else {
+						false
+					};
 				if bIsGood_0 {
 					bJustADegenerate = false
 				} else {
@@ -1616,10 +1618,14 @@ unsafe fn MergeVertsFast<I: Geometry>(
 				let vT2 = get_tex_coord(geometry, index2 as usize);
 				i2rec = i2;
 				if vP.x == vP2.x
-					&& vP.y == vP2.y && vP.z == vP2.z
-					&& vN.x == vN2.x && vN.y == vN2.y
-					&& vN.z == vN2.z && vT.x == vT2.x
-					&& vT.y == vT2.y && vT.z == vT2.z
+					&& vP.y == vP2.y
+					&& vP.z == vP2.z
+					&& vN.x == vN2.x
+					&& vN.y == vN2.y
+					&& vN.z == vN2.z
+					&& vT.x == vT2.x
+					&& vT.y == vT2.y
+					&& vT.z == vT2.z
 				{
 					bNotFound = false
 				} else {
@@ -1627,8 +1633,7 @@ unsafe fn MergeVertsFast<I: Geometry>(
 				}
 			}
 			if !bNotFound {
-				*piTriList_in_and_out.offset(i as isize) =
-					*piTriList_in_and_out.offset(i2rec as isize)
+				*piTriList_in_and_out.offset(i as isize) = *piTriList_in_and_out.offset(i2rec as isize)
 			}
 			l += 1
 		}
@@ -1659,8 +1664,7 @@ unsafe fn MergeVertsFast<I: Geometry>(
 			}
 		}
 		if iL == iR {
-			let bReadyRightSwap_0: bool =
-				(*pTmpVert.offset(iR as isize)).vert[channel as usize] < fSep;
+			let bReadyRightSwap_0: bool = (*pTmpVert.offset(iR as isize)).vert[channel as usize] < fSep;
 			if bReadyRightSwap_0 {
 				iL += 1
 			} else {

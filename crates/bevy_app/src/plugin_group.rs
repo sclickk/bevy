@@ -82,7 +82,9 @@ impl PluginGroupBuilder {
 	/// be a plugin of type `Target` in the group or it will panic.
 	pub fn add_before<Target: Plugin, T: Plugin>(&mut self, plugin: T) -> &mut Self {
 		let target_index = self.index_of::<Target>();
-		self.order.insert(target_index, TypeId::of::<T>());
+		self
+			.order
+			.insert(target_index, TypeId::of::<T>());
 		self.upsert_plugin_state(plugin, target_index);
 		self
 	}
@@ -92,7 +94,9 @@ impl PluginGroupBuilder {
 	/// be a plugin of type `Target` in the group or it will panic.
 	pub fn add_after<Target: Plugin, T: Plugin>(&mut self, plugin: T) -> &mut Self {
 		let target_index = self.index_of::<Target>() + 1;
-		self.order.insert(target_index, TypeId::of::<T>());
+		self
+			.order
+			.insert(target_index, TypeId::of::<T>());
 		self.upsert_plugin_state(plugin, target_index);
 		self
 	}

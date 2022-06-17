@@ -38,7 +38,8 @@ pub enum HierarchySystem {
 
 impl Plugin for HierarchyPlugin {
 	fn build(&self, app: &mut App) {
-		app.register_type::<Children>()
+		app
+			.register_type::<Children>()
 			.register_type::<Parent>()
 			.register_type::<PreviousParent>()
 			.add_startup_system_to_stage(

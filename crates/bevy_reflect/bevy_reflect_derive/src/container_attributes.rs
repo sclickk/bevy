@@ -135,7 +135,9 @@ impl ReflectTraits {
 						HASH_ATTR => traits.hash = TraitImpl::Implemented,
 						SERIALIZE_ATTR => traits.serialize = TraitImpl::Implemented,
 						// We only track reflected idents for traits not considered special
-						_ => traits.idents.push(utility::get_reflect_ident(&ident)),
+						_ => traits
+							.idents
+							.push(utility::get_reflect_ident(&ident)),
 					}
 				}
 				// Handles `#[reflect( Hash(custom_hash_fn) )]`
@@ -206,10 +208,7 @@ impl ReflectTraits {
 	/// Returns the implementation of `Reflect::reflect_partial_eq` as a `TokenStream`.
 	///
 	/// If `PartialEq` was not registered, returns `None`.
-	pub fn get_partial_eq_impl(
-		&self,
-		bevy_reflect_path: &Path,
-	) -> Option<proc_macro2::TokenStream> {
+	pub fn get_partial_eq_impl(&self, bevy_reflect_path: &Path) -> Option<proc_macro2::TokenStream> {
 		match &self.partial_eq {
 			TraitImpl::Implemented => Some(quote! {
 				fn reflect_partial_eq(&self, value: &dyn #bevy_reflect_path::Reflect) -> Option<bool> {

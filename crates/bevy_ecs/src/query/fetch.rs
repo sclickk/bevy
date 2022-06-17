@@ -548,13 +548,17 @@ unsafe impl<'w> Fetch<'w> for EntityFetch<'w> {
 
 	#[inline]
 	unsafe fn table_fetch(&mut self, table_row: usize) -> Self::Item {
-		let entities = self.entities.unwrap_or_else(|| debug_checked_unreachable());
+		let entities = self
+			.entities
+			.unwrap_or_else(|| debug_checked_unreachable());
 		*entities.get(table_row)
 	}
 
 	#[inline]
 	unsafe fn archetype_fetch(&mut self, archetype_index: usize) -> Self::Item {
-		let entities = self.entities.unwrap_or_else(|| debug_checked_unreachable());
+		let entities = self
+			.entities
+			.unwrap_or_else(|| debug_checked_unreachable());
 		*entities.get(archetype_index)
 	}
 
@@ -741,9 +745,7 @@ unsafe impl<'w, T: Component> Fetch<'w> for ReadFetch<'w, T> {
 		archetype: &Archetype,
 		access: &mut Access<ArchetypeComponentId>,
 	) {
-		if let Some(archetype_component_id) =
-			archetype.get_archetype_component_id(state.component_id)
-		{
+		if let Some(archetype_component_id) = archetype.get_archetype_component_id(state.component_id) {
 			access.add_read(archetype_component_id);
 		}
 	}
@@ -927,9 +929,7 @@ unsafe impl<'w, T: Component> Fetch<'w> for WriteFetch<'w, T> {
 		archetype: &Archetype,
 		access: &mut Access<ArchetypeComponentId>,
 	) {
-		if let Some(archetype_component_id) =
-			archetype.get_archetype_component_id(state.component_id)
-		{
+		if let Some(archetype_component_id) = archetype.get_archetype_component_id(state.component_id) {
 			access.add_write(archetype_component_id);
 		}
 	}
@@ -1012,7 +1012,9 @@ unsafe impl<'w, T: Fetch<'w>> Fetch<'w> for OptionFetch<T> {
 			.state
 			.matches_component_set(&|id| archetype.contains(id));
 		if self.matches {
-			self.fetch.set_archetype(&state.state, archetype, tables);
+			self
+				.fetch
+				.set_archetype(&state.state, archetype, tables);
 		}
 	}
 
@@ -1118,13 +1120,15 @@ impl<T: Component> std::fmt::Debug for ChangeTrackers<T> {
 impl<T: Component> ChangeTrackers<T> {
 	/// Returns true if this component has been added since the last execution of this system.
 	pub fn is_added(&self) -> bool {
-		self.component_ticks
+		self
+			.component_ticks
 			.is_added(self.last_change_tick, self.change_tick)
 	}
 
 	/// Returns true if this component has been changed since the last execution of this system.
 	pub fn is_changed(&self) -> bool {
-		self.component_ticks
+		self
+			.component_ticks
 			.is_changed(self.last_change_tick, self.change_tick)
 	}
 }
@@ -1286,7 +1290,9 @@ unsafe impl<'w, T: Component> Fetch<'w> for ChangeTrackersFetch<'w, T> {
 				}
 			}
 			StorageType::SparseSet => {
-				let entities = self.entities.unwrap_or_else(|| debug_checked_unreachable());
+				let entities = self
+					.entities
+					.unwrap_or_else(|| debug_checked_unreachable());
 				let entity = *entities.get(archetype_index);
 				ChangeTrackers {
 					component_ticks: self
@@ -1333,9 +1339,7 @@ unsafe impl<'w, T: Component> Fetch<'w> for ChangeTrackersFetch<'w, T> {
 		archetype: &Archetype,
 		access: &mut Access<ArchetypeComponentId>,
 	) {
-		if let Some(archetype_component_id) =
-			archetype.get_archetype_component_id(state.component_id)
-		{
+		if let Some(archetype_component_id) = archetype.get_archetype_component_id(state.component_id) {
 			access.add_read(archetype_component_id);
 		}
 	}

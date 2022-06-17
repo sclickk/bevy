@@ -40,7 +40,8 @@ pub struct Core3dPlugin;
 
 impl Plugin for Core3dPlugin {
 	fn build(&self, app: &mut App) {
-		app.register_type::<Camera3d>()
+		app
+			.register_type::<Camera3d>()
 			.add_plugin(ExtractComponentPlugin::<Camera3d>::default());
 
 		let render_app = match app.get_sub_app_mut(RenderApp) {
@@ -238,10 +239,12 @@ pub fn prepare_core_3d_depth_textures(
 					)
 				})
 				.clone();
-			commands.entity(entity).insert(ViewDepthTexture {
-				texture: cached_texture.texture,
-				view: cached_texture.default_view,
-			});
+			commands
+				.entity(entity)
+				.insert(ViewDepthTexture {
+					texture: cached_texture.texture,
+					view: cached_texture.default_view,
+				});
 		}
 	}
 }

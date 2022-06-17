@@ -59,7 +59,11 @@ impl<'a> ReflectDeriveData<'a> {
 		// Should indicate whether `#[reflect_value]` was used
 		let mut force_reflect_value = false;
 
-		for attribute in input.attrs.iter().filter_map(|attr| attr.parse_meta().ok()) {
+		for attribute in input
+			.attrs
+			.iter()
+			.filter_map(|attr| attr.parse_meta().ok())
+		{
 			let meta_list = if let Meta::List(meta_list) = attribute {
 				meta_list
 			} else {
@@ -139,17 +143,24 @@ impl<'a> ReflectDeriveData<'a> {
 
 	/// Get an iterator over the active fields
 	pub fn active_fields(&self) -> impl Iterator<Item = &StructField<'a>> {
-		self.fields.iter().filter(|field| !field.attrs.ignore)
+		self
+			.fields
+			.iter()
+			.filter(|field| !field.attrs.ignore)
 	}
 
 	/// Get an iterator over the ignored fields
 	pub fn ignored_fields(&self) -> impl Iterator<Item = &StructField<'a>> {
-		self.fields.iter().filter(|field| field.attrs.ignore)
+		self
+			.fields
+			.iter()
+			.filter(|field| field.attrs.ignore)
 	}
 
 	/// Get a collection of all active types
 	pub fn active_types(&self) -> Vec<syn::Type> {
-		self.active_fields()
+		self
+			.active_fields()
 			.map(|field| field.data.ty.clone())
 			.collect::<Vec<_>>()
 	}

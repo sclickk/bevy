@@ -20,8 +20,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
 		..Default::default()
 	});
 	commands.spawn_bundle(Camera3dBundle {
-		transform: Transform::from_xyz(1.05, 0.9, 1.5)
-			.looking_at(Vec3::new(0.0, 0.3, 0.0), Vec3::Y),
+		transform: Transform::from_xyz(1.05, 0.9, 1.5).looking_at(Vec3::new(0.0, 0.3, 0.0), Vec3::Y),
 		..Default::default()
 	});
 

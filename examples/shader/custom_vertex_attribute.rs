@@ -9,10 +9,10 @@ use bevy::{
 		mesh::{MeshVertexAttribute, MeshVertexBufferLayout},
 		render_asset::{PrepareAssetError, RenderAsset},
 		render_resource::{
-			BindGroup, BindGroupDescriptor, BindGroupEntry, BindGroupLayout,
-			BindGroupLayoutDescriptor, BindGroupLayoutEntry, BindingType, Buffer,
-			BufferBindingType, BufferInitDescriptor, BufferUsages, RenderPipelineDescriptor,
-			ShaderSize, ShaderStages, ShaderType, SpecializedMeshPipelineError, VertexFormat,
+			BindGroup, BindGroupDescriptor, BindGroupEntry, BindGroupLayout, BindGroupLayoutDescriptor,
+			BindGroupLayoutEntry, BindingType, Buffer, BufferBindingType, BufferInitDescriptor,
+			BufferUsages, RenderPipelineDescriptor, ShaderSize, ShaderStages, ShaderType,
+			SpecializedMeshPipelineError, VertexFormat,
 		},
 		renderer::RenderDevice,
 	},
@@ -45,14 +45,16 @@ fn setup(
 	);
 
 	// cube
-	commands.spawn().insert_bundle(MaterialMeshBundle {
-		mesh: meshes.add(mesh),
-		transform: Transform::from_xyz(0.0, 0.5, 0.0),
-		material: materials.add(CustomMaterial {
-			color: Color::WHITE,
-		}),
-		..Default::default()
-	});
+	commands
+		.spawn()
+		.insert_bundle(MaterialMeshBundle {
+			mesh: meshes.add(mesh),
+			transform: Transform::from_xyz(0.0, 0.5, 0.0),
+			material: materials.add(CustomMaterial {
+				color: Color::WHITE,
+			}),
+			..Default::default()
+		});
 
 	// camera
 	commands.spawn_bundle(Camera3dBundle {

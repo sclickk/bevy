@@ -45,7 +45,10 @@ impl<E: Event> fmt::Debug for EventId<E> {
 		write!(
 			f,
 			"event<{}>#{}",
-			std::any::type_name::<E>().split("::").last().unwrap(),
+			std::any::type_name::<E>()
+				.split("::")
+				.last()
+				.unwrap(),
 			self.id,
 		)
 	}
@@ -199,10 +202,13 @@ impl<'w, 's, E: Event> EventReader<'w, 's, E> {
 		&mut self,
 	) -> impl DoubleEndedIterator<Item = (&E, EventId<E>)> + ExactSizeIterator<Item = (&E, EventId<E>)>
 	{
-		self.reader.iter_with_id(&self.events).map(|r @ (_, id)| {
-			trace!("EventReader::iter() -> {}", id);
-			r
-		})
+		self
+			.reader
+			.iter_with_id(&self.events)
+			.map(|r @ (_, id)| {
+				trace!("EventReader::iter() -> {}", id);
+				r
+			})
 	}
 
 	/// Determines the number of events available to be read from this [`EventReader`] without consuming any.
@@ -305,14 +311,20 @@ impl<E: Event> ManualEventReader<E> {
 	pub fn iter_with_id<'a>(
 		&'a mut self,
 		events: &'a Events<E>,
-	) -> impl DoubleEndedIterator<Item = (&'a E, EventId<E>)>
-	       + ExactSizeIterator<Item = (&'a E, EventId<E>)> {
+	) -> impl DoubleEndedIterator<Item = (&'a E, EventId<E>)> + ExactSizeIterator<Item = (&'a E, EventId<E>)>
+	{
 		// if the reader has seen some of the events in a buffer, find the proper index offset.
 		// otherwise read all events in the buffer
 		let a_index = (self.last_event_count).saturating_sub(events.events_a.start_event_count);
 		let b_index = (self.last_event_count).saturating_sub(events.events_b.start_event_count);
-		let a = events.events_a.get(a_index..).unwrap_or_default();
-		let b = events.events_b.get(b_index..).unwrap_or_default();
+		let a = events
+			.events_a
+			.get(a_index..)
+			.unwrap_or_default();
+		let b = events
+			.events_b
+			.get(b_index..)
+			.unwrap_or_default();
 		let unread_count = a.len() + b.len();
 		// Ensure `len` is implemented correctly
 		debug_assert_eq!(unread_count, self.len(events));
@@ -482,7 +494,8 @@ impl<E: Event> Events<E> {
 		self.reset_start_event_count();
 
 		// Drain the oldest events first, then the newest
-		self.events_a
+		self
+			.events_a
 			.drain(..)
 			.chain(self.events_b.drain(..))
 			.map(|i| i.event)
@@ -629,10 +642,7 @@ mod tests {
 		);
 	}
 
-	fn get_events<E: Event + Clone>(
-		events: &Events<E>,
-		reader: &mut ManualEventReader<E>,
-	) -> Vec<E> {
+	fn get_events<E: Event + Clone>(events: &Events<E>, reader: &mut ManualEventReader<E>) -> Vec<E> {
 		reader.iter(events).cloned().collect::<Vec<E>>()
 	}
 

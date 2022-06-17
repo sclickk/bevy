@@ -13,7 +13,9 @@ impl Default for FilesystemWatcher {
 	fn default() -> Self {
 		let (sender, receiver) = crossbeam_channel::unbounded();
 		let watcher: RecommendedWatcher = RecommendedWatcher::new(move |res| {
-			sender.send(res).expect("Watch event send failure.");
+			sender
+				.send(res)
+				.expect("Watch event send failure.");
 		})
 		.expect("Failed to create filesystem watcher.");
 		FilesystemWatcher { watcher, receiver }
@@ -22,6 +24,8 @@ impl Default for FilesystemWatcher {
 
 impl FilesystemWatcher {
 	pub fn watch<P: AsRef<Path>>(&mut self, path: P) -> Result<()> {
-		self.watcher.watch(path.as_ref(), RecursiveMode::Recursive)
+		self
+			.watcher
+			.watch(path.as_ref(), RecursiveMode::Recursive)
 	}
 }

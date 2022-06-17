@@ -68,7 +68,8 @@ impl Column {
 	pub unsafe fn replace(&mut self, row: usize, data: OwningPtr<'_>, change_tick: u32) {
 		debug_assert!(row < self.len());
 		self.data.replace_unchecked(row, data);
-		self.ticks
+		self
+			.ticks
 			.get_unchecked_mut(row)
 			.get_mut()
 			.set_changed(change_tick);
@@ -182,7 +183,9 @@ impl Column {
 	#[inline]
 	pub(crate) fn check_change_ticks(&mut self, change_tick: u32) {
 		for component_ticks in &mut self.ticks {
-			component_ticks.get_mut().check_ticks(change_tick);
+			component_ticks
+				.get_mut()
+				.check_ticks(change_tick);
 		}
 	}
 }
@@ -367,7 +370,9 @@ impl Table {
 		self.entities.push(entity);
 		for column in self.columns.values_mut() {
 			column.data.set_len(self.entities.len());
-			column.ticks.push(UnsafeCell::new(ComponentTicks::new(0)));
+			column
+				.ticks
+				.push(UnsafeCell::new(ComponentTicks::new(0)));
 		}
 		index
 	}
@@ -539,7 +544,9 @@ mod tests {
 		let columns = &[component_id];
 		let mut table = Table::with_capacity(0, columns.len());
 		table.add_column(components.get_info(component_id).unwrap());
-		let entities = (0..200).map(Entity::from_raw).collect::<Vec<_>>();
+		let entities = (0..200)
+			.map(Entity::from_raw)
+			.collect::<Vec<_>>();
 		for entity in &entities {
 			// SAFE: we allocate and immediately set data afterwards
 			unsafe {

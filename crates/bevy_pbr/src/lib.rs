@@ -112,7 +112,8 @@ impl Plugin for PbrPlugin {
 			Shader::from_wgsl
 		);
 
-		app.register_type::<CubemapVisibleEntities>()
+		app
+			.register_type::<CubemapVisibleEntities>()
 			.register_type::<DirectionalLight>()
 			.register_type::<PointLight>()
 			.add_plugin(MeshRenderPlugin)
@@ -165,7 +166,8 @@ impl Plugin for PbrPlugin {
 					.after(VisibilitySystems::CheckVisibility),
 			);
 
-		app.world
+		app
+			.world
 			.resource_mut::<Assets<StandardMaterial>>()
 			.set_untracked(
 				Handle::<StandardMaterial>::default(),

@@ -72,25 +72,26 @@ fn extract_windows(
 	mut closed: EventReader<WindowClosed>,
 	windows: Res<Windows>,
 ) {
-	let mut extracted_windows = render_world.get_resource_mut::<ExtractedWindows>().unwrap();
+	let mut extracted_windows = render_world
+		.get_resource_mut::<ExtractedWindows>()
+		.unwrap();
 	for window in windows.iter() {
 		let (new_width, new_height) = (
 			window.physical_width().max(1),
 			window.physical_height().max(1),
 		);
 
-		let mut extracted_window =
-			extracted_windows
-				.entry(window.id())
-				.or_insert(ExtractedWindow {
-					id: window.id(),
-					handle: window.raw_window_handle(),
-					physical_width: new_width,
-					physical_height: new_height,
-					present_mode: window.present_mode(),
-					swap_chain_texture: None,
-					size_changed: false,
-				});
+		let mut extracted_window = extracted_windows
+			.entry(window.id())
+			.or_insert(ExtractedWindow {
+				id: window.id(),
+				handle: window.raw_window_handle(),
+				physical_width: new_width,
+				physical_height: new_height,
+				present_mode: window.present_mode(),
+				swap_chain_texture: None,
+				size_changed: false,
+			});
 
 		// NOTE: Drop the swap chain frame here
 		extracted_window.swap_chain_texture = None;
@@ -100,10 +101,7 @@ fn extract_windows(
 		if extracted_window.size_changed {
 			debug!(
 				"Window size changed from {}x{} to {}x{}",
-				extracted_window.physical_width,
-				extracted_window.physical_height,
-				new_width,
-				new_height
+				extracted_window.physical_width, extracted_window.physical_height, new_width, new_height
 			);
 			extracted_window.physical_width = new_width;
 			extracted_window.physical_height = new_height;
@@ -153,7 +151,11 @@ pub fn prepare_windows(
 		};
 
 		// Do the initial surface configuration if it hasn't been configured yet
-		if window_surfaces.configured_windows.insert(window.id) || window.size_changed {
+		if window_surfaces
+			.configured_windows
+			.insert(window.id)
+			|| window.size_changed
+		{
 			render_device.configure_surface(surface, &swap_chain_descriptor);
 		}
 

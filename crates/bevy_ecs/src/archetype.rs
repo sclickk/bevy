@@ -78,15 +78,17 @@ impl Edges {
 
 	#[inline]
 	pub fn insert_remove_bundle(&mut self, bundle_id: BundleId, archetype_id: Option<ArchetypeId>) {
-		self.remove_bundle.insert(bundle_id, archetype_id);
+		self
+			.remove_bundle
+			.insert(bundle_id, archetype_id);
 	}
 
 	#[inline]
-	pub fn get_remove_bundle_intersection(
-		&self,
-		bundle_id: BundleId,
-	) -> Option<Option<ArchetypeId>> {
-		self.remove_bundle_intersection.get(bundle_id).cloned()
+	pub fn get_remove_bundle_intersection(&self, bundle_id: BundleId) -> Option<Option<ArchetypeId>> {
+		self
+			.remove_bundle_intersection
+			.get(bundle_id)
+			.cloned()
 	}
 
 	#[inline]
@@ -95,7 +97,8 @@ impl Edges {
 		bundle_id: BundleId,
 		archetype_id: Option<ArchetypeId>,
 	) {
-		self.remove_bundle_intersection
+		self
+			.remove_bundle_intersection
 			.insert(bundle_id, archetype_id);
 	}
 }
@@ -137,8 +140,9 @@ impl Archetype {
 	) -> Self {
 		let mut components =
 			SparseSet::with_capacity(table_components.len() + sparse_set_components.len());
-		for (component_id, archetype_component_id) in
-			table_components.iter().zip(table_archetype_components)
+		for (component_id, archetype_component_id) in table_components
+			.iter()
+			.zip(table_archetype_components)
 		{
 			components.insert(
 				*component_id,
@@ -291,7 +295,8 @@ impl Archetype {
 
 	#[inline]
 	pub fn get_storage_type(&self, component_id: ComponentId) -> Option<StorageType> {
-		self.components
+		self
+			.components
 			.get(component_id)
 			.map(|info| info.storage_type)
 	}
@@ -301,7 +306,8 @@ impl Archetype {
 		&self,
 		component_id: ComponentId,
 	) -> Option<ArchetypeComponentId> {
-		self.components
+		self
+			.components
 			.get(component_id)
 			.map(|info| info.archetype_component_id)
 	}
@@ -403,14 +409,19 @@ impl Archetypes {
 	#[inline]
 	pub fn empty(&self) -> &Archetype {
 		// SAFE: empty archetype always exists
-		unsafe { self.archetypes.get_unchecked(ArchetypeId::EMPTY.index()) }
+		unsafe {
+			self
+				.archetypes
+				.get_unchecked(ArchetypeId::EMPTY.index())
+		}
 	}
 
 	#[inline]
 	pub fn empty_mut(&mut self) -> &mut Archetype {
 		// SAFE: empty archetype always exists
 		unsafe {
-			self.archetypes
+			self
+				.archetypes
 				.get_unchecked_mut(ArchetypeId::EMPTY.index())
 		}
 	}
@@ -418,14 +429,19 @@ impl Archetypes {
 	#[inline]
 	pub fn resource(&self) -> &Archetype {
 		// SAFE: resource archetype always exists
-		unsafe { self.archetypes.get_unchecked(ArchetypeId::RESOURCE.index()) }
+		unsafe {
+			self
+				.archetypes
+				.get_unchecked(ArchetypeId::RESOURCE.index())
+		}
 	}
 
 	#[inline]
 	pub fn resource_mut(&mut self) -> &mut Archetype {
 		// SAFE: resource archetype always exists
 		unsafe {
-			self.archetypes
+			self
+				.archetypes
 				.get_unchecked_mut(ArchetypeId::RESOURCE.index())
 		}
 	}

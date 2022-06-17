@@ -382,7 +382,8 @@ impl Window {
 	/// Set whether or not the window is maximized.
 	#[inline]
 	pub fn set_maximized(&mut self, maximized: bool) {
-		self.command_queue
+		self
+			.command_queue
 			.push(WindowCommand::SetMaximized { maximized });
 	}
 
@@ -393,7 +394,8 @@ impl Window {
 	/// - Wayland: Un-minimize is unsupported.
 	#[inline]
 	pub fn set_minimized(&mut self, minimized: bool) {
-		self.command_queue
+		self
+			.command_queue
 			.push(WindowCommand::SetMinimized { minimized });
 	}
 
@@ -412,14 +414,16 @@ impl Window {
 	/// - Android / Wayland: Unsupported.
 	#[inline]
 	pub fn set_position(&mut self, position: IVec2) {
-		self.command_queue
+		self
+			.command_queue
 			.push(WindowCommand::SetPosition { position });
 	}
 
 	/// Modifies the minimum and maximum window bounds for resizing in logical pixels.
 	#[inline]
 	pub fn set_resize_constraints(&mut self, resize_constraints: WindowResizeConstraints) {
-		self.command_queue
+		self
+			.command_queue
 			.push(WindowCommand::SetResizeConstraints { resize_constraints });
 	}
 
@@ -433,10 +437,12 @@ impl Window {
 
 		self.requested_width = width;
 		self.requested_height = height;
-		self.command_queue.push(WindowCommand::SetResolution {
-			logical_resolution: (self.requested_width, self.requested_height),
-			scale_factor: self.scale_factor(),
-		});
+		self
+			.command_queue
+			.push(WindowCommand::SetResolution {
+				logical_resolution: (self.requested_width, self.requested_height),
+				scale_factor: self.scale_factor(),
+			});
 	}
 
 	/// Override the os-reported scaling factor.
@@ -447,13 +453,17 @@ impl Window {
 		}
 
 		self.scale_factor_override = scale_factor;
-		self.command_queue.push(WindowCommand::SetScaleFactor {
-			scale_factor: self.scale_factor(),
-		});
-		self.command_queue.push(WindowCommand::SetResolution {
-			logical_resolution: (self.requested_width, self.requested_height),
-			scale_factor: self.scale_factor(),
-		});
+		self
+			.command_queue
+			.push(WindowCommand::SetScaleFactor {
+				scale_factor: self.scale_factor(),
+			});
+		self
+			.command_queue
+			.push(WindowCommand::SetResolution {
+				logical_resolution: (self.requested_width, self.requested_height),
+				scale_factor: self.scale_factor(),
+			});
 	}
 
 	#[allow(missing_docs)]
@@ -479,7 +489,8 @@ impl Window {
 	///
 	/// `physical_pixels = logical_pixels * scale_factor`
 	pub fn scale_factor(&self) -> f64 {
-		self.scale_factor_override
+		self
+			.scale_factor_override
 			.unwrap_or(self.backend_scale_factor)
 	}
 
@@ -505,7 +516,9 @@ impl Window {
 	/// Set the window's title.
 	pub fn set_title(&mut self, title: String) {
 		self.title = title.to_string();
-		self.command_queue.push(WindowCommand::SetTitle { title });
+		self
+			.command_queue
+			.push(WindowCommand::SetTitle { title });
 	}
 
 	#[inline]
@@ -520,7 +533,8 @@ impl Window {
 	/// Set the window's [`PresentMode`].
 	pub fn set_present_mode(&mut self, present_mode: PresentMode) {
 		self.present_mode = present_mode;
-		self.command_queue
+		self
+			.command_queue
 			.push(WindowCommand::SetPresentMode { present_mode });
 	}
 	/// Get whether or not the window is resizable.
@@ -531,7 +545,8 @@ impl Window {
 	/// Set whether or not the window is resizable.
 	pub fn set_resizable(&mut self, resizable: bool) {
 		self.resizable = resizable;
-		self.command_queue
+		self
+			.command_queue
 			.push(WindowCommand::SetResizable { resizable });
 	}
 	/// Get whether or not decorations are enabled.
@@ -554,7 +569,8 @@ impl Window {
 	/// **`iOS`**, **`Android`**, and the **`Web`** do not have decorations.
 	pub fn set_decorations(&mut self, decorations: bool) {
 		self.decorations = decorations;
-		self.command_queue
+		self
+			.command_queue
 			.push(WindowCommand::SetDecorations { decorations });
 	}
 	/// Get whether or not the cursor is locked.
@@ -577,7 +593,8 @@ impl Window {
 	/// - **`iOS/Android`** don't have cursors.
 	pub fn set_cursor_lock_mode(&mut self, lock_mode: bool) {
 		self.cursor_locked = lock_mode;
-		self.command_queue
+		self
+			.command_queue
 			.push(WindowCommand::SetCursorLockMode { locked: lock_mode });
 	}
 	/// Get whether or not the cursor is visible.
@@ -600,9 +617,11 @@ impl Window {
 	/// - **`iOS`** and **`Android`** do not have cursors
 	pub fn set_cursor_visibility(&mut self, visibile_mode: bool) {
 		self.cursor_visible = visibile_mode;
-		self.command_queue.push(WindowCommand::SetCursorVisibility {
-			visible: visibile_mode,
-		});
+		self
+			.command_queue
+			.push(WindowCommand::SetCursorVisibility {
+				visible: visibile_mode,
+			});
 	}
 	/// Get the current [`CursorIcon`]
 	#[inline]
@@ -611,7 +630,8 @@ impl Window {
 	}
 	/// Set the [`CursorIcon`]
 	pub fn set_cursor_icon(&mut self, icon: CursorIcon) {
-		self.command_queue
+		self
+			.command_queue
 			.push(WindowCommand::SetCursorIcon { icon });
 	}
 
@@ -625,12 +645,14 @@ impl Window {
 	#[inline]
 	#[doc(alias = "mouse position")]
 	pub fn cursor_position(&self) -> Option<Vec2> {
-		self.physical_cursor_position
+		self
+			.physical_cursor_position
 			.map(|p| (p / self.scale_factor()).as_vec2())
 	}
 	/// Set the cursor's position
 	pub fn set_cursor_position(&mut self, position: Vec2) {
-		self.command_queue
+		self
+			.command_queue
 			.push(WindowCommand::SetCursorPosition { position });
 	}
 
@@ -653,10 +675,12 @@ impl Window {
 	/// Set the window's [`WindowMode`]
 	pub fn set_mode(&mut self, mode: WindowMode) {
 		self.mode = mode;
-		self.command_queue.push(WindowCommand::SetWindowMode {
-			mode,
-			resolution: (self.physical_width, self.physical_height),
-		});
+		self
+			.command_queue
+			.push(WindowCommand::SetWindowMode {
+				mode,
+				resolution: (self.physical_width, self.physical_height),
+			});
 	}
 	/// Close the operating system window corresponding to this [`Window`].
 	///  

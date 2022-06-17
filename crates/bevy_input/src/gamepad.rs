@@ -164,19 +164,22 @@ pub struct GamepadSettings {
 
 impl GamepadSettings {
 	pub fn get_button_settings(&self, button: GamepadButton) -> &ButtonSettings {
-		self.button_settings
+		self
+			.button_settings
 			.get(&button)
 			.unwrap_or(&self.default_button_settings)
 	}
 
 	pub fn get_axis_settings(&self, axis: GamepadAxis) -> &AxisSettings {
-		self.axis_settings
+		self
+			.axis_settings
 			.get(&axis)
 			.unwrap_or(&self.default_axis_settings)
 	}
 
 	pub fn get_button_axis_settings(&self, button: GamepadButton) -> &ButtonAxisSettings {
-		self.button_axis_settings
+		self
+			.button_axis_settings
 			.get(&button)
 			.unwrap_or(&self.default_button_axis_settings)
 	}

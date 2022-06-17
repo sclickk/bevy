@@ -12,18 +12,18 @@ use bevy::{
 		render_asset::RenderAssets,
 		render_phase::{AddRenderCommand, DrawFunctions, RenderPhase, SetItemPipeline},
 		render_resource::{
-			BlendState, ColorTargetState, ColorWrites, Face, FragmentState, FrontFace,
-			MultisampleState, PipelineCache, PolygonMode, PrimitiveState, PrimitiveTopology,
-			RenderPipelineDescriptor, SpecializedRenderPipeline, SpecializedRenderPipelines,
-			TextureFormat, VertexBufferLayout, VertexFormat, VertexState, VertexStepMode,
+			BlendState, ColorTargetState, ColorWrites, Face, FragmentState, FrontFace, MultisampleState,
+			PipelineCache, PolygonMode, PrimitiveState, PrimitiveTopology, RenderPipelineDescriptor,
+			SpecializedRenderPipeline, SpecializedRenderPipelines, TextureFormat, VertexBufferLayout,
+			VertexFormat, VertexState, VertexStepMode,
 		},
 		texture::BevyDefault,
 		view::VisibleEntities,
 		RenderApp, RenderStage,
 	},
 	sprite::{
-		DrawMesh2d, Mesh2dHandle, Mesh2dPipeline, Mesh2dPipelineKey, Mesh2dUniform,
-		SetMesh2dBindGroup, SetMesh2dViewBindGroup,
+		DrawMesh2d, Mesh2dHandle, Mesh2dPipeline, Mesh2dPipelineKey, Mesh2dUniform, SetMesh2dBindGroup,
+		SetMesh2dViewBindGroup,
 	},
 	utils::FloatOrd,
 };
@@ -143,8 +143,7 @@ impl SpecializedRenderPipeline for ColoredMesh2dPipeline {
 			VertexFormat::Uint32,
 		];
 
-		let vertex_layout =
-			VertexBufferLayout::from_vertex_formats(VertexStepMode::Vertex, formats);
+		let vertex_layout = VertexBufferLayout::from_vertex_formats(VertexStepMode::Vertex, formats);
 
 		RenderPipelineDescriptor {
 			vertex: VertexState {
@@ -329,8 +328,7 @@ pub fn queue_colored_mesh2d(
 				// Get our specialized pipeline
 				let mut mesh2d_key = mesh_key;
 				if let Some(mesh) = render_meshes.get(&mesh2d_handle.0) {
-					mesh2d_key |=
-						Mesh2dPipelineKey::from_primitive_topology(mesh.primitive_topology);
+					mesh2d_key |= Mesh2dPipelineKey::from_primitive_topology(mesh.primitive_topology);
 				}
 
 				let pipeline_id =

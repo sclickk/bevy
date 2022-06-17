@@ -119,15 +119,17 @@ fn setup(
 			let (s, c) = fox_angle.sin_cos();
 			let (x, z) = (radius * c, radius * s);
 
-			commands.entity(ring_parent).with_children(|builder| {
-				builder.spawn_bundle(SceneBundle {
-					scene: fox_handle.clone(),
-					transform: Transform::from_xyz(x as f32, 0.0, z as f32)
-						.with_scale(Vec3::splat(0.01))
-						.with_rotation(base_rotation * Quat::from_rotation_y(-fox_angle)),
-					..Default::default()
+			commands
+				.entity(ring_parent)
+				.with_children(|builder| {
+					builder.spawn_bundle(SceneBundle {
+						scene: fox_handle.clone(),
+						transform: Transform::from_xyz(x as f32, 0.0, z as f32)
+							.with_scale(Vec3::splat(0.01))
+							.with_rotation(base_rotation * Quat::from_rotation_y(-fox_angle)),
+						..Default::default()
+					});
 				});
-			});
 		}
 
 		foxes_remaining -= foxes_in_ring;
@@ -186,7 +188,9 @@ fn setup_scene_once_loaded(
 ) {
 	if !*done && player.iter().len() == foxes.count {
 		for mut player in player.iter_mut() {
-			player.play(animations.0[0].clone_weak()).repeat();
+			player
+				.play(animations.0[0].clone_weak())
+				.repeat();
 		}
 		*done = true;
 	}

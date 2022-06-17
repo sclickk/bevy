@@ -54,7 +54,9 @@ pub fn render_system(world: &mut World) {
 			.iter(world)
 			.collect::<Vec<_>>();
 		for view_entity in view_entities {
-			world.entity_mut(view_entity).remove::<ViewTarget>();
+			world
+				.entity_mut(view_entity)
+				.remove::<ViewTarget>();
 		}
 
 		let mut windows = world.resource_mut::<ExtractedWindows>();
@@ -224,7 +226,10 @@ pub async fn initialize_renderer(
 	let (device, queue) = adapter
 		.request_device(
 			&wgpu::DeviceDescriptor {
-				label: options.device_label.as_ref().map(|a| a.as_ref()),
+				label: options
+					.device_label
+					.as_ref()
+					.map(|a| a.as_ref()),
 				features,
 				limits,
 			},

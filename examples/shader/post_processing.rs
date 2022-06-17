@@ -12,10 +12,10 @@ use bevy::{
 		camera::{Camera, RenderTarget},
 		render_asset::{PrepareAssetError, RenderAsset, RenderAssets},
 		render_resource::{
-			BindGroup, BindGroupDescriptor, BindGroupEntry, BindGroupLayout,
-			BindGroupLayoutDescriptor, BindGroupLayoutEntry, BindingResource, BindingType,
-			Extent3d, SamplerBindingType, ShaderStages, TextureDescriptor, TextureDimension,
-			TextureFormat, TextureSampleType, TextureUsages, TextureViewDimension,
+			BindGroup, BindGroupDescriptor, BindGroupEntry, BindGroupLayout, BindGroupLayoutDescriptor,
+			BindGroupLayoutEntry, BindingResource, BindingType, Extent3d, SamplerBindingType,
+			ShaderStages, TextureDescriptor, TextureDimension, TextureFormat, TextureSampleType,
+			TextureUsages, TextureViewDimension,
 		},
 		renderer::RenderDevice,
 		view::RenderLayers,
@@ -25,7 +25,8 @@ use bevy::{
 
 fn main() {
 	let mut app = App::new();
-	app.add_plugins(DefaultPlugins)
+	app
+		.add_plugins(DefaultPlugins)
 		.add_plugin(Material2dPlugin::<PostProcessingMaterial>::default())
 		.add_startup_system(setup)
 		.add_system(main_camera_cube_rotator_system);

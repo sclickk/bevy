@@ -1,7 +1,6 @@
 use crate::{
 	schedule::{
-		RunCriteriaDescriptor, RunCriteriaDescriptorCoercion, RunCriteriaLabel, ShouldRun,
-		SystemSet,
+		RunCriteriaDescriptor, RunCriteriaDescriptorCoercion, RunCriteriaLabel, ShouldRun, SystemSet,
 	},
 	system::{In, IntoChainSystem, Local, Res, ResMut},
 };
@@ -103,12 +102,10 @@ where
 {
 	pub fn on_update(pred: T) -> RunCriteriaDescriptor {
 		let pred_clone = pred.clone();
-		(move |state: Res<State<T>>| {
-			state.stack.last().unwrap() == &pred && state.transition.is_none()
-		})
-		.chain(should_run_adapter::<T>)
-		.after(DriverLabel::of::<T>())
-		.label_discard_if_duplicate(StateCallback::Update.into_label(pred_clone))
+		(move |state: Res<State<T>>| state.stack.last().unwrap() == &pred && state.transition.is_none())
+			.chain(should_run_adapter::<T>)
+			.after(DriverLabel::of::<T>())
+			.label_discard_if_duplicate(StateCallback::Update.into_label(pred_clone))
 	}
 
 	pub fn on_inactive_update(pred: T) -> RunCriteriaDescriptor {
@@ -388,7 +385,11 @@ where
 	}
 
 	pub fn inactives(&self) -> &[T] {
-		self.stack.split_last().map(|(_, rest)| rest).unwrap()
+		self
+			.stack
+			.split_last()
+			.map(|(_, rest)| rest)
+			.unwrap()
 	}
 
 	/// Clears the scheduled state operation.

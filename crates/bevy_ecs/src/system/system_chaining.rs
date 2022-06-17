@@ -85,19 +85,27 @@ impl<SystemA: System, SystemB: System<In = SystemA::Out>> System for ChainSystem
 	fn initialize(&mut self, world: &mut World) {
 		self.system_a.initialize(world);
 		self.system_b.initialize(world);
-		self.component_access
+		self
+			.component_access
 			.extend(self.system_a.component_access());
-		self.component_access
+		self
+			.component_access
 			.extend(self.system_b.component_access());
 	}
 
 	fn update_archetype_component_access(&mut self, world: &World) {
-		self.system_a.update_archetype_component_access(world);
-		self.system_b.update_archetype_component_access(world);
+		self
+			.system_a
+			.update_archetype_component_access(world);
+		self
+			.system_b
+			.update_archetype_component_access(world);
 
-		self.archetype_component_access
+		self
+			.archetype_component_access
 			.extend(self.system_a.archetype_component_access());
-		self.archetype_component_access
+		self
+			.archetype_component_access
 			.extend(self.system_b.archetype_component_access());
 	}
 

@@ -78,6 +78,10 @@ fn change_scale_factor(input: Res<Input<KeyCode>>, mut windows: ResMut<Windows>)
 	if input.just_pressed(KeyCode::Up) {
 		window.set_scale_factor_override(window.scale_factor_override().map(|n| n + 1.));
 	} else if input.just_pressed(KeyCode::Down) {
-		window.set_scale_factor_override(window.scale_factor_override().map(|n| (n - 1.).max(1.)));
+		window.set_scale_factor_override(
+			window
+				.scale_factor_override()
+				.map(|n| (n - 1.).max(1.)),
+		);
 	}
 }

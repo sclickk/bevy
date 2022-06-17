@@ -44,7 +44,12 @@ impl AssetLoader for ImageTextureLoader {
 	) -> BoxedFuture<'a, Result<()>> {
 		Box::pin(async move {
 			// use the file extension for the image type
-			let ext = load_context.path().extension().unwrap().to_str().unwrap();
+			let ext = load_context
+				.path()
+				.extension()
+				.unwrap()
+				.to_str()
+				.unwrap();
 
 			let dyn_img = Image::from_buffer(
 				bytes,

@@ -75,9 +75,7 @@ impl Node for MainPass3dNode {
 				// buffer as well as writing to it.
 				color_attachments: &[target.get_color_attachment(Operations {
 					load: match camera_3d.clear_color {
-						ClearColorConfig::Default => {
-							LoadOp::Clear(world.resource::<ClearColor>().0.into())
-						}
+						ClearColorConfig::Default => LoadOp::Clear(world.resource::<ClearColor>().0.into()),
 						ClearColorConfig::Custom(color) => LoadOp::Clear(color.into()),
 						ClearColorConfig::None => LoadOp::Load,
 					},
@@ -106,7 +104,9 @@ impl Node for MainPass3dNode {
 				tracked_pass.set_camera_viewport(viewport);
 			}
 			for item in &opaque_phase.items {
-				let draw_function = draw_functions.get_mut(item.draw_function).unwrap();
+				let draw_function = draw_functions
+					.get_mut(item.draw_function)
+					.unwrap();
 				draw_function.draw(world, &mut tracked_pass, view_entity, item);
 			}
 		}
@@ -145,7 +145,9 @@ impl Node for MainPass3dNode {
 				tracked_pass.set_camera_viewport(viewport);
 			}
 			for item in &alpha_mask_phase.items {
-				let draw_function = draw_functions.get_mut(item.draw_function).unwrap();
+				let draw_function = draw_functions
+					.get_mut(item.draw_function)
+					.unwrap();
 				draw_function.draw(world, &mut tracked_pass, view_entity, item);
 			}
 		}
@@ -189,7 +191,9 @@ impl Node for MainPass3dNode {
 				tracked_pass.set_camera_viewport(viewport);
 			}
 			for item in &transparent_phase.items {
-				let draw_function = draw_functions.get_mut(item.draw_function).unwrap();
+				let draw_function = draw_functions
+					.get_mut(item.draw_function)
+					.unwrap();
 				draw_function.draw(world, &mut tracked_pass, view_entity, item);
 			}
 		}

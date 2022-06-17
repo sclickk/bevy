@@ -137,7 +137,8 @@ impl Camera {
 	/// [`RenderTarget`], prefer [`Camera::logical_target_size`].
 	#[inline]
 	pub fn logical_viewport_size(&self) -> Option<Vec2> {
-		self.viewport
+		self
+			.viewport
 			.as_ref()
 			.and_then(|v| self.to_logical(v.physical_size))
 			.or_else(|| self.logical_target_size())
@@ -149,7 +150,8 @@ impl Camera {
 	/// For logic that requires the full physical size of the [`RenderTarget`], prefer [`Camera::physical_target_size`].
 	#[inline]
 	pub fn physical_viewport_size(&self) -> Option<UVec2> {
-		self.viewport
+		self
+			.viewport
 			.as_ref()
 			.map(|v| v.physical_size)
 			.or_else(|| self.physical_target_size())
@@ -160,7 +162,8 @@ impl Camera {
 	/// For logic that requires the size of the actually rendered area, prefer [`Camera::logical_viewport_size`].
 	#[inline]
 	pub fn logical_target_size(&self) -> Option<Vec2> {
-		self.computed
+		self
+			.computed
 			.target_info
 			.as_ref()
 			.and_then(|t| self.to_logical(t.physical_size))
@@ -171,7 +174,11 @@ impl Camera {
 	/// For logic that requires the size of the actually rendered area, prefer [`Camera::physical_viewport_size`].
 	#[inline]
 	pub fn physical_target_size(&self) -> Option<UVec2> {
-		self.computed.target_info.as_ref().map(|t| t.physical_size)
+		self
+			.computed
+			.target_info
+			.as_ref()
+			.map(|t| t.physical_size)
 	}
 
 	/// The projection matrix computed using this camera's [`CameraProjection`].
@@ -261,9 +268,9 @@ impl RenderTarget {
 			RenderTarget::Window(window_id) => windows
 				.get(window_id)
 				.and_then(|window| window.swap_chain_texture.as_ref()),
-			RenderTarget::Image(image_handle) => {
-				images.get(image_handle).map(|image| &image.texture_view)
-			}
+			RenderTarget::Image(image_handle) => images
+				.get(image_handle)
+				.map(|image| &image.texture_view),
 		}
 	}
 
@@ -372,7 +379,9 @@ pub fn camera_system<T: CameraProjection + Component>(
 			|| added_cameras.contains(&entity)
 			|| camera_projection.is_changed()
 		{
-			camera.computed.target_info = camera.target.get_render_target_info(&windows, &images);
+			camera.computed.target_info = camera
+				.target
+				.get_render_target_info(&windows, &images);
 			if let Some(size) = camera.logical_viewport_size() {
 				camera_projection.update(size.x, size.y);
 				camera.computed.projection_matrix = camera_projection.get_projection_matrix();

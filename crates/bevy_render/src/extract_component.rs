@@ -115,7 +115,9 @@ fn prepare_uniform_components<C: Component>(
 			(
 				entity,
 				(DynamicUniformIndex::<C> {
-					index: component_uniforms.uniforms.push(component.clone()),
+					index: component_uniforms
+						.uniforms
+						.push(component.clone()),
 					marker: PhantomData,
 				},),
 			)
@@ -159,8 +161,7 @@ impl<C: ExtractComponent> Plugin for ExtractComponentPlugin<C> {
 	fn build(&self, app: &mut App) {
 		if let Ok(render_app) = app.get_sub_app_mut(RenderApp) {
 			if self.only_extract_visible {
-				render_app
-					.add_system_to_stage(RenderStage::Extract, extract_visible_components::<C>);
+				render_app.add_system_to_stage(RenderStage::Extract, extract_visible_components::<C>);
 			} else {
 				render_app.add_system_to_stage(RenderStage::Extract, extract_components::<C>);
 			}

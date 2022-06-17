@@ -171,7 +171,9 @@ impl Frustum {
 
 	#[inline]
 	pub fn intersects_obb(&self, aabb: &Aabb, model_to_world: &Mat4, intersect_far: bool) -> bool {
-		let aabb_center_world = model_to_world.transform_point3a(aabb.center).extend(1.0);
+		let aabb_center_world = model_to_world
+			.transform_point3a(aabb.center)
+			.extend(1.0);
 		let axes = [
 			Vec3A::from(model_to_world.x_axis),
 			Vec3A::from(model_to_world.y_axis),

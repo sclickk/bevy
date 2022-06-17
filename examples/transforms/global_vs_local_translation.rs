@@ -148,11 +148,11 @@ fn move_cubes_according_to_local_transform(
 // The direction is defined by the input of arrow keys and is only in left/right and up/down direction.
 fn update_directional_input(mut direction: ResMut<Direction>, keyboard_input: Res<Input<KeyCode>>) {
 	let horizontal_movement = Vec3::X
-		* (keyboard_input.pressed(KeyCode::Right) as i32
-			- keyboard_input.pressed(KeyCode::Left) as i32) as f32;
+		* (keyboard_input.pressed(KeyCode::Right) as i32 - keyboard_input.pressed(KeyCode::Left) as i32)
+			as f32;
 	let vertical_movement = Vec3::Y
-		* (keyboard_input.pressed(KeyCode::Up) as i32
-			- keyboard_input.pressed(KeyCode::Down) as i32) as f32;
+		* (keyboard_input.pressed(KeyCode::Up) as i32 - keyboard_input.pressed(KeyCode::Down) as i32)
+			as f32;
 	direction.0 = horizontal_movement + vertical_movement;
 }
 

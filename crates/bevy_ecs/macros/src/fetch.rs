@@ -38,45 +38,46 @@ pub fn derive_world_query_impl(ast: DeriveInput) -> TokenStream {
 			continue;
 		}
 
-		attr.parse_args_with(|input: ParseStream| {
-			let meta = input.parse_terminated::<syn::Meta, syn::token::Comma>(syn::Meta::parse)?;
-			for meta in meta {
-				let ident = meta.path().get_ident().unwrap_or_else(|| {
-					panic!(
-						"Unrecognized attribute: `{}`",
-						meta.path().to_token_stream()
-					)
-				});
-				if ident == MUTABLE_ATTRIBUTE_NAME {
-					if let syn::Meta::Path(_) = meta {
-						fetch_struct_attributes.is_mutable = true;
+		attr
+			.parse_args_with(|input: ParseStream| {
+				let meta = input.parse_terminated::<syn::Meta, syn::token::Comma>(syn::Meta::parse)?;
+				for meta in meta {
+					let ident = meta.path().get_ident().unwrap_or_else(|| {
+						panic!(
+							"Unrecognized attribute: `{}`",
+							meta.path().to_token_stream()
+						)
+					});
+					if ident == MUTABLE_ATTRIBUTE_NAME {
+						if let syn::Meta::Path(_) = meta {
+							fetch_struct_attributes.is_mutable = true;
+						} else {
+							panic!(
+								"The `{}` attribute is expected to have no value or arguments",
+								MUTABLE_ATTRIBUTE_NAME
+							);
+						}
+					} else if ident == DERIVE_ATTRIBUTE_NAME {
+						if let syn::Meta::List(meta_list) = meta {
+							fetch_struct_attributes
+								.derive_args
+								.extend(meta_list.nested.iter().cloned());
+						} else {
+							panic!(
+								"Expected a structured list within the `{}` attribute",
+								DERIVE_ATTRIBUTE_NAME
+							);
+						}
 					} else {
 						panic!(
-							"The `{}` attribute is expected to have no value or arguments",
-							MUTABLE_ATTRIBUTE_NAME
+							"Unrecognized attribute: `{}`",
+							meta.path().to_token_stream()
 						);
 					}
-				} else if ident == DERIVE_ATTRIBUTE_NAME {
-					if let syn::Meta::List(meta_list) = meta {
-						fetch_struct_attributes
-							.derive_args
-							.extend(meta_list.nested.iter().cloned());
-					} else {
-						panic!(
-							"Expected a structured list within the `{}` attribute",
-							DERIVE_ATTRIBUTE_NAME
-						);
-					}
-				} else {
-					panic!(
-						"Unrecognized attribute: `{}`",
-						meta.path().to_token_stream()
-					);
 				}
-			}
-			Ok(())
-		})
-		.unwrap_or_else(|_| panic!("Invalid `{}` attribute format", WORLD_QUERY_ATTRIBUTE_NAME));
+				Ok(())
+			})
+			.unwrap_or_else(|_| panic!("Invalid `{}` attribute format", WORLD_QUERY_ATTRIBUTE_NAME));
 	}
 
 	let user_generics = ast.generics.clone();
@@ -379,7 +380,7 @@ pub fn derive_world_query_impl(ast: DeriveInput) -> TokenStream {
 				-> #path::query::#item_type_alias<'__wshort, Self> {
 					#item_struct_name {
 						#(
-						   #field_idents : < #field_types as #path::query::WorldQuery> :: shrink( item.#field_idents ),
+							 #field_idents : < #field_types as #path::query::WorldQuery> :: shrink( item.#field_idents ),
 						)*
 						#(
 							#ignored_field_idents: item.#ignored_field_idents,
@@ -437,24 +438,24 @@ fn read_world_query_field_info(field: &Field) -> WorldQueryFieldInfo {
 		.attrs
 		.iter()
 		.find(|attr| {
-			attr.path
+			attr
+				.path
 				.get_ident()
 				.map_or(false, |ident| ident == WORLD_QUERY_ATTRIBUTE_NAME)
 		})
 		.map_or(false, |attr| {
 			let mut is_ignored = false;
-			attr.parse_args_with(|input: ParseStream| {
-				if input
-					.parse::<Option<field_attr_keywords::ignore>>()?
-					.is_some()
-				{
-					is_ignored = true;
-				}
-				Ok(())
-			})
-			.unwrap_or_else(|_| {
-				panic!("Invalid `{}` attribute format", WORLD_QUERY_ATTRIBUTE_NAME)
-			});
+			attr
+				.parse_args_with(|input: ParseStream| {
+					if input
+						.parse::<Option<field_attr_keywords::ignore>>()?
+						.is_some()
+					{
+						is_ignored = true;
+					}
+					Ok(())
+				})
+				.unwrap_or_else(|_| panic!("Invalid `{}` attribute format", WORLD_QUERY_ATTRIBUTE_NAME));
 
 			is_ignored
 		});
@@ -463,7 +464,8 @@ fn read_world_query_field_info(field: &Field) -> WorldQueryFieldInfo {
 		.attrs
 		.iter()
 		.filter(|attr| {
-			attr.path
+			attr
+				.path
 				.get_ident()
 				.map_or(true, |ident| ident != WORLD_QUERY_ATTRIBUTE_NAME)
 		})

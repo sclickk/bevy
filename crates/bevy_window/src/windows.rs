@@ -34,7 +34,9 @@ impl Windows {
 	///
 	/// Panics if the primary window does not exist in [`Windows`].
 	pub fn primary(&self) -> &Window {
-		self.get_primary().expect("Primary window does not exist")
+		self
+			.get_primary()
+			.expect("Primary window does not exist")
 	}
 
 	/// Get a mutable reference to the primary [`Window`].
@@ -48,7 +50,8 @@ impl Windows {
 	///
 	/// Panics if the primary window does not exist in [`Windows`].
 	pub fn primary_mut(&mut self) -> &mut Window {
-		self.get_primary_mut()
+		self
+			.get_primary_mut()
 			.expect("Primary window does not exist")
 	}
 

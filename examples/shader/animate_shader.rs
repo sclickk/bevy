@@ -6,8 +6,7 @@ use bevy::{
 	core_pipeline::core_3d::Transparent3d,
 	ecs::system::{lifetimeless::SRes, SystemParamItem},
 	pbr::{
-		DrawMesh, MeshPipeline, MeshPipelineKey, MeshUniform, SetMeshBindGroup,
-		SetMeshViewBindGroup,
+		DrawMesh, MeshPipeline, MeshPipelineKey, MeshUniform, SetMeshBindGroup, SetMeshViewBindGroup,
 	},
 	prelude::*,
 	render::{
@@ -65,7 +64,8 @@ impl Plugin for CustomMaterialPlugin {
 			mapped_at_creation: false,
 		});
 
-		app.sub_app_mut(RenderApp)
+		app
+			.sub_app_mut(RenderApp)
 			.add_render_command::<Transparent3d, DrawCustom>()
 			.insert_resource(TimeMeta {
 				buffer,
@@ -258,7 +258,11 @@ impl<const I: usize> EntityRenderCommand for SetTimeBindGroup<I> {
 		time_meta: SystemParamItem<'w, '_, Self::Param>,
 		pass: &mut TrackedRenderPass<'w>,
 	) -> RenderCommandResult {
-		let time_bind_group = time_meta.into_inner().bind_group.as_ref().unwrap();
+		let time_bind_group = time_meta
+			.into_inner()
+			.bind_group
+			.as_ref()
+			.unwrap();
 		pass.set_bind_group(I, time_bind_group, &[]);
 
 		RenderCommandResult::Success

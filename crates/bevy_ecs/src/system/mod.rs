@@ -187,11 +187,15 @@ mod tests {
 				"entity 2 has C, but it shouldn't be accessible from b_query"
 			);
 			assert!(
-				a_c_query.get_component::<C>(entities[2]).is_ok(),
+				a_c_query
+					.get_component::<C>(entities[2])
+					.is_ok(),
 				"entity 2 has C, and it should be accessible from a_c_query"
 			);
 			assert!(
-				a_c_query.get_component::<D>(entities[3]).is_err(),
+				a_c_query
+					.get_component::<D>(entities[3])
+					.is_err(),
 				"entity 3 should have D, but it shouldn't be accessible from b_query"
 			);
 			assert!(
@@ -246,11 +250,7 @@ mod tests {
 	fn changed_resource_system() {
 		struct Added(usize);
 		struct Changed(usize);
-		fn incr_e_on_flip(
-			value: Res<bool>,
-			mut changed: ResMut<Changed>,
-			mut added: ResMut<Added>,
-		) {
+		fn incr_e_on_flip(value: Res<bool>, mut changed: ResMut<Changed>, mut added: ResMut<Added>) {
 			if value.is_added() {
 				added.0 += 1;
 			}
@@ -562,7 +562,9 @@ mod tests {
 		// Then, try removing a component
 		world.spawn().insert(W(3));
 		world.spawn().insert(W(4));
-		world.entity_mut(entity_to_remove_w_from).remove::<W<i32>>();
+		world
+			.entity_mut(entity_to_remove_w_from)
+			.remove::<W<i32>>();
 
 		fn validate_remove(
 			removed_i32: RemovedComponents<W<i32>>,
@@ -640,12 +642,17 @@ mod tests {
 		x.initialize(&mut world);
 		y.initialize(&mut world);
 
-		let conflicts = x.component_access().get_conflicts(y.component_access());
+		let conflicts = x
+			.component_access()
+			.get_conflicts(y.component_access());
 		let b_id = world
 			.components()
 			.get_resource_id(TypeId::of::<B>())
 			.unwrap();
-		let d_id = world.components().get_id(TypeId::of::<D>()).unwrap();
+		let d_id = world
+			.components()
+			.get_id(TypeId::of::<D>())
+			.unwrap();
 		assert_eq!(conflicts, vec![b_id, d_id]);
 	}
 
@@ -756,8 +763,7 @@ mod tests {
 		world.insert_resource(A(42));
 		world.spawn().insert(B(7));
 
-		let mut system_state: SystemState<(ResMut<A>, Query<&mut B>)> =
-			SystemState::new(&mut world);
+		let mut system_state: SystemState<(ResMut<A>, Query<&mut B>)> = SystemState::new(&mut world);
 
 		// The following line shouldn't compile because the parameters used are not ReadOnlySystemParam
 		// let (a, query) = system_state.get(&world);
@@ -790,7 +796,11 @@ mod tests {
 			assert!(query.get_single().is_err());
 		}
 
-		world.entity_mut(entity).get_mut::<A>().unwrap().0 = 2;
+		world
+			.entity_mut(entity)
+			.get_mut::<A>()
+			.unwrap()
+			.0 = 2;
 		{
 			let query = system_state.get(&world);
 			assert_eq!(*query.single(), A(2));

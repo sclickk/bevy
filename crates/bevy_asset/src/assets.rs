@@ -238,10 +238,7 @@ impl<T: Asset> Assets<T> {
 		self.assets.shrink_to_fit();
 	}
 
-	pub fn asset_event_system(
-		mut events: EventWriter<AssetEvent<T>>,
-		mut assets: ResMut<Assets<T>>,
-	) {
+	pub fn asset_event_system(mut events: EventWriter<AssetEvent<T>>, mut assets: ResMut<Assets<T>>) {
 		// Check if the events are empty before calling `drain`.
 		// As `drain` triggers change detection.
 		if !assets.events.is_empty() {
@@ -313,7 +310,8 @@ impl AddAsset for App {
 			let mut app = self
 				.world
 				.non_send_resource_mut::<crate::debug_asset_server::DebugAssetApp>();
-			app.add_asset::<T>()
+			app
+				.add_asset::<T>()
 				.init_resource::<crate::debug_asset_server::HandleMap<T>>();
 		}
 		self
@@ -345,7 +343,10 @@ impl AddAsset for App {
 	where
 		T: AssetLoader,
 	{
-		self.world.resource_mut::<AssetServer>().add_loader(loader);
+		self
+			.world
+			.resource_mut::<AssetServer>()
+			.add_loader(loader);
 		self
 	}
 }
@@ -392,7 +393,8 @@ mod tests {
 		#[uuid = "44115972-f31b-46e5-be5c-2b9aece6a52f"]
 		struct MyAsset;
 		let mut app = App::new();
-		app.add_plugin(bevy_core::CorePlugin)
+		app
+			.add_plugin(bevy_core::CorePlugin)
 			.add_plugin(crate::AssetPlugin);
 		app.add_asset::<MyAsset>();
 		let mut assets_before = app.world.resource_mut::<Assets<MyAsset>>();

@@ -15,7 +15,8 @@ pub fn derive_component(input: TokenStream) -> TokenStream {
 
 	let storage = storage_path(&bevy_ecs_path, attrs.storage);
 
-	ast.generics
+	ast
+		.generics
 		.make_where_clause()
 		.predicates
 		.push(parse_quote! { Self: Send + Sync + 'static });

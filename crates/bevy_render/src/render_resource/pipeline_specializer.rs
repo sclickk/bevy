@@ -36,10 +36,13 @@ impl<S: SpecializedRenderPipeline> SpecializedRenderPipelines<S> {
 		specialize_pipeline: &S,
 		key: S::Key,
 	) -> CachedRenderPipelineId {
-		*self.cache.entry(key.clone()).or_insert_with(|| {
-			let descriptor = specialize_pipeline.specialize(key);
-			cache.queue_render_pipeline(descriptor)
-		})
+		*self
+			.cache
+			.entry(key.clone())
+			.or_insert_with(|| {
+				let descriptor = specialize_pipeline.specialize(key);
+				cache.queue_render_pipeline(descriptor)
+			})
 	}
 }
 
@@ -67,10 +70,13 @@ impl<S: SpecializedComputePipeline> SpecializedComputePipelines<S> {
 		specialize_pipeline: &S,
 		key: S::Key,
 	) -> CachedComputePipelineId {
-		*self.cache.entry(key.clone()).or_insert_with(|| {
-			let descriptor = specialize_pipeline.specialize(key);
-			cache.queue_compute_pipeline(descriptor)
-		})
+		*self
+			.cache
+			.entry(key.clone())
+			.or_insert_with(|| {
+				let descriptor = specialize_pipeline.specialize(key);
+				cache.queue_compute_pipeline(descriptor)
+			})
 	}
 }
 
@@ -117,8 +123,7 @@ impl<S: SpecializedMeshPipeline> SpecializedMeshPipelines<S> {
 					.specialize(key.clone(), layout)
 					.map_err(|mut err| {
 						{
-							let SpecializedMeshPipelineError::MissingVertexAttribute(err) =
-								&mut err;
+							let SpecializedMeshPipelineError::MissingVertexAttribute(err) = &mut err;
 							err.pipeline_type = Some(std::any::type_name::<S>());
 						}
 						err

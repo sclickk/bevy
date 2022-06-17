@@ -8,8 +8,8 @@ use basis_universal::{
 #[cfg(any(feature = "flate2", feature = "ruzstd"))]
 use ktx2::SupercompressionScheme;
 use ktx2::{
-	BasicDataFormatDescriptor, ChannelTypeQualifiers, ColorModel, DataFormatDescriptorHeader,
-	Header, SampleInformation,
+	BasicDataFormatDescriptor, ChannelTypeQualifiers, ColorModel, DataFormatDescriptorHeader, Header,
+	SampleInformation,
 };
 use wgpu::{Extent3d, TextureDimension, TextureFormat};
 
@@ -20,9 +20,8 @@ pub fn ktx2_buffer_to_image(
 	supported_compressed_formats: CompressedImageFormats,
 	is_srgb: bool,
 ) -> Result<Image, TextureError> {
-	let ktx2 = ktx2::Reader::new(buffer).map_err(|err| {
-		TextureError::InvalidData(format!("Failed to parse ktx2 file: {:?}", err))
-	})?;
+	let ktx2 = ktx2::Reader::new(buffer)
+		.map_err(|err| TextureError::InvalidData(format!("Failed to parse ktx2 file: {:?}", err)))?;
 	let Header {
 		pixel_width: width,
 		pixel_height: height,
@@ -42,12 +41,14 @@ pub fn ktx2_buffer_to_image(
 				SupercompressionScheme::ZLIB => {
 					let mut decoder = flate2::bufread::ZlibDecoder::new(_level_data);
 					let mut decompressed = Vec::new();
-					decoder.read_to_end(&mut decompressed).map_err(|err| {
-						TextureError::SuperDecompressionError(format!(
-							"Failed to decompress {:?} for mip {}: {:?}",
-							supercompression_scheme, _level, err
-						))
-					})?;
+					decoder
+						.read_to_end(&mut decompressed)
+						.map_err(|err| {
+							TextureError::SuperDecompressionError(format!(
+								"Failed to decompress {:?} for mip {}: {:?}",
+								supercompression_scheme, _level, err
+							))
+						})?;
 					levels.push(decompressed);
 				}
 				#[cfg(feature = "ruzstd")]
@@ -56,12 +57,14 @@ pub fn ktx2_buffer_to_image(
 					let mut decoder = ruzstd::StreamingDecoder::new(&mut cursor)
 						.map_err(TextureError::SuperDecompressionError)?;
 					let mut decompressed = Vec::new();
-					decoder.read_to_end(&mut decompressed).map_err(|err| {
-						TextureError::SuperDecompressionError(format!(
-							"Failed to decompress {:?} for mip {}: {:?}",
-							supercompression_scheme, _level, err
-						))
-					})?;
+					decoder
+						.read_to_end(&mut decompressed)
+						.map_err(|err| {
+							TextureError::SuperDecompressionError(format!(
+								"Failed to decompress {:?} for mip {}: {:?}",
+								supercompression_scheme, _level, err
+							))
+						})?;
 					levels.push(decompressed);
 				}
 				_ => {
@@ -73,7 +76,10 @@ pub fn ktx2_buffer_to_image(
 			}
 		}
 	} else {
-		levels = ktx2.levels().map(|level| level.to_vec()).collect();
+		levels = ktx2
+			.levels()
+			.map(|level| level.to_vec())
+			.collect();
 	}
 
 	// Identify the format
@@ -117,11 +123,8 @@ pub fn ktx2_buffer_to_image(
 					let transcoder = LowLevelUastcTranscoder::new();
 					for (level, level_data) in levels.iter().enumerate() {
 						let slice_parameters = SliceParametersUastc {
-							num_blocks_x: ((original_width + block_width_pixels - 1)
-								/ block_width_pixels)
-								.max(1),
-							num_blocks_y: ((original_height + block_height_pixels - 1)
-								/ block_height_pixels)
+							num_blocks_x: ((original_width + block_width_pixels - 1) / block_width_pixels).max(1),
+							num_blocks_y: ((original_height + block_height_pixels - 1) / block_height_pixels)
 								.max(1),
 							has_alpha: false,
 							original_width,
@@ -375,8 +378,7 @@ pub fn ktx2_dfd_to_texture_format(
 					// Only red channel allowed
 					if sample_information[0].channel_type != 0 {
 						return Err(TextureError::UnsupportedTextureFormat(
-							"Only red-component single-component KTX2 RGBSDA formats supported"
-								.to_string(),
+							"Only red-component single-component KTX2 RGBSDA formats supported".to_string(),
 						));
 					}
 
@@ -441,12 +443,9 @@ pub fn ktx2_dfd_to_texture_format(
 				}
 				2 => {
 					// Only red and green channels allowed
-					if sample_information[0].channel_type != 0
-						|| sample_information[1].channel_type != 1
-					{
+					if sample_information[0].channel_type != 0 || sample_information[1].channel_type != 1 {
 						return Err(TextureError::UnsupportedTextureFormat(
-							"Only red-green-component two-component KTX2 RGBSDA formats supported"
-								.to_string(),
+							"Only red-green-component two-component KTX2 RGBSDA formats supported".to_string(),
 						));
 					}
 					// Only same bit length for all channels
@@ -559,8 +558,7 @@ pub fn ktx2_dfd_to_texture_format(
 					// Only RGBA or BGRA channels allowed
 					let is_rgba = sample_information[0].channel_type == 0;
 					assert!(
-						sample_information[0].channel_type == 0
-							|| sample_information[0].channel_type == 2
+						sample_information[0].channel_type == 0 || sample_information[0].channel_type == 2
 					);
 					assert_eq!(sample_information[1].channel_type, 1);
 					assert_eq!(

@@ -106,7 +106,9 @@ impl<'a> LoadContext<'a> {
 	}
 
 	pub fn has_labeled_asset(&self, label: &str) -> bool {
-		self.labeled_assets.contains_key(&Some(label.to_string()))
+		self
+			.labeled_assets
+			.contains_key(&Some(label.to_string()))
 	}
 
 	pub fn set_default_asset<T: Asset>(&mut self, asset: LoadedAsset<T>) {
@@ -115,7 +117,8 @@ impl<'a> LoadContext<'a> {
 
 	pub fn set_labeled_asset<T: Asset>(&mut self, label: &str, asset: LoadedAsset<T>) -> Handle<T> {
 		assert!(!label.is_empty());
-		self.labeled_assets
+		self
+			.labeled_assets
 			.insert(Some(label.to_string()), asset.into());
 		self.get_handle(AssetPath::new_ref(self.path(), Some(label)))
 	}
@@ -174,7 +177,8 @@ impl_downcast!(AssetLifecycle);
 impl<T: AssetDynamic> AssetLifecycle for AssetLifecycleChannel<T> {
 	fn create_asset(&self, id: HandleId, asset: Box<dyn AssetDynamic>, version: usize) {
 		if let Ok(asset) = asset.downcast::<T>() {
-			self.sender
+			self
+				.sender
 				.send(AssetLifecycleEvent::Create(AssetResult {
 					asset,
 					id,
@@ -190,7 +194,10 @@ impl<T: AssetDynamic> AssetLifecycle for AssetLifecycleChannel<T> {
 	}
 
 	fn free_asset(&self, id: HandleId) {
-		self.sender.send(AssetLifecycleEvent::Free(id)).unwrap();
+		self
+			.sender
+			.send(AssetLifecycleEvent::Free(id))
+			.unwrap();
 	}
 }
 

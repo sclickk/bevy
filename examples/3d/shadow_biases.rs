@@ -87,8 +87,7 @@ fn setup(
 	// camera
 	commands
 		.spawn_bundle(Camera3dBundle {
-			transform: Transform::from_xyz(-1.0, 1.0, 1.0)
-				.looking_at(Vec3::new(-1.0, 1.0, 0.0), Vec3::Y),
+			transform: Transform::from_xyz(-1.0, 1.0, 1.0).looking_at(Vec3::new(-1.0, 1.0, 0.0), Vec3::Y),
 			..Default::default()
 		})
 		.insert(CameraController::default());

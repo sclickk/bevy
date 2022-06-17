@@ -19,7 +19,10 @@ fn main() {
 
 fn minimise_automatically(mut windows: ResMut<Windows>, mut frames: Local<u32>) {
 	if *frames == 60 {
-		windows.get_primary_mut().unwrap().set_minimized(true);
+		windows
+			.get_primary_mut()
+			.unwrap()
+			.set_minimized(true);
 	} else {
 		*frames += 1;
 	}

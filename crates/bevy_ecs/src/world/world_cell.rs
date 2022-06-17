@@ -40,7 +40,9 @@ impl ArchetypeComponentAccess {
 	}
 
 	fn read(&mut self, id: ArchetypeComponentId) -> bool {
-		let id_access = self.access.get_or_insert_with(id, || BASE_ACCESS);
+		let id_access = self
+			.access
+			.get_or_insert_with(id, || BASE_ACCESS);
 		if *id_access == UNIQUE_ACCESS {
 			false
 		} else {
@@ -50,12 +52,16 @@ impl ArchetypeComponentAccess {
 	}
 
 	fn drop_read(&mut self, id: ArchetypeComponentId) {
-		let id_access = self.access.get_or_insert_with(id, || BASE_ACCESS);
+		let id_access = self
+			.access
+			.get_or_insert_with(id, || BASE_ACCESS);
 		*id_access -= 1;
 	}
 
 	fn write(&mut self, id: ArchetypeComponentId) -> bool {
-		let id_access = self.access.get_or_insert_with(id, || BASE_ACCESS);
+		let id_access = self
+			.access
+			.get_or_insert_with(id, || BASE_ACCESS);
 		if *id_access == BASE_ACCESS {
 			*id_access = UNIQUE_ACCESS;
 			true
@@ -65,7 +71,9 @@ impl ArchetypeComponentAccess {
 	}
 
 	fn drop_write(&mut self, id: ArchetypeComponentId) {
-		let id_access = self.access.get_or_insert_with(id, || BASE_ACCESS);
+		let id_access = self
+			.access
+			.get_or_insert_with(id, || BASE_ACCESS);
 		*id_access = BASE_ACCESS;
 	}
 }
@@ -132,7 +140,9 @@ impl<'w, T> WorldBorrowMut<'w, T> {
 		access: Rc<RefCell<ArchetypeComponentAccess>>,
 	) -> Self {
 		assert!(
-			access.borrow_mut().write(archetype_component_id),
+			access
+				.borrow_mut()
+				.write(archetype_component_id),
 			"Attempted to mutably access {}, but it is already mutably borrowed",
 			std::any::type_name::<T>(),
 		);
@@ -182,7 +192,10 @@ impl<'w> WorldCell<'w> {
 
 	/// Gets a reference to the resource of the given type
 	pub fn get_resource<T: Resource>(&self) -> Option<WorldBorrow<'_, T>> {
-		let component_id = self.world.components.get_resource_id(TypeId::of::<T>())?;
+		let component_id = self
+			.world
+			.components
+			.get_resource_id(TypeId::of::<T>())?;
 		let resource_archetype = self.world.archetypes.resource();
 		let archetype_component_id = resource_archetype.get_archetype_component_id(component_id)?;
 		Some(WorldBorrow::new(
@@ -214,13 +227,17 @@ impl<'w> WorldCell<'w> {
 
 	/// Gets a mutable reference to the resource of the given type
 	pub fn get_resource_mut<T: Resource>(&self) -> Option<WorldBorrowMut<'_, T>> {
-		let component_id = self.world.components.get_resource_id(TypeId::of::<T>())?;
+		let component_id = self
+			.world
+			.components
+			.get_resource_id(TypeId::of::<T>())?;
 		let resource_archetype = self.world.archetypes.resource();
 		let archetype_component_id = resource_archetype.get_archetype_component_id(component_id)?;
 		Some(WorldBorrowMut::new(
 			// SAFE: ComponentId matches TypeId and access is checked by WorldBorrowMut
 			unsafe {
-				self.world
+				self
+					.world
 					.get_resource_unchecked_mut_with_id(component_id)?
 			},
 			archetype_component_id,
@@ -249,7 +266,10 @@ impl<'w> WorldCell<'w> {
 
 	/// Gets an immutable reference to the non-send resource of the given type, if it exists.
 	pub fn get_non_send_resource<T: 'static>(&self) -> Option<WorldBorrow<'_, T>> {
-		let component_id = self.world.components.get_resource_id(TypeId::of::<T>())?;
+		let component_id = self
+			.world
+			.components
+			.get_resource_id(TypeId::of::<T>())?;
 		let resource_archetype = self.world.archetypes.resource();
 		let archetype_component_id = resource_archetype.get_archetype_component_id(component_id)?;
 		Some(WorldBorrow::new(
@@ -281,13 +301,17 @@ impl<'w> WorldCell<'w> {
 
 	/// Gets a mutable reference to the non-send resource of the given type, if it exists.
 	pub fn get_non_send_resource_mut<T: 'static>(&self) -> Option<WorldBorrowMut<'_, T>> {
-		let component_id = self.world.components.get_resource_id(TypeId::of::<T>())?;
+		let component_id = self
+			.world
+			.components
+			.get_resource_id(TypeId::of::<T>())?;
 		let resource_archetype = self.world.archetypes.resource();
 		let archetype_component_id = resource_archetype.get_archetype_component_id(component_id)?;
 		Some(WorldBorrowMut::new(
 			// SAFE: ComponentId matches TypeId and access is checked by WorldBorrowMut
 			unsafe {
-				self.world
+				self
+					.world
 					.get_non_send_unchecked_mut_with_id(component_id)?
 			},
 			archetype_component_id,
@@ -374,7 +398,10 @@ mod tests {
 			.components
 			.get_resource_id(TypeId::of::<u32>())
 			.unwrap();
-		let resource_archetype = world.archetypes.get(ArchetypeId::RESOURCE).unwrap();
+		let resource_archetype = world
+			.archetypes
+			.get(ArchetypeId::RESOURCE)
+			.unwrap();
 		let u32_archetype_component_id = resource_archetype
 			.get_archetype_component_id(u32_component_id)
 			.unwrap();

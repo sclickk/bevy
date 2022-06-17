@@ -113,8 +113,7 @@ pub(crate) mod test_setup {
 	) {
 		for mut transform in cube_transform.iter_mut() {
 			let t = time.seconds_since_startup() as f32;
-			*transform =
-				transform.with_rotation(Quat::from_rotation_x(t) * Quat::from_rotation_y(t));
+			*transform = transform.with_rotation(Quat::from_rotation_x(t) * Quat::from_rotation_y(t));
 		}
 	}
 

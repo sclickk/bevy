@@ -196,19 +196,22 @@ impl<T: FromReflect> FromReflect for Vec<T> {
 
 impl<K: Reflect + Eq + Hash, V: Reflect> Map for HashMap<K, V> {
 	fn get(&self, key: &dyn Reflect) -> Option<&dyn Reflect> {
-		key.downcast_ref::<K>()
+		key
+			.downcast_ref::<K>()
 			.and_then(|key| HashMap::get(self, key))
 			.map(|value| value as &dyn Reflect)
 	}
 
 	fn get_mut(&mut self, key: &dyn Reflect) -> Option<&mut dyn Reflect> {
-		key.downcast_ref::<K>()
+		key
+			.downcast_ref::<K>()
 			.and_then(move |key| HashMap::get_mut(self, key))
 			.map(|value| value as &mut dyn Reflect)
 	}
 
 	fn get_at(&self, index: usize) -> Option<(&dyn Reflect, &dyn Reflect)> {
-		self.iter()
+		self
+			.iter()
 			.nth(index)
 			.map(|(key, value)| (key as &dyn Reflect, value as &dyn Reflect))
 	}
@@ -564,7 +567,12 @@ impl GetTypeRegistration for Cow<'static, str> {
 
 impl FromReflect for Cow<'static, str> {
 	fn from_reflect(reflect: &dyn crate::Reflect) -> Option<Self> {
-		Some(reflect.any().downcast_ref::<Cow<'static, str>>()?.clone())
+		Some(
+			reflect
+				.any()
+				.downcast_ref::<Cow<'static, str>>()?
+				.clone(),
+		)
 	}
 }
 
@@ -576,7 +584,9 @@ mod tests {
 
 	#[test]
 	fn can_serialize_duration() {
-		assert!(std::time::Duration::ZERO.serializable().is_some());
+		assert!(std::time::Duration::ZERO
+			.serializable()
+			.is_some());
 	}
 
 	#[test]

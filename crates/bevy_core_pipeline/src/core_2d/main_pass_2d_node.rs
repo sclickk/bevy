@@ -66,9 +66,7 @@ impl Node for MainPass2dNode {
 				label: Some("main_pass_2d"),
 				color_attachments: &[target.get_color_attachment(Operations {
 					load: match camera_2d.clear_color {
-						ClearColorConfig::Default => {
-							LoadOp::Clear(world.resource::<ClearColor>().0.into())
-						}
+						ClearColorConfig::Default => LoadOp::Clear(world.resource::<ClearColor>().0.into()),
 						ClearColorConfig::Custom(color) => LoadOp::Clear(color.into()),
 						ClearColorConfig::None => LoadOp::Load,
 					},
@@ -89,7 +87,9 @@ impl Node for MainPass2dNode {
 				tracked_pass.set_camera_viewport(viewport);
 			}
 			for item in &transparent_phase.items {
-				let draw_function = draw_functions.get_mut(item.draw_function).unwrap();
+				let draw_function = draw_functions
+					.get_mut(item.draw_function)
+					.unwrap();
 				draw_function.draw(world, &mut tracked_pass, view_entity, item);
 			}
 		}

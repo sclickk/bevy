@@ -45,7 +45,9 @@ impl Node for UiPassNode {
 
 	fn update(&mut self, world: &mut World) {
 		self.ui_view_query.update_archetypes(world);
-		self.default_camera_view_query.update_archetypes(world);
+		self
+			.default_camera_view_query
+			.update_archetypes(world);
 	}
 
 	fn run(
@@ -56,12 +58,14 @@ impl Node for UiPassNode {
 	) -> Result<(), NodeRunError> {
 		let input_view_entity = graph.get_input_entity(Self::IN_VIEW)?;
 
-		let (transparent_phase, target, camera_ui) =
-			if let Ok(result) = self.ui_view_query.get_manual(world, input_view_entity) {
-				result
-			} else {
-				return Ok(());
-			};
+		let (transparent_phase, target, camera_ui) = if let Ok(result) = self
+			.ui_view_query
+			.get_manual(world, input_view_entity)
+		{
+			result
+		} else {
+			return Ok(());
+		};
 		if transparent_phase.items.is_empty() {
 			return Ok(());
 		}
@@ -101,7 +105,9 @@ impl Node for UiPassNode {
 		let mut draw_functions = draw_functions.write();
 		let mut tracked_pass = TrackedRenderPass::new(render_pass);
 		for item in &transparent_phase.items {
-			let draw_function = draw_functions.get_mut(item.draw_function).unwrap();
+			let draw_function = draw_functions
+				.get_mut(item.draw_function)
+				.unwrap();
 			draw_function.draw(world, &mut tracked_pass, view_entity, item);
 		}
 		Ok(())
@@ -163,7 +169,11 @@ impl<const I: usize> EntityRenderCommand for SetUiViewBindGroup<I> {
 		let view_uniform = view_query.get(view).unwrap();
 		pass.set_bind_group(
 			I,
-			ui_meta.into_inner().view_bind_group.as_ref().unwrap(),
+			ui_meta
+				.into_inner()
+				.view_bind_group
+				.as_ref()
+				.unwrap(),
 			&[view_uniform.offset],
 		);
 		RenderCommandResult::Success
@@ -182,7 +192,14 @@ impl<const I: usize> EntityRenderCommand for SetUiTextureBindGroup<I> {
 		let batch = query_batch.get(item).unwrap();
 		let image_bind_groups = image_bind_groups.into_inner();
 
-		pass.set_bind_group(I, image_bind_groups.values.get(&batch.image).unwrap(), &[]);
+		pass.set_bind_group(
+			I,
+			image_bind_groups
+				.values
+				.get(&batch.image)
+				.unwrap(),
+			&[],
+		);
 		RenderCommandResult::Success
 	}
 }
@@ -198,7 +215,15 @@ impl EntityRenderCommand for DrawUiNode {
 	) -> RenderCommandResult {
 		let batch = query_batch.get(item).unwrap();
 
-		pass.set_vertex_buffer(0, ui_meta.into_inner().vertices.buffer().unwrap().slice(..));
+		pass.set_vertex_buffer(
+			0,
+			ui_meta
+				.into_inner()
+				.vertices
+				.buffer()
+				.unwrap()
+				.slice(..),
+		);
 		pass.draw(batch.range.clone(), 0..1);
 		RenderCommandResult::Success
 	}

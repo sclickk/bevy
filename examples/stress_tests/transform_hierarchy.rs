@@ -392,7 +392,9 @@ fn spawn_tree(
 		info.depth = depth;
 
 		// update max depth of tree
-		result.maximum_depth = result.maximum_depth.max(depth.try_into().unwrap());
+		result.maximum_depth = result
+			.maximum_depth
+			.max(depth.try_into().unwrap());
 
 		// insert child
 		let child_entity = {
@@ -416,7 +418,9 @@ fn spawn_tree(
 			};
 
 			// only insert the components necessary for the transform propagation
-			cmd.insert(transform).insert(GlobalTransform::default());
+			cmd
+				.insert(transform)
+				.insert(GlobalTransform::default());
 
 			cmd.id()
 		};

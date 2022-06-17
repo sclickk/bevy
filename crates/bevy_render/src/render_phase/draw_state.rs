@@ -20,18 +20,17 @@ pub struct DrawState {
 }
 
 impl DrawState {
-	pub fn set_bind_group(
-		&mut self,
-		index: usize,
-		bind_group: BindGroupId,
-		dynamic_indices: &[u32],
-	) {
+	pub fn set_bind_group(&mut self, index: usize, bind_group: BindGroupId, dynamic_indices: &[u32]) {
 		if index >= self.bind_groups.len() {
-			self.bind_groups.resize(index + 1, (None, Vec::new()));
+			self
+				.bind_groups
+				.resize(index + 1, (None, Vec::new()));
 		}
 		self.bind_groups[index].0 = Some(bind_group);
 		self.bind_groups[index].1.clear();
-		self.bind_groups[index].1.extend(dynamic_indices);
+		self.bind_groups[index]
+			.1
+			.extend(dynamic_indices);
 	}
 
 	pub fn is_bind_group_set(
@@ -144,9 +143,11 @@ impl<'a> TrackedRenderPass<'a> {
 			dynamic_uniform_indices
 		);
 
-		self.pass
+		self
+			.pass
 			.set_bind_group(index as u32, bind_group, dynamic_uniform_indices);
-		self.state
+		self
+			.state
 			.set_bind_group(index as usize, bind_group.id(), dynamic_uniform_indices);
 	}
 
@@ -178,9 +179,11 @@ impl<'a> TrackedRenderPass<'a> {
 			offset
 		);
 
-		self.pass
+		self
+			.pass
 			.set_vertex_buffer(slot_index as u32, *buffer_slice);
-		self.state
+		self
+			.state
 			.set_vertex_buffer(slot_index, buffer_slice.id(), offset);
 	}
 
@@ -206,8 +209,11 @@ impl<'a> TrackedRenderPass<'a> {
 			return;
 		}
 		trace!("set index buffer: {:?} ({})", buffer_slice.id(), offset);
-		self.pass.set_index_buffer(*buffer_slice, index_format);
-		self.state
+		self
+			.pass
+			.set_index_buffer(*buffer_slice, index_format);
+		self
+			.state
 			.set_index_buffer(buffer_slice.id(), offset, index_format);
 	}
 
@@ -230,7 +236,9 @@ impl<'a> TrackedRenderPass<'a> {
 			base_vertex,
 			instances
 		);
-		self.pass.draw_indexed(indices, base_vertex, instances);
+		self
+			.pass
+			.draw_indexed(indices, base_vertex, instances);
 	}
 
 	/// Draws primitives from the active vertex buffer(s) based on the contents of the `indirect_buffer`.
@@ -251,7 +259,9 @@ impl<'a> TrackedRenderPass<'a> {
 	/// ```
 	pub fn draw_indirect(&mut self, indirect_buffer: &'a Buffer, indirect_offset: u64) {
 		trace!("draw indirect: {:?} {}", indirect_buffer, indirect_offset);
-		self.pass.draw_indirect(indirect_buffer, indirect_offset);
+		self
+			.pass
+			.draw_indirect(indirect_buffer, indirect_offset);
 	}
 
 	/// Draws indexed primitives using the active index buffer and the active vertex buffers,
@@ -279,7 +289,8 @@ impl<'a> TrackedRenderPass<'a> {
 			indirect_buffer,
 			indirect_offset
 		);
-		self.pass
+		self
+			.pass
 			.draw_indexed_indirect(indirect_buffer, indirect_offset);
 	}
 
@@ -309,7 +320,9 @@ impl<'a> TrackedRenderPass<'a> {
 			offset,
 			data.len()
 		);
-		self.pass.set_push_constants(stages, offset, data);
+		self
+			.pass
+			.set_push_constants(stages, offset, data);
 	}
 
 	/// Set the rendering viewport.
@@ -333,7 +346,8 @@ impl<'a> TrackedRenderPass<'a> {
 			min_depth,
 			max_depth
 		);
-		self.pass
+		self
+			.pass
 			.set_viewport(x, y, width, height, min_depth, max_depth);
 	}
 
@@ -403,6 +417,8 @@ impl<'a> TrackedRenderPass<'a> {
 
 	pub fn set_blend_constant(&mut self, color: Color) {
 		trace!("set blend constant: {:?}", color);
-		self.pass.set_blend_constant(wgpu::Color::from(color));
+		self
+			.pass
+			.set_blend_constant(wgpu::Color::from(color));
 	}
 }

@@ -113,8 +113,10 @@ pub fn derive_bundle(input: TokenStream) -> TokenStream {
 	let mut field_component_ids = Vec::new();
 	let mut field_get_components = Vec::new();
 	let mut field_from_components = Vec::new();
-	for ((field_type, is_bundle), field) in
-		field_type.iter().zip(is_bundle.iter()).zip(field.iter())
+	for ((field_type, is_bundle), field) in field_type
+		.iter()
+		.zip(is_bundle.iter())
+		.zip(field.iter())
 	{
 		if *is_bundle {
 			field_component_ids.push(quote! {
@@ -438,7 +440,9 @@ pub fn derive_world_query(input: TokenStream) -> TokenStream {
 pub fn derive_system_label(input: TokenStream) -> TokenStream {
 	let input = parse_macro_input!(input as DeriveInput);
 	let mut trait_path = bevy_ecs_path();
-	trait_path.segments.push(format_ident!("schedule").into());
+	trait_path
+		.segments
+		.push(format_ident!("schedule").into());
 	trait_path
 		.segments
 		.push(format_ident!("SystemLabel").into());
@@ -449,8 +453,12 @@ pub fn derive_system_label(input: TokenStream) -> TokenStream {
 pub fn derive_stage_label(input: TokenStream) -> TokenStream {
 	let input = parse_macro_input!(input as DeriveInput);
 	let mut trait_path = bevy_ecs_path();
-	trait_path.segments.push(format_ident!("schedule").into());
-	trait_path.segments.push(format_ident!("StageLabel").into());
+	trait_path
+		.segments
+		.push(format_ident!("schedule").into());
+	trait_path
+		.segments
+		.push(format_ident!("StageLabel").into());
 	derive_label(input, &trait_path)
 }
 
@@ -458,7 +466,9 @@ pub fn derive_stage_label(input: TokenStream) -> TokenStream {
 pub fn derive_ambiguity_set_label(input: TokenStream) -> TokenStream {
 	let input = parse_macro_input!(input as DeriveInput);
 	let mut trait_path = bevy_ecs_path();
-	trait_path.segments.push(format_ident!("schedule").into());
+	trait_path
+		.segments
+		.push(format_ident!("schedule").into());
 	trait_path
 		.segments
 		.push(format_ident!("AmbiguitySetLabel").into());
@@ -469,7 +479,9 @@ pub fn derive_ambiguity_set_label(input: TokenStream) -> TokenStream {
 pub fn derive_run_criteria_label(input: TokenStream) -> TokenStream {
 	let input = parse_macro_input!(input as DeriveInput);
 	let mut trait_path = bevy_ecs_path();
-	trait_path.segments.push(format_ident!("schedule").into());
+	trait_path
+		.segments
+		.push(format_ident!("schedule").into());
 	trait_path
 		.segments
 		.push(format_ident!("RunCriteriaLabel").into());

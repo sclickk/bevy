@@ -10,7 +10,8 @@ pub(crate) struct CanvasParentResizePlugin;
 
 impl Plugin for CanvasParentResizePlugin {
 	fn build(&self, app: &mut App) {
-		app.init_resource::<CanvasParentResizeEventChannel>()
+		app
+			.init_resource::<CanvasParentResizeEventChannel>()
 			.add_system(canvas_parent_resize_event_handler);
 	}
 }
@@ -63,7 +64,9 @@ impl CanvasParentResizeEventChannel {
 		let owned_selector = selector.to_string();
 		let resize = move || {
 			if let Some(size) = get_size(&owned_selector) {
-				sender.send(ResizeEvent { size, window_id }).unwrap();
+				sender
+					.send(ResizeEvent { size, window_id })
+					.unwrap();
 			}
 		};
 

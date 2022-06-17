@@ -26,7 +26,9 @@ where
 	Source: Decodable,
 {
 	fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-		f.debug_struct("Audio").field("queue", &self.queue).finish()
+		f.debug_struct("Audio")
+			.field("queue", &self.queue)
+			.finish()
 	}
 }
 

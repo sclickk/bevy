@@ -74,13 +74,15 @@ impl FontAtlas {
 		glyph_id: GlyphId,
 		subpixel_offset: SubpixelOffset,
 	) -> Option<usize> {
-		self.glyph_to_atlas_index
+		self
+			.glyph_to_atlas_index
 			.get(&(glyph_id, subpixel_offset))
 			.copied()
 	}
 
 	pub fn has_glyph(&self, glyph_id: GlyphId, subpixel_offset: SubpixelOffset) -> bool {
-		self.glyph_to_atlas_index
+		self
+			.glyph_to_atlas_index
 			.contains_key(&(glyph_id, subpixel_offset))
 	}
 
@@ -92,12 +94,16 @@ impl FontAtlas {
 		subpixel_offset: SubpixelOffset,
 		texture: &Image,
 	) -> bool {
-		let texture_atlas = texture_atlases.get_mut(&self.texture_atlas).unwrap();
+		let texture_atlas = texture_atlases
+			.get_mut(&self.texture_atlas)
+			.unwrap();
 		if let Some(index) =
-			self.dynamic_texture_atlas_builder
+			self
+				.dynamic_texture_atlas_builder
 				.add_texture(texture_atlas, textures, texture)
 		{
-			self.glyph_to_atlas_index
+			self
+				.glyph_to_atlas_index
 				.insert((glyph_id, subpixel_offset), index);
 			true
 		} else {

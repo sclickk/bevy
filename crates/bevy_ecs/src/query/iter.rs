@@ -53,7 +53,8 @@ where
 	#[inline(always)]
 	fn next(&mut self) -> Option<Self::Item> {
 		unsafe {
-			self.cursor
+			self
+				.cursor
 				.next(self.tables, self.archetypes, self.query_state)
 		}
 	}
@@ -167,11 +168,16 @@ where
 
 				let archetype = &self.archetypes[location.archetype_id];
 
-				self.fetch
+				self
+					.fetch
 					.set_archetype(&self.query_state.fetch_state, archetype, self.tables);
-				self.filter
+				self
+					.filter
 					.set_archetype(&self.query_state.filter_state, archetype, self.tables);
-				if self.filter.archetype_filter_fetch(location.index) {
+				if self
+					.filter
+					.archetype_filter_fetch(location.index)
+				{
 					return Some(self.fetch.archetype_fetch(location.index));
 				}
 			}
@@ -276,7 +282,9 @@ impl<'w, 's, Q: WorldQuery, F: WorldQuery, const K: usize> QueryCombinationIter<
 
 		let ptr = values.as_mut_ptr().cast::<QueryItem<'w, Q>>();
 		for (offset, cursor) in self.cursors.iter_mut().enumerate() {
-			ptr.add(offset).write(cursor.peek_last().unwrap());
+			ptr
+				.add(offset)
+				.write(cursor.peek_last().unwrap());
 		}
 
 		Some(values.assume_init())
@@ -293,7 +301,8 @@ impl<'w, 's, Q: WorldQuery, F: WorldQuery, const K: usize> QueryCombinationIter<
 		// making sure this method cannot be called multiple times without getting rid
 		// of any previously returned unique references first, thus preventing aliasing.
 		unsafe {
-			self.fetch_next_aliased_unchecked()
+			self
+				.fetch_next_aliased_unchecked()
 				.map(|array| array.map(Q::shrink))
 		}
 	}
@@ -357,7 +366,8 @@ where
 	QF: Fetch<'w, State = Q::State>,
 {
 	fn len(&self) -> usize {
-		self.query_state
+		self
+			.query_state
 			.matched_archetype_ids
 			.iter()
 			.map(|id| self.archetypes[*id].len())
@@ -457,7 +467,11 @@ where
 			if Self::IS_DENSE {
 				Some(self.fetch.table_fetch(self.current_index - 1))
 			} else {
-				Some(self.fetch.archetype_fetch(self.current_index - 1))
+				Some(
+					self
+						.fetch
+						.archetype_fetch(self.current_index - 1),
+				)
 			}
 		} else {
 			None
@@ -478,14 +492,21 @@ where
 				if self.current_index == self.current_len {
 					let table_id = self.table_id_iter.next()?;
 					let table = &tables[*table_id];
-					self.fetch.set_table(&query_state.fetch_state, table);
-					self.filter.set_table(&query_state.filter_state, table);
+					self
+						.fetch
+						.set_table(&query_state.fetch_state, table);
+					self
+						.filter
+						.set_table(&query_state.filter_state, table);
 					self.current_len = table.len();
 					self.current_index = 0;
 					continue;
 				}
 
-				if !self.filter.table_filter_fetch(self.current_index) {
+				if !self
+					.filter
+					.table_filter_fetch(self.current_index)
+				{
 					self.current_index += 1;
 					continue;
 				}
@@ -500,16 +521,21 @@ where
 				if self.current_index == self.current_len {
 					let archetype_id = self.archetype_id_iter.next()?;
 					let archetype = &archetypes[*archetype_id];
-					self.fetch
+					self
+						.fetch
 						.set_archetype(&query_state.fetch_state, archetype, tables);
-					self.filter
+					self
+						.filter
 						.set_archetype(&query_state.filter_state, archetype, tables);
 					self.current_len = archetype.len();
 					self.current_index = 0;
 					continue;
 				}
 
-				if !self.filter.archetype_filter_fetch(self.current_index) {
+				if !self
+					.filter
+					.archetype_filter_fetch(self.current_index)
+				{
 					self.current_index += 1;
 					continue;
 				}

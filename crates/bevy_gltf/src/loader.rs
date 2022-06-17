@@ -79,9 +79,9 @@ impl AssetLoader for GltfLoader {
 		bytes: &'a [u8],
 		load_context: &'a mut LoadContext,
 	) -> BoxedFuture<'a, Result<()>> {
-		Box::pin(async move {
-			Ok(load_gltf(bytes, load_context, self.supported_compressed_formats).await?)
-		})
+		Box::pin(
+			async move { Ok(load_gltf(bytes, load_context, self.supported_compressed_formats).await?) },
+		)
 	}
 
 	fn extensions(&self) -> &[&str] {
@@ -183,7 +183,10 @@ async fn load_gltf<'a, 'b>(
 						}
 						gltf::animation::util::ReadOutputs::Rotations(rots) => {
 							bevy_animation::Keyframes::Rotation(
-								rots.into_f32().map(bevy_math::Quat::from_array).collect(),
+								rots
+									.into_f32()
+									.map(bevy_math::Quat::from_array)
+									.collect(),
 							)
 						}
 						gltf::animation::util::ReadOutputs::Scales(scale) => {
@@ -300,9 +303,7 @@ async fn load_gltf<'a, 'b>(
 				if vertex_count_before != vertex_count_after {
 					bevy_log::debug!("Missing vertex normals in indexed geometry, computing them as flat. Vertex count increased from {} to {}", vertex_count_before, vertex_count_after);
 				} else {
-					bevy_log::debug!(
-						"Missing vertex normals in indexed geometry, computing them as flat."
-					);
+					bevy_log::debug!("Missing vertex normals in indexed geometry, computing them as flat.");
 				}
 			}
 
@@ -314,9 +315,7 @@ async fn load_gltf<'a, 'b>(
 			} else if mesh.attribute(Mesh::ATTRIBUTE_NORMAL).is_some()
 				&& primitive.material().normal_texture().is_some()
 			{
-				bevy_log::debug!(
-					"Missing vertex tangents, computing them using the mikktspace algorithm"
-				);
+				bevy_log::debug!("Missing vertex tangents, computing them using the mikktspace algorithm");
 				if let Err(err) = mesh.generate_tangents() {
 					bevy_log::warn!(
 						"Failed to generate vertex tangents using the mikktspace algorithm: {:?}",
@@ -372,7 +371,8 @@ async fn load_gltf<'a, 'b>(
 					},
 				},
 			},
-			node.children()
+			node
+				.children()
 				.map(|child| child.index())
 				.collect::<Vec<_>>(),
 		));
@@ -498,7 +498,11 @@ async fn load_gltf<'a, 'b>(
 			for node in scene.nodes() {
 				if animation_roots.contains(&node.index()) {
 					world
-						.entity_mut(*node_index_to_entity_map.get(&node.index()).unwrap())
+						.entity_mut(
+							*node_index_to_entity_map
+								.get(&node.index())
+								.unwrap(),
+						)
 						.insert(bevy_animation::AnimationPlayer::default());
 				}
 			}
@@ -518,8 +522,8 @@ async fn load_gltf<'a, 'b>(
 			});
 		}
 
-		let scene_handle = load_context
-			.set_labeled_asset(&scene_label(&scene), LoadedAsset::new(Scene::new(world)));
+		let scene_handle =
+			load_context.set_labeled_asset(&scene_label(&scene), LoadedAsset::new(Scene::new(world)));
 
 		if let Some(name) = scene.name() {
 			named_scenes.insert(name.to_string(), scene_handle.clone());
@@ -603,9 +607,15 @@ async fn load_texture<'a>(
 			} else {
 				let parent = load_context.path().parent().unwrap();
 				let image_path = parent.join(uri);
-				let bytes = load_context.read_asset_bytes(image_path.clone()).await?;
+				let bytes = load_context
+					.read_asset_bytes(image_path.clone())
+					.await?;
 
-				let extension = Path::new(uri).extension().unwrap().to_str().unwrap();
+				let extension = Path::new(uri)
+					.extension()
+					.unwrap()
+					.to_str()
+					.unwrap();
 				let image_type = ImageType::Extension(extension);
 
 				(bytes, image_type)
@@ -613,7 +623,9 @@ async fn load_texture<'a>(
 
 			Image::from_buffer(
 				&bytes,
-				mime_type.map(ImageType::MimeType).unwrap_or(image_type),
+				mime_type
+					.map(ImageType::MimeType)
+					.unwrap_or(image_type),
 				supported_compressed_formats,
 				is_srgb,
 			)?
@@ -638,14 +650,13 @@ fn load_material(material: &Material, load_context: &mut LoadContext) -> Handle<
 		load_context.get_handle(path)
 	});
 
-	let normal_map_texture: Option<Handle<Image>> =
-		material.normal_texture().map(|normal_texture| {
-			// TODO: handle normal_texture.scale
-			// TODO: handle normal_texture.tex_coord() (the *set* index for the right texcoords)
-			let label = texture_label(&normal_texture.texture());
-			let path = AssetPath::new_ref(load_context.path(), Some(&label));
-			load_context.get_handle(path)
-		});
+	let normal_map_texture: Option<Handle<Image>> = material.normal_texture().map(|normal_texture| {
+		// TODO: handle normal_texture.scale
+		// TODO: handle normal_texture.tex_coord() (the *set* index for the right texcoords)
+		let label = texture_label(&normal_texture.texture());
+		let path = AssetPath::new_ref(load_context.path(), Some(&label));
+		load_context.get_handle(path)
+	});
 
 	let metallic_roughness_texture = pbr.metallic_roughness_texture().map(|info| {
 		// TODO: handle info.tex_coord() (the *set* index for the right texcoords)
@@ -654,13 +665,15 @@ fn load_material(material: &Material, load_context: &mut LoadContext) -> Handle<
 		load_context.get_handle(path)
 	});
 
-	let occlusion_texture = material.occlusion_texture().map(|occlusion_texture| {
-		// TODO: handle occlusion_texture.tex_coord() (the *set* index for the right texcoords)
-		// TODO: handle occlusion_texture.strength() (a scalar multiplier for occlusion strength)
-		let label = texture_label(&occlusion_texture.texture());
-		let path = AssetPath::new_ref(load_context.path(), Some(&label));
-		load_context.get_handle(path)
-	});
+	let occlusion_texture = material
+		.occlusion_texture()
+		.map(|occlusion_texture| {
+			// TODO: handle occlusion_texture.tex_coord() (the *set* index for the right texcoords)
+			// TODO: handle occlusion_texture.strength() (a scalar multiplier for occlusion strength)
+			let label = texture_label(&occlusion_texture.texture());
+			let path = AssetPath::new_ref(load_context.path(), Some(&label));
+			load_context.get_handle(path)
+		});
 
 	let emissive = material.emissive_factor();
 	let emissive_texture = material.emissive_texture().map(|info| {
@@ -785,10 +798,8 @@ fn load_node(
 
 				let primitive_label = primitive_label(&mesh, &primitive);
 				let bounds = primitive.bounding_box();
-				let mesh_asset_path =
-					AssetPath::new_ref(load_context.path(), Some(&primitive_label));
-				let material_asset_path =
-					AssetPath::new_ref(load_context.path(), Some(&material_label));
+				let mesh_asset_path = AssetPath::new_ref(load_context.path(), Some(&primitive_label));
+				let material_asset_path = AssetPath::new_ref(load_context.path(), Some(&material_label));
 
 				let mut mesh_entity = parent.spawn_bundle(PbrBundle {
 					mesh: load_context.get_handle(mesh_asset_path),
@@ -947,12 +958,12 @@ fn texture_sampler<'a>(texture: &gltf::Texture) -> SamplerDescriptor<'a> {
 		min_filter: gltf_sampler
 			.min_filter()
 			.map(|mf| match mf {
-				MinFilter::Nearest
-				| MinFilter::NearestMipmapNearest
-				| MinFilter::NearestMipmapLinear => FilterMode::Nearest,
-				MinFilter::Linear
-				| MinFilter::LinearMipmapNearest
-				| MinFilter::LinearMipmapLinear => FilterMode::Linear,
+				MinFilter::Nearest | MinFilter::NearestMipmapNearest | MinFilter::NearestMipmapLinear => {
+					FilterMode::Nearest
+				}
+				MinFilter::Linear | MinFilter::LinearMipmapNearest | MinFilter::LinearMipmapLinear => {
+					FilterMode::Linear
+				}
 			})
 			.unwrap_or(SamplerDescriptor::default().min_filter),
 
@@ -963,9 +974,7 @@ fn texture_sampler<'a>(texture: &gltf::Texture) -> SamplerDescriptor<'a> {
 				| MinFilter::Linear
 				| MinFilter::NearestMipmapNearest
 				| MinFilter::LinearMipmapNearest => FilterMode::Nearest,
-				MinFilter::NearestMipmapLinear | MinFilter::LinearMipmapLinear => {
-					FilterMode::Linear
-				}
+				MinFilter::NearestMipmapLinear | MinFilter::LinearMipmapLinear => FilterMode::Linear,
 			})
 			.unwrap_or(SamplerDescriptor::default().mipmap_filter),
 
@@ -1019,14 +1028,14 @@ async fn load_buffers(
 					.unwrap();
 				let uri = uri.as_ref();
 				let buffer_bytes = match DataUri::parse(uri) {
-					Ok(data_uri) if VALID_MIME_TYPES.contains(&data_uri.mime_type) => {
-						data_uri.decode()?
-					}
+					Ok(data_uri) if VALID_MIME_TYPES.contains(&data_uri.mime_type) => data_uri.decode()?,
 					Ok(_) => return Err(GltfError::BufferFormatUnsupported),
 					Err(()) => {
 						// TODO: Remove this and add dep
 						let buffer_path = asset_path.parent().unwrap().join(uri);
-						let buffer_bytes = load_context.read_asset_bytes(buffer_path).await?;
+						let buffer_bytes = load_context
+							.read_asset_bytes(buffer_path)
+							.await?;
 						buffer_bytes
 					}
 				};
@@ -1077,8 +1086,9 @@ fn resolve_node_hierarchy(
 		assert!(children.is_empty());
 		nodes.insert(index, (label, node));
 		if let Some(parent_index) = parents[index] {
-			let (_, parent_node, parent_children) =
-				unprocessed_nodes.get_mut(&parent_index).unwrap();
+			let (_, parent_node, parent_children) = unprocessed_nodes
+				.get_mut(&parent_index)
+				.unwrap();
 
 			assert!(parent_children.remove(&index));
 			if let Some((_, child_node)) = nodes.get(&index) {

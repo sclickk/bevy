@@ -272,7 +272,9 @@ impl<'w, 's> Commands<'w, 's> {
 		I::IntoIter: Iterator<Item = (Entity, B)>,
 		B: Bundle,
 	{
-		self.queue.push(InsertOrSpawnBatch { bundles_iter });
+		self
+			.queue
+			.push(InsertOrSpawnBatch { bundles_iter });
 	}
 
 	/// Inserts a resource with standard starting values to the [`World`].
@@ -663,10 +665,10 @@ where
 	fn write(self, world: &mut World) {
 		if let Err(invalid_entities) = world.insert_or_spawn_batch(self.bundles_iter) {
 			error!(
-                "Failed to 'insert or spawn' bundle of type {} into the following invalid entities: {:?}",
-                std::any::type_name::<B>(),
-                invalid_entities
-            );
+				"Failed to 'insert or spawn' bundle of type {} into the following invalid entities: {:?}",
+				std::any::type_name::<B>(),
+				invalid_entities
+			);
 		}
 	}
 }

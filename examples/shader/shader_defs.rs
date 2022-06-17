@@ -3,8 +3,7 @@
 use bevy::{
 	core_pipeline::core_3d::Transparent3d,
 	pbr::{
-		DrawMesh, MeshPipeline, MeshPipelineKey, MeshUniform, SetMeshBindGroup,
-		SetMeshViewBindGroup,
+		DrawMesh, MeshPipeline, MeshPipelineKey, MeshUniform, SetMeshBindGroup, SetMeshViewBindGroup,
 	},
 	prelude::*,
 	render::{
@@ -26,7 +25,8 @@ pub struct IsRedPlugin;
 impl Plugin for IsRedPlugin {
 	fn build(&self, app: &mut App) {
 		app.add_plugin(ExtractComponentPlugin::<IsRed>::default());
-		app.sub_app_mut(RenderApp)
+		app
+			.sub_app_mut(RenderApp)
 			.add_render_command::<Transparent3d, DrawIsRed>()
 			.init_resource::<IsRedPipeline>()
 			.init_resource::<SpecializedMeshPipelines<IsRedPipeline>>()
@@ -113,7 +113,9 @@ impl SpecializedMeshPipeline for IsRedPipeline {
 		if is_red.0 {
 			shader_defs.push("IS_RED".to_string());
 		}
-		let mut descriptor = self.mesh_pipeline.specialize(pbr_pipeline_key, layout)?;
+		let mut descriptor = self
+			.mesh_pipeline
+			.specialize(pbr_pipeline_key, layout)?;
 		descriptor.vertex.shader = self.shader.clone();
 		descriptor.vertex.shader_defs = shader_defs.clone();
 		let fragment = descriptor.fragment.as_mut().unwrap();
@@ -155,8 +157,7 @@ fn queue_custom(
 		let view_row_2 = view_matrix.row(2);
 		for (entity, mesh_handle, mesh_uniform, is_red) in material_meshes.iter() {
 			if let Some(mesh) = render_meshes.get(mesh_handle) {
-				let key =
-					msaa_key | MeshPipelineKey::from_primitive_topology(mesh.primitive_topology);
+				let key = msaa_key | MeshPipelineKey::from_primitive_topology(mesh.primitive_topology);
 				let pipeline = pipelines
 					.specialize(
 						&mut pipeline_cache,

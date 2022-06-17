@@ -23,7 +23,12 @@ pub struct TypeRegistryArc {
 
 impl Debug for TypeRegistryArc {
 	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-		self.internal.read().full_name_to_id.keys().fmt(f)
+		self
+			.internal
+			.read()
+			.full_name_to_id
+			.keys()
+			.fmt(f)
 	}
 }
 
@@ -83,19 +88,21 @@ impl TypeRegistry {
 	/// Registers the type described by `registration`.
 	pub fn add_registration(&mut self, registration: TypeRegistration) {
 		let short_name = registration.short_name.to_string();
-		if self.short_name_to_id.contains_key(&short_name)
-			|| self.ambiguous_names.contains(&short_name)
+		if self.short_name_to_id.contains_key(&short_name) || self.ambiguous_names.contains(&short_name)
 		{
 			// name is ambiguous. fall back to long names for all ambiguous types
 			self.short_name_to_id.remove(&short_name);
 			self.ambiguous_names.insert(short_name);
 		} else {
-			self.short_name_to_id
+			self
+				.short_name_to_id
 				.insert(short_name, registration.type_id());
 		}
-		self.full_name_to_id
+		self
+			.full_name_to_id
 			.insert(registration.type_name().to_string(), registration.type_id());
-		self.registrations
+		self
+			.registrations
 			.insert(registration.type_id(), registration);
 	}
 
@@ -124,7 +131,8 @@ impl TypeRegistry {
 	///
 	/// If no type with the given name has been registered, returns `None`.
 	pub fn get_with_name(&self, type_name: &str) -> Option<&TypeRegistration> {
-		self.full_name_to_id
+		self
+			.full_name_to_id
 			.get(type_name)
 			.and_then(|id| self.get(*id))
 	}
@@ -134,7 +142,8 @@ impl TypeRegistry {
 	///
 	/// If no type with the given name has been registered, returns `None`.
 	pub fn get_with_name_mut(&mut self, type_name: &str) -> Option<&mut TypeRegistration> {
-		self.full_name_to_id
+		self
+			.full_name_to_id
 			.get(type_name)
 			.cloned()
 			.and_then(move |id| self.get_mut(id))
@@ -146,7 +155,8 @@ impl TypeRegistry {
 	/// If the short name is ambiguous, or if no type with the given short name
 	/// has been registered, returns `None`.
 	pub fn get_with_short_name(&self, short_type_name: &str) -> Option<&TypeRegistration> {
-		self.short_name_to_id
+		self
+			.short_name_to_id
 			.get(short_type_name)
 			.and_then(|id| self.registrations.get(id))
 	}
@@ -160,7 +170,8 @@ impl TypeRegistry {
 		&mut self,
 		short_type_name: &str,
 	) -> Option<&mut TypeRegistration> {
-		self.short_name_to_id
+		self
+			.short_name_to_id
 			.get(short_type_name)
 			.and_then(|id| self.registrations.get_mut(id))
 	}
@@ -175,7 +186,8 @@ impl TypeRegistry {
 	/// If the specified type has not been registered, or if `T` is not present
 	/// in its type registration, returns `None`.
 	pub fn get_type_data<T: TypeData>(&self, type_id: TypeId) -> Option<&T> {
-		self.get(type_id)
+		self
+			.get(type_id)
 			.and_then(|registration| registration.data::<T>())
 	}
 
@@ -184,7 +196,8 @@ impl TypeRegistry {
 	/// If the specified type has not been registered, or if `T` is not present
 	/// in its type registration, returns `None`.
 	pub fn get_type_data_mut<T: TypeData>(&mut self, type_id: TypeId) -> Option<&mut T> {
-		self.get_mut(type_id)
+		self
+			.get_mut(type_id)
 			.and_then(|registration| registration.data_mut::<T>())
 	}
 
@@ -192,7 +205,8 @@ impl TypeRegistry {
 	///
 	/// If the specified type has not been registered, returns `None`.
 	pub fn get_type_info(&self, type_id: TypeId) -> Option<&'static TypeInfo> {
-		self.get(type_id)
+		self
+			.get(type_id)
 			.map(|registration| registration.type_info())
 	}
 
@@ -254,7 +268,8 @@ impl TypeRegistration {
 	///
 	/// Returns `None` if no such value exists.
 	pub fn data<T: TypeData>(&self) -> Option<&T> {
-		self.data
+		self
+			.data
 			.get(&TypeId::of::<T>())
 			.and_then(|value| value.downcast_ref())
 	}
@@ -264,7 +279,8 @@ impl TypeRegistration {
 	///
 	/// Returns `None` if no such value exists.
 	pub fn data_mut<T: TypeData>(&mut self) -> Option<&mut T> {
-		self.data
+		self
+			.data
 			.get_mut(&TypeId::of::<T>())
 			.and_then(|value| value.downcast_mut())
 	}
@@ -278,7 +294,9 @@ impl TypeRegistration {
 	///
 	/// If another instance of `T` was previously inserted, it is replaced.
 	pub fn insert<T: TypeData>(&mut self, data: T) {
-		self.data.insert(TypeId::of::<T>(), Box::new(data));
+		self
+			.data
+			.insert(TypeId::of::<T>(), Box::new(data));
 	}
 
 	/// Creates type registration information for `T`.

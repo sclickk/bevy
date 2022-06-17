@@ -83,38 +83,39 @@ impl Plugin for VisibilityPlugin {
 	fn build(&self, app: &mut bevy_app::App) {
 		use VisibilitySystems::*;
 
-		app.add_system_to_stage(
-			CoreStage::PostUpdate,
-			calculate_bounds.label(CalculateBounds),
-		)
-		.add_system_to_stage(
-			CoreStage::PostUpdate,
-			update_frusta::<OrthographicProjection>
-				.label(UpdateOrthographicFrusta)
-				.after(TransformSystem::TransformPropagate),
-		)
-		.add_system_to_stage(
-			CoreStage::PostUpdate,
-			update_frusta::<PerspectiveProjection>
-				.label(UpdatePerspectiveFrusta)
-				.after(TransformSystem::TransformPropagate),
-		)
-		.add_system_to_stage(
-			CoreStage::PostUpdate,
-			update_frusta::<Projection>
-				.label(UpdateProjectionFrusta)
-				.after(TransformSystem::TransformPropagate),
-		)
-		.add_system_to_stage(
-			CoreStage::PostUpdate,
-			check_visibility
-				.label(CheckVisibility)
-				.after(CalculateBounds)
-				.after(UpdateOrthographicFrusta)
-				.after(UpdatePerspectiveFrusta)
-				.after(UpdateProjectionFrusta)
-				.after(TransformSystem::TransformPropagate),
-		);
+		app
+			.add_system_to_stage(
+				CoreStage::PostUpdate,
+				calculate_bounds.label(CalculateBounds),
+			)
+			.add_system_to_stage(
+				CoreStage::PostUpdate,
+				update_frusta::<OrthographicProjection>
+					.label(UpdateOrthographicFrusta)
+					.after(TransformSystem::TransformPropagate),
+			)
+			.add_system_to_stage(
+				CoreStage::PostUpdate,
+				update_frusta::<PerspectiveProjection>
+					.label(UpdatePerspectiveFrusta)
+					.after(TransformSystem::TransformPropagate),
+			)
+			.add_system_to_stage(
+				CoreStage::PostUpdate,
+				update_frusta::<Projection>
+					.label(UpdateProjectionFrusta)
+					.after(TransformSystem::TransformPropagate),
+			)
+			.add_system_to_stage(
+				CoreStage::PostUpdate,
+				check_visibility
+					.label(CheckVisibility)
+					.after(CalculateBounds)
+					.after(UpdateOrthographicFrusta)
+					.after(UpdatePerspectiveFrusta)
+					.after(UpdateProjectionFrusta)
+					.after(TransformSystem::TransformPropagate),
+			);
 	}
 }
 
@@ -136,8 +137,7 @@ pub fn update_frusta<T: Component + CameraProjection + Send + Sync + 'static>(
 	mut views: Query<(&GlobalTransform, &T, &mut Frustum)>,
 ) {
 	for (transform, projection, mut frustum) in views.iter_mut() {
-		let view_projection =
-			projection.get_projection_matrix() * transform.compute_matrix().inverse();
+		let view_projection = projection.get_projection_matrix() * transform.compute_matrix().inverse();
 		*frustum = Frustum::from_view_projection(
 			&view_projection,
 			&transform.translation,

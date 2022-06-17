@@ -53,10 +53,7 @@ impl<Q: WorldQuery, F: WorldQuery> QueryState<Q, F> {
 		// main Query's `fetch_state` access. Filters are allowed to conflict with the main query fetch
 		// because they are evaluated *before* a specific reference is constructed.
 		let mut filter_component_access = FilteredAccess::default();
-		QueryFetch::<'static, F>::update_component_access(
-			&filter_state,
-			&mut filter_component_access,
-		);
+		QueryFetch::<'static, F>::update_component_access(&filter_state, &mut filter_component_access);
 
 		// Merge the temporary filter access with the main access. This ensures that filter access is
 		// properly considered in a global "cross-query" context (both within systems and across systems).
@@ -83,7 +80,8 @@ impl<Q: WorldQuery, F: WorldQuery> QueryState<Q, F> {
 	pub fn is_empty(&self, world: &World, last_change_tick: u32, change_tick: u32) -> bool {
 		// SAFE: NopFetch does not access any members while &self ensures no one has exclusive access
 		unsafe {
-			self.iter_unchecked_manual::<NopFetch<Q::State>>(world, last_change_tick, change_tick)
+			self
+				.iter_unchecked_manual::<NopFetch<Q::State>>(world, last_change_tick, change_tick)
 				.next()
 				.is_none()
 		}
@@ -136,16 +134,25 @@ impl<Q: WorldQuery, F: WorldQuery> QueryState<Q, F> {
 				&mut self.archetype_component_access,
 			);
 			let archetype_index = archetype.id().index();
-			if !self.matched_archetypes.contains(archetype_index) {
-				self.matched_archetypes.grow(archetype_index + 1);
-				self.matched_archetypes.set(archetype_index, true);
+			if !self
+				.matched_archetypes
+				.contains(archetype_index)
+			{
+				self
+					.matched_archetypes
+					.grow(archetype_index + 1);
+				self
+					.matched_archetypes
+					.set(archetype_index, true);
 				self.matched_archetype_ids.push(archetype.id());
 			}
 			let table_index = archetype.table_id().index();
 			if !self.matched_tables.contains(table_index) {
 				self.matched_tables.grow(table_index + 1);
 				self.matched_tables.set(table_index, true);
-				self.matched_table_ids.push(archetype.table_id());
+				self
+					.matched_table_ids
+					.push(archetype.table_id());
 			}
 		}
 	}
@@ -367,12 +374,8 @@ impl<Q: WorldQuery, F: WorldQuery> QueryState<Q, F> {
 		}
 		let archetype = &world.archetypes[location.archetype_id];
 		let mut fetch = QF::init(world, &self.fetch_state, last_change_tick, change_tick);
-		let mut filter = <QueryFetch<F> as Fetch>::init(
-			world,
-			&self.filter_state,
-			last_change_tick,
-			change_tick,
-		);
+		let mut filter =
+			<QueryFetch<F> as Fetch>::init(world, &self.filter_state, last_change_tick, change_tick);
 
 		fetch.set_archetype(&self.fetch_state, archetype, &world.storages().tables);
 		filter.set_archetype(&self.filter_state, archetype, &world.storages().tables);
@@ -400,12 +403,7 @@ impl<Q: WorldQuery, F: WorldQuery> QueryState<Q, F> {
 		// SAFE: fetch is read-only
 		// and world must be validated
 		let array_of_results = entities.map(|entity| {
-			self.get_unchecked_manual::<ROQueryFetch<'w, Q>>(
-				world,
-				entity,
-				last_change_tick,
-				change_tick,
-			)
+			self.get_unchecked_manual::<ROQueryFetch<'w, Q>>(world, entity, last_change_tick, change_tick)
 		});
 
 		// TODO: Replace with TryMap once https://github.com/rust-lang/rust/issues/79711 is stabilized
@@ -448,12 +446,7 @@ impl<Q: WorldQuery, F: WorldQuery> QueryState<Q, F> {
 		}
 
 		let array_of_results = entities.map(|entity| {
-			self.get_unchecked_manual::<QueryFetch<'w, Q>>(
-				world,
-				entity,
-				last_change_tick,
-				change_tick,
-			)
+			self.get_unchecked_manual::<QueryFetch<'w, Q>>(world, entity, last_change_tick, change_tick)
 		});
 
 		// If any of the get calls failed, bubble up the error
@@ -507,9 +500,7 @@ impl<Q: WorldQuery, F: WorldQuery> QueryState<Q, F> {
 	) -> QueryIter<'w, 's, Q, ROQueryFetch<'w, Q>, F> {
 		self.validate_world(world);
 		// SAFETY: query is read only and world is validated
-		unsafe {
-			self.iter_unchecked_manual(world, world.last_change_tick(), world.read_change_tick())
-		}
+		unsafe { self.iter_unchecked_manual(world, world.last_change_tick(), world.read_change_tick()) }
 	}
 
 	/// Returns an [`Iterator`] over all possible combinations of `K` query results without repetition.
@@ -712,11 +703,7 @@ impl<Q: WorldQuery, F: WorldQuery> QueryState<Q, F> {
 	/// Runs `func` on each query result for the given [`World`]. This is faster than the equivalent
 	/// `iter_mut()` method, but cannot be chained like a normal [`Iterator`].
 	#[inline]
-	pub fn for_each_mut<'w, FN: FnMut(QueryItem<'w, Q>)>(
-		&mut self,
-		world: &'w mut World,
-		func: FN,
-	) {
+	pub fn for_each_mut<'w, FN: FnMut(QueryItem<'w, Q>)>(&mut self, world: &'w mut World, func: FN) {
 		// SAFETY: query has unique world access
 		unsafe {
 			self.update_archetypes(world);
@@ -882,12 +869,8 @@ impl<Q: WorldQuery, F: WorldQuery> QueryState<Q, F> {
 		// NOTE: If you are changing query iteration code, remember to update the following places, where relevant:
 		// QueryIter, QueryIterationCursor, QueryState::for_each_unchecked_manual, QueryState::many_for_each_unchecked_manual, QueryState::par_for_each_unchecked_manual
 		let mut fetch = QF::init(world, &self.fetch_state, last_change_tick, change_tick);
-		let mut filter = <QueryFetch<F> as Fetch>::init(
-			world,
-			&self.filter_state,
-			last_change_tick,
-			change_tick,
-		);
+		let mut filter =
+			<QueryFetch<F> as Fetch>::init(world, &self.filter_state, last_change_tick, change_tick);
 
 		if <QueryFetch<'static, Q>>::IS_DENSE && <QueryFetch<'static, F>>::IS_DENSE {
 			let tables = &world.storages().tables;
@@ -960,8 +943,7 @@ impl<Q: WorldQuery, F: WorldQuery> QueryState<Q, F> {
 						let func = func.clone();
 						let len = batch_size.min(table.len() - offset);
 						let task = async move {
-							let mut fetch =
-								QF::init(world, &self.fetch_state, last_change_tick, change_tick);
+							let mut fetch = QF::init(world, &self.fetch_state, last_change_tick, change_tick);
 							let mut filter = <QueryFetch<F> as Fetch>::init(
 								world,
 								&self.filter_state,
@@ -1002,8 +984,7 @@ impl<Q: WorldQuery, F: WorldQuery> QueryState<Q, F> {
 						let func = func.clone();
 						let len = batch_size.min(archetype.len() - offset);
 						let task = async move {
-							let mut fetch =
-								QF::init(world, &self.fetch_state, last_change_tick, change_tick);
+							let mut fetch = QF::init(world, &self.fetch_state, last_change_tick, change_tick);
 							let mut filter = <QueryFetch<F> as Fetch>::init(
 								world,
 								&self.filter_state,
@@ -1065,12 +1046,8 @@ impl<Q: WorldQuery, F: WorldQuery> QueryState<Q, F> {
 		// QueryIter, QueryIterationCursor, QueryState::for_each_unchecked_manual, QueryState::many_for_each_unchecked_manual, QueryState::par_for_each_unchecked_manual
 		let mut fetch =
 			<QueryFetch<Q> as Fetch>::init(world, &self.fetch_state, last_change_tick, change_tick);
-		let mut filter = <QueryFetch<F> as Fetch>::init(
-			world,
-			&self.filter_state,
-			last_change_tick,
-			change_tick,
-		);
+		let mut filter =
+			<QueryFetch<F> as Fetch>::init(world, &self.filter_state, last_change_tick, change_tick);
 
 		let tables = &world.storages.tables;
 

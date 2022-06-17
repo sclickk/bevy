@@ -120,7 +120,8 @@ impl Plugin for RenderPlugin {
 			.cloned()
 			.unwrap_or_default();
 
-		app.add_asset::<Shader>()
+		app
+			.add_asset::<Shader>()
 			.add_debug_asset::<Shader>()
 			.init_asset_loader::<ShaderLoader>()
 			.init_debug_asset_loader::<ShaderLoader>()
@@ -146,7 +147,8 @@ impl Plugin for RenderPlugin {
 			);
 			debug!("Configured wgpu adapter Limits: {:#?}", device.limits());
 			debug!("Configured wgpu adapter Features: {:#?}", device.features());
-			app.insert_resource(device.clone())
+			app
+				.insert_resource(device.clone())
 				.insert_resource(queue.clone())
 				.insert_resource(adapter_info.clone())
 				.init_resource::<ScratchRenderWorld>()
@@ -157,8 +159,7 @@ impl Plugin for RenderPlugin {
 			let asset_server = app.world.resource::<AssetServer>().clone();
 
 			let mut render_app = App::empty();
-			let mut extract_stage =
-				SystemStage::parallel().with_system(PipelineCache::extract_shaders);
+			let mut extract_stage = SystemStage::parallel().with_system(PipelineCache::extract_shaders);
 			// don't apply buffers when the stage finishes running
 			// extract stage runs on the app world, but the buffers are applied to the render world
 			extract_stage.set_apply_buffers(false);
@@ -280,7 +281,8 @@ impl Plugin for RenderPlugin {
 			});
 		}
 
-		app.add_plugin(WindowRenderPlugin)
+		app
+			.add_plugin(WindowRenderPlugin)
 			.add_plugin(CameraPlugin)
 			.add_plugin(ViewPlugin)
 			.add_plugin(MeshPlugin)
@@ -299,14 +301,18 @@ fn extract(app_world: &mut World, render_app: &mut App) {
 		.unwrap();
 
 	// temporarily add the render world to the app world as a resource
-	let scratch_world = app_world.remove_resource::<ScratchRenderWorld>().unwrap();
+	let scratch_world = app_world
+		.remove_resource::<ScratchRenderWorld>()
+		.unwrap();
 	let render_world = std::mem::replace(&mut render_app.world, scratch_world.0);
 	app_world.insert_resource(RenderWorld(render_world));
 
 	extract.run(app_world);
 
 	// add the render world back to the render app
-	let render_world = app_world.remove_resource::<RenderWorld>().unwrap();
+	let render_world = app_world
+		.remove_resource::<RenderWorld>()
+		.unwrap();
 	let scratch_world = std::mem::replace(&mut render_app.world, render_world.0);
 	app_world.insert_resource(ScratchRenderWorld(scratch_world));
 

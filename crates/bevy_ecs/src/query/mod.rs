@@ -41,13 +41,22 @@ mod tests {
 		let mut world = World::new();
 		world.spawn().insert_bundle((A(1), B(1)));
 		world.spawn().insert_bundle((A(2),));
-		let values = world.query::<&A>().iter(&world).collect::<Vec<&A>>();
+		let values = world
+			.query::<&A>()
+			.iter(&world)
+			.collect::<Vec<&A>>();
 		assert_eq!(values, vec![&A(1), &A(2)]);
 
-		for (_a, mut b) in world.query::<(&A, &mut B)>().iter_mut(&mut world) {
+		for (_a, mut b) in world
+			.query::<(&A, &mut B)>()
+			.iter_mut(&mut world)
+		{
 			b.0 = 3;
 		}
-		let values = world.query::<&B>().iter(&world).collect::<Vec<&B>>();
+		let values = world
+			.query::<&B>()
+			.iter(&world)
+			.collect::<Vec<&B>>();
 		assert_eq!(values, vec![&B(3)]);
 	}
 
@@ -75,9 +84,18 @@ mod tests {
 		assert_eq!(a_query.iter_combinations::<5>(w).count(), 0);
 		assert_eq!(a_query.iter_combinations::<5>(w).size_hint().1, Some(0));
 		assert_eq!(a_query.iter_combinations::<128>(w).count(), 0);
-		assert_eq!(a_query.iter_combinations::<128>(w).size_hint().1, Some(0));
+		assert_eq!(
+			a_query
+				.iter_combinations::<128>(w)
+				.size_hint()
+				.1,
+			Some(0)
+		);
 
-		let values: Vec<[&A; 2]> = world.query::<&A>().iter_combinations(&world).collect();
+		let values: Vec<[&A; 2]> = world
+			.query::<&A>()
+			.iter_combinations(&world)
+			.collect();
 		assert_eq!(
 			values,
 			vec![
@@ -89,7 +107,9 @@ mod tests {
 				[&A(3), &A(4)],
 			]
 		);
-		let size = a_query.iter_combinations::<3>(&world).size_hint();
+		let size = a_query
+			.iter_combinations::<3>(&world)
+			.size_hint();
 		assert_eq!(size.1, Some(4));
 		let values: Vec<[&A; 3]> = a_query.iter_combinations(&world).collect();
 		assert_eq!(
@@ -123,7 +143,9 @@ mod tests {
 
 		let mut b_query = world.query::<&B>();
 		assert_eq!(
-			b_query.iter_combinations::<2>(&world).size_hint(),
+			b_query
+				.iter_combinations::<2>(&world)
+				.size_hint(),
 			(0, Some(0))
 		);
 		let values: Vec<[&B; 2]> = b_query.iter_combinations(&world).collect();
@@ -156,7 +178,13 @@ mod tests {
 		assert_eq!(a_with_b.iter_combinations::<5>(w).count(), 0);
 		assert_eq!(a_with_b.iter_combinations::<5>(w).size_hint().1, Some(0));
 		assert_eq!(a_with_b.iter_combinations::<128>(w).count(), 0);
-		assert_eq!(a_with_b.iter_combinations::<128>(w).size_hint().1, Some(0));
+		assert_eq!(
+			a_with_b
+				.iter_combinations::<128>(w)
+				.size_hint()
+				.1,
+			Some(0)
+		);
 
 		let mut a_wout_b = world.query_filtered::<&A, Without<B>>();
 		let w = &world;
@@ -173,7 +201,13 @@ mod tests {
 		assert_eq!(a_wout_b.iter_combinations::<5>(w).count(), 0);
 		assert_eq!(a_wout_b.iter_combinations::<5>(w).size_hint().1, Some(0));
 		assert_eq!(a_wout_b.iter_combinations::<128>(w).count(), 0);
-		assert_eq!(a_wout_b.iter_combinations::<128>(w).size_hint().1, Some(0));
+		assert_eq!(
+			a_wout_b
+				.iter_combinations::<128>(w)
+				.size_hint()
+				.1,
+			Some(0)
+		);
 
 		let values: HashSet<[&A; 2]> = a_wout_b.iter_combinations(&world).collect();
 		assert_eq!(
@@ -186,7 +220,9 @@ mod tests {
 		let values: HashSet<[&A; 3]> = a_wout_b.iter_combinations(&world).collect();
 		assert_eq!(
 			values,
-			[[&A(2), &A(3), &A(4)],].into_iter().collect::<HashSet<_>>()
+			[[&A(2), &A(3), &A(4)],]
+				.into_iter()
+				.collect::<HashSet<_>>()
 		);
 
 		let mut query = world.query_filtered::<&A, Or<(With<A>, With<B>)>>();
@@ -234,20 +270,35 @@ mod tests {
 		world.clear_trackers();
 		world.spawn().insert_bundle((A(5),));
 
-		assert_eq!(query_added.iter_combinations::<2>(&world).count(), 0);
+		assert_eq!(
+			query_added
+				.iter_combinations::<2>(&world)
+				.count(),
+			0
+		);
 
 		world.clear_trackers();
 		world.spawn().insert_bundle((A(6),));
 		world.spawn().insert_bundle((A(7),));
 
-		assert_eq!(query_added.iter_combinations::<2>(&world).count(), 1);
+		assert_eq!(
+			query_added
+				.iter_combinations::<2>(&world)
+				.count(),
+			1
+		);
 
 		world.clear_trackers();
 		world.spawn().insert_bundle((A(8),));
 		world.spawn().insert_bundle((A(9),));
 		world.spawn().insert_bundle((A(10),));
 
-		assert_eq!(query_added.iter_combinations::<2>(&world).count(), 3);
+		assert_eq!(
+			query_added
+				.iter_combinations::<2>(&world)
+				.count(),
+			3
+		);
 
 		world.clear_trackers();
 
@@ -261,7 +312,9 @@ mod tests {
 			c.0 += 1000;
 		}
 
-		let values: HashSet<[&A; 3]> = query_changed.iter_combinations(&world).collect();
+		let values: HashSet<[&A; 3]> = query_changed
+			.iter_combinations(&world)
+			.collect();
 		assert_eq!(
 			values,
 			[
@@ -315,11 +368,17 @@ mod tests {
 			.collect::<Vec<&Sparse>>();
 		assert_eq!(values, vec![&Sparse(1), &Sparse(2)]);
 
-		for (_a, mut b) in world.query::<(&Sparse, &mut B)>().iter_mut(&mut world) {
+		for (_a, mut b) in world
+			.query::<(&Sparse, &mut B)>()
+			.iter_mut(&mut world)
+		{
 			b.0 = 3;
 		}
 
-		let values = world.query::<&B>().iter(&world).collect::<Vec<&B>>();
+		let values = world
+			.query::<&B>()
+			.iter(&world)
+			.collect::<Vec<&B>>();
 		assert_eq!(values, vec![&B(3)]);
 	}
 
@@ -331,8 +390,10 @@ mod tests {
 		world.spawn().insert_bundle((A(2),));
 		world.spawn().insert_bundle((C(3),));
 
-		let values: Vec<(Option<&A>, Option<&B>)> =
-			world.query::<AnyOf<(&A, &B)>>().iter(&world).collect();
+		let values: Vec<(Option<&A>, Option<&B>)> = world
+			.query::<AnyOf<(&A, &B)>>()
+			.iter(&world)
+			.collect();
 
 		assert_eq!(
 			values,
@@ -358,24 +419,46 @@ mod tests {
 	fn derived_worldqueries() {
 		let mut world = World::new();
 
-		world.spawn().insert_bundle((A(10), B(18), C(3), Sparse(4)));
+		world
+			.spawn()
+			.insert_bundle((A(10), B(18), C(3), Sparse(4)));
 
-		world.spawn().insert_bundle((A(101), B(148), C(13)));
-		world.spawn().insert_bundle((A(51), B(46), Sparse(72)));
-		world.spawn().insert_bundle((A(398), C(6), Sparse(9)));
-		world.spawn().insert_bundle((B(11), C(28), Sparse(92)));
+		world
+			.spawn()
+			.insert_bundle((A(101), B(148), C(13)));
+		world
+			.spawn()
+			.insert_bundle((A(51), B(46), Sparse(72)));
+		world
+			.spawn()
+			.insert_bundle((A(398), C(6), Sparse(9)));
+		world
+			.spawn()
+			.insert_bundle((B(11), C(28), Sparse(92)));
 
-		world.spawn().insert_bundle((C(18348), Sparse(101)));
+		world
+			.spawn()
+			.insert_bundle((C(18348), Sparse(101)));
 		world.spawn().insert_bundle((B(839), Sparse(5)));
 		world.spawn().insert_bundle((B(6721), C(122)));
-		world.spawn().insert_bundle((A(220), Sparse(63)));
+		world
+			.spawn()
+			.insert_bundle((A(220), Sparse(63)));
 		world.spawn().insert_bundle((A(1092), C(382)));
 		world.spawn().insert_bundle((A(2058), B(3019)));
 
-		world.spawn().insert_bundle((B(38), C(8), Sparse(100)));
-		world.spawn().insert_bundle((A(111), C(52), Sparse(1)));
-		world.spawn().insert_bundle((A(599), B(39), Sparse(13)));
-		world.spawn().insert_bundle((A(55), B(66), C(77)));
+		world
+			.spawn()
+			.insert_bundle((B(38), C(8), Sparse(100)));
+		world
+			.spawn()
+			.insert_bundle((A(111), C(52), Sparse(1)));
+		world
+			.spawn()
+			.insert_bundle((A(599), B(39), Sparse(13)));
+		world
+			.spawn()
+			.insert_bundle((A(55), B(66), C(77)));
 
 		world.spawn();
 
@@ -436,8 +519,8 @@ mod tests {
 				.iter(&world)
 				.map(
 					|MatchEverythingItem {
-					     abcs: (a, b, c),
-					     opt_bsparse: MaybeBSparseItem { blah: bsparse },
+					   abcs: (a, b, c),
+					   opt_bsparse: MaybeBSparseItem { blah: bsparse },
 					 }| {
 						(
 							(a.copied(), b.copied(), c.copied()),

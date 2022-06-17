@@ -64,7 +64,9 @@ fn joint_animation(
 		// Second joint is the first child of the first joint.
 		let second_joint_entity = first_joint_children[0];
 		// Get `Transform` in the second joint.
-		let mut second_joint_transform = transform_query.get_mut(second_joint_entity).unwrap();
+		let mut second_joint_transform = transform_query
+			.get_mut(second_joint_entity)
+			.unwrap();
 
 		second_joint_transform.rotation = Quat::from_axis_angle(
 			Vec3::Z,

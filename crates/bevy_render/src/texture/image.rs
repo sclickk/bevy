@@ -284,7 +284,13 @@ impl Image {
 	pub fn reinterpret_stacked_2d_as_array(&mut self, layers: u32) {
 		// Must be a stacked image, and the height must be divisible by layers.
 		assert!(self.texture_descriptor.dimension == TextureDimension::D2);
-		assert!(self.texture_descriptor.size.depth_or_array_layers == 1);
+		assert!(
+			self
+				.texture_descriptor
+				.size
+				.depth_or_array_layers
+				== 1
+		);
 		assert_eq!(self.texture_descriptor.size.height % layers, 0);
 
 		self.reinterpret_size(Extent3d {
@@ -302,9 +308,7 @@ impl Image {
 	pub fn convert(&self, new_format: TextureFormat) -> Option<Self> {
 		super::image_texture_conversion::texture_to_image(self)
 			.and_then(|img| match new_format {
-				TextureFormat::R8Unorm => {
-					Some((image::DynamicImage::ImageLuma8(img.into_luma8()), false))
-				}
+				TextureFormat::R8Unorm => Some((image::DynamicImage::ImageLuma8(img.into_luma8()), false)),
 				TextureFormat::Rg8Unorm => Some((
 					image::DynamicImage::ImageLumaA8(img.into_luma_alpha8()),
 					false,
@@ -314,9 +318,7 @@ impl Image {
 				}
 				_ => None,
 			})
-			.map(|(dyn_img, is_srgb)| {
-				super::image_texture_conversion::image_to_texture(dyn_img, is_srgb)
-			})
+			.map(|(dyn_img, is_srgb)| super::image_texture_conversion::image_to_texture(dyn_img, is_srgb))
 	}
 
 	/// Load a bytes buffer in a [`Image`], according to type `image_type`, using the `image`
@@ -343,9 +345,9 @@ impl Image {
 			#[cfg(feature = "ktx2")]
 			ImageFormat::Ktx2 => ktx2_buffer_to_image(buffer, supported_compressed_formats, is_srgb),
 			_ => {
-				let image_crate_format = format.as_image_crate_format().ok_or_else(|| {
-					TextureError::UnsupportedTextureFormat(format!("{:?}", format))
-				})?;
+				let image_crate_format = format
+					.as_image_crate_format()
+					.ok_or_else(|| TextureError::UnsupportedTextureFormat(format!("{:?}", format)))?;
 				let dyn_img = image::load_from_memory_with_format(buffer, image_crate_format)?;
 				Ok(image_to_texture(dyn_img, is_srgb))
 			}
@@ -595,11 +597,7 @@ impl RenderAsset for Image {
 		(render_device, render_queue, default_sampler): &mut SystemParamItem<Self::Param>,
 	) -> Result<Self::PreparedAsset, PrepareAssetError<Self::ExtractedAsset>> {
 		let texture = if image.texture_descriptor.mip_level_count > 1 || image.is_compressed() {
-			render_device.create_texture_with_data(
-				render_queue,
-				&image.texture_descriptor,
-				&image.data,
-			)
+			render_device.create_texture_with_data(render_queue, &image.texture_descriptor, &image.data)
 		} else {
 			let texture = render_device.create_texture(&image.texture_descriptor);
 			let format_size = image.texture_descriptor.format.pixel_size();
@@ -614,12 +612,15 @@ impl RenderAsset for Image {
 				ImageDataLayout {
 					offset: 0,
 					bytes_per_row: Some(
-						std::num::NonZeroU32::new(
-							image.texture_descriptor.size.width * format_size as u32,
-						)
-						.unwrap(),
+						std::num::NonZeroU32::new(image.texture_descriptor.size.width * format_size as u32)
+							.unwrap(),
 					),
-					rows_per_image: if image.texture_descriptor.size.depth_or_array_layers > 1 {
+					rows_per_image: if image
+						.texture_descriptor
+						.size
+						.depth_or_array_layers
+						> 1
+					{
 						std::num::NonZeroU32::new(image.texture_descriptor.size.height)
 					} else {
 						None

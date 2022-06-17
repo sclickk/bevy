@@ -74,10 +74,7 @@ fn setup_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
 
 fn menu(
 	mut state: ResMut<State<AppState>>,
-	mut interaction_query: Query<
-		(&Interaction, &mut UiColor),
-		(Changed<Interaction>, With<Button>),
-	>,
+	mut interaction_query: Query<(&Interaction, &mut UiColor), (Changed<Interaction>, With<Button>)>,
 ) {
 	for (interaction, mut color) in interaction_query.iter_mut() {
 		match *interaction {
@@ -96,7 +93,9 @@ fn menu(
 }
 
 fn cleanup_menu(mut commands: Commands, menu_data: Res<MenuData>) {
-	commands.entity(menu_data.button_entity).despawn_recursive();
+	commands
+		.entity(menu_data.button_entity)
+		.despawn_recursive();
 }
 
 fn setup_game(mut commands: Commands, asset_server: Res<AssetServer>) {

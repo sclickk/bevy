@@ -20,7 +20,8 @@ pub struct CameraPlugin;
 
 impl Plugin for CameraPlugin {
 	fn build(&self, app: &mut App) {
-		app.register_type::<Camera>()
+		app
+			.register_type::<Camera>()
 			.register_type::<Visibility>()
 			.register_type::<ComputedVisibility>()
 			.register_type::<VisibleEntities>()

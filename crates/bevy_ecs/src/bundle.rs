@@ -242,10 +242,12 @@ impl BundleInfo {
 	) -> BundleSpawner<'a, 'b> {
 		let new_archetype_id =
 			self.add_bundle_to_archetype(archetypes, storages, components, ArchetypeId::EMPTY);
-		let (empty_archetype, archetype) =
-			archetypes.get_2_mut(ArchetypeId::EMPTY, new_archetype_id);
+		let (empty_archetype, archetype) = archetypes.get_2_mut(ArchetypeId::EMPTY, new_archetype_id);
 		let table = &mut storages.tables[archetype.table_id()];
-		let add_bundle = empty_archetype.edges().get_add_bundle(self.id()).unwrap();
+		let add_bundle = empty_archetype
+			.edges()
+			.get_add_bundle(self.id())
+			.unwrap();
 		BundleSpawner {
 			archetype,
 			add_bundle,
@@ -276,17 +278,18 @@ impl BundleInfo {
 		// bundle_info.component_ids are also in "bundle order"
 		let mut bundle_component = 0;
 		bundle.get_components(|component_ptr| {
-			let component_id = *self.component_ids.get_unchecked(bundle_component);
+			let component_id = *self
+				.component_ids
+				.get_unchecked(bundle_component);
 			match self.storage_types[bundle_component] {
 				StorageType::Table => {
 					let column = table.get_column_mut(component_id).unwrap();
-					match add_bundle.bundle_status.get_unchecked(bundle_component) {
+					match add_bundle
+						.bundle_status
+						.get_unchecked(bundle_component)
+					{
 						ComponentStatus::Added => {
-							column.initialize(
-								table_row,
-								component_ptr,
-								ComponentTicks::new(change_tick),
-							);
+							column.initialize(table_row, component_ptr, ComponentTicks::new(change_tick));
 						}
 						ComponentStatus::Mutated => {
 							column.replace(table_row, component_ptr, change_tick);
@@ -312,7 +315,10 @@ impl BundleInfo {
 		components: &mut Components,
 		archetype_id: ArchetypeId,
 	) -> ArchetypeId {
-		if let Some(add_bundle) = archetypes[archetype_id].edges().get_add_bundle(self.id) {
+		if let Some(add_bundle) = archetypes[archetype_id]
+			.edges()
+			.get_add_bundle(self.id)
+		{
 			return add_bundle.archetype_id;
 		}
 		let mut new_table_components = Vec::new();
@@ -365,7 +371,9 @@ impl BundleInfo {
 				};
 
 				sparse_set_components = if new_sparse_set_components.is_empty() {
-					current_archetype.sparse_set_components().to_vec()
+					current_archetype
+						.sparse_set_components()
+						.to_vec()
 				} else {
 					new_sparse_set_components.extend(current_archetype.sparse_set_components());
 					// sort to ignore order while hashing
@@ -376,11 +384,9 @@ impl BundleInfo {
 			let new_archetype_id =
 				archetypes.get_id_or_insert(table_id, table_components, sparse_set_components);
 			// add an edge from the old archetype to the new archetype
-			archetypes[archetype_id].edges_mut().insert_add_bundle(
-				self.id,
-				new_archetype_id,
-				bundle_status,
-			);
+			archetypes[archetype_id]
+				.edges_mut()
+				.insert_add_bundle(self.id, new_archetype_id, bundle_status);
 			new_archetype_id
 		}
 	}
@@ -486,8 +492,7 @@ impl<'a, 'b> BundleInserter<'a, 'b> {
 				// if an entity was moved into this entity's table spot, update its table row
 				if let Some(swapped_entity) = move_result.swapped_entity {
 					let swapped_location = self.entities.get(swapped_entity).unwrap();
-					let swapped_archetype = if self.archetype.id() == swapped_location.archetype_id
-					{
+					let swapped_archetype = if self.archetype.id() == swapped_location.archetype_id {
 						&mut *self.archetype
 					} else if new_archetype.id() == swapped_location.archetype_id {
 						new_archetype
@@ -498,8 +503,7 @@ impl<'a, 'b> BundleInserter<'a, 'b> {
 							.add(swapped_location.archetype_id.index())
 					};
 
-					swapped_archetype
-						.set_entity_table_row(swapped_location.index, result.table_row);
+					swapped_archetype.set_entity_table_row(swapped_location.index, result.table_row);
 				}
 
 				// PERF: this could be looked up during Inserter construction and stored (but borrowing makes this nasty)
@@ -596,16 +600,18 @@ impl Bundles {
 		storages: &mut Storages,
 	) -> &'a BundleInfo {
 		let bundle_infos = &mut self.bundle_infos;
-		let id = self.bundle_ids.entry(TypeId::of::<T>()).or_insert_with(|| {
-			let component_ids = T::component_ids(components, storages);
-			let id = BundleId(bundle_infos.len());
-			// SAFE: T::component_id ensures info was created
-			let bundle_info = unsafe {
-				initialize_bundle(std::any::type_name::<T>(), component_ids, id, components)
-			};
-			bundle_infos.push(bundle_info);
-			id
-		});
+		let id = self
+			.bundle_ids
+			.entry(TypeId::of::<T>())
+			.or_insert_with(|| {
+				let component_ids = T::component_ids(components, storages);
+				let id = BundleId(bundle_infos.len());
+				// SAFE: T::component_id ensures info was created
+				let bundle_info =
+					unsafe { initialize_bundle(std::any::type_name::<T>(), component_ids, id, components) };
+				bundle_infos.push(bundle_info);
+				id
+			});
 		// SAFE: index either exists, or was initialized
 		unsafe { self.bundle_infos.get_unchecked(id.0) }
 	}

@@ -233,5 +233,7 @@ fn set_fg(stdout: &mut StandardStream, color: Color) {
 }
 
 pub fn set_bold(stdout: &mut StandardStream, bold: bool) {
-	stdout.set_color(ColorSpec::new().set_bold(bold)).unwrap();
+	stdout
+		.set_color(ColorSpec::new().set_bold(bold))
+		.unwrap();
 }

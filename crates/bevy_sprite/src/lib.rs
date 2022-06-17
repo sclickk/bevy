@@ -55,7 +55,8 @@ impl Plugin for SpritePlugin {
 		let mut shaders = app.world.resource_mut::<Assets<Shader>>();
 		let sprite_shader = Shader::from_wgsl(include_str!("render/sprite.wgsl"));
 		shaders.set_untracked(SPRITE_SHADER_HANDLE, sprite_shader);
-		app.add_asset::<TextureAtlas>()
+		app
+			.add_asset::<TextureAtlas>()
 			.register_type::<Sprite>()
 			.register_type::<Mesh2dHandle>()
 			.add_plugin(Mesh2dRenderPlugin)

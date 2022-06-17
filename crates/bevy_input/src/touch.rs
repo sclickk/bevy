@@ -277,11 +277,15 @@ impl Touches {
 				}
 			}
 			TouchPhase::Ended => {
-				self.just_released.insert(event.id, event.into());
+				self
+					.just_released
+					.insert(event.id, event.into());
 				self.pressed.remove_entry(&event.id);
 			}
 			TouchPhase::Cancelled => {
-				self.just_cancelled.insert(event.id, event.into());
+				self
+					.just_cancelled
+					.insert(event.id, event.into());
 				self.pressed.remove_entry(&event.id);
 			}
 		};
@@ -372,7 +376,10 @@ mod test {
 		touches.process_touch_event(&touch_event);
 
 		assert!(touches.pressed.get(&touch_event.id).is_some());
-		assert!(touches.just_pressed.get(&touch_event.id).is_some());
+		assert!(touches
+			.just_pressed
+			.get(&touch_event.id)
+			.is_some());
 
 		// Test adding a `TouchPhase::Moved`
 
@@ -407,8 +414,14 @@ mod test {
 		touches.update();
 		touches.process_touch_event(&cancel_touch_event);
 
-		assert!(touches.just_cancelled.get(&cancel_touch_event.id).is_some());
-		assert!(touches.pressed.get(&cancel_touch_event.id).is_none());
+		assert!(touches
+			.just_cancelled
+			.get(&cancel_touch_event.id)
+			.is_some());
+		assert!(touches
+			.pressed
+			.get(&cancel_touch_event.id)
+			.is_none());
 
 		// Test ending an event
 
@@ -423,7 +436,10 @@ mod test {
 		touches.process_touch_event(&touch_event);
 		touches.process_touch_event(&end_touch_event);
 
-		assert!(touches.just_released.get(&touch_event.id).is_some());
+		assert!(touches
+			.just_released
+			.get(&touch_event.id)
+			.is_some());
 		assert!(touches.pressed.get(&touch_event.id).is_none());
 	}
 

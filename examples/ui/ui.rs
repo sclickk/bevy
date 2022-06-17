@@ -154,8 +154,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
 											text: Text::with_section(
 												format!("Item {}", i),
 												TextStyle {
-													font: asset_server
-														.load("fonts/FiraSans-Bold.ttf"),
+													font: asset_server.load("fonts/FiraSans-Bold.ttf"),
 													font_size: 20.,
 													color: Color::WHITE,
 												},
@@ -297,7 +296,9 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
 							size: Size::new(Val::Px(500.0), Val::Auto),
 							..Default::default()
 						},
-						image: asset_server.load("branding/bevy_logo_dark_big.png").into(),
+						image: asset_server
+							.load("branding/bevy_logo_dark_big.png")
+							.into(),
 						..Default::default()
 					});
 				});

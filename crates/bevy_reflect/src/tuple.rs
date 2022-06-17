@@ -1,7 +1,7 @@
 use crate::utility::NonGenericTypeInfoCell;
 use crate::{
-	DynamicInfo, FromReflect, FromType, GetTypeRegistration, Reflect, ReflectDeserialize,
-	ReflectMut, ReflectRef, TypeInfo, TypeRegistration, Typed, UnnamedField,
+	DynamicInfo, FromReflect, FromType, GetTypeRegistration, Reflect, ReflectDeserialize, ReflectMut,
+	ReflectRef, TypeInfo, TypeRegistration, Typed, UnnamedField,
 };
 use serde::Deserialize;
 use std::any::{Any, TypeId};
@@ -104,24 +104,28 @@ pub trait GetTupleField {
 
 impl<S: Tuple> GetTupleField for S {
 	fn get_field<T: Reflect>(&self, index: usize) -> Option<&T> {
-		self.field(index)
+		self
+			.field(index)
 			.and_then(|value| value.downcast_ref::<T>())
 	}
 
 	fn get_field_mut<T: Reflect>(&mut self, index: usize) -> Option<&mut T> {
-		self.field_mut(index)
+		self
+			.field_mut(index)
 			.and_then(|value| value.downcast_mut::<T>())
 	}
 }
 
 impl GetTupleField for dyn Tuple {
 	fn get_field<T: Reflect>(&self, index: usize) -> Option<&T> {
-		self.field(index)
+		self
+			.field(index)
 			.and_then(|value| value.downcast_ref::<T>())
 	}
 
 	fn get_field_mut<T: Reflect>(&mut self, index: usize) -> Option<&mut T> {
-		self.field_mut(index)
+		self
+			.field_mut(index)
 			.and_then(|value| value.downcast_mut::<T>())
 	}
 }
@@ -238,7 +242,10 @@ impl Tuple for DynamicTuple {
 
 	#[inline]
 	fn field_mut(&mut self, index: usize) -> Option<&mut dyn Reflect> {
-		self.fields.get_mut(index).map(|field| &mut **field)
+		self
+			.fields
+			.get_mut(index)
+			.map(|field| &mut **field)
 	}
 
 	#[inline]

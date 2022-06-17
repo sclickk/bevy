@@ -30,11 +30,9 @@ fn touch_camera(
 			let window = windows.primary();
 			let mut transform = camera.single_mut();
 			*transform = Transform::from_xyz(
-				transform.translation.x
-					+ (touch.position.x - last_position.x) / window.width() * 5.0,
+				transform.translation.x + (touch.position.x - last_position.x) / window.width() * 5.0,
 				transform.translation.y,
-				transform.translation.z
-					+ (touch.position.y - last_position.y) / window.height() * 5.0,
+				transform.translation.z + (touch.position.y - last_position.y) / window.height() * 5.0,
 			)
 			.looking_at(Vec3::ZERO, Vec3::Y);
 		}

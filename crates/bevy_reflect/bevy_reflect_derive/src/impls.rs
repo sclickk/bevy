@@ -39,8 +39,12 @@ pub(crate) fn impl_struct(derive_data: &ReflectDeriveData) -> TokenStream {
 	let field_count = field_idents.len();
 	let field_indices = (0..field_count).collect::<Vec<usize>>();
 
-	let hash_fn = derive_data.traits().get_hash_impl(bevy_reflect_path);
-	let serialize_fn = derive_data.traits().get_serialize_impl(bevy_reflect_path);
+	let hash_fn = derive_data
+		.traits()
+		.get_hash_impl(bevy_reflect_path);
+	let serialize_fn = derive_data
+		.traits()
+		.get_serialize_impl(bevy_reflect_path);
 	let partial_eq_fn = derive_data
 		.traits()
 		.get_partial_eq_impl(bevy_reflect_path)
@@ -57,7 +61,7 @@ pub(crate) fn impl_struct(derive_data: &ReflectDeriveData) -> TokenStream {
 		struct_name,
 		derive_data.generics(),
 		quote! {
-		   let fields: [#bevy_reflect_path::NamedField; #field_count] = [
+			 let fields: [#bevy_reflect_path::NamedField; #field_count] = [
 				#(#bevy_reflect_path::NamedField::new::<#field_types, _>(#field_names),)*
 			];
 			let info = #bevy_reflect_path::StructInfo::new::<Self>(&fields);
@@ -215,8 +219,12 @@ pub(crate) fn impl_tuple_struct(derive_data: &ReflectDeriveData) -> TokenStream 
 	let field_count = field_idents.len();
 	let field_indices = (0..field_count).collect::<Vec<usize>>();
 
-	let hash_fn = derive_data.traits().get_hash_impl(bevy_reflect_path);
-	let serialize_fn = derive_data.traits().get_serialize_impl(bevy_reflect_path);
+	let hash_fn = derive_data
+		.traits()
+		.get_hash_impl(bevy_reflect_path);
+	let serialize_fn = derive_data
+		.traits()
+		.get_serialize_impl(bevy_reflect_path);
 	let partial_eq_fn = derive_data
 		.traits()
 		.get_partial_eq_impl(bevy_reflect_path)

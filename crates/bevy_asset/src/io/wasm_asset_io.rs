@@ -31,7 +31,9 @@ impl AssetIo for WasmAssetIo {
 				.await
 				.unwrap();
 			let resp: Response = resp_value.dyn_into().unwrap();
-			let data = JsFuture::from(resp.array_buffer().unwrap()).await.unwrap();
+			let data = JsFuture::from(resp.array_buffer().unwrap())
+				.await
+				.unwrap();
 			let bytes = Uint8Array::new(&data).to_vec();
 			Ok(bytes)
 		})

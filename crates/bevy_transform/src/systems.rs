@@ -103,9 +103,7 @@ mod test {
 	use crate::components::{GlobalTransform, Transform};
 	use crate::systems::transform_propagate_system;
 	use crate::TransformBundle;
-	use bevy_hierarchy::{
-		parent_update_system, BuildChildren, BuildWorldChildren, Children, Parent,
-	};
+	use bevy_hierarchy::{parent_update_system, BuildChildren, BuildWorldChildren, Children, Parent};
 
 	#[test]
 	fn did_propagate() {
@@ -142,12 +140,16 @@ mod test {
 		schedule.run(&mut world);
 
 		assert_eq!(
-			*world.get::<GlobalTransform>(children[0]).unwrap(),
+			*world
+				.get::<GlobalTransform>(children[0])
+				.unwrap(),
 			GlobalTransform::from_xyz(1.0, 0.0, 0.0) * Transform::from_xyz(0.0, 2.0, 0.0)
 		);
 
 		assert_eq!(
-			*world.get::<GlobalTransform>(children[1]).unwrap(),
+			*world
+				.get::<GlobalTransform>(children[1])
+				.unwrap(),
 			GlobalTransform::from_xyz(1.0, 0.0, 0.0) * Transform::from_xyz(0.0, 0.0, 3.0)
 		);
 	}
@@ -185,12 +187,16 @@ mod test {
 		schedule.run(&mut world);
 
 		assert_eq!(
-			*world.get::<GlobalTransform>(children[0]).unwrap(),
+			*world
+				.get::<GlobalTransform>(children[0])
+				.unwrap(),
 			GlobalTransform::from_xyz(1.0, 0.0, 0.0) * Transform::from_xyz(0.0, 2.0, 0.0)
 		);
 
 		assert_eq!(
-			*world.get::<GlobalTransform>(children[1]).unwrap(),
+			*world
+				.get::<GlobalTransform>(children[1])
+				.unwrap(),
 			GlobalTransform::from_xyz(1.0, 0.0, 0.0) * Transform::from_xyz(0.0, 0.0, 3.0)
 		);
 	}
@@ -364,7 +370,10 @@ mod test {
 			GlobalTransform::default(),
 			Children::with(&[child]),
 		));
-		app.world.entity_mut(child).insert(Parent(grandchild));
+		app
+			.world
+			.entity_mut(child)
+			.insert(Parent(grandchild));
 
 		app.update();
 	}

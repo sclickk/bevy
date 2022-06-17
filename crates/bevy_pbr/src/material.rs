@@ -223,7 +223,8 @@ impl<M: SpecializedMaterial> Default for MaterialPlugin<M> {
 
 impl<M: SpecializedMaterial> Plugin for MaterialPlugin<M> {
 	fn build(&self, app: &mut App) {
-		app.add_asset::<M>()
+		app
+			.add_asset::<M>()
 			.add_plugin(ExtractComponentPlugin::<Handle<M>>::extract_visible())
 			.add_plugin(RenderAssetPlugin::<M>::default());
 		if let Ok(render_app) = app.get_sub_app_mut(RenderApp) {
@@ -260,7 +261,9 @@ impl<M: SpecializedMaterial> SpecializedMeshPipeline for MaterialPipeline<M> {
 		key: Self::Key,
 		layout: &MeshVertexBufferLayout,
 	) -> Result<RenderPipelineDescriptor, SpecializedMeshPipelineError> {
-		let mut descriptor = self.mesh_pipeline.specialize(key.mesh_key, layout)?;
+		let mut descriptor = self
+			.mesh_pipeline
+			.specialize(key.mesh_key, layout)?;
 		if let Some(vertex_shader) = &self.vertex_shader {
 			descriptor.vertex.shader = vertex_shader.clone();
 		}
@@ -313,7 +316,10 @@ impl<M: SpecializedMaterial, const I: usize> EntityRenderCommand for SetMaterial
 		pass: &mut TrackedRenderPass<'w>,
 	) -> RenderCommandResult {
 		let material_handle = query.get(item).unwrap();
-		let material = materials.into_inner().get(material_handle).unwrap();
+		let material = materials
+			.into_inner()
+			.get(material_handle)
+			.unwrap();
 		pass.set_bind_group(
 			I,
 			M::bind_group(material),
@@ -364,14 +370,12 @@ pub fn queue_material_meshes<M: SpecializedMaterial>(
 		let msaa_key = MeshPipelineKey::from_msaa_samples(msaa.samples);
 
 		for visible_entity in &visible_entities.entities {
-			if let Ok((material_handle, mesh_handle, mesh_uniform)) =
-				material_meshes.get(*visible_entity)
+			if let Ok((material_handle, mesh_handle, mesh_uniform)) = material_meshes.get(*visible_entity)
 			{
 				if let Some(material) = render_materials.get(material_handle) {
 					if let Some(mesh) = render_meshes.get(mesh_handle) {
 						let mut mesh_key =
-							MeshPipelineKey::from_primitive_topology(mesh.primitive_topology)
-								| msaa_key;
+							MeshPipelineKey::from_primitive_topology(mesh.primitive_topology) | msaa_key;
 						let alpha_mode = M::alpha_mode(material);
 						if let AlphaMode::Blend = alpha_mode {
 							mesh_key |= MeshPipelineKey::TRANSPARENT_MAIN_PASS;

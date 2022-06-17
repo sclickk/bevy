@@ -40,7 +40,9 @@ where
 	/// - wasn't present before, [None] is returned.
 	pub fn set(&mut self, input_device: T, position_data: f32) -> Option<f32> {
 		let new_position_data = position_data.clamp(Self::MIN, Self::MAX);
-		self.axis_data.insert(input_device, new_position_data)
+		self
+			.axis_data
+			.insert(input_device, new_position_data)
 	}
 
 	/// Returns a position data corresponding to the `input_device`.
@@ -77,8 +79,7 @@ mod tests {
 		];
 
 		for (value, expected) in cases {
-			let gamepad_button =
-				GamepadButton::new(Gamepad::new(1), GamepadButtonType::RightTrigger);
+			let gamepad_button = GamepadButton::new(Gamepad::new(1), GamepadButtonType::RightTrigger);
 			let mut axis = Axis::<GamepadButton>::default();
 
 			axis.set(gamepad_button, value);
@@ -93,8 +94,7 @@ mod tests {
 		let cases = [-1.0, -0.9, -0.1, 0.0, 0.1, 0.9, 1.0];
 
 		for value in cases {
-			let gamepad_button =
-				GamepadButton::new(Gamepad::new(1), GamepadButtonType::RightTrigger);
+			let gamepad_button = GamepadButton::new(Gamepad::new(1), GamepadButtonType::RightTrigger);
 			let mut axis = Axis::<GamepadButton>::default();
 
 			axis.set(gamepad_button, value);

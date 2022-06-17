@@ -165,7 +165,9 @@ impl App {
 		label: impl StageLabel,
 		stage: S,
 	) -> &mut Self {
-		self.schedule.add_stage_after(target, label, stage);
+		self
+			.schedule
+			.add_stage_after(target, label, stage);
 		self
 	}
 
@@ -187,7 +189,9 @@ impl App {
 		label: impl StageLabel,
 		stage: S,
 	) -> &mut Self {
-		self.schedule.add_stage_before(target, label, stage);
+		self
+			.schedule
+			.add_stage_before(target, label, stage);
 		self
 	}
 
@@ -204,7 +208,8 @@ impl App {
 	/// app.add_startup_stage("my_startup_stage", SystemStage::parallel());
 	/// ```
 	pub fn add_startup_stage<S: Stage>(&mut self, label: impl StageLabel, stage: S) -> &mut Self {
-		self.schedule
+		self
+			.schedule
 			.stage(StartupSchedule, |schedule: &mut Schedule| {
 				schedule.add_stage(label, stage)
 			});
@@ -235,7 +240,8 @@ impl App {
 		label: impl StageLabel,
 		stage: S,
 	) -> &mut Self {
-		self.schedule
+		self
+			.schedule
 			.stage(StartupSchedule, |schedule: &mut Schedule| {
 				schedule.add_stage_after(target, label, stage)
 			});
@@ -266,7 +272,8 @@ impl App {
 		label: impl StageLabel,
 		stage: S,
 	) -> &mut Self {
-		self.schedule
+		self
+			.schedule
 			.stage(StartupSchedule, |schedule: &mut Schedule| {
 				schedule.add_stage_before(target, label, stage)
 			});
@@ -373,7 +380,9 @@ impl App {
 			stage_label.type_id() != TypeId::of::<StartupStage>(),
 			"add systems to a startup stage using App::add_startup_system_to_stage"
 		);
-		self.schedule.add_system_to_stage(stage_label, system);
+		self
+			.schedule
+			.add_system_to_stage(stage_label, system);
 		self
 	}
 
@@ -408,7 +417,8 @@ impl App {
 			stage_label.type_id() != TypeId::of::<StartupStage>(),
 			"add system sets to a startup stage using App::add_startup_system_set_to_stage"
 		);
-		self.schedule
+		self
+			.schedule
 			.add_system_set_to_stage(stage_label, system_set);
 		self
 	}
@@ -483,7 +493,8 @@ impl App {
 		stage_label: impl StageLabel,
 		system: impl IntoSystemDescriptor<Params>,
 	) -> &mut Self {
-		self.schedule
+		self
+			.schedule
 			.stage(StartupSchedule, |schedule: &mut Schedule| {
 				schedule.add_system_to_stage(stage_label, system)
 			});
@@ -519,7 +530,8 @@ impl App {
 		stage_label: impl StageLabel,
 		system_set: SystemSet,
 	) -> &mut Self {
-		self.schedule
+		self
+			.schedule
 			.stage(StartupSchedule, |schedule: &mut Schedule| {
 				schedule.add_system_set_to_stage(stage_label, system_set)
 			});
@@ -547,7 +559,8 @@ impl App {
 	where
 		T: StateData,
 	{
-		self.insert_resource(State::new(initial))
+		self
+			.insert_resource(State::new(initial))
 			.add_system_set_to_stage(stage, State::<T>::get_driver())
 	}
 
@@ -587,7 +600,8 @@ impl App {
 	/// let app = App::empty().add_default_stages();
 	/// ```
 	pub fn add_default_stages(&mut self) -> &mut Self {
-		self.add_stage(CoreStage::First, SystemStage::parallel())
+		self
+			.add_stage(CoreStage::First, SystemStage::parallel())
 			.add_stage(
 				StartupSchedule,
 				Schedule::default()
@@ -625,7 +639,8 @@ impl App {
 		T: Event,
 	{
 		if !self.world.contains_resource::<Events<T>>() {
-			self.init_resource::<Events<T>>()
+			self
+				.init_resource::<Events<T>>()
 				.add_system_to_stage(CoreStage::First, Events::<T>::update_system);
 		}
 	}
@@ -847,7 +862,9 @@ impl App {
 	#[cfg(feature = "bevy_reflect")]
 	pub fn register_type<T: bevy_reflect::GetTypeRegistration>(&mut self) -> &mut Self {
 		{
-			let registry = self.world.resource_mut::<bevy_reflect::TypeRegistryArc>();
+			let registry = self
+				.world
+				.resource_mut::<bevy_reflect::TypeRegistryArc>();
 			registry.write().register::<T>();
 		}
 		self
@@ -889,7 +906,8 @@ impl App {
 	/// Retrieves a `SubApp` inside this [`App`] with the given label, if it exists. Otherwise returns
 	/// an [`Err`] containing the given label.
 	pub fn get_sub_app_mut(&mut self, label: impl AppLabel) -> Result<&mut App, impl AppLabel> {
-		self.sub_apps
+		self
+			.sub_apps
 			.get_mut((&label) as &dyn AppLabel)
 			.map(|sub_app| &mut sub_app.app)
 			.ok_or(label)
@@ -910,7 +928,8 @@ impl App {
 	/// Retrieves a `SubApp` inside this [`App`] with the given label, if it exists. Otherwise returns
 	/// an [`Err`] containing the given label.
 	pub fn get_sub_app(&self, label: impl AppLabel) -> Result<&App, impl AppLabel> {
-		self.sub_apps
+		self
+			.sub_apps
 			.get((&label) as &dyn AppLabel)
 			.map(|sub_app| &sub_app.app)
 			.ok_or(label)

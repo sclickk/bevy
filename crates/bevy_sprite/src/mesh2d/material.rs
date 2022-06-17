@@ -193,7 +193,8 @@ impl<M: SpecializedMaterial2d> Default for Material2dPlugin<M> {
 
 impl<M: SpecializedMaterial2d> Plugin for Material2dPlugin<M> {
 	fn build(&self, app: &mut App) {
-		app.add_asset::<M>()
+		app
+			.add_asset::<M>()
 			.add_plugin(ExtractComponentPlugin::<Handle<M>>::extract_visible())
 			.add_plugin(RenderAssetPlugin::<M>::default());
 		if let Ok(render_app) = app.get_sub_app_mut(RenderApp) {
@@ -228,7 +229,9 @@ impl<M: SpecializedMaterial2d> SpecializedMeshPipeline for Material2dPipeline<M>
 		key: Self::Key,
 		layout: &MeshVertexBufferLayout,
 	) -> Result<RenderPipelineDescriptor, SpecializedMeshPipelineError> {
-		let mut descriptor = self.mesh2d_pipeline.specialize(key.mesh_key, layout)?;
+		let mut descriptor = self
+			.mesh2d_pipeline
+			.specialize(key.mesh_key, layout)?;
 		if let Some(vertex_shader) = &self.vertex_shader {
 			descriptor.vertex.shader = vertex_shader.clone();
 		}
@@ -283,7 +286,10 @@ impl<M: SpecializedMaterial2d, const I: usize> EntityRenderCommand
 		pass: &mut TrackedRenderPass<'w>,
 	) -> RenderCommandResult {
 		let material2d_handle = query.get(item).unwrap();
-		let material2d = materials.into_inner().get(material2d_handle).unwrap();
+		let material2d = materials
+			.into_inner()
+			.get(material2d_handle)
+			.unwrap();
 		pass.set_bind_group(
 			I,
 			M::bind_group(material2d),
@@ -324,8 +330,8 @@ pub fn queue_material2d_meshes<M: SpecializedMaterial2d>(
 			{
 				if let Some(material2d) = render_materials.get(material2d_handle) {
 					if let Some(mesh) = render_meshes.get(&mesh2d_handle.0) {
-						let mesh_key = msaa_key
-							| Mesh2dPipelineKey::from_primitive_topology(mesh.primitive_topology);
+						let mesh_key =
+							msaa_key | Mesh2dPipelineKey::from_primitive_topology(mesh.primitive_topology);
 
 						let material_key = M::key(render_device, material2d);
 						let pipeline_id = pipelines.specialize(

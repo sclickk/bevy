@@ -139,11 +139,7 @@ impl<'w> EntityMut<'w> {
 	/// # Safety
 	/// entity and location _must_ be valid
 	#[inline]
-	pub(crate) unsafe fn new(
-		world: &'w mut World,
-		entity: Entity,
-		location: EntityLocation,
-	) -> Self {
+	pub(crate) unsafe fn new(world: &'w mut World, entity: Entity, location: EntityLocation) -> Self {
 		EntityMut {
 			world,
 			entity,
@@ -261,7 +257,10 @@ impl<'w> EntityMut<'w> {
 		let entities = &mut self.world.entities;
 		let removed_components = &mut self.world.removed_components;
 
-		let bundle_info = self.world.bundles.init_info::<T>(components, storages);
+		let bundle_info = self
+			.world
+			.bundles
+			.init_info::<T>(components, storages);
 		let old_location = self.location;
 		let new_archetype_id = unsafe {
 			remove_bundle_from_archetype(
@@ -383,7 +382,10 @@ impl<'w> EntityMut<'w> {
 		let entities = &mut self.world.entities;
 		let removed_components = &mut self.world.removed_components;
 
-		let bundle_info = self.world.bundles.init_info::<T>(components, storages);
+		let bundle_info = self
+			.world
+			.bundles
+			.init_info::<T>(components, storages);
 		let old_location = self.location;
 		let new_archetype_id = unsafe {
 			remove_bundle_from_archetype(
@@ -467,13 +469,16 @@ impl<'w> EntityMut<'w> {
 			table_row = remove_result.table_row;
 
 			for component_id in archetype.sparse_set_components() {
-				let sparse_set = world.storages.sparse_sets.get_mut(*component_id).unwrap();
+				let sparse_set = world
+					.storages
+					.sparse_sets
+					.get_mut(*component_id)
+					.unwrap();
 				sparse_set.remove(self.entity);
 			}
 			// SAFE: table rows stored in archetypes always exist
-			moved_entity = unsafe {
-				world.storages.tables[archetype.table_id()].swap_remove_unchecked(table_row)
-			};
+			moved_entity =
+				unsafe { world.storages.tables[archetype.table_id()].swap_remove_unchecked(table_row) };
 		};
 
 		if let Some(moved_entity) = moved_entity {
@@ -553,7 +558,9 @@ pub(crate) unsafe fn get_component(
 ) -> Option<Ptr<'_>> {
 	let archetype = &world.archetypes[location.archetype_id];
 	// SAFE: component_id exists and is therefore valid
-	let component_info = world.components.get_info_unchecked(component_id);
+	let component_info = world
+		.components
+		.get_info_unchecked(component_id);
 	match component_info.storage_type() {
 		StorageType::Table => {
 			let table = &world.storages.tables[archetype.table_id()];
@@ -583,7 +590,9 @@ unsafe fn get_component_and_ticks(
 	location: EntityLocation,
 ) -> Option<(Ptr<'_>, &UnsafeCell<ComponentTicks>)> {
 	let archetype = &world.archetypes[location.archetype_id];
-	let component_info = world.components.get_info_unchecked(component_id);
+	let component_info = world
+		.components
+		.get_info_unchecked(component_id);
 	match component_info.storage_type() {
 		StorageType::Table => {
 			let table = &world.storages.tables[archetype.table_id()];
@@ -611,7 +620,9 @@ unsafe fn get_ticks(
 	location: EntityLocation,
 ) -> Option<&UnsafeCell<ComponentTicks>> {
 	let archetype = &world.archetypes[location.archetype_id];
-	let component_info = world.components.get_info_unchecked(component_id);
+	let component_info = world
+		.components
+		.get_info_unchecked(component_id);
 	match component_info.storage_type() {
 		StorageType::Table => {
 			let table = &world.storages.tables[archetype.table_id()];
@@ -659,7 +670,9 @@ unsafe fn take_component<'a>(
 			let components = table.get_column_mut(component_id).unwrap();
 			let table_row = archetype.entity_table_row(location.index);
 			// SAFE: archetypes only store valid table_rows and the stored component type is T
-			components.get_data_unchecked_mut(table_row).promote()
+			components
+				.get_data_unchecked_mut(table_row)
+				.promote()
 		}
 		StorageType::SparseSet => storages
 			.sparse_sets
@@ -752,7 +765,9 @@ unsafe fn remove_bundle_from_archetype(
 				.edges()
 				.get_remove_bundle_intersection(bundle_info.id)
 		} else {
-			current_archetype.edges().get_remove_bundle(bundle_info.id)
+			current_archetype
+				.edges()
+				.get_remove_bundle(bundle_info.id)
 		}
 	};
 	let result = if let Some(result) = remove_bundle_result {
@@ -790,7 +805,9 @@ unsafe fn remove_bundle_from_archetype(
 			removed_table_components.sort();
 			removed_sparse_set_components.sort();
 			next_table_components = current_archetype.table_components().to_vec();
-			next_sparse_set_components = current_archetype.sparse_set_components().to_vec();
+			next_sparse_set_components = current_archetype
+				.sparse_set_components()
+				.to_vec();
 			sorted_remove(&mut next_table_components, &removed_table_components);
 			sorted_remove(
 				&mut next_sparse_set_components,
@@ -875,15 +892,13 @@ pub(crate) unsafe fn get_mut_by_id(
 	component_id: ComponentId,
 ) -> Option<MutUntyped> {
 	// SAFE: world access is unique, entity location and component_id required to be valid
-	get_component_and_ticks(world, component_id, entity, location).map(|(value, ticks)| {
-		MutUntyped {
-			value: value.assert_unique(),
-			ticks: Ticks {
-				component_ticks: ticks.deref_mut(),
-				last_change_tick: world.last_change_tick(),
-				change_tick: world.read_change_tick(),
-			},
-		}
+	get_component_and_ticks(world, component_id, entity, location).map(|(value, ticks)| MutUntyped {
+		value: value.assert_unique(),
+		ticks: Ticks {
+			component_ticks: ticks.deref_mut(),
+			last_change_tick: world.last_change_tick(),
+			change_tick: world.read_change_tick(),
+		},
 	})
 }
 
@@ -948,8 +963,11 @@ mod tests {
 		{
 			test_component.set_changed();
 			// SAFE: `test_component` has unique access of the `EntityMut` and is not used afterwards
-			let test_component =
-				unsafe { test_component.into_inner().deref_mut::<TestComponent>() };
+			let test_component = unsafe {
+				test_component
+					.into_inner()
+					.deref_mut::<TestComponent>()
+			};
 			test_component.0 = 43;
 		}
 
@@ -977,6 +995,8 @@ mod tests {
 		let mut world = World::new();
 		let mut entity = world.spawn();
 		assert!(entity.get_by_id(invalid_component_id).is_none());
-		assert!(entity.get_mut_by_id(invalid_component_id).is_none());
+		assert!(entity
+			.get_mut_by_id(invalid_component_id)
+			.is_none());
 	}
 }

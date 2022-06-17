@@ -188,7 +188,9 @@ fn prepare_assets<R: RenderAsset>(
 				render_assets.insert(handle, prepared_asset);
 			}
 			Err(PrepareAssetError::RetryNextUpdate(extracted_asset)) => {
-				prepare_next_frame.assets.push((handle, extracted_asset));
+				prepare_next_frame
+					.assets
+					.push((handle, extracted_asset));
 			}
 		}
 	}
@@ -203,7 +205,9 @@ fn prepare_assets<R: RenderAsset>(
 				render_assets.insert(handle, prepared_asset);
 			}
 			Err(PrepareAssetError::RetryNextUpdate(extracted_asset)) => {
-				prepare_next_frame.assets.push((handle, extracted_asset));
+				prepare_next_frame
+					.assets
+					.push((handle, extracted_asset));
 			}
 		}
 	}

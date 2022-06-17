@@ -1,6 +1,10 @@
 use_field_init_shorthand = true
 newline_style = "Unix"
 hard_tabs = true
+reorder_imports = true
+reorder_modules = true
+tab_spaces = 2
+chain_width = 48
 
 # The following lines may be uncommented on nightly Rust.
 # Once these features have stabilized, they should be added to the always-enabled options above.

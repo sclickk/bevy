@@ -89,7 +89,9 @@ where
 
 	/// Returns `true` if any item in `inputs` has just been pressed.
 	pub fn any_just_pressed(&self, inputs: impl IntoIterator<Item = T>) -> bool {
-		inputs.into_iter().any(|it| self.just_pressed(it))
+		inputs
+			.into_iter()
+			.any(|it| self.just_pressed(it))
 	}
 
 	/// Clears the `just_pressed` state of the `input` and returns `true` if the `input` has just been pressed.
@@ -106,7 +108,9 @@ where
 
 	/// Returns `true` if any item in `inputs` has just been released.
 	pub fn any_just_released(&self, inputs: impl IntoIterator<Item = T>) -> bool {
-		inputs.into_iter().any(|it| self.just_released(it))
+		inputs
+			.into_iter()
+			.any(|it| self.just_released(it))
 	}
 
 	/// Clears the `just_released` state of the `input` and returns `true` if the `input` has just been released.
@@ -191,10 +195,14 @@ mod test {
 		let mut input = Input::default();
 		input.press(DummyInput::Input1);
 		assert!(input.pressed.contains(&DummyInput::Input1));
-		assert!(!input.just_released.contains(&DummyInput::Input1));
+		assert!(!input
+			.just_released
+			.contains(&DummyInput::Input1));
 		input.release(DummyInput::Input1);
 		assert!(!input.pressed.contains(&DummyInput::Input1));
-		assert!(input.just_released.contains(&DummyInput::Input1));
+		assert!(input
+			.just_released
+			.contains(&DummyInput::Input1));
 	}
 
 	#[test]
@@ -344,7 +352,9 @@ mod test {
 		let just_released = input.get_just_released();
 		assert_eq!(just_released.len(), 2);
 		for just_released_input in just_released {
-			assert!(input.just_released.contains(just_released_input));
+			assert!(input
+				.just_released
+				.contains(just_released_input));
 		}
 	}
 

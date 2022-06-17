@@ -60,13 +60,19 @@ impl FlexSurface {
 		let mut added = false;
 		let stretch = &mut self.stretch;
 		let stretch_style = convert::from_style(scale_factor, style);
-		let stretch_node = self.entity_to_stretch.entry(entity).or_insert_with(|| {
-			added = true;
-			stretch.new_node(stretch_style, Vec::new()).unwrap()
-		});
+		let stretch_node = self
+			.entity_to_stretch
+			.entry(entity)
+			.or_insert_with(|| {
+				added = true;
+				stretch
+					.new_node(stretch_style, Vec::new())
+					.unwrap()
+			});
 
 		if !added {
-			self.stretch
+			self
+				.stretch
 				.set_style(*stretch_node, stretch_style)
 				.unwrap();
 		}
@@ -102,15 +108,21 @@ impl FlexSurface {
 		});
 
 		if let Some(stretch_node) = self.entity_to_stretch.get(&entity) {
-			self.stretch
+			self
+				.stretch
 				.set_style(*stretch_node, stretch_style)
 				.unwrap();
-			self.stretch
+			self
+				.stretch
 				.set_measure(*stretch_node, Some(measure))
 				.unwrap();
 		} else {
-			let stretch_node = stretch.new_leaf(stretch_style, measure).unwrap();
-			self.entity_to_stretch.insert(entity, stretch_node);
+			let stretch_node = stretch
+				.new_leaf(stretch_style, measure)
+				.unwrap();
+			self
+				.entity_to_stretch
+				.insert(entity, stretch_node);
 		}
 	}
 
@@ -128,18 +140,22 @@ without UI components as a child of an entity with UI components, results may be
 		}
 
 		let stretch_node = self.entity_to_stretch.get(&entity).unwrap();
-		self.stretch
+		self
+			.stretch
 			.set_children(*stretch_node, stretch_children)
 			.unwrap();
 	}
 
 	pub fn update_window(&mut self, window: &Window) {
 		let stretch = &mut self.stretch;
-		let node = self.window_nodes.entry(window.id()).or_insert_with(|| {
-			stretch
-				.new_node(stretch::style::Style::default(), Vec::new())
-				.unwrap()
-		});
+		let node = self
+			.window_nodes
+			.entry(window.id())
+			.or_insert_with(|| {
+				stretch
+					.new_node(stretch::style::Style::default(), Vec::new())
+					.unwrap()
+			});
 
 		stretch
 			.set_style(
@@ -164,14 +180,16 @@ without UI components as a child of an entity with UI components, results may be
 		let child_nodes = children
 			.map(|e| *self.entity_to_stretch.get(&e).unwrap())
 			.collect::<Vec<stretch::node::Node>>();
-		self.stretch
+		self
+			.stretch
 			.set_children(*stretch_node, child_nodes)
 			.unwrap();
 	}
 
 	pub fn compute_window_layouts(&mut self) {
 		for window_node in self.window_nodes.values() {
-			self.stretch
+			self
+				.stretch
 				.compute_layout(*window_node, stretch::geometry::Size::undefined())
 				.unwrap();
 		}
@@ -179,7 +197,8 @@ without UI components as a child of an entity with UI components, results may be
 
 	pub fn get_layout(&self, entity: Entity) -> Result<&stretch::result::Layout, FlexError> {
 		if let Some(stretch_node) = self.entity_to_stretch.get(&entity) {
-			self.stretch
+			self
+				.stretch
 				.layout(*stretch_node)
 				.map_err(FlexError::StretchError)
 		} else {

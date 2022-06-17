@@ -23,7 +23,9 @@ pub struct HelloWorldPlugins;
 
 impl PluginGroup for HelloWorldPlugins {
 	fn build(&mut self, group: &mut PluginGroupBuilder) {
-		group.add(PrintHelloPlugin).add(PrintWorldPlugin);
+		group
+			.add(PrintHelloPlugin)
+			.add(PrintWorldPlugin);
 	}
 }
 

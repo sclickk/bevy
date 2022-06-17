@@ -49,8 +49,7 @@ fn setup(
 			let radius = WIDTH as f64 * 2.5;
 			let golden_ratio = 0.5f64 * (1.0f64 + 5.0f64.sqrt());
 			for i in 0..N_POINTS {
-				let spherical_polar_theta_phi =
-					fibonacci_spiral_on_sphere(golden_ratio, i, N_POINTS);
+				let spherical_polar_theta_phi = fibonacci_spiral_on_sphere(golden_ratio, i, N_POINTS);
 				let unit_sphere_p = spherical_polar_to_cartesian(spherical_polar_theta_phi);
 				commands.spawn_bundle(PbrBundle {
 					mesh: mesh.clone_weak(),
@@ -82,11 +81,7 @@ fn setup(
 					commands.spawn_bundle(PbrBundle {
 						mesh: mesh.clone_weak(),
 						material: material.clone_weak(),
-						transform: Transform::from_xyz(
-							(x as f32) * 2.5,
-							HEIGHT as f32 * 2.5,
-							(y as f32) * 2.5,
-						),
+						transform: Transform::from_xyz((x as f32) * 2.5, HEIGHT as f32 * 2.5, (y as f32) * 2.5),
 						..Default::default()
 					});
 					commands.spawn_bundle(PbrBundle {
@@ -167,7 +162,10 @@ fn print_mesh_count(
 		info!(
 			"Meshes: {} - Visible Meshes {}",
 			sprites.iter().len(),
-			sprites.iter().filter(|(_, cv)| cv.is_visible).count(),
+			sprites
+				.iter()
+				.filter(|(_, cv)| cv.is_visible)
+				.count(),
 		);
 	}
 }

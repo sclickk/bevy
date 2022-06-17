@@ -42,7 +42,8 @@ impl EntityMap {
 	}
 
 	pub fn get(&self, entity: Entity) -> Result<Entity, MapEntitiesError> {
-		self.map
+		self
+			.map
 			.get(&entity)
 			.cloned()
 			.ok_or(MapEntitiesError::EntityNotFound(entity))

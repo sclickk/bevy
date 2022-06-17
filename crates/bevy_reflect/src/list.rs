@@ -19,7 +19,10 @@ pub trait List: Reflect + Array {
 	fn clone_dynamic(&self) -> DynamicList {
 		DynamicList {
 			name: self.type_name().to_string(),
-			values: self.iter().map(|value| value.clone_value()).collect(),
+			values: self
+				.iter()
+				.map(|value| value.clone_value())
+				.collect(),
 		}
 	}
 }
@@ -120,7 +123,10 @@ impl Array for DynamicList {
 	}
 
 	fn get_mut(&mut self, index: usize) -> Option<&mut dyn Reflect> {
-		self.values.get_mut(index).map(|value| &mut **value)
+		self
+			.values
+			.get_mut(index)
+			.map(|value| &mut **value)
 	}
 
 	fn len(&self) -> usize {
@@ -353,7 +359,9 @@ mod tests {
 		list.push(2usize);
 		let items = list.into_iter();
 		for (index, item) in items.into_iter().enumerate() {
-			let value = item.take::<usize>().expect("couldn't downcast to usize");
+			let value = item
+				.take::<usize>()
+				.expect("couldn't downcast to usize");
 			assert_eq!(index, value);
 		}
 	}

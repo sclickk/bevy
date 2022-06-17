@@ -56,11 +56,13 @@ impl Plugin for ImagePlugin {
 			app.init_asset_loader::<HdrTextureLoader>();
 		}
 
-		app.add_plugin(RenderAssetPlugin::<Image>::with_prepare_asset_label(
-			PrepareAssetLabel::PreAssetPrepare,
-		))
-		.add_asset::<Image>();
-		app.world
+		app
+			.add_plugin(RenderAssetPlugin::<Image>::with_prepare_asset_label(
+				PrepareAssetLabel::PreAssetPrepare,
+			))
+			.add_asset::<Image>();
+		app
+			.world
 			.resource_mut::<Assets<Image>>()
 			.set_untracked(DEFAULT_IMAGE_HANDLE, Image::default());
 

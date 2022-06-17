@@ -39,29 +39,31 @@ Controls:
 "
 	);
 	let mut app = App::new();
-	app.insert_resource(AmbientLight {
-		color: Color::WHITE,
-		brightness: 1.0 / 5.0f32,
-	})
-	.insert_resource(AssetServerSettings {
-		asset_folder: std::env::var("CARGO_MANIFEST_DIR").unwrap_or_else(|_| ".".to_string()),
-		watch_for_changes: true,
-	})
-	.insert_resource(WindowDescriptor {
-		title: "bevy scene viewer".to_string(),
-		..Default::default()
-	})
-	.init_resource::<CameraTracker>()
-	.add_plugins(DefaultPlugins)
-	.add_startup_system(setup)
-	.add_system_to_stage(CoreStage::PreUpdate, scene_load_check)
-	.add_system_to_stage(CoreStage::PreUpdate, setup_scene_after_load)
-	.add_system(update_lights)
-	.add_system(camera_controller)
-	.add_system(camera_tracker);
+	app
+		.insert_resource(AmbientLight {
+			color: Color::WHITE,
+			brightness: 1.0 / 5.0f32,
+		})
+		.insert_resource(AssetServerSettings {
+			asset_folder: std::env::var("CARGO_MANIFEST_DIR").unwrap_or_else(|_| ".".to_string()),
+			watch_for_changes: true,
+		})
+		.insert_resource(WindowDescriptor {
+			title: "bevy scene viewer".to_string(),
+			..Default::default()
+		})
+		.init_resource::<CameraTracker>()
+		.add_plugins(DefaultPlugins)
+		.add_startup_system(setup)
+		.add_system_to_stage(CoreStage::PreUpdate, scene_load_check)
+		.add_system_to_stage(CoreStage::PreUpdate, setup_scene_after_load)
+		.add_system(update_lights)
+		.add_system(camera_controller)
+		.add_system(camera_tracker);
 
 	#[cfg(feature = "animation")]
-	app.add_system(start_animation)
+	app
+		.add_system(start_animation)
 		.add_system(keyboard_animation_control);
 
 	app.run();
@@ -102,7 +104,10 @@ fn scene_load_check(
 		None => {
 			if asset_server.get_load_state(&scene_handle.handle) == LoadState::Loaded {
 				let gltf = gltf_assets.get(&scene_handle.handle).unwrap();
-				let gltf_scene_handle = gltf.scenes.first().expect("glTF file contains no scenes!");
+				let gltf_scene_handle = gltf
+					.scenes
+					.first()
+					.expect("glTF file contains no scenes!");
 				let scene = scenes.get_mut(gltf_scene_handle).unwrap();
 
 				let mut query = scene
@@ -115,8 +120,7 @@ fn scene_load_check(
 							maybe_directional_light.is_some() || maybe_point_light.is_some()
 						});
 
-				scene_handle.instance_id =
-					Some(scene_spawner.spawn(gltf_scene_handle.clone_weak()));
+				scene_handle.instance_id = Some(scene_spawner.spawn(gltf_scene_handle.clone_weak()));
 
 				#[cfg(feature = "animation")]
 				{
@@ -211,7 +215,10 @@ fn setup_scene_after_load(
 	if scene_handle.is_loaded && !*setup {
 		*setup = true;
 		// Find an approximate bounding box of the scene from its meshes
-		if meshes.iter().any(|(_, maybe_aabb)| maybe_aabb.is_none()) {
+		if meshes
+			.iter()
+			.any(|(_, maybe_aabb)| maybe_aabb.is_none())
+		{
 			return;
 		}
 
