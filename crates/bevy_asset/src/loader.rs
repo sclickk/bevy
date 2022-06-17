@@ -1,6 +1,6 @@
 use crate::{
 	path::AssetPath, AssetIo, AssetIoError, AssetMeta, AssetServer, Assets, Handle, HandleId,
-	RefChangeChannel,
+	RefChangeChannel, SourceMeta,
 };
 use anyhow::Result;
 use bevy_ecs::system::{Res, ResMut};
@@ -117,16 +117,18 @@ impl<'a> LoadContext<'a> {
 		self.asset_io.load_path(path.as_ref()).await
 	}
 
-	pub fn get_asset_metas(&self) -> Vec<AssetMeta> {
-		let mut asset_metas = Vec::new();
-		for (label, asset) in &self.labeled_assets {
-			asset_metas.push(AssetMeta {
-				dependencies: asset.dependencies.clone(),
-				label: label.clone(),
-				type_uuid: asset.value.as_ref().unwrap().type_uuid(),
-			});
+	pub fn get_asset_metas(&self) -> SourceMeta {
+		SourceMeta {
+			assets: self
+				.labeled_assets
+				.iter()
+				.map(|(label, asset)| AssetMeta {
+					dependencies: asset.dependencies.clone(),
+					label: label.clone(),
+					type_uuid: asset.value.as_ref().unwrap().type_uuid(),
+				})
+				.collect(),
 		}
-		asset_metas
 	}
 
 	pub fn asset_io(&self) -> &dyn AssetIo {
