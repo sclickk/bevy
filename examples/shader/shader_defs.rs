@@ -24,13 +24,12 @@ pub struct IsRedPlugin;
 
 impl Plugin for IsRedPlugin {
 	fn build(&self, app: &mut App) {
-		app.add_plugin(ExtractComponentPlugin::<IsRed>::default());
-		app
-			.sub_app_mut(RenderApp)
-			.add_render_command::<Transparent3d, DrawIsRed>()
-			.init_resource::<IsRedPipeline>()
-			.init_resource::<SpecializedMeshPipelines<IsRedPipeline>>()
-			.add_system_to_stage(RenderStage::Queue, queue_custom);
+		app.init_plugin::<ExtractComponentPlugin<IsRed>>();
+		app.sub_app_mut(RenderApp);
+		app.add_render_command::<Transparent3d, DrawIsRed>();
+		app.init_resource::<IsRedPipeline>();
+		app.init_resource::<SpecializedMeshPipelines<IsRedPipeline>>();
+		app.add_system_to_stage(RenderStage::Queue, queue_custom);
 	}
 }
 

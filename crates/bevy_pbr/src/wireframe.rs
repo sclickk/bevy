@@ -35,9 +35,8 @@ impl Plugin for WireframePlugin {
 			Shader::from_wgsl
 		);
 
-		app
-			.init_resource::<WireframeConfig>()
-			.add_plugin(ExtractResourcePlugin::<WireframeConfig>::default());
+		app.init_resource::<WireframeConfig>();
+		app.init_plugin::<ExtractResourcePlugin<WireframeConfig>>();
 
 		if let Ok(render_app) = app.get_sub_app_mut(RenderApp) {
 			render_app

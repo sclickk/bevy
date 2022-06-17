@@ -84,7 +84,7 @@ impl Plugin for Mesh2dRenderPlugin {
 		);
 		load_internal_asset!(app, MESH2D_SHADER_HANDLE, "mesh2d.wgsl", Shader::from_wgsl);
 
-		app.add_plugin(UniformComponentPlugin::<Mesh2dUniform>::default());
+		app.init_plugin::<UniformComponentPlugin<Mesh2dUniform>>();
 
 		if let Ok(render_app) = app.get_sub_app_mut(RenderApp) {
 			render_app

@@ -17,14 +17,14 @@ use bevy::{
 };
 
 fn main() {
-	App::new()
-		.add_plugins(DefaultPlugins)
-		.add_plugin(FrameTimeDiagnosticsPlugin::default())
-		.add_plugin(LogDiagnosticsPlugin::default())
-		.add_startup_system(setup)
-		.add_system(move_camera)
-		.add_system(print_mesh_count)
-		.run();
+	let mut app = App::new();
+	app.add_plugins(DefaultPlugins);
+	app.init_plugin::<FrameTimeDiagnosticsPlugin>();
+	app.init_plugin::<LogDiagnosticsPlugin>();
+	app.add_startup_system(setup);
+	app.add_system(move_camera);
+	app.add_system(print_mesh_count);
+	app.run();
 }
 
 fn setup(

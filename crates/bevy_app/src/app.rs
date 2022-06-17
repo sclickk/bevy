@@ -601,13 +601,13 @@ impl App {
 	pub fn add_default_stages(&mut self) -> &mut Self {
 		self.add_stage(CoreStage::First, SystemStage::parallel());
 		self.add_stage(
-				StartupSchedule,
-				Schedule::default()
-					.with_run_criteria(ShouldRun::once)
-					.with_stage(StartupStage::PreStartup, SystemStage::parallel())
-					.with_stage(StartupStage::Startup, SystemStage::parallel())
-					.with_stage(StartupStage::PostStartup, SystemStage::parallel()),
-			);
+			StartupSchedule,
+			Schedule::default()
+				.with_run_criteria(ShouldRun::once)
+				.with_stage(StartupStage::PreStartup, SystemStage::parallel())
+				.with_stage(StartupStage::Startup, SystemStage::parallel())
+				.with_stage(StartupStage::PostStartup, SystemStage::parallel()),
+		);
 		self.add_stage(CoreStage::PreUpdate, SystemStage::parallel());
 		self.add_stage(CoreStage::Update, SystemStage::parallel());
 		self.add_stage(CoreStage::PostUpdate, SystemStage::parallel());
@@ -779,6 +779,14 @@ impl App {
 	{
 		debug!("added plugin: {}", plugin.name());
 		plugin.build(self);
+	}
+
+	/// Alternatyive to add_plugin(default());
+	pub fn init_plugin<T>(&mut self)
+	where
+		T: Plugin + Default,
+	{
+		self.add_plugin(T::default());
 	}
 
 	/// Adds a group of [`Plugin`]s.

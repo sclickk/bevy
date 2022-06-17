@@ -16,15 +16,15 @@ use rand::Rng;
 const CAMERA_SPEED: f32 = 1000.0;
 
 fn main() {
-	App::new()
-		// Since this is also used as a benchmark, we want it to display performance data.
-		.add_plugin(LogDiagnosticsPlugin::default())
-		.add_plugin(FrameTimeDiagnosticsPlugin::default())
-		.add_plugins(DefaultPlugins)
-		.add_startup_system(setup)
-		.add_system(print_sprite_count)
-		.add_system(move_camera.after(print_sprite_count))
-		.run();
+	let mut app = App::new();
+	// Since this is also used as a benchmark, we want it to display performance data.
+	app.init_plugin::<LogDiagnosticsPlugin>();
+	app.init_plugin::<FrameTimeDiagnosticsPlugin>();
+	app.add_plugins(DefaultPlugins);
+	app.add_startup_system(setup);
+	app.add_system(print_sprite_count);
+	app.add_system(move_camera.after(print_sprite_count));
+	app.run();
 }
 
 fn setup(mut commands: Commands, assets: Res<AssetServer>) {

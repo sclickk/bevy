@@ -169,11 +169,11 @@ impl Plugin for RenderPlugin {
 			render_app.add_stage(RenderStage::Queue, SystemStage::parallel());
 			render_app.add_stage(RenderStage::PhaseSort, SystemStage::parallel());
 			render_app.add_stage(
-					RenderStage::Render,
-					SystemStage::parallel()
-						.with_system(PipelineCache::process_pipeline_queue_system)
-						.with_system(render_system.exclusive_system().at_end()),
-				);
+				RenderStage::Render,
+				SystemStage::parallel()
+					.with_system(PipelineCache::process_pipeline_queue_system)
+					.with_system(render_system.exclusive_system().at_end()),
+			);
 			render_app.add_stage(RenderStage::Cleanup, SystemStage::parallel());
 			render_app.init_resource::<RenderGraph>();
 			render_app.insert_resource(instance);

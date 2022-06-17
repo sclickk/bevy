@@ -17,12 +17,12 @@ use bevy::{
 };
 
 fn main() {
-	App::new()
-		.add_plugins(DefaultPlugins)
-		.add_plugin(MaterialPlugin::<CustomMaterial>::default())
-		.add_startup_system(setup)
-		.add_system(rotate_camera)
-		.run();
+	let mut app = App::new();
+	app.add_plugins(DefaultPlugins);
+	app.init_plugin::<MaterialPlugin<CustomMaterial>>();
+	app.add_startup_system(setup);
+	app.add_system(rotate_camera);
+	app.run();
 }
 
 #[derive(Component)]

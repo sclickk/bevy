@@ -9,13 +9,13 @@ use bevy::{
 };
 
 fn main() {
-	App::new()
-		.add_plugins(DefaultPlugins)
-		.add_plugin(FrameTimeDiagnosticsPlugin::default())
-		.add_startup_system(setup)
-		.add_system(text_update_system)
-		.add_system(text_color_system)
-		.run();
+	let mut app = App::new();
+	app.add_plugins(DefaultPlugins);
+	app.init_plugin::<FrameTimeDiagnosticsPlugin>();
+	app.add_startup_system(setup);
+	app.add_system(text_update_system);
+	app.add_system(text_color_system);
+	app.run();
 }
 
 // A unit struct to help identify the FPS UI component, since there may be many Text components

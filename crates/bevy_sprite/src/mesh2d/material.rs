@@ -193,10 +193,9 @@ impl<M: SpecializedMaterial2d> Default for Material2dPlugin<M> {
 
 impl<M: SpecializedMaterial2d> Plugin for Material2dPlugin<M> {
 	fn build(&self, app: &mut App) {
-		app
-			.add_asset::<M>()
-			.add_plugin(ExtractComponentPlugin::<Handle<M>>::extract_visible())
-			.add_plugin(RenderAssetPlugin::<M>::default());
+		app.add_asset::<M>();
+		app.add_plugin(ExtractComponentPlugin::<Handle<M>>::extract_visible());
+		app.init_plugin::<RenderAssetPlugin<M>>();
 		if let Ok(render_app) = app.get_sub_app_mut(RenderApp) {
 			render_app
 				.add_render_command::<Transparent2d, DrawMaterial2d<M>>()

@@ -17,11 +17,11 @@ use bevy::{
 };
 
 fn main() {
-	App::new()
-		.add_plugins(DefaultPlugins)
-		.add_plugin(MaterialPlugin::<CustomMaterial>::default())
-		.add_startup_system(setup)
-		.run();
+	let mut app = App::new();
+	app.add_plugins(DefaultPlugins);
+	app.init_plugin::<MaterialPlugin<CustomMaterial>>();
+	app.add_startup_system(setup);
+	app.run();
 }
 
 /// set up a simple 3D scene

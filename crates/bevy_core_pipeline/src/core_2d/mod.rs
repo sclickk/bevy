@@ -34,20 +34,18 @@ pub struct Core2dPlugin;
 
 impl Plugin for Core2dPlugin {
 	fn build(&self, app: &mut App) {
-		app
-			.register_type::<Camera2d>()
-			.add_plugin(ExtractComponentPlugin::<Camera2d>::default());
+		app.register_type::<Camera2d>();
+		app.init_plugin::<ExtractComponentPlugin<Camera2d>>();
 
 		let render_app = match app.get_sub_app_mut(RenderApp) {
 			Ok(render_app) => render_app,
 			Err(_) => return,
 		};
 
-		render_app
-			.init_resource::<DrawFunctions<Transparent2d>>()
-			.add_system_to_stage(RenderStage::Extract, extract_core_2d_camera_phases)
-			.add_system_to_stage(RenderStage::PhaseSort, sort_phase_system::<Transparent2d>)
-			.add_system_to_stage(RenderStage::PhaseSort, batch_phase_system::<Transparent2d>);
+		render_app.init_resource::<DrawFunctions<Transparent2d>>();
+		render_app.add_system_to_stage(RenderStage::Extract, extract_core_2d_camera_phases);
+		render_app.add_system_to_stage(RenderStage::PhaseSort, sort_phase_system::<Transparent2d>);
+		render_app.add_system_to_stage(RenderStage::PhaseSort, batch_phase_system::<Transparent2d>);
 
 		let pass_node_2d = MainPass2dNode::new(&mut render_app.world);
 		let mut graph = render_app.world.resource_mut::<RenderGraph>();

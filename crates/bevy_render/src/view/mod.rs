@@ -28,11 +28,10 @@ pub struct ViewPlugin;
 
 impl Plugin for ViewPlugin {
 	fn build(&self, app: &mut App) {
-		app
-			.init_resource::<Msaa>()
-			// NOTE: windows.is_changed() handles cases where a window was resized
-			.add_plugin(ExtractResourcePlugin::<Msaa>::default())
-			.add_plugin(VisibilityPlugin);
+		app.init_resource::<Msaa>();
+		// NOTE: windows.is_changed() handles cases where a window was resized
+		app.init_plugin::<ExtractResourcePlugin<Msaa>>();
+		app.add_plugin(VisibilityPlugin);
 
 		if let Ok(render_app) = app.get_sub_app_mut(RenderApp) {
 			render_app

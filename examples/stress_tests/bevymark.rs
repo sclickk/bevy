@@ -27,33 +27,33 @@ struct Bird {
 }
 
 fn main() {
-	App::new()
-		.insert_resource(WindowDescriptor {
-			title: "BevyMark".to_string(),
-			width: 800.,
-			height: 600.,
-			present_mode: PresentMode::Immediate,
-			resizable: true,
-			..Default::default()
-		})
-		.add_plugins(DefaultPlugins)
-		.add_plugin(FrameTimeDiagnosticsPlugin::default())
-		.add_plugin(LogDiagnosticsPlugin::default())
-		.insert_resource(BevyCounter {
-			count: 0,
-			color: Color::WHITE,
-		})
-		.add_startup_system(setup)
-		.add_system(mouse_handler)
-		.add_system(movement_system)
-		.add_system(collision_system)
-		.add_system(counter_system)
-		.add_system_set(
-			SystemSet::new()
-				.with_run_criteria(FixedTimestep::step(0.2))
-				.with_system(scheduled_spawner),
-		)
-		.run();
+	let mut app = App::new();
+	app.insert_resource(WindowDescriptor {
+		title: "BevyMark".to_string(),
+		width: 800.,
+		height: 600.,
+		present_mode: PresentMode::Immediate,
+		resizable: true,
+		..Default::default()
+	});
+	app.add_plugins(DefaultPlugins);
+	app.init_plugin::<FrameTimeDiagnosticsPlugin>();
+	app.init_plugin::<LogDiagnosticsPlugin>();
+	app.insert_resource(BevyCounter {
+		count: 0,
+		color: Color::WHITE,
+	});
+	app.add_startup_system(setup);
+	app.add_system(mouse_handler);
+	app.add_system(movement_system);
+	app.add_system(collision_system);
+	app.add_system(counter_system);
+	app.add_system_set(
+		SystemSet::new()
+			.with_run_criteria(FixedTimestep::step(0.2))
+			.with_system(scheduled_spawner),
+	);
+	app.run();
 }
 
 struct BirdScheduled {

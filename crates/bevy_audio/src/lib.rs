@@ -58,9 +58,9 @@ impl Plugin for AudioPlugin {
 		app.add_asset::<AudioSink>();
 		app.init_resource::<Audio<AudioSource>>();
 		app.add_system_to_stage(
-				CoreStage::PostUpdate,
-				play_queued_audio_system::<AudioSource>,
-			);
+			CoreStage::PostUpdate,
+			play_queued_audio_system::<AudioSource>,
+		);
 
 		#[cfg(any(feature = "mp3", feature = "flac", feature = "wav", feature = "vorbis"))]
 		app.init_asset_loader::<AudioLoader>();

@@ -112,59 +112,58 @@ impl Plugin for PbrPlugin {
 			Shader::from_wgsl
 		);
 
-		app
-			.register_type::<CubemapVisibleEntities>()
-			.register_type::<DirectionalLight>()
-			.register_type::<PointLight>()
-			.add_plugin(MeshRenderPlugin)
-			.add_plugin(MaterialPlugin::<StandardMaterial>::default())
-			.init_resource::<AmbientLight>()
-			.init_resource::<GlobalVisiblePointLights>()
-			.init_resource::<DirectionalLightShadowMap>()
-			.init_resource::<PointLightShadowMap>()
-			.add_plugin(ExtractResourcePlugin::<AmbientLight>::default())
-			.add_system_to_stage(
-				CoreStage::PostUpdate,
-				// NOTE: Clusters need to have been added before update_clusters is run so
-				// add as an exclusive system
-				add_clusters
-					.exclusive_system()
-					.label(SimulationLightSystems::AddClusters),
-			)
-			.add_system_to_stage(
-				CoreStage::PostUpdate,
-				assign_lights_to_clusters
-					.label(SimulationLightSystems::AssignLightsToClusters)
-					.after(TransformSystem::TransformPropagate)
-					.after(CameraUpdateSystem)
-					.after(ModifiesWindows),
-			)
-			.add_system_to_stage(
-				CoreStage::PostUpdate,
-				update_directional_light_frusta
-					.label(SimulationLightSystems::UpdateDirectionalLightFrusta)
-					.after(TransformSystem::TransformPropagate),
-			)
-			.add_system_to_stage(
-				CoreStage::PostUpdate,
-				update_point_light_frusta
-					.label(SimulationLightSystems::UpdatePointLightFrusta)
-					.after(TransformSystem::TransformPropagate)
-					.after(SimulationLightSystems::AssignLightsToClusters),
-			)
-			.add_system_to_stage(
-				CoreStage::PostUpdate,
-				check_light_mesh_visibility
-					.label(SimulationLightSystems::CheckLightVisibility)
-					.after(TransformSystem::TransformPropagate)
-					.after(VisibilitySystems::CalculateBounds)
-					.after(SimulationLightSystems::UpdateDirectionalLightFrusta)
-					.after(SimulationLightSystems::UpdatePointLightFrusta)
-					// NOTE: This MUST be scheduled AFTER the core renderer visibility check
-					// because that resets entity ComputedVisibility for the first view
-					// which would override any results from this otherwise
-					.after(VisibilitySystems::CheckVisibility),
-			);
+		app.register_type::<CubemapVisibleEntities>();
+		app.register_type::<DirectionalLight>();
+		app.register_type::<PointLight>();
+		app.add_plugin(MeshRenderPlugin);
+		app.init_plugin::<MaterialPlugin<StandardMaterial>>();
+		app.init_resource::<AmbientLight>();
+		app.init_resource::<GlobalVisiblePointLights>();
+		app.init_resource::<DirectionalLightShadowMap>();
+		app.init_resource::<PointLightShadowMap>();
+		app.init_plugin::<ExtractResourcePlugin<AmbientLight>>();
+		app.add_system_to_stage(
+			CoreStage::PostUpdate,
+			// NOTE: Clusters need to have been added before update_clusters is run so
+			// add as an exclusive system
+			add_clusters
+				.exclusive_system()
+				.label(SimulationLightSystems::AddClusters),
+		);
+		app.add_system_to_stage(
+			CoreStage::PostUpdate,
+			assign_lights_to_clusters
+				.label(SimulationLightSystems::AssignLightsToClusters)
+				.after(TransformSystem::TransformPropagate)
+				.after(CameraUpdateSystem)
+				.after(ModifiesWindows),
+		);
+		app.add_system_to_stage(
+			CoreStage::PostUpdate,
+			update_directional_light_frusta
+				.label(SimulationLightSystems::UpdateDirectionalLightFrusta)
+				.after(TransformSystem::TransformPropagate),
+		);
+		app.add_system_to_stage(
+			CoreStage::PostUpdate,
+			update_point_light_frusta
+				.label(SimulationLightSystems::UpdatePointLightFrusta)
+				.after(TransformSystem::TransformPropagate)
+				.after(SimulationLightSystems::AssignLightsToClusters),
+		);
+		app.add_system_to_stage(
+			CoreStage::PostUpdate,
+			check_light_mesh_visibility
+				.label(SimulationLightSystems::CheckLightVisibility)
+				.after(TransformSystem::TransformPropagate)
+				.after(VisibilitySystems::CalculateBounds)
+				.after(SimulationLightSystems::UpdateDirectionalLightFrusta)
+				.after(SimulationLightSystems::UpdatePointLightFrusta)
+				// NOTE: This MUST be scheduled AFTER the core renderer visibility check
+				// because that resets entity ComputedVisibility for the first view
+				// which would override any results from this otherwise
+				.after(VisibilitySystems::CheckVisibility),
+		);
 
 		app
 			.world

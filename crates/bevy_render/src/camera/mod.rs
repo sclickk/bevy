@@ -20,19 +20,18 @@ pub struct CameraPlugin;
 
 impl Plugin for CameraPlugin {
 	fn build(&self, app: &mut App) {
-		app
-			.register_type::<Camera>()
-			.register_type::<Visibility>()
-			.register_type::<ComputedVisibility>()
-			.register_type::<VisibleEntities>()
-			.register_type::<WindowOrigin>()
-			.register_type::<ScalingMode>()
-			.register_type::<DepthCalculation>()
-			.register_type::<Aabb>()
-			.register_type::<CameraRenderGraph>()
-			.add_plugin(CameraProjectionPlugin::<Projection>::default())
-			.add_plugin(CameraProjectionPlugin::<OrthographicProjection>::default())
-			.add_plugin(CameraProjectionPlugin::<PerspectiveProjection>::default());
+		app.register_type::<Camera>();
+		app.register_type::<Visibility>();
+		app.register_type::<ComputedVisibility>();
+		app.register_type::<VisibleEntities>();
+		app.register_type::<WindowOrigin>();
+		app.register_type::<ScalingMode>();
+		app.register_type::<DepthCalculation>();
+		app.register_type::<Aabb>();
+		app.register_type::<CameraRenderGraph>();
+		app.init_plugin::<CameraProjectionPlugin<Projection>>();
+		app.init_plugin::<CameraProjectionPlugin<OrthographicProjection>>();
+		app.init_plugin::<CameraProjectionPlugin<PerspectiveProjection>>();
 
 		if let Ok(render_app) = app.get_sub_app_mut(RenderApp) {
 			render_app.add_system_to_stage(RenderStage::Extract, extract_cameras);

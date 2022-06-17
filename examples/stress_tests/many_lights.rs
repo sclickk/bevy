@@ -11,22 +11,22 @@ use bevy::{
 use rand::{thread_rng, Rng};
 
 fn main() {
-	App::new()
-		.insert_resource(WindowDescriptor {
-			width: 1024.0,
-			height: 768.0,
-			title: "many_lights".to_string(),
-			present_mode: bevy::window::PresentMode::Immediate,
-			..Default::default()
-		})
-		.add_plugins(DefaultPlugins)
-		.add_plugin(FrameTimeDiagnosticsPlugin::default())
-		.add_plugin(LogDiagnosticsPlugin::default())
-		.add_startup_system(setup)
-		.add_system(move_camera)
-		.add_system(print_light_count)
-		.add_plugin(LogVisibleLights)
-		.run();
+	let mut app = App::new();
+	app.insert_resource(WindowDescriptor {
+		width: 1024.0,
+		height: 768.0,
+		title: "many_lights".to_string(),
+		present_mode: bevy::window::PresentMode::Immediate,
+		..Default::default()
+	});
+	app.add_plugins(DefaultPlugins);
+	app.init_plugin::<FrameTimeDiagnosticsPlugin>();
+	app.init_plugin::<LogDiagnosticsPlugin>();
+	app.add_startup_system(setup);
+	app.add_system(move_camera);
+	app.add_system(print_light_count);
+	app.add_plugin(LogVisibleLights);
+	app.run();
 }
 
 fn setup(

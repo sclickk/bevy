@@ -19,11 +19,11 @@ use bevy::{
 };
 
 fn main() {
-	App::new()
-		.add_plugins(DefaultPlugins)
-		.add_plugin(MaterialPlugin::<CustomMaterial>::default())
-		.add_startup_system(setup)
-		.run();
+	let mut app = App::new();
+	app.add_plugins(DefaultPlugins);
+	app.init_plugin::<MaterialPlugin<CustomMaterial>>();
+	app.add_startup_system(setup);
+	app.run();
 }
 
 // A "high" random id should be used for custom attributes to ensure consistent sorting and avoid collisions with other attributes.

@@ -25,11 +25,11 @@ use bevy::{
 
 fn main() {
 	let mut app = App::new();
-	app
-		.add_plugins(DefaultPlugins)
-		.add_plugin(Material2dPlugin::<PostProcessingMaterial>::default())
-		.add_startup_system(setup)
-		.add_system(main_camera_cube_rotator_system);
+
+	app.add_plugins(DefaultPlugins);
+	app.init_plugin::<Material2dPlugin<PostProcessingMaterial>>();
+	app.add_startup_system(setup);
+	app.add_system(main_camera_cube_rotator_system);
 
 	app.run();
 }

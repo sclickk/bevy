@@ -40,24 +40,22 @@ pub struct Core3dPlugin;
 
 impl Plugin for Core3dPlugin {
 	fn build(&self, app: &mut App) {
-		app
-			.register_type::<Camera3d>()
-			.add_plugin(ExtractComponentPlugin::<Camera3d>::default());
+		app.register_type::<Camera3d>();
+		app.init_plugin::<ExtractComponentPlugin<Camera3d>>();
 
 		let render_app = match app.get_sub_app_mut(RenderApp) {
 			Ok(render_app) => render_app,
 			Err(_) => return,
 		};
 
-		render_app
-			.init_resource::<DrawFunctions<Opaque3d>>()
-			.init_resource::<DrawFunctions<AlphaMask3d>>()
-			.init_resource::<DrawFunctions<Transparent3d>>()
-			.add_system_to_stage(RenderStage::Extract, extract_core_3d_camera_phases)
-			.add_system_to_stage(RenderStage::Prepare, prepare_core_3d_depth_textures)
-			.add_system_to_stage(RenderStage::PhaseSort, sort_phase_system::<Opaque3d>)
-			.add_system_to_stage(RenderStage::PhaseSort, sort_phase_system::<AlphaMask3d>)
-			.add_system_to_stage(RenderStage::PhaseSort, sort_phase_system::<Transparent3d>);
+		render_app.init_resource::<DrawFunctions<Opaque3d>>();
+		render_app.init_resource::<DrawFunctions<AlphaMask3d>>();
+		render_app.init_resource::<DrawFunctions<Transparent3d>>();
+		render_app.add_system_to_stage(RenderStage::Extract, extract_core_3d_camera_phases);
+		render_app.add_system_to_stage(RenderStage::Prepare, prepare_core_3d_depth_textures);
+		render_app.add_system_to_stage(RenderStage::PhaseSort, sort_phase_system::<Opaque3d>);
+		render_app.add_system_to_stage(RenderStage::PhaseSort, sort_phase_system::<AlphaMask3d>);
+		render_app.add_system_to_stage(RenderStage::PhaseSort, sort_phase_system::<Transparent3d>);
 
 		let pass_node_3d = MainPass3dNode::new(&mut render_app.world);
 		let mut graph = render_app.world.resource_mut::<RenderGraph>();

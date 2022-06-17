@@ -6,14 +6,14 @@ use bevy::{
 };
 
 fn main() {
-	App::new()
-		.add_plugins(DefaultPlugins)
-		// The "print diagnostics" plugin is optional.
-		// It just visualizes our diagnostics in the console.
-		.add_plugin(LogDiagnosticsPlugin::default())
-		.add_startup_system(setup_diagnostic_system)
-		.add_system(my_system)
-		.run();
+	let mut app = App::new();
+	app.add_plugins(DefaultPlugins);
+	// The "print diagnostics" plugin is optional.
+	// It just visualizes our diagnostics in the console.
+	app.init_plugin::<LogDiagnosticsPlugin>();
+	app.add_startup_system(setup_diagnostic_system);
+	app.add_system(my_system);
+	app.run();
 }
 
 // All diagnostics should have a unique DiagnosticId.

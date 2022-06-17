@@ -29,7 +29,7 @@ impl Plugin for ColorMaterialPlugin {
 			Shader::from_wgsl
 		);
 
-		app.add_plugin(Material2dPlugin::<ColorMaterial>::default());
+		app.init_plugin::<Material2dPlugin<ColorMaterial>>();
 
 		app
 			.world

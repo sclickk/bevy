@@ -181,13 +181,13 @@ fn main() {
 
 	println!("\n{:#?}", cfg);
 
-	App::new()
-		.insert_resource(cfg)
-		.add_plugins(MinimalPlugins)
-		.add_plugin(TransformPlugin::default())
-		.add_startup_system(setup)
-		.add_system(update)
-		.run();
+	let mut app = App::new();
+	app.insert_resource(cfg);
+	app.add_plugins(MinimalPlugins);
+	app.init_plugin::<TransformPlugin>();
+	app.add_startup_system(setup);
+	app.add_system(update);
+	app.run();
 }
 
 /// test configuration
