@@ -738,6 +738,12 @@ impl From<wgpu::Features> for CompressedImageFormats {
 	}
 }
 
+impl From<&RenderDevice> for CompressedImageFormats {
+	fn from(render_device: &RenderDevice) -> Self {
+		Self::from(render_device.features())
+	}
+}
+
 #[cfg(test)]
 mod test {
 
