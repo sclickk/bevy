@@ -7,7 +7,7 @@ use rand::random;
 struct Velocity(Vec2);
 
 fn spawn_system(mut commands: Commands, asset_server: Res<AssetServer>) {
-	commands.spawn_bundle(Camera2dBundle::default());
+	commands.init_bundle::<Camera2dBundle>();
 	let texture = asset_server.load("branding/icon.png");
 	for _ in 0..128 {
 		commands

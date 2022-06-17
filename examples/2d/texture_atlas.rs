@@ -72,7 +72,7 @@ fn setup(
 	let atlas_handle = texture_atlases.add(texture_atlas);
 
 	// set up a scene to display our texture atlas
-	commands.spawn_bundle(Camera2dBundle::default());
+	commands.init_bundle::<Camera2dBundle>();
 	// draw a sprite from the atlas
 	commands.spawn_bundle(SpriteSheetBundle {
 		transform: Transform {

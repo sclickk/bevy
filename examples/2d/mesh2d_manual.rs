@@ -108,7 +108,7 @@ fn star(
 	));
 	commands
 		// And use an orthographic projection
-		.spawn_bundle(Camera2dBundle::default());
+		.init_bundle::<Camera2dBundle>();
 }
 
 /// A marker component for colored 2d meshes

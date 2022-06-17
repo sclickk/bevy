@@ -14,7 +14,7 @@ fn setup(
 	mut meshes: ResMut<Assets<Mesh>>,
 	mut materials: ResMut<Assets<ColorMaterial>>,
 ) {
-	commands.spawn_bundle(Camera2dBundle::default());
+	commands.init_bundle::<Camera2dBundle>();
 
 	// Rectangle
 	commands.spawn_bundle(SpriteBundle {

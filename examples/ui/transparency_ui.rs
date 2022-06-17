@@ -12,7 +12,7 @@ fn main() {
 }
 
 fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
-	commands.spawn_bundle(Camera2dBundle::default());
+	commands.init_bundle::<Camera2dBundle>();
 
 	let font_handle = asset_server.load("fonts/FiraSans-Bold.ttf");
 

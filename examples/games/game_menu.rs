@@ -43,7 +43,7 @@ fn main() {
 }
 
 fn setup(mut commands: Commands) {
-	commands.spawn_bundle(Camera2dBundle::default());
+	commands.init_bundle::<Camera2dBundle>();
 }
 
 mod splash {

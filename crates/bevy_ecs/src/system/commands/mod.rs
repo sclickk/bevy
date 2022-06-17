@@ -178,6 +178,11 @@ impl<'w, 's> Commands<'w, 's> {
 		e
 	}
 
+	/// Alterantive to `spawn_bundle(default())`
+	pub fn init_bundle<T: Bundle + Default>(&mut self) {
+		self.spawn_bundle(T::default());
+	}
+
 	/// Returns an [`EntityCommands`] builder for the requested [`Entity`].
 	///
 	/// # Example

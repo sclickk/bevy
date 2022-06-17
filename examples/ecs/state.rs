@@ -35,7 +35,7 @@ const HOVERED_BUTTON: Color = Color::rgb(0.25, 0.25, 0.25);
 const PRESSED_BUTTON: Color = Color::rgb(0.35, 0.75, 0.35);
 
 fn setup(mut commands: Commands) {
-	commands.spawn_bundle(Camera2dBundle::default());
+	commands.init_bundle::<Camera2dBundle>();
 }
 
 fn setup_menu(mut commands: Commands, asset_server: Res<AssetServer>) {

@@ -173,7 +173,7 @@ struct Scoreboard {
 // Add the game's entities to our world
 fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
 	// Camera
-	commands.spawn_bundle(Camera2dBundle::default());
+	commands.init_bundle::<Camera2dBundle>();
 
 	// Sound
 	let ball_collision_sound = asset_server.load("sounds/breakout_collision.ogg");

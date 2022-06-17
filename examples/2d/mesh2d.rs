@@ -14,7 +14,7 @@ fn setup(
 	mut meshes: ResMut<Assets<Mesh>>,
 	mut materials: ResMut<Assets<ColorMaterial>>,
 ) {
-	commands.spawn_bundle(Camera2dBundle::default());
+	commands.init_bundle::<Camera2dBundle>();
 	commands.spawn_bundle(MaterialMesh2dBundle {
 		mesh: meshes
 			.add(Mesh::from(shape::Quad::default()))

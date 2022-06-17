@@ -57,7 +57,7 @@ fn setup(mut commands: Commands, mut images: ResMut<Assets<Image>>) {
 		texture: image.clone(),
 		..Default::default()
 	});
-	commands.spawn_bundle(Camera2dBundle::default());
+	commands.init_bundle::<Camera2dBundle>();
 
 	commands.insert_resource(GameOfLifeImage(image));
 }
