@@ -1,6 +1,7 @@
 //! A simplified implementation of the classic game "Breakout".
 
 use bevy::{
+	diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin},
 	math::{const_vec2, const_vec3},
 	prelude::*,
 	sprite::collide_aabb::{collide, Collision},
@@ -55,6 +56,8 @@ const SCORE_COLOR: Color = Color::rgb(1.0, 0.5, 0.5);
 fn main() {
 	let mut app = App::new();
 	app.add_plugins(DefaultPlugins);
+	app.init_plugin::<LogDiagnosticsPlugin>();
+	app.init_plugin::<FrameTimeDiagnosticsPlugin>();
 	app.insert_resource(Scoreboard { score: 0 });
 	app.insert_resource(ClearColor(BACKGROUND_COLOR));
 	app.add_startup_system(setup);
