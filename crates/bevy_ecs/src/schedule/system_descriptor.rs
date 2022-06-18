@@ -42,6 +42,7 @@ pub enum SystemDescriptor {
 	Exclusive(ExclusiveSystemDescriptor),
 }
 
+// TODO: Deprecate!
 pub trait IntoSystemDescriptor<Params> {
 	fn into_descriptor(self) -> SystemDescriptor;
 }
@@ -75,9 +76,15 @@ impl IntoSystemDescriptor<()> for BoxedSystem<(), ()> {
 	}
 }
 
+impl Into<SystemDescriptor> for ExclusiveSystemDescriptor {
+	fn into(self) -> SystemDescriptor {
+		SystemDescriptor::Exclusive(self)
+	}
+}
+
 impl IntoSystemDescriptor<()> for ExclusiveSystemDescriptor {
 	fn into_descriptor(self) -> SystemDescriptor {
-		SystemDescriptor::Exclusive(self)
+		self.into()
 	}
 }
 
