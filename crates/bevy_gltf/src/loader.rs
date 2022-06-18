@@ -911,11 +911,10 @@ fn primitive_label(mesh: &gltf::Mesh, primitive: &Primitive) -> String {
 
 /// Returns the label for the `material`.
 fn material_label(material: &gltf::Material) -> String {
-	if let Some(index) = material.index() {
-		format!("Material{}", index)
-	} else {
-		"MaterialDefault".to_string()
-	}
+	material
+		.index()
+		.map(|index| format!("Material{}", index))
+		.unwrap_or("MaterialDefault".to_string())
 }
 
 /// Returns the label for the `texture`.
