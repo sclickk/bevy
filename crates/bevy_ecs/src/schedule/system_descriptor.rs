@@ -106,15 +106,22 @@ pub struct ParallelSystemDescriptor {
 	pub(crate) ambiguity_sets: Vec<BoxedAmbiguitySetLabel>,
 }
 
-fn new_parallel_descriptor(system: BoxedSystem<(), ()>) -> ParallelSystemDescriptor {
-	ParallelSystemDescriptor {
-		labels: system.default_labels(),
-		system,
-		run_criteria: None,
-		before: Vec::new(),
-		after: Vec::new(),
-		ambiguity_sets: Vec::new(),
+impl From<BoxedSystem<(), ()>> for ParallelSystemDescriptor {
+	fn from(system: BoxedSystem<(), ()>) -> Self {
+		Self {
+			labels: system.default_labels(),
+			system,
+			run_criteria: None,
+			before: Vec::new(),
+			after: Vec::new(),
+			ambiguity_sets: Vec::new(),
+		}
 	}
+}
+
+// TODO: Deprecate!
+fn new_parallel_descriptor(system: BoxedSystem<(), ()>) -> ParallelSystemDescriptor {
+	ParallelSystemDescriptor::from(system)
 }
 
 pub trait ParallelSystemDescriptorCoercion<Params> {
@@ -244,16 +251,23 @@ pub struct ExclusiveSystemDescriptor {
 	pub(crate) insertion_point: InsertionPoint,
 }
 
-fn new_exclusive_descriptor(system: Box<dyn ExclusiveSystem>) -> ExclusiveSystemDescriptor {
-	ExclusiveSystemDescriptor {
-		system,
-		run_criteria: None,
-		labels: Vec::new(),
-		before: Vec::new(),
-		after: Vec::new(),
-		ambiguity_sets: Vec::new(),
-		insertion_point: InsertionPoint::AtStart,
+impl From<Box<dyn ExclusiveSystem>> for ExclusiveSystemDescriptor {
+	fn from(system: Box<dyn ExclusiveSystem>) -> Self {
+		Self {
+			system,
+			run_criteria: None,
+			labels: Vec::new(),
+			before: Vec::new(),
+			after: Vec::new(),
+			ambiguity_sets: Vec::new(),
+			insertion_point: InsertionPoint::AtStart,
+		}
 	}
+}
+
+// TODO: Deprecate!
+fn new_exclusive_descriptor(system: Box<dyn ExclusiveSystem>) -> ExclusiveSystemDescriptor {
+	ExclusiveSystemDescriptor::from(system)
 }
 
 pub trait ExclusiveSystemDescriptorCoercion {
