@@ -1,6 +1,11 @@
 //! Eat the cakes. Eat them all. An example 3D game.
 
-use bevy::{ecs::schedule::SystemSet, prelude::*, time::FixedTimestep};
+use bevy::{
+	diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin},
+	ecs::schedule::SystemSet,
+	prelude::*,
+	time::FixedTimestep,
+};
 use rand::Rng;
 
 #[derive(Clone, Eq, PartialEq, Debug, Hash)]
@@ -10,30 +15,32 @@ enum GameState {
 }
 
 fn main() {
-	App::new()
-		.init_resource::<Game>()
-		.add_plugins(DefaultPlugins)
-		.add_state(GameState::Playing)
-		.add_startup_system(setup_cameras)
-		.add_system_set(SystemSet::on_enter(GameState::Playing).with_system(setup))
-		.add_system_set(
-			SystemSet::on_update(GameState::Playing)
-				.with_system(move_player)
-				.with_system(focus_camera)
-				.with_system(rotate_bonus)
-				.with_system(scoreboard_system),
-		)
-		.add_system_set(SystemSet::on_exit(GameState::Playing).with_system(teardown))
-		.add_system_set(SystemSet::on_enter(GameState::GameOver).with_system(display_score))
-		.add_system_set(SystemSet::on_update(GameState::GameOver).with_system(gameover_keyboard))
-		.add_system_set(SystemSet::on_exit(GameState::GameOver).with_system(teardown))
-		.add_system_set(
-			SystemSet::new()
-				.with_run_criteria(FixedTimestep::step(5.0))
-				.with_system(spawn_bonus),
-		)
-		.add_system(bevy::window::close_on_esc)
-		.run();
+	let mut app = App::new();
+	app.init_resource::<Game>();
+	app.init_plugin::<LogDiagnosticsPlugin>();
+	app.init_plugin::<FrameTimeDiagnosticsPlugin>();
+	app.add_plugins(DefaultPlugins);
+	app.add_state(GameState::Playing);
+	app.add_startup_system(setup_cameras);
+	app.add_system_set(SystemSet::on_enter(GameState::Playing).with_system(setup));
+	app.add_system_set(
+		SystemSet::on_update(GameState::Playing)
+			.with_system(move_player)
+			.with_system(focus_camera)
+			.with_system(rotate_bonus)
+			.with_system(scoreboard_system),
+	);
+	app.add_system_set(SystemSet::on_exit(GameState::Playing).with_system(teardown));
+	app.add_system_set(SystemSet::on_enter(GameState::GameOver).with_system(display_score));
+	app.add_system_set(SystemSet::on_update(GameState::GameOver).with_system(gameover_keyboard));
+	app.add_system_set(SystemSet::on_exit(GameState::GameOver).with_system(teardown));
+	app.add_system_set(
+		SystemSet::new()
+			.with_run_criteria(FixedTimestep::step(5.0))
+			.with_system(spawn_bonus),
+	);
+	app.add_system(bevy::window::close_on_esc);
+	app.run();
 }
 
 struct Cell {
