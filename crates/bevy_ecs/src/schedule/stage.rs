@@ -156,7 +156,7 @@ impl SystemStage {
 			SystemDescriptor::Exclusive(mut descriptor) => {
 				let insertion_point = descriptor.insertion_point;
 				let criteria = descriptor.run_criteria.take();
-				let mut container = ExclusiveSystemContainer::from_descriptor(descriptor);
+				let mut container = ExclusiveSystemContainer::from(descriptor);
 				match criteria {
 					Some(RunCriteriaDescriptorOrLabel::Label(label)) => {
 						container.run_criteria_label = Some(label);
@@ -190,7 +190,7 @@ impl SystemStage {
 			}
 			SystemDescriptor::Parallel(mut descriptor) => {
 				let criteria = descriptor.run_criteria.take();
-				let mut container = ParallelSystemContainer::from_descriptor(descriptor);
+				let mut container = ParallelSystemContainer::from(descriptor);
 				match criteria {
 					Some(RunCriteriaDescriptorOrLabel::Label(label)) => {
 						container.run_criteria_label = Some(label);
@@ -348,7 +348,7 @@ impl SystemStage {
 
 		self
 			.run_criteria
-			.push(RunCriteriaContainer::from_descriptor(descriptor));
+			.push(RunCriteriaContainer::from(descriptor));
 		index
 	}
 

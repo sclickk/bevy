@@ -100,19 +100,6 @@ pub(crate) struct RunCriteriaContainer {
 }
 
 impl RunCriteriaContainer {
-	pub(crate) fn from_descriptor(descriptor: RunCriteriaDescriptor) -> Self {
-		Self {
-			should_run: ShouldRun::Yes,
-			inner: match descriptor.system {
-				RunCriteriaSystem::Single(system) => RunCriteriaInner::Single(system),
-				RunCriteriaSystem::Piped(system) => RunCriteriaInner::Piped { input: 0, system },
-			},
-			label: descriptor.label,
-			before: descriptor.before,
-			after: descriptor.after,
-		}
-	}
-
 	pub(crate) fn name(&self) -> Cow<'static, str> {
 		match &self.inner {
 			RunCriteriaInner::Single(system) => system.name(),
@@ -124,6 +111,21 @@ impl RunCriteriaContainer {
 		match &mut self.inner {
 			RunCriteriaInner::Single(system) => system.initialize(world),
 			RunCriteriaInner::Piped { system, .. } => system.initialize(world),
+		}
+	}
+}
+
+impl From<RunCriteriaDescriptor> for RunCriteriaContainer {
+	fn from(descriptor: RunCriteriaDescriptor) -> Self {
+		Self {
+			should_run: ShouldRun::Yes,
+			inner: match descriptor.system {
+				RunCriteriaSystem::Single(system) => RunCriteriaInner::Single(system),
+				RunCriteriaSystem::Piped(system) => RunCriteriaInner::Piped { input: 0, system },
+			},
+			label: descriptor.label,
+			before: descriptor.before,
+			after: descriptor.after,
 		}
 	}
 }

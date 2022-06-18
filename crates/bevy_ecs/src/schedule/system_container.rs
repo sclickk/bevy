@@ -36,8 +36,14 @@ pub(super) struct ExclusiveSystemContainer {
 }
 
 impl ExclusiveSystemContainer {
-	pub(super) fn from_descriptor(descriptor: ExclusiveSystemDescriptor) -> Self {
-		ExclusiveSystemContainer {
+	pub(super) fn system_mut(&mut self) -> &mut Box<dyn ExclusiveSystem> {
+		&mut self.system
+	}
+}
+
+impl From<ExclusiveSystemDescriptor> for ExclusiveSystemContainer {
+	fn from(descriptor: ExclusiveSystemDescriptor) -> Self {
+		Self {
 			system: descriptor.system,
 			run_criteria_index: None,
 			run_criteria_label: None,
@@ -47,10 +53,6 @@ impl ExclusiveSystemContainer {
 			after: descriptor.after,
 			ambiguity_sets: descriptor.ambiguity_sets,
 		}
-	}
-
-	pub(super) fn system_mut(&mut self) -> &mut Box<dyn ExclusiveSystem> {
-		&mut self.system
 	}
 }
 
@@ -121,20 +123,6 @@ unsafe impl Send for ParallelSystemContainer {}
 unsafe impl Sync for ParallelSystemContainer {}
 
 impl ParallelSystemContainer {
-	pub(crate) fn from_descriptor(descriptor: ParallelSystemDescriptor) -> Self {
-		ParallelSystemContainer {
-			system: descriptor.system,
-			should_run: false,
-			run_criteria_index: None,
-			run_criteria_label: None,
-			dependencies: Vec::new(),
-			labels: descriptor.labels,
-			before: descriptor.before,
-			after: descriptor.after,
-			ambiguity_sets: descriptor.ambiguity_sets,
-		}
-	}
-
 	pub fn name(&self) -> Cow<'static, str> {
 		GraphNode::name(self)
 	}
@@ -153,6 +141,22 @@ impl ParallelSystemContainer {
 
 	pub fn dependencies(&self) -> &[usize] {
 		&self.dependencies
+	}
+}
+
+impl From<ParallelSystemDescriptor> for ParallelSystemContainer {
+	fn from(descriptor: ParallelSystemDescriptor) -> Self {
+		Self {
+			system: descriptor.system,
+			should_run: false,
+			run_criteria_index: None,
+			run_criteria_label: None,
+			dependencies: Vec::new(),
+			labels: descriptor.labels,
+			before: descriptor.before,
+			after: descriptor.after,
+			ambiguity_sets: descriptor.ambiguity_sets,
+		}
 	}
 }
 
