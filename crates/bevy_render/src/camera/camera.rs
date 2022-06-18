@@ -199,12 +199,10 @@ impl Camera {
 		let target_size = self.logical_viewport_size()?;
 		let ndc_space_coords = self.world_to_ndc(camera_transform, world_position)?;
 		// NDC z-values outside of 0 < z < 1 are outside the camera frustum and are thus not in viewport-space
-		if ndc_space_coords.z < 0.0 || ndc_space_coords.z > 1.0 {
-			return None;
-		}
-
-		// Once in NDC space, we can discard the z element and rescale x/y to fit the screen
-		Some((ndc_space_coords.truncate() + Vec2::ONE) / 2.0 * target_size)
+		(!(0.0..=1.0).contains(&ndc_space_coords.z)).then(|| {
+			// Once in NDC space, we can discard the z element and rescale x/y to fit the screen
+			(ndc_space_coords.truncate() + Vec2::ONE) / 2.0 * target_size
+		})
 	}
 
 	/// Given a position in world space, use the camera's viewport to compute the Normalized Device Coordinates.
@@ -221,12 +219,7 @@ impl Camera {
 		let world_to_ndc: Mat4 =
 			self.computed.projection_matrix * camera_transform.compute_matrix().inverse();
 		let ndc_space_coords: Vec3 = world_to_ndc.project_point3(world_position);
-
-		if !ndc_space_coords.is_nan() {
-			Some(ndc_space_coords)
-		} else {
-			None
-		}
+		(!ndc_space_coords.is_nan()).then(|| ndc_space_coords)
 	}
 }
 
