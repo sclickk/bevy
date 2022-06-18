@@ -55,6 +55,7 @@ where
 /// # use bevy_utils::define_label;
 /// define_label!(MyNewLabelTrait);
 /// ```
+/// TODO: Move into bevy_ecs/src/schedule/label.rs
 #[macro_export]
 macro_rules! define_label {
 	($label_trait_name:ident) => {
