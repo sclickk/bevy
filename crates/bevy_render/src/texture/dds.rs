@@ -47,79 +47,79 @@ pub fn dds_format_to_texture_format(
 ) -> Result<TextureFormat, TextureError> {
 	Ok(if let Some(d3d_format) = dds.get_d3d_format() {
 		match d3d_format {
-            D3DFormat::A8B8G8R8 => {
-                if is_srgb {
-                    TextureFormat::Rgba8UnormSrgb
-                } else {
-                    TextureFormat::Rgba8Unorm
-                }
-            }
-            D3DFormat::A8 => TextureFormat::R8Unorm,
-            D3DFormat::A8R8G8B8 => {
-                if is_srgb {
-                    TextureFormat::Bgra8UnormSrgb
-                } else {
-                    TextureFormat::Bgra8Unorm
-                }
-            }
-            D3DFormat::G16R16 => TextureFormat::Rg16Uint,
-            D3DFormat::A2B10G10R10 => TextureFormat::Rgb10a2Unorm,
-            D3DFormat::A8L8 => TextureFormat::Rg8Uint,
-            D3DFormat::L16 => TextureFormat::R16Uint,
-            D3DFormat::L8 => TextureFormat::R8Uint,
-            D3DFormat::DXT1 => {
-                if is_srgb {
-                    TextureFormat::Bc1RgbaUnormSrgb
-                } else {
-                    TextureFormat::Bc1RgbaUnorm
-                }
-            }
-            D3DFormat::DXT3 | D3DFormat::DXT2 => {
-                if is_srgb {
-                    TextureFormat::Bc2RgbaUnormSrgb
-                } else {
-                    TextureFormat::Bc2RgbaUnorm
-                }
-            }
-            D3DFormat::DXT5 | D3DFormat::DXT4 => {
-                if is_srgb {
-                    TextureFormat::Bc3RgbaUnormSrgb
-                } else {
-                    TextureFormat::Bc3RgbaUnorm
-                }
-            }
-            D3DFormat::A16B16G16R16 => TextureFormat::Rgba16Uint,
-            D3DFormat::Q16W16V16U16 => TextureFormat::Rgba16Sint,
-            D3DFormat::R16F => TextureFormat::R16Float,
-            D3DFormat::G16R16F => TextureFormat::Rg16Float,
-            D3DFormat::A16B16G16R16F => TextureFormat::Rgba16Float,
-            D3DFormat::R32F => TextureFormat::R32Float,
-            D3DFormat::G32R32F => TextureFormat::Rg32Float,
-            D3DFormat::A32B32G32R32F => TextureFormat::Rgba32Float,
-            D3DFormat::A1R5G5B5
-            | D3DFormat::R5G6B5
-            // FIXME: Map to argb format and user has to know to ignore the alpha channel?
-            | D3DFormat::X8R8G8B8
-            // FIXME: Map to argb format and user has to know to ignore the alpha channel?
-            | D3DFormat::X8B8G8R8
-            | D3DFormat::A2R10G10B10
-            | D3DFormat::R8G8B8
-            | D3DFormat::X1R5G5B5
-            | D3DFormat::A4R4G4B4
-            | D3DFormat::X4R4G4B4
-            | D3DFormat::A8R3G3B2
-            | D3DFormat::A4L4
-            | D3DFormat::R8G8_B8G8
-            | D3DFormat::G8R8_G8B8
-            | D3DFormat::UYVY
-            | D3DFormat::YUY2
-            | D3DFormat::CXV8U8 => {
-                return Err(TextureError::UnsupportedTextureFormat(format!(
-                    "{:?}",
-                    d3d_format
-                )))
-            }
-        }
+			D3DFormat::A8B8G8R8 => {
+				if is_srgb {
+					TextureFormat::Rgba8UnormSrgb
+				} else {
+					TextureFormat::Rgba8Unorm
+				}
+			}
+			D3DFormat::A8 => TextureFormat::R8Unorm,
+			D3DFormat::A8R8G8B8 => {
+				if is_srgb {
+					TextureFormat::Bgra8UnormSrgb
+				} else {
+					TextureFormat::Bgra8Unorm
+				}
+			}
+			D3DFormat::G16R16 => TextureFormat::Rg16Uint,
+			D3DFormat::A2B10G10R10 => TextureFormat::Rgb10a2Unorm,
+			D3DFormat::A8L8 => TextureFormat::Rg8Uint,
+			D3DFormat::L16 => TextureFormat::R16Uint,
+			D3DFormat::L8 => TextureFormat::R8Uint,
+			D3DFormat::DXT1 => {
+				if is_srgb {
+					TextureFormat::Bc1RgbaUnormSrgb
+				} else {
+					TextureFormat::Bc1RgbaUnorm
+				}
+			}
+			D3DFormat::DXT3 | D3DFormat::DXT2 => {
+				if is_srgb {
+					TextureFormat::Bc2RgbaUnormSrgb
+				} else {
+					TextureFormat::Bc2RgbaUnorm
+				}
+			}
+			D3DFormat::DXT5 | D3DFormat::DXT4 => {
+				if is_srgb {
+					TextureFormat::Bc3RgbaUnormSrgb
+				} else {
+					TextureFormat::Bc3RgbaUnorm
+				}
+			}
+			D3DFormat::A16B16G16R16 => TextureFormat::Rgba16Uint,
+			D3DFormat::Q16W16V16U16 => TextureFormat::Rgba16Sint,
+			D3DFormat::R16F => TextureFormat::R16Float,
+			D3DFormat::G16R16F => TextureFormat::Rg16Float,
+			D3DFormat::A16B16G16R16F => TextureFormat::Rgba16Float,
+			D3DFormat::R32F => TextureFormat::R32Float,
+			D3DFormat::G32R32F => TextureFormat::Rg32Float,
+			D3DFormat::A32B32G32R32F => TextureFormat::Rgba32Float,
+			D3DFormat::A1R5G5B5
+			| D3DFormat::R5G6B5
+			// FIXME: Map to argb format and user has to know to ignore the alpha channel?
+			| D3DFormat::X8R8G8B8
+			// FIXME: Map to argb format and user has to know to ignore the alpha channel?
+			| D3DFormat::X8B8G8R8
+			| D3DFormat::A2R10G10B10
+			| D3DFormat::R8G8B8
+			| D3DFormat::X1R5G5B5
+			| D3DFormat::A4R4G4B4
+			| D3DFormat::X4R4G4B4
+			| D3DFormat::A8R3G3B2
+			| D3DFormat::A4L4
+			| D3DFormat::R8G8_B8G8
+			| D3DFormat::G8R8_G8B8
+			| D3DFormat::UYVY
+			| D3DFormat::YUY2
+			| D3DFormat::CXV8U8 => {
+				return Err(TextureError::UnsupportedTextureFormat(format!(
+					"{:?}",
+					d3d_format
+				)))
+			}
+		}
 	} else if let Some(dxgi_format) = dds.get_dxgi_format() {
 		match dxgi_format {
 			DxgiFormat::R32G32B32A32_Typeless | DxgiFormat::R32G32B32A32_Float => {
