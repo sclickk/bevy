@@ -40,18 +40,17 @@ pub struct TextPlugin;
 
 impl Plugin for TextPlugin {
 	fn build(&self, app: &mut App) {
-		app
-			.add_asset::<Font>()
-			.add_asset::<FontAtlasSet>()
-			.register_type::<Text>()
-			.register_type::<VerticalAlign>()
-			.register_type::<HorizontalAlign>()
-			.init_asset_loader::<FontLoader>()
-			.insert_resource(DefaultTextPipeline::default())
-			.add_system_to_stage(
-				CoreStage::PostUpdate,
-				update_text2d_layout.after(ModifiesWindows),
-			);
+		app.add_asset::<Font>();
+		app.add_asset::<FontAtlasSet>();
+		app.register_type::<Text>();
+		app.register_type::<VerticalAlign>();
+		app.register_type::<HorizontalAlign>();
+		app.init_asset_loader::<FontLoader>();
+		app.insert_resource(DefaultTextPipeline::default());
+		app.add_system_to_stage(
+			CoreStage::PostUpdate,
+			update_text2d_layout.after(ModifiesWindows),
+		);
 
 		if let Ok(render_app) = app.get_sub_app_mut(RenderApp) {
 			render_app.add_system_to_stage(

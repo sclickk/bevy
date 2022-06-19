@@ -259,19 +259,19 @@ impl<T: Asset> Assets<T> {
 
 /// [App] extension methods for adding new asset types
 pub trait AddAsset {
-	fn add_asset<T>(&mut self) -> &mut Self
+	fn add_asset<T>(&mut self)
 	where
 		T: Asset;
-	fn add_debug_asset<T: Clone>(&mut self) -> &mut Self
+	fn add_debug_asset<T: Clone>(&mut self)
 	where
 		T: Asset;
-	fn init_asset_loader<T>(&mut self) -> &mut Self
+	fn init_asset_loader<T>(&mut self)
 	where
 		T: AssetLoader + FromWorld;
-	fn init_debug_asset_loader<T>(&mut self) -> &mut Self
+	fn init_debug_asset_loader<T>(&mut self)
 	where
 		T: AssetLoader + FromWorld;
-	fn add_asset_loader<T>(&mut self, loader: T) -> &mut Self
+	fn add_asset_loader<T>(&mut self, loader: T)
 	where
 		T: AssetLoader;
 }
@@ -280,7 +280,7 @@ impl AddAsset for App {
 	/// Add an [`Asset`] to the [`App`].
 	///
 	/// Adding the same [`Asset`] again after it has been added does nothing.
-	fn add_asset<T>(&mut self) -> &mut Self
+	fn add_asset<T>(&mut self)
 	where
 		T: Asset,
 	{
@@ -296,10 +296,9 @@ impl AddAsset for App {
 			self.register_type::<Handle<T>>();
 			self.add_event::<AssetEvent<T>>();
 		}
-		self
 	}
 
-	fn add_debug_asset<T: Clone>(&mut self) -> &mut Self
+	fn add_debug_asset<T: Clone>(&mut self)
 	where
 		T: Asset,
 	{
@@ -309,14 +308,12 @@ impl AddAsset for App {
 			let mut app = self
 				.world
 				.non_send_resource_mut::<crate::debug_asset_server::DebugAssetApp>();
-			app
-				.add_asset::<T>()
-				.init_resource::<crate::debug_asset_server::HandleMap<T>>();
+			app.add_asset::<T>();
+			app.init_resource::<crate::debug_asset_server::HandleMap<T>>();
 		}
-		self
 	}
 
-	fn init_asset_loader<T>(&mut self) -> &mut Self
+	fn init_asset_loader<T>(&mut self)
 	where
 		T: AssetLoader + FromWorld,
 	{
@@ -324,7 +321,7 @@ impl AddAsset for App {
 		self.add_asset_loader(result)
 	}
 
-	fn init_debug_asset_loader<T>(&mut self) -> &mut Self
+	fn init_debug_asset_loader<T>(&mut self)
 	where
 		T: AssetLoader + FromWorld,
 	{
@@ -335,10 +332,9 @@ impl AddAsset for App {
 				.non_send_resource_mut::<crate::debug_asset_server::DebugAssetApp>();
 			app.init_asset_loader::<T>();
 		}
-		self
 	}
 
-	fn add_asset_loader<T>(&mut self, loader: T) -> &mut Self
+	fn add_asset_loader<T>(&mut self, loader: T)
 	where
 		T: AssetLoader,
 	{
@@ -346,7 +342,6 @@ impl AddAsset for App {
 			.world
 			.resource_mut::<AssetServer>()
 			.add_loader(loader);
-		self
 	}
 }
 

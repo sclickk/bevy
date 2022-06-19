@@ -36,14 +36,14 @@ impl AssetLoader for CustomAssetLoader {
 }
 
 fn main() {
-	App::new()
-		.add_plugins(DefaultPlugins)
-		.init_resource::<State>()
-		.add_asset::<CustomAsset>()
-		.init_asset_loader::<CustomAssetLoader>()
-		.add_startup_system(setup)
-		.add_system(print_on_load)
-		.run();
+	let mut app = App::new();
+	app.add_plugins(DefaultPlugins);
+	app.init_resource::<State>();
+	app.add_asset::<CustomAsset>();
+	app.init_asset_loader::<CustomAssetLoader>();
+	app.add_startup_system(setup);
+	app.add_system(print_on_load);
+	app.run();
 }
 
 #[derive(Default)]

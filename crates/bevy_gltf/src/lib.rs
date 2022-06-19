@@ -19,13 +19,12 @@ pub struct GltfPlugin;
 
 impl Plugin for GltfPlugin {
 	fn build(&self, app: &mut App) {
-		app
-			.init_asset_loader::<GltfLoader>()
-			.register_type::<GltfExtras>()
-			.add_asset::<Gltf>()
-			.add_asset::<GltfNode>()
-			.add_asset::<GltfPrimitive>()
-			.add_asset::<GltfMesh>();
+		app.init_asset_loader::<GltfLoader>();
+		app.register_type::<GltfExtras>();
+		app.add_asset::<Gltf>();
+		app.add_asset::<GltfNode>();
+		app.add_asset::<GltfPrimitive>();
+		app.add_asset::<GltfMesh>();
 	}
 }
 

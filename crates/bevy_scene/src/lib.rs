@@ -25,16 +25,15 @@ pub struct ScenePlugin;
 
 impl Plugin for ScenePlugin {
 	fn build(&self, app: &mut App) {
-		app
-			.add_asset::<DynamicScene>()
-			.add_asset::<Scene>()
-			.init_asset_loader::<SceneLoader>()
-			.init_resource::<SceneSpawner>()
-			.add_system_to_stage(
-				CoreStage::PreUpdate,
-				scene_spawner_system.exclusive_system().at_end(),
-			)
-			// Systems `*_bundle_spawner` must run before `scene_spawner_system`
-			.add_system_to_stage(CoreStage::PreUpdate, scene_spawner);
+		app.add_asset::<DynamicScene>();
+		app.add_asset::<Scene>();
+		app.init_asset_loader::<SceneLoader>();
+		app.init_resource::<SceneSpawner>();
+		app.add_system_to_stage(
+			CoreStage::PreUpdate,
+			scene_spawner_system.exclusive_system().at_end(),
+		);
+		// Systems `*_bundle_spawner` must run before `scene_spawner_system`
+		app.add_system_to_stage(CoreStage::PreUpdate, scene_spawner);
 	}
 }

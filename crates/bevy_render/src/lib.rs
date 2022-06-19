@@ -120,12 +120,11 @@ impl Plugin for RenderPlugin {
 			.cloned()
 			.unwrap_or_default();
 
-		app
-			.add_asset::<Shader>()
-			.add_debug_asset::<Shader>()
-			.init_asset_loader::<ShaderLoader>()
-			.init_debug_asset_loader::<ShaderLoader>()
-			.register_type::<Color>();
+		app.add_asset::<Shader>();
+		app.add_debug_asset::<Shader>();
+		app.init_asset_loader::<ShaderLoader>();
+		app.init_debug_asset_loader::<ShaderLoader>();
+		app.register_type::<Color>();
 
 		if let Some(backends) = options.backends {
 			let instance = wgpu::Instance::new(backends);
