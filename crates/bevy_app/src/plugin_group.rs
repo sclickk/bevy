@@ -106,13 +106,12 @@ impl PluginGroupBuilder {
 	/// [`Plugin`]s within a [`PluginGroup`] are enabled by default. This function is used to
 	/// opt back in to a [`Plugin`] after [disabling](Self::disable) it. If there are no plugins
 	/// of type `T` in this group, it will panic.
-	pub fn enable<T: Plugin>(&mut self) -> &mut Self {
+	pub fn enable<T: Plugin>(&mut self) {
 		let mut plugin_entry = self
 			.plugins
 			.get_mut(&TypeId::of::<T>())
 			.expect("Cannot enable a plugin that does not exist.");
 		plugin_entry.enabled = true;
-		self
 	}
 
 	/// Disables a [`Plugin`], preventing it from being added to the [`App`] with the rest of the
@@ -120,13 +119,12 @@ impl PluginGroupBuilder {
 	/// still be used for ordering with [`add_before`](Self::add_before) or
 	/// [`add_after`](Self::add_after), or it can be [re-enabled](Self::enable). If there are no
 	/// plugins of type `T` in this group, it will panic.
-	pub fn disable<T: Plugin>(&mut self) -> &mut Self {
+	pub fn disable<T: Plugin>(&mut self) {
 		let mut plugin_entry = self
 			.plugins
 			.get_mut(&TypeId::of::<T>())
 			.expect("Cannot disable a plugin that does not exist.");
 		plugin_entry.enabled = false;
-		self
 	}
 
 	/// Consumes the [`PluginGroupBuilder`] and [builds](Plugin::build) the contained [`Plugin`]s
