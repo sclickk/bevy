@@ -15,11 +15,9 @@ impl Aabb {
 	pub fn from_min_max(minimum: Vec3, maximum: Vec3) -> Self {
 		let minimum = Vec3A::from(minimum);
 		let maximum = Vec3A::from(maximum);
-		let center = 0.5 * (maximum + minimum);
-		let half_extents = 0.5 * (maximum - minimum);
 		Self {
-			center,
-			half_extents,
+			center: 0.5 * (maximum + minimum),
+			half_extents: 0.5 * (maximum - minimum),
 		}
 	}
 
