@@ -26,18 +26,14 @@ pub struct PluginGroupBuilder {
 impl PluginGroupBuilder {
 	/// Finds the index of a target [`Plugin`]. Panics if the target's [`TypeId`] is not found.
 	fn index_of<Target: Plugin>(&mut self) -> usize {
-		let index = self
+		self
 			.order
 			.iter()
-			.position(|&ty| ty == TypeId::of::<Target>());
-
-		match index {
-			Some(i) => i,
-			None => panic!(
+			.position(|&ty| ty == TypeId::of::<Target>())
+			.expect(&format!(
 				"Plugin does not exist in group: {}.",
 				std::any::type_name::<Target>()
-			),
-		}
+			))
 	}
 
 	// Insert the new plugin as enabled, and removes its previous ordering if it was
