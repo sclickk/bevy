@@ -100,11 +100,7 @@ impl Diagnostic {
 	}
 
 	pub fn average(&self) -> Option<f64> {
-		if !self.history.is_empty() {
-			Some(self.sum / self.history.len() as f64)
-		} else {
-			None
-		}
+		(!self.history.is_empty()).then(|| self.sum / self.history.len() as f64)
 	}
 
 	pub fn history_len(&self) -> usize {
