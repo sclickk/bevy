@@ -22,15 +22,14 @@ pub struct CameraUpdateSystem;
 
 impl<T: CameraProjection + Component + GetTypeRegistration> Plugin for CameraProjectionPlugin<T> {
 	fn build(&self, app: &mut App) {
-		app
-			.register_type::<T>()
-			.add_startup_system_to_stage(StartupStage::PostStartup, crate::camera::camera_system::<T>)
-			.add_system_to_stage(
-				CoreStage::PostUpdate,
-				crate::camera::camera_system::<T>
-					.label(CameraUpdateSystem)
-					.after(ModifiesWindows),
-			);
+		app.register_type::<T>();
+		app.add_startup_system_to_stage(StartupStage::PostStartup, crate::camera::camera_system::<T>);
+		app.add_system_to_stage(
+			CoreStage::PostUpdate,
+			crate::camera::camera_system::<T>
+				.label(CameraUpdateSystem)
+				.after(ModifiesWindows),
+		);
 	}
 }
 
