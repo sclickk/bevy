@@ -111,7 +111,7 @@ mod test {
 
 		let mut update_stage = SystemStage::parallel();
 		update_stage.add_system(parent_update_system);
-		update_stage.add_system(transform_propagate_system);
+		update_stage.add_system(transform_propagate_system.after(parent_update_system));
 
 		let mut schedule = Schedule::default();
 		schedule.add_stage("update", update_stage);
@@ -160,7 +160,7 @@ mod test {
 
 		let mut update_stage = SystemStage::parallel();
 		update_stage.add_system(parent_update_system);
-		update_stage.add_system(transform_propagate_system);
+		update_stage.add_system(transform_propagate_system.after(parent_update_system));
 
 		let mut schedule = Schedule::default();
 		schedule.add_stage("update", update_stage);
@@ -207,7 +207,7 @@ mod test {
 
 		let mut update_stage = SystemStage::parallel();
 		update_stage.add_system(parent_update_system);
-		update_stage.add_system(transform_propagate_system);
+		update_stage.add_system(transform_propagate_system.after(parent_update_system));
 
 		let mut schedule = Schedule::default();
 		schedule.add_stage("update", update_stage);
@@ -292,7 +292,7 @@ mod test {
 		let mut app = App::new();
 
 		app.add_system(parent_update_system);
-		app.add_system(transform_propagate_system);
+		app.add_system(transform_propagate_system.after(parent_update_system));
 
 		let translation = vec3(1.0, 0.0, 0.0);
 
@@ -345,19 +345,20 @@ mod test {
 	#[test]
 	#[should_panic]
 	fn panic_when_hierarchy_cycle() {
-		let mut app = App::new();
+		let mut world = World::default();
+		// This test is run on a single thread in order to avoid breaking the global task pool by panicking
+		// This fixes the flaky tests reported in https://github.com/bevyengine/bevy/issues/4996
+		let mut update_stage = SystemStage::single_threaded();
 
-		app.add_system(parent_update_system);
-		app.add_system(transform_propagate_system);
+		update_stage.add_system(parent_update_system);
+		update_stage.add_system(transform_propagate_system.after(parent_update_system));
 
-		let child = app
-			.world
+		let child = world
 			.spawn()
 			.insert_bundle((Transform::identity(), GlobalTransform::default()))
 			.id();
 
-		let grandchild = app
-			.world
+		let grandchild = world
 			.spawn()
 			.insert_bundle((
 				Transform::identity(),
@@ -365,16 +366,15 @@ mod test {
 				Parent(child),
 			))
 			.id();
-		app.world.spawn().insert_bundle((
+		world.spawn().insert_bundle((
 			Transform::default(),
 			GlobalTransform::default(),
 			Children::with(&[child]),
 		));
-		app
-			.world
+		world
 			.entity_mut(child)
 			.insert(Parent(grandchild));
 
-		app.update();
+		update_stage.run(&mut world);
 	}
 }
