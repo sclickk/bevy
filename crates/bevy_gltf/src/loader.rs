@@ -521,7 +521,7 @@ async fn load_gltf<'a, 'b>(
 		}
 
 		let scene_handle =
-			load_context.set_labeled_asset(&scene_label(&scene), LoadedAsset::new(Scene::new(world)));
+			load_context.set_labeled_asset(&scene_label(&scene), LoadedAsset::new(Scene::from(world)));
 
 		if let Some(name) = scene.name() {
 			named_scenes.insert(name.to_string(), scene_handle.clone());

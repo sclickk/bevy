@@ -13,8 +13,8 @@ pub struct Scene {
 	pub world: World,
 }
 
-impl Scene {
-	pub fn new(world: World) -> Self {
+impl From<World> for Scene {
+	fn from(world: World) -> Self {
 		Self { world }
 	}
 }
