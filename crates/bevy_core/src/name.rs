@@ -23,7 +23,7 @@ pub struct Name {
 
 impl Default for Name {
 	fn default() -> Self {
-		Name::new("")
+		Name::from("")
 	}
 }
 
@@ -32,10 +32,7 @@ impl Name {
 	///
 	/// The internal hash will be computed immediately.
 	pub fn new(name: impl Into<Cow<'static, str>>) -> Self {
-		let name = name.into();
-		let mut name = Name { name, hash: 0 };
-		name.update_hash();
-		name
+		Self::from(name.into())
 	}
 
 	/// Sets the entity's name.
@@ -66,6 +63,14 @@ impl Name {
 		let mut hasher = AHasher::default();
 		self.name.hash(&mut hasher);
 		self.hash = hasher.finish();
+	}
+}
+
+impl From<Cow<'static, str>> for Name {
+	fn from(name: Cow<'static, str>) -> Self {
+		let mut name = Name { name, hash: 0 };
+		name.update_hash();
+		name
 	}
 }
 
