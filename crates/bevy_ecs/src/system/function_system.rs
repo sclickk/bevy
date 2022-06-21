@@ -435,9 +435,7 @@ where
 		let archetypes = world.archetypes();
 		let new_generation = archetypes.generation();
 		let old_generation = std::mem::replace(&mut self.archetype_generation, new_generation);
-		let archetype_index_range = old_generation.value()..new_generation.value();
-
-		for archetype_index in archetype_index_range {
+		for archetype_index in old_generation.value()..new_generation.value() {
 			self
 				.param_state
 				.as_mut()
