@@ -380,6 +380,12 @@ impl Mesh {
 	}
 }
 
+impl Into<PrimitiveTopology> for Mesh {
+	fn into(self) -> PrimitiveTopology {
+		self.primitive_topology
+	}
+}
+
 impl From<PrimitiveTopology> for Mesh {
 	/// Construct a new mesh. You need to provide a [`PrimitiveTopology`] so that the
 	/// renderer knows how to treat the vertex data. Most of the time this will be
@@ -868,7 +874,7 @@ impl RenderAsset for Mesh {
 		Ok(GpuMesh {
 			vertex_buffer,
 			buffer_info,
-			primitive_topology: mesh.primitive_topology(),
+			primitive_topology: mesh.into(),
 			layout: mesh_vertex_buffer_layout,
 		})
 	}
