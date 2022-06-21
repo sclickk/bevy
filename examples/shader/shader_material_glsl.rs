@@ -108,11 +108,12 @@ impl SpecializedMaterial for CustomMaterial {
 		_: Self::Key,
 		_layout: &MeshVertexBufferLayout,
 	) -> Result<(), SpecializedMeshPipelineError> {
-		descriptor.vertex.entry_point = "main".into();
+		descriptor.vertex.meta.entry_point = "main".into();
 		descriptor
 			.fragment
 			.as_mut()
 			.unwrap()
+			.meta
 			.entry_point = "main".into();
 		Ok(())
 	}

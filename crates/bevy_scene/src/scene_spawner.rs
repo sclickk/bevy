@@ -151,12 +151,12 @@ impl SceneSpawner {
 		entity_map: &mut EntityMap,
 	) -> Result<(), SceneSpawnError> {
 		world.resource_scope(|world, scenes: Mut<Assets<DynamicScene>>| {
-			let scene = scenes
+			scenes
 				.get(scene_handle)
-				.ok_or_else(|| SceneSpawnError::NonExistentScene {
+				.ok_or(SceneSpawnError::NonExistentScene {
 					handle: scene_handle.clone_weak(),
-				})?;
-			scene.write_to_world(world, entity_map)
+				})?
+				.write_to_world(world, entity_map)
 		})
 	}
 
@@ -180,12 +180,11 @@ impl SceneSpawner {
 		let type_registry = world.resource::<TypeRegistryArc>().clone();
 		let type_registry = type_registry.read();
 		world.resource_scope(|world, scenes: Mut<Assets<Scene>>| {
-			let scene =
-				scenes
-					.get(&scene_handle)
-					.ok_or_else(|| SceneSpawnError::NonExistentRealScene {
-						handle: scene_handle.clone(),
-					})?;
+			let scene = scenes
+				.get(&scene_handle)
+				.ok_or(SceneSpawnError::NonExistentRealScene {
+					handle: scene_handle.clone(),
+				})?;
 
 			for archetype in scene.world.archetypes().iter() {
 				for scene_entity in archetype.entities() {
@@ -202,15 +201,15 @@ impl SceneSpawner {
 
 						let reflect_component = type_registry
 							.get(component_info.type_id().unwrap())
-							.ok_or_else(|| SceneSpawnError::UnregisteredType {
+							.ok_or(SceneSpawnError::UnregisteredType {
 								type_name: component_info.name().to_string(),
 							})
 							.and_then(|registration| {
-								registration
-									.data::<ReflectComponent>()
-									.ok_or_else(|| SceneSpawnError::UnregisteredComponent {
+								registration.data::<ReflectComponent>().ok_or(
+									SceneSpawnError::UnregisteredComponent {
 										type_name: component_info.name().to_string(),
-									})
+									},
+								)
 							})?;
 						reflect_component.copy_component(&scene.world, world, *scene_entity, entity);
 					}

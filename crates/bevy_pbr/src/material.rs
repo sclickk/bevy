@@ -264,16 +264,21 @@ impl<M: SpecializedMaterial> SpecializedMeshPipeline for MaterialPipeline<M> {
 			.mesh_pipeline
 			.specialize(key.mesh_key, layout)?;
 		if let Some(vertex_shader) = &self.vertex_shader {
-			descriptor.vertex.shader = vertex_shader.clone();
+			descriptor.vertex.meta.shader = vertex_shader.clone();
 		}
 
 		if let Some(fragment_shader) = &self.fragment_shader {
-			descriptor.fragment.as_mut().unwrap().shader = fragment_shader.clone();
+			descriptor
+				.fragment
+				.as_mut()
+				.unwrap()
+				.meta
+				.shader = fragment_shader.clone();
 		}
 
 		// MeshPipeline::specialize's current implementation guarantees that the returned
 		// specialized descriptor has a populated layout
-		let descriptor_layout = descriptor.layout.as_mut().unwrap();
+		let descriptor_layout = descriptor.meta.layout.as_mut().unwrap();
 		descriptor_layout.insert(1, self.material_layout.clone());
 
 		M::specialize(self, &mut descriptor, key.material_key, layout)?;

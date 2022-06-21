@@ -1,5 +1,5 @@
 use crate::{
-	schedule::{BoxedRunCriteriaLabel, GraphNode, RunCriteriaLabel},
+	schedule::{GraphNode, RunCriteriaLabel},
 	system::{BoxedSystem, IntoSystem, Local},
 	world::World,
 };
@@ -94,9 +94,9 @@ pub(crate) enum RunCriteriaInner {
 pub(crate) struct RunCriteriaContainer {
 	pub(crate) should_run: ShouldRun,
 	pub(crate) inner: RunCriteriaInner,
-	pub(crate) label: Option<BoxedRunCriteriaLabel>,
-	pub(crate) before: Vec<BoxedRunCriteriaLabel>,
-	pub(crate) after: Vec<BoxedRunCriteriaLabel>,
+	pub(crate) label: Option<Box<dyn RunCriteriaLabel>>,
+	pub(crate) before: Vec<Box<dyn RunCriteriaLabel>>,
+	pub(crate) after: Vec<Box<dyn RunCriteriaLabel>>,
 }
 
 impl RunCriteriaContainer {
@@ -131,7 +131,7 @@ impl From<RunCriteriaDescriptor> for RunCriteriaContainer {
 }
 
 impl GraphNode for RunCriteriaContainer {
-	type Label = BoxedRunCriteriaLabel;
+	type Label = Box<dyn RunCriteriaLabel>;
 
 	fn name(&self) -> Cow<'static, str> {
 		match &self.inner {
@@ -140,7 +140,7 @@ impl GraphNode for RunCriteriaContainer {
 		}
 	}
 
-	fn labels(&self) -> &[BoxedRunCriteriaLabel] {
+	fn labels(&self) -> &[Box<dyn RunCriteriaLabel>] {
 		if let Some(ref label) = self.label {
 			std::slice::from_ref(label)
 		} else {
@@ -148,18 +148,18 @@ impl GraphNode for RunCriteriaContainer {
 		}
 	}
 
-	fn before(&self) -> &[BoxedRunCriteriaLabel] {
+	fn before(&self) -> &[Box<dyn RunCriteriaLabel>] {
 		&self.before
 	}
 
-	fn after(&self) -> &[BoxedRunCriteriaLabel] {
+	fn after(&self) -> &[Box<dyn RunCriteriaLabel>] {
 		&self.after
 	}
 }
 
 pub enum RunCriteriaDescriptorOrLabel {
 	Descriptor(RunCriteriaDescriptor),
-	Label(BoxedRunCriteriaLabel),
+	Label(Box<dyn RunCriteriaLabel>),
 }
 
 #[derive(Clone, Copy)]
@@ -170,10 +170,10 @@ pub(crate) enum DuplicateLabelStrategy {
 
 pub struct RunCriteriaDescriptor {
 	pub(crate) system: RunCriteriaSystem,
-	pub(crate) label: Option<BoxedRunCriteriaLabel>,
+	pub(crate) label: Option<Box<dyn RunCriteriaLabel>>,
 	pub(crate) duplicate_label_strategy: DuplicateLabelStrategy,
-	pub(crate) before: Vec<BoxedRunCriteriaLabel>,
-	pub(crate) after: Vec<BoxedRunCriteriaLabel>,
+	pub(crate) before: Vec<Box<dyn RunCriteriaLabel>>,
+	pub(crate) after: Vec<Box<dyn RunCriteriaLabel>>,
 }
 
 pub(crate) enum RunCriteriaSystem {
@@ -214,7 +214,7 @@ where
 	}
 }
 
-impl<L> IntoRunCriteria<BoxedRunCriteriaLabel> for L
+impl<L> IntoRunCriteria<Box<dyn RunCriteriaLabel>> for L
 where
 	L: RunCriteriaLabel,
 {
@@ -319,7 +319,7 @@ where
 }
 
 pub struct RunCriteria {
-	label: BoxedRunCriteriaLabel,
+	label: Box<dyn RunCriteriaLabel>,
 }
 
 impl RunCriteria {

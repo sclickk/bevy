@@ -333,22 +333,29 @@ impl SpecializedMeshPipeline for Mesh2dPipeline {
 
 		Ok(RenderPipelineDescriptor {
 			vertex: VertexState {
-				shader: MESH2D_SHADER_HANDLE.typed::<Shader>(),
-				entry_point: "vertex".into(),
-				shader_defs: shader_defs.clone(),
+				meta: ShaderMeta {
+					shader: MESH2D_SHADER_HANDLE.typed::<Shader>(),
+					entry_point: "vertex".into(),
+					shader_defs: shader_defs.clone(),
+				},
 				buffers: vec![vertex_buffer_layout],
 			},
 			fragment: Some(FragmentState {
-				shader: MESH2D_SHADER_HANDLE.typed::<Shader>(),
-				shader_defs,
-				entry_point: "fragment".into(),
+				meta: ShaderMeta {
+					shader: MESH2D_SHADER_HANDLE.typed::<Shader>(),
+					shader_defs,
+					entry_point: "fragment".into(),
+				},
 				targets: vec![ColorTargetState {
 					format: TextureFormat::bevy_default(),
 					blend: Some(BlendState::ALPHA_BLENDING),
 					write_mask: ColorWrites::ALL,
 				}],
 			}),
-			layout: Some(vec![self.view_layout.clone(), self.mesh_layout.clone()]),
+			meta: PipelineDescriptorMeta {
+				label: Some("transparent_mesh2d_pipeline".into()),
+				layout: Some(vec![self.view_layout.clone(), self.mesh_layout.clone()]),
+			},
 			primitive: PrimitiveState {
 				front_face: FrontFace::Ccw,
 				cull_mode: Some(Face::Back),
@@ -364,7 +371,6 @@ impl SpecializedMeshPipeline for Mesh2dPipeline {
 				mask: !0,
 				alpha_to_coverage_enabled: false,
 			},
-			label: Some("transparent_mesh2d_pipeline".into()),
 		})
 	}
 }

@@ -1,7 +1,6 @@
 use crate::schedule::{
-	AmbiguitySetLabel, BoxedAmbiguitySetLabel, BoxedSystemLabel, IntoRunCriteria,
-	IntoSystemDescriptor, RunCriteriaDescriptorOrLabel, State, StateData, SystemDescriptor,
-	SystemLabel,
+	AmbiguitySetLabel, IntoRunCriteria, IntoSystemDescriptor, RunCriteriaDescriptorOrLabel, State,
+	StateData, SystemContainerMeta, SystemDescriptor, SystemLabel,
 };
 use crate::system::AsSystemLabel;
 
@@ -10,10 +9,7 @@ use crate::system::AsSystemLabel;
 pub struct SystemSet {
 	pub(crate) systems: Vec<SystemDescriptor>,
 	pub(crate) run_criteria: Option<RunCriteriaDescriptorOrLabel>,
-	pub(crate) labels: Vec<BoxedSystemLabel>,
-	pub(crate) before: Vec<BoxedSystemLabel>,
-	pub(crate) after: Vec<BoxedSystemLabel>,
-	pub(crate) ambiguity_sets: Vec<BoxedAmbiguitySetLabel>,
+	pub(crate) meta: SystemContainerMeta,
 }
 
 impl SystemSet {
@@ -72,7 +68,7 @@ impl SystemSet {
 
 	#[must_use]
 	pub fn in_ambiguity_set(mut self, set: impl AmbiguitySetLabel) -> Self {
-		self.ambiguity_sets.push(Box::new(set));
+		self.meta.ambiguity_sets.push(Box::new(set));
 		self
 	}
 
@@ -90,13 +86,14 @@ impl SystemSet {
 
 	#[must_use]
 	pub fn label(mut self, label: impl SystemLabel) -> Self {
-		self.labels.push(Box::new(label));
+		self.meta.labels.push(Box::new(label));
 		self
 	}
 
 	#[must_use]
 	pub fn before<Marker>(mut self, label: impl AsSystemLabel<Marker>) -> Self {
 		self
+			.meta
 			.before
 			.push(Box::new(label.as_system_label()));
 		self
@@ -105,6 +102,7 @@ impl SystemSet {
 	#[must_use]
 	pub fn after<Marker>(mut self, label: impl AsSystemLabel<Marker>) -> Self {
 		self
+			.meta
 			.after
 			.push(Box::new(label.as_system_label()));
 		self
@@ -114,28 +112,45 @@ impl SystemSet {
 		let SystemSet {
 			mut systems,
 			run_criteria,
-			labels,
-			before,
-			after,
-			ambiguity_sets,
+			meta,
 		} = self;
 		for descriptor in &mut systems {
 			match descriptor {
 				SystemDescriptor::Parallel(descriptor) => {
-					descriptor.labels.extend(labels.iter().cloned());
-					descriptor.before.extend(before.iter().cloned());
-					descriptor.after.extend(after.iter().cloned());
 					descriptor
+						.meta
+						.labels
+						.extend(meta.labels.iter().cloned());
+					descriptor
+						.meta
+						.before
+						.extend(meta.before.iter().cloned());
+					descriptor
+						.meta
+						.after
+						.extend(meta.after.iter().cloned());
+					descriptor
+						.meta
 						.ambiguity_sets
-						.extend(ambiguity_sets.iter().cloned());
+						.extend(meta.ambiguity_sets.iter().cloned());
 				}
 				SystemDescriptor::Exclusive(descriptor) => {
-					descriptor.labels.extend(labels.iter().cloned());
-					descriptor.before.extend(before.iter().cloned());
-					descriptor.after.extend(after.iter().cloned());
 					descriptor
+						.meta
+						.labels
+						.extend(meta.labels.iter().cloned());
+					descriptor
+						.meta
+						.before
+						.extend(meta.before.iter().cloned());
+					descriptor
+						.meta
+						.after
+						.extend(meta.after.iter().cloned());
+					descriptor
+						.meta
 						.ambiguity_sets
-						.extend(ambiguity_sets.iter().cloned());
+						.extend(meta.ambiguity_sets.iter().cloned());
 				}
 			}
 		}

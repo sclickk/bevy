@@ -16,6 +16,13 @@ use crate::{DynamicScene, InstanceId, Scene, SceneSpawner};
 #[derive(Component, Deref, DerefMut)]
 pub struct SceneInstance(InstanceId);
 
+// TODO: Use this in SceneBundle and DynamicSceneBundle
+#[derive(Default)]
+struct SceneTransform {
+	pub local: Transform,
+	pub global: GlobalTransform,
+}
+
 /// A component bundle for a [`Scene`] root.
 ///
 /// The scene from `scene` will be spawn as a child of the entity with this component.

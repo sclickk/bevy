@@ -13,9 +13,9 @@ use bevy::{
 		render_phase::{AddRenderCommand, DrawFunctions, RenderPhase, SetItemPipeline},
 		render_resource::{
 			BlendState, ColorTargetState, ColorWrites, Face, FragmentState, FrontFace, MultisampleState,
-			PipelineCache, PolygonMode, PrimitiveState, PrimitiveTopology, RenderPipelineDescriptor,
-			SpecializedRenderPipeline, SpecializedRenderPipelines, TextureFormat, VertexBufferLayout,
-			VertexFormat, VertexState, VertexStepMode,
+			PipelineCache, PipelineDescriptorMeta, PolygonMode, PrimitiveState, PrimitiveTopology,
+			RenderPipelineDescriptor, ShaderMeta, SpecializedRenderPipeline, SpecializedRenderPipelines,
+			TextureFormat, VertexBufferLayout, VertexFormat, VertexState, VertexStepMode,
 		},
 		texture::BevyDefault,
 		view::VisibleEntities,
@@ -148,30 +148,37 @@ impl SpecializedRenderPipeline for ColoredMesh2dPipeline {
 		RenderPipelineDescriptor {
 			vertex: VertexState {
 				// Use our custom shader
-				shader: COLORED_MESH2D_SHADER_HANDLE.typed::<Shader>(),
-				entry_point: "vertex".into(),
-				shader_defs: Vec::new(),
+				meta: ShaderMeta {
+					shader: COLORED_MESH2D_SHADER_HANDLE.typed::<Shader>(),
+					entry_point: "vertex".into(),
+					shader_defs: Vec::new(),
+				},
 				// Use our custom vertex buffer
 				buffers: vec![vertex_layout],
 			},
 			fragment: Some(FragmentState {
 				// Use our custom shader
-				shader: COLORED_MESH2D_SHADER_HANDLE.typed::<Shader>(),
-				shader_defs: Vec::new(),
-				entry_point: "fragment".into(),
+				meta: ShaderMeta {
+					shader: COLORED_MESH2D_SHADER_HANDLE.typed::<Shader>(),
+					shader_defs: Vec::new(),
+					entry_point: "fragment".into(),
+				},
 				targets: vec![ColorTargetState {
 					format: TextureFormat::bevy_default(),
 					blend: Some(BlendState::ALPHA_BLENDING),
 					write_mask: ColorWrites::ALL,
 				}],
 			}),
-			// Use the two standard uniforms for 2d meshes
-			layout: Some(vec![
-				// Bind group 0 is the view uniform
-				self.mesh2d_pipeline.view_layout.clone(),
-				// Bind group 1 is the mesh uniform
-				self.mesh2d_pipeline.mesh_layout.clone(),
-			]),
+			meta: PipelineDescriptorMeta {
+				// Use the two standard uniforms for 2d meshes
+				layout: Some(vec![
+					// Bind group 0 is the view uniform
+					self.mesh2d_pipeline.view_layout.clone(),
+					// Bind group 1 is the mesh uniform
+					self.mesh2d_pipeline.mesh_layout.clone(),
+				]),
+				label: Some("colored_mesh2d_pipeline".into()),
+			},
 			primitive: PrimitiveState {
 				front_face: FrontFace::Ccw,
 				cull_mode: Some(Face::Back),
@@ -187,7 +194,6 @@ impl SpecializedRenderPipeline for ColoredMesh2dPipeline {
 				mask: !0,
 				alpha_to_coverage_enabled: false,
 			},
-			label: Some("colored_mesh2d_pipeline".into()),
 		}
 	}
 }

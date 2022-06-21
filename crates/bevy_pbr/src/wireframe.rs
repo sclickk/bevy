@@ -88,8 +88,13 @@ impl SpecializedMeshPipeline for WireframePipeline {
 		layout: &MeshVertexBufferLayout,
 	) -> Result<RenderPipelineDescriptor, SpecializedMeshPipelineError> {
 		let mut descriptor = self.mesh_pipeline.specialize(key, layout)?;
-		descriptor.vertex.shader = self.shader.clone_weak();
-		descriptor.fragment.as_mut().unwrap().shader = self.shader.clone_weak();
+		descriptor.vertex.meta.shader = self.shader.clone_weak();
+		descriptor
+			.fragment
+			.as_mut()
+			.unwrap()
+			.meta
+			.shader = self.shader.clone_weak();
 		descriptor.primitive.polygon_mode = PolygonMode::Line;
 		descriptor
 			.depth_stencil

@@ -1,7 +1,8 @@
 use crate::{
+	prelude::World,
 	schedule::{
-		AmbiguitySetLabel, BoxedAmbiguitySetLabel, BoxedSystemLabel, IntoRunCriteria,
-		RunCriteriaDescriptorOrLabel, SystemLabel,
+		AmbiguitySetLabel, IntoRunCriteria, RunCriteriaDescriptorOrLabel, SystemContainerMeta,
+		SystemLabel,
 	},
 	system::{
 		AsSystemLabel, BoxedSystem, ExclusiveSystem, ExclusiveSystemCoerced, ExclusiveSystemFn,
@@ -49,9 +50,16 @@ pub trait IntoSystemDescriptor<Params> {
 
 pub struct SystemLabelMarker;
 
+impl Into<SystemDescriptor> for ParallelSystemDescriptor {
+	fn into(self) -> SystemDescriptor {
+		SystemDescriptor::Parallel(self)
+	}
+}
+
+// TODO: Deprecate!
 impl IntoSystemDescriptor<()> for ParallelSystemDescriptor {
 	fn into_descriptor(self) -> SystemDescriptor {
-		SystemDescriptor::Parallel(self)
+		self.into()
 	}
 }
 
@@ -64,15 +72,23 @@ where
 	}
 }
 
+// What the fuck is this???
 impl IntoSystemDescriptor<()> for SystemDescriptor {
 	fn into_descriptor(self) -> SystemDescriptor {
 		self
 	}
 }
 
+impl Into<SystemDescriptor> for BoxedSystem<(), ()> {
+	fn into(self) -> SystemDescriptor {
+		new_parallel_descriptor(self).into()
+	}
+}
+
+// TODO: Deprecate!
 impl IntoSystemDescriptor<()> for BoxedSystem<(), ()> {
 	fn into_descriptor(self) -> SystemDescriptor {
-		new_parallel_descriptor(self).into_descriptor()
+		self.into()
 	}
 }
 
@@ -88,18 +104,35 @@ impl IntoSystemDescriptor<()> for ExclusiveSystemDescriptor {
 	}
 }
 
-impl<F> IntoSystemDescriptor<()> for ExclusiveSystemFn<F>
+impl<F> Into<SystemDescriptor> for ExclusiveSystemFn<F>
 where
-	F: FnMut(&mut crate::prelude::World) + Send + Sync + 'static,
+	F: FnMut(&mut World) + Send + Sync + 'static,
 {
-	fn into_descriptor(self) -> SystemDescriptor {
-		new_exclusive_descriptor(Box::new(self)).into_descriptor()
+	fn into(self) -> SystemDescriptor {
+		new_exclusive_descriptor(Box::new(self)).into()
 	}
 }
 
+// TODO: Deprecate!
+impl<F> IntoSystemDescriptor<()> for ExclusiveSystemFn<F>
+where
+	F: FnMut(&mut World) + Send + Sync + 'static,
+{
+	fn into_descriptor(self) -> SystemDescriptor {
+		self.into()
+	}
+}
+
+impl Into<SystemDescriptor> for ExclusiveSystemCoerced {
+	fn into(self) -> SystemDescriptor {
+		new_exclusive_descriptor(Box::new(self)).into()
+	}
+}
+
+// TODO: Deprecate!
 impl IntoSystemDescriptor<()> for ExclusiveSystemCoerced {
 	fn into_descriptor(self) -> SystemDescriptor {
-		new_exclusive_descriptor(Box::new(self)).into_descriptor()
+		self.into()
 	}
 }
 
@@ -107,21 +140,20 @@ impl IntoSystemDescriptor<()> for ExclusiveSystemCoerced {
 pub struct ParallelSystemDescriptor {
 	pub(crate) system: BoxedSystem<(), ()>,
 	pub(crate) run_criteria: Option<RunCriteriaDescriptorOrLabel>,
-	pub(crate) labels: Vec<BoxedSystemLabel>,
-	pub(crate) before: Vec<BoxedSystemLabel>,
-	pub(crate) after: Vec<BoxedSystemLabel>,
-	pub(crate) ambiguity_sets: Vec<BoxedAmbiguitySetLabel>,
+	pub(crate) meta: SystemContainerMeta,
 }
 
 impl From<BoxedSystem<(), ()>> for ParallelSystemDescriptor {
 	fn from(system: BoxedSystem<(), ()>) -> Self {
 		Self {
-			labels: system.default_labels(),
-			system,
 			run_criteria: None,
-			before: Vec::new(),
-			after: Vec::new(),
-			ambiguity_sets: Vec::new(),
+			meta: SystemContainerMeta {
+				labels: system.default_labels(),
+				before: Vec::new(),
+				after: Vec::new(),
+				ambiguity_sets: Vec::new(),
+			},
+			system,
 		}
 	}
 }
@@ -163,12 +195,13 @@ impl ParallelSystemDescriptorCoercion<()> for ParallelSystemDescriptor {
 	}
 
 	fn label(mut self, label: impl SystemLabel) -> ParallelSystemDescriptor {
-		self.labels.push(Box::new(label));
+		self.meta.labels.push(Box::new(label));
 		self
 	}
 
 	fn before<Marker>(mut self, label: impl AsSystemLabel<Marker>) -> ParallelSystemDescriptor {
 		self
+			.meta
 			.before
 			.push(Box::new(label.as_system_label()));
 		self
@@ -176,13 +209,14 @@ impl ParallelSystemDescriptorCoercion<()> for ParallelSystemDescriptor {
 
 	fn after<Marker>(mut self, label: impl AsSystemLabel<Marker>) -> ParallelSystemDescriptor {
 		self
+			.meta
 			.after
 			.push(Box::new(label.as_system_label()));
 		self
 	}
 
 	fn in_ambiguity_set(mut self, set: impl AmbiguitySetLabel) -> ParallelSystemDescriptor {
-		self.ambiguity_sets.push(Box::new(set));
+		self.meta.ambiguity_sets.push(Box::new(set));
 		self
 	}
 }
@@ -251,10 +285,7 @@ pub(crate) enum InsertionPoint {
 pub struct ExclusiveSystemDescriptor {
 	pub(crate) system: Box<dyn ExclusiveSystem>,
 	pub(crate) run_criteria: Option<RunCriteriaDescriptorOrLabel>,
-	pub(crate) labels: Vec<BoxedSystemLabel>,
-	pub(crate) before: Vec<BoxedSystemLabel>,
-	pub(crate) after: Vec<BoxedSystemLabel>,
-	pub(crate) ambiguity_sets: Vec<BoxedAmbiguitySetLabel>,
+	pub(crate) meta: SystemContainerMeta,
 	pub(crate) insertion_point: InsertionPoint,
 }
 
@@ -263,11 +294,13 @@ impl From<Box<dyn ExclusiveSystem>> for ExclusiveSystemDescriptor {
 		Self {
 			system,
 			run_criteria: None,
-			labels: Vec::new(),
-			before: Vec::new(),
-			after: Vec::new(),
-			ambiguity_sets: Vec::new(),
 			insertion_point: InsertionPoint::AtStart,
+			meta: SystemContainerMeta {
+				ambiguity_sets: Vec::new(),
+				labels: Vec::new(),
+				before: Vec::new(),
+				after: Vec::new(),
+			},
 		}
 	}
 }
@@ -319,22 +352,22 @@ impl ExclusiveSystemDescriptorCoercion for ExclusiveSystemDescriptor {
 	}
 
 	fn label(mut self, label: impl SystemLabel) -> ExclusiveSystemDescriptor {
-		self.labels.push(Box::new(label));
+		self.meta.labels.push(Box::new(label));
 		self
 	}
 
 	fn before(mut self, label: impl SystemLabel) -> ExclusiveSystemDescriptor {
-		self.before.push(Box::new(label));
+		self.meta.before.push(Box::new(label));
 		self
 	}
 
 	fn after(mut self, label: impl SystemLabel) -> ExclusiveSystemDescriptor {
-		self.after.push(Box::new(label));
+		self.meta.after.push(Box::new(label));
 		self
 	}
 
 	fn in_ambiguity_set(mut self, set: impl AmbiguitySetLabel) -> ExclusiveSystemDescriptor {
-		self.ambiguity_sets.push(Box::new(set));
+		self.meta.ambiguity_sets.push(Box::new(set));
 		self
 	}
 

@@ -115,12 +115,12 @@ impl SpecializedMeshPipeline for IsRedPipeline {
 		let mut descriptor = self
 			.mesh_pipeline
 			.specialize(pbr_pipeline_key, layout)?;
-		descriptor.vertex.shader = self.shader.clone();
-		descriptor.vertex.shader_defs = shader_defs.clone();
+		descriptor.vertex.meta.shader = self.shader.clone();
+		descriptor.vertex.meta.shader_defs = shader_defs.clone();
 		let fragment = descriptor.fragment.as_mut().unwrap();
-		fragment.shader = self.shader.clone();
-		fragment.shader_defs = shader_defs;
-		descriptor.layout = Some(vec![
+		fragment.meta.shader = self.shader.clone();
+		fragment.meta.shader_defs = shader_defs;
+		descriptor.meta.layout = Some(vec![
 			self.mesh_pipeline.view_layout.clone(),
 			self.mesh_pipeline.mesh_layout.clone(),
 		]);

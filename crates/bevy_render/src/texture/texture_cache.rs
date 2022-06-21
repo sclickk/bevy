@@ -40,31 +40,32 @@ impl TextureCache {
 		descriptor: TextureDescriptor<'static>,
 	) -> CachedTexture {
 		match self.textures.entry(descriptor) {
-			Entry::Occupied(mut entry) => {
-				for texture in entry.get_mut().iter_mut() {
-					if !texture.taken {
-						texture.frames_since_last_use = 0;
-						texture.taken = true;
-						return CachedTexture {
-							texture: texture.texture.clone(),
-							default_view: texture.default_view.clone(),
-						};
+			Entry::Occupied(mut entry) => entry
+				.get_mut()
+				.iter_mut()
+				.find(|texture| !texture.taken)
+				.map(|texture| {
+					texture.frames_since_last_use = 0;
+					texture.taken = true;
+					CachedTexture {
+						texture: texture.texture.clone(),
+						default_view: texture.default_view.clone(),
 					}
-				}
-
-				let texture = render_device.create_texture(&entry.key().clone());
-				let default_view = texture.create_view(&TextureViewDescriptor::default());
-				entry.get_mut().push(CachedTextureMeta {
-					texture: texture.clone(),
-					default_view: default_view.clone(),
-					frames_since_last_use: 0,
-					taken: true,
-				});
-				CachedTexture {
-					texture,
-					default_view,
-				}
-			}
+				})
+				.unwrap_or_else(|| {
+					let texture = render_device.create_texture(&entry.key().clone());
+					let default_view = texture.create_view(&TextureViewDescriptor::default());
+					entry.get_mut().push(CachedTextureMeta {
+						texture: texture.clone(),
+						default_view: default_view.clone(),
+						frames_since_last_use: 0,
+						taken: true,
+					});
+					CachedTexture {
+						texture,
+						default_view,
+					}
+				}),
 			Entry::Vacant(entry) => {
 				let texture = render_device.create_texture(entry.key());
 				let default_view = texture.create_view(&TextureViewDescriptor::default());

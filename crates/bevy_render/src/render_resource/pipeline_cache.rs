@@ -403,8 +403,8 @@ impl PipelineCache {
 		let vertex_module = match self.shader_cache.get(
 			&self.device,
 			id,
-			&descriptor.vertex.shader,
-			&descriptor.vertex.shader_defs,
+			&descriptor.vertex.meta.shader,
+			&descriptor.vertex.meta.shader_defs,
 		) {
 			Ok(module) => module,
 			Err(err) => {
@@ -413,19 +413,20 @@ impl PipelineCache {
 		};
 
 		let fragment_data = if let Some(fragment) = &descriptor.fragment {
-			let fragment_module =
-				match self
-					.shader_cache
-					.get(&self.device, id, &fragment.shader, &fragment.shader_defs)
-				{
-					Ok(module) => module,
-					Err(err) => {
-						return CachedPipelineState::Err(err);
-					}
-				};
+			let fragment_module = match self.shader_cache.get(
+				&self.device,
+				id,
+				&fragment.meta.shader,
+				&fragment.meta.shader_defs,
+			) {
+				Ok(module) => module,
+				Err(err) => {
+					return CachedPipelineState::Err(err);
+				}
+			};
 			Some((
 				fragment_module,
-				fragment.entry_point.deref(),
+				fragment.meta.entry_point.deref(),
 				&fragment.targets,
 			))
 		} else {
@@ -443,7 +444,8 @@ impl PipelineCache {
 			})
 			.collect::<Vec<_>>();
 
-		let layout = if let Some(layout) = &descriptor.layout {
+		// TODO: Use Option function!
+		let layout = if let Some(layout) = &descriptor.meta.layout {
 			Some(self.layout_cache.get(&self.device, layout))
 		} else {
 			None
@@ -452,13 +454,13 @@ impl PipelineCache {
 		let descriptor = RawRenderPipelineDescriptor {
 			multiview: None,
 			depth_stencil: descriptor.depth_stencil.clone(),
-			label: descriptor.label.as_deref(),
+			label: descriptor.meta.label.as_deref(),
 			layout,
 			multisample: descriptor.multisample,
 			primitive: descriptor.primitive,
 			vertex: RawVertexState {
 				buffers: &vertex_buffer_layouts,
-				entry_point: descriptor.vertex.entry_point.deref(),
+				entry_point: descriptor.vertex.meta.entry_point.deref(),
 				module: &vertex_module,
 			},
 			fragment: fragment_data
@@ -483,8 +485,8 @@ impl PipelineCache {
 		let compute_module = match self.shader_cache.get(
 			&self.device,
 			id,
-			&descriptor.shader,
-			&descriptor.shader_defs,
+			&descriptor.meta.shader,
+			&descriptor.meta.shader_defs,
 		) {
 			Ok(module) => module,
 			Err(err) => {
@@ -492,17 +494,18 @@ impl PipelineCache {
 			}
 		};
 
-		let layout = if let Some(layout) = &descriptor.layout {
+		// TODO: Use an Option function!
+		let layout = if let Some(layout) = &descriptor.descriptor_meta.layout {
 			Some(self.layout_cache.get(&self.device, layout))
 		} else {
 			None
 		};
 
 		let descriptor = RawComputePipelineDescriptor {
-			label: descriptor.label.as_deref(),
+			label: descriptor.descriptor_meta.label.as_deref(),
 			layout,
 			module: &compute_module,
-			entry_point: descriptor.entry_point.as_ref(),
+			entry_point: descriptor.meta.entry_point.as_ref(),
 		};
 
 		let pipeline = self.device.create_compute_pipeline(&descriptor);

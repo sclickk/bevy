@@ -1,16 +1,42 @@
 use crate::{
 	component::ComponentId,
+	prelude::{AmbiguitySetLabel, RunCriteriaLabel, SystemLabel},
 	query::Access,
-	schedule::{
-		BoxedAmbiguitySetLabel, BoxedRunCriteriaLabel, BoxedSystemLabel, ExclusiveSystemDescriptor,
-		GraphNode, ParallelSystemDescriptor,
-	},
+	schedule::{ExclusiveSystemDescriptor, GraphNode, ParallelSystemDescriptor},
 	system::{ExclusiveSystem, System},
 };
 use std::borrow::Cow;
 
+// TODO: FIX CODE DUPLICATION IN HERE!
+#[derive(Default)]
+pub(crate) struct SystemContainerMeta {
+	pub(crate) labels: Vec<Box<dyn SystemLabel>>,
+	pub(crate) before: Vec<Box<dyn SystemLabel>>,
+	pub(crate) after: Vec<Box<dyn SystemLabel>>,
+	pub(crate) ambiguity_sets: Vec<Box<dyn AmbiguitySetLabel>>,
+}
+
+pub(crate) struct RunCriteriaMeta {
+	pub(crate) index: Option<usize>,
+	pub(crate) label: Option<Box<dyn RunCriteriaLabel>>,
+}
+
+impl RunCriteriaMeta {
+	fn index(&self) -> Option<usize> {
+		self.index
+	}
+
+	fn set_index(&mut self, index: usize) {
+		self.index = Some(index);
+	}
+
+	fn label(&self) -> Option<&Box<dyn RunCriteriaLabel>> {
+		self.label.as_ref()
+	}
+}
+
 /// System metadata like its name, labels, order requirements and component access.
-pub trait SystemContainer: GraphNode<Label = BoxedSystemLabel> {
+pub trait SystemContainer: GraphNode<Label = Box<dyn SystemLabel>> {
 	#[doc(hidden)]
 	fn dependencies(&self) -> &[usize];
 	#[doc(hidden)]
@@ -19,20 +45,16 @@ pub trait SystemContainer: GraphNode<Label = BoxedSystemLabel> {
 	fn run_criteria(&self) -> Option<usize>;
 	#[doc(hidden)]
 	fn set_run_criteria(&mut self, index: usize);
-	fn run_criteria_label(&self) -> Option<&BoxedRunCriteriaLabel>;
-	fn ambiguity_sets(&self) -> &[BoxedAmbiguitySetLabel];
+	fn run_criteria_label(&self) -> Option<&Box<dyn RunCriteriaLabel>>;
+	fn ambiguity_sets(&self) -> &[Box<dyn AmbiguitySetLabel>];
 	fn component_access(&self) -> Option<&Access<ComponentId>>;
 }
 
 pub(super) struct ExclusiveSystemContainer {
 	system: Box<dyn ExclusiveSystem>,
-	pub(super) run_criteria_index: Option<usize>,
-	pub(super) run_criteria_label: Option<BoxedRunCriteriaLabel>,
+	pub(super) run_criteria_meta: RunCriteriaMeta,
 	dependencies: Vec<usize>,
-	labels: Vec<BoxedSystemLabel>,
-	before: Vec<BoxedSystemLabel>,
-	after: Vec<BoxedSystemLabel>,
-	ambiguity_sets: Vec<BoxedAmbiguitySetLabel>,
+	meta: SystemContainerMeta,
 }
 
 impl ExclusiveSystemContainer {
@@ -45,34 +67,33 @@ impl From<ExclusiveSystemDescriptor> for ExclusiveSystemContainer {
 	fn from(descriptor: ExclusiveSystemDescriptor) -> Self {
 		Self {
 			system: descriptor.system,
-			run_criteria_index: None,
-			run_criteria_label: None,
+			run_criteria_meta: RunCriteriaMeta {
+				label: None,
+				index: None,
+			},
 			dependencies: Vec::new(),
-			labels: descriptor.labels,
-			before: descriptor.before,
-			after: descriptor.after,
-			ambiguity_sets: descriptor.ambiguity_sets,
+			meta: descriptor.meta,
 		}
 	}
 }
 
 impl GraphNode for ExclusiveSystemContainer {
-	type Label = BoxedSystemLabel;
+	type Label = Box<dyn SystemLabel>;
 
 	fn name(&self) -> Cow<'static, str> {
 		self.system.name()
 	}
 
-	fn labels(&self) -> &[BoxedSystemLabel] {
-		&self.labels
+	fn labels(&self) -> &[Box<dyn SystemLabel>] {
+		&self.meta.labels
 	}
 
-	fn before(&self) -> &[BoxedSystemLabel] {
-		&self.before
+	fn before(&self) -> &[Box<dyn SystemLabel>] {
+		&self.meta.before
 	}
 
-	fn after(&self) -> &[BoxedSystemLabel] {
-		&self.after
+	fn after(&self) -> &[Box<dyn SystemLabel>] {
+		&self.meta.after
 	}
 }
 
@@ -87,19 +108,19 @@ impl SystemContainer for ExclusiveSystemContainer {
 	}
 
 	fn run_criteria(&self) -> Option<usize> {
-		self.run_criteria_index
+		self.run_criteria_meta.index()
 	}
 
 	fn set_run_criteria(&mut self, index: usize) {
-		self.run_criteria_index = Some(index);
+		self.run_criteria_meta.set_index(index);
 	}
 
-	fn run_criteria_label(&self) -> Option<&BoxedRunCriteriaLabel> {
-		self.run_criteria_label.as_ref()
+	fn run_criteria_label(&self) -> Option<&Box<dyn RunCriteriaLabel>> {
+		self.run_criteria_meta.label()
 	}
 
-	fn ambiguity_sets(&self) -> &[BoxedAmbiguitySetLabel] {
-		&self.ambiguity_sets
+	fn ambiguity_sets(&self) -> &[Box<dyn AmbiguitySetLabel>] {
+		&self.meta.ambiguity_sets
 	}
 
 	fn component_access(&self) -> Option<&Access<ComponentId>> {
@@ -109,14 +130,10 @@ impl SystemContainer for ExclusiveSystemContainer {
 
 pub struct ParallelSystemContainer {
 	system: Box<dyn System<In = (), Out = ()>>,
-	pub(crate) run_criteria_index: Option<usize>,
-	pub(crate) run_criteria_label: Option<BoxedRunCriteriaLabel>,
+	pub(crate) run_criteria_meta: RunCriteriaMeta,
 	pub(crate) should_run: bool,
 	dependencies: Vec<usize>,
-	labels: Vec<BoxedSystemLabel>,
-	before: Vec<BoxedSystemLabel>,
-	after: Vec<BoxedSystemLabel>,
-	ambiguity_sets: Vec<BoxedAmbiguitySetLabel>,
+	meta: SystemContainerMeta,
 }
 
 unsafe impl Send for ParallelSystemContainer {}
@@ -149,34 +166,33 @@ impl From<ParallelSystemDescriptor> for ParallelSystemContainer {
 		Self {
 			system: descriptor.system,
 			should_run: false,
-			run_criteria_index: None,
-			run_criteria_label: None,
+			run_criteria_meta: RunCriteriaMeta {
+				index: None,
+				label: None,
+			},
 			dependencies: Vec::new(),
-			labels: descriptor.labels,
-			before: descriptor.before,
-			after: descriptor.after,
-			ambiguity_sets: descriptor.ambiguity_sets,
+			meta: descriptor.meta,
 		}
 	}
 }
 
 impl GraphNode for ParallelSystemContainer {
-	type Label = BoxedSystemLabel;
+	type Label = Box<dyn SystemLabel>;
 
 	fn name(&self) -> Cow<'static, str> {
 		self.system().name()
 	}
 
-	fn labels(&self) -> &[BoxedSystemLabel] {
-		&self.labels
+	fn labels(&self) -> &[Box<dyn SystemLabel>] {
+		&self.meta.labels
 	}
 
-	fn before(&self) -> &[BoxedSystemLabel] {
-		&self.before
+	fn before(&self) -> &[Box<dyn SystemLabel>] {
+		&self.meta.before
 	}
 
-	fn after(&self) -> &[BoxedSystemLabel] {
-		&self.after
+	fn after(&self) -> &[Box<dyn SystemLabel>] {
+		&self.meta.after
 	}
 }
 
@@ -191,19 +207,19 @@ impl SystemContainer for ParallelSystemContainer {
 	}
 
 	fn run_criteria(&self) -> Option<usize> {
-		self.run_criteria_index
+		self.run_criteria_meta.index()
 	}
 
 	fn set_run_criteria(&mut self, index: usize) {
-		self.run_criteria_index = Some(index);
+		self.run_criteria_meta.set_index(index);
 	}
 
-	fn run_criteria_label(&self) -> Option<&BoxedRunCriteriaLabel> {
-		self.run_criteria_label.as_ref()
+	fn run_criteria_label(&self) -> Option<&Box<dyn RunCriteriaLabel>> {
+		self.run_criteria_meta.label()
 	}
 
-	fn ambiguity_sets(&self) -> &[BoxedAmbiguitySetLabel] {
-		&self.ambiguity_sets
+	fn ambiguity_sets(&self) -> &[Box<dyn AmbiguitySetLabel>] {
+		&self.meta.ambiguity_sets
 	}
 
 	fn component_access(&self) -> Option<&Access<ComponentId>> {

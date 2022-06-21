@@ -330,13 +330,18 @@ impl SpecializedMeshPipeline for ShadowPipeline {
 
 		Ok(RenderPipelineDescriptor {
 			vertex: VertexState {
-				shader: SHADOW_SHADER_HANDLE.typed::<Shader>(),
-				entry_point: "vertex".into(),
-				shader_defs,
+				meta: ShaderMeta {
+					shader: SHADOW_SHADER_HANDLE.typed::<Shader>(),
+					entry_point: "vertex".into(),
+					shader_defs,
+				},
 				buffers: vec![vertex_buffer_layout],
 			},
 			fragment: None,
-			layout: Some(bind_group_layout),
+			meta: PipelineDescriptorMeta {
+				layout: Some(bind_group_layout),
+				label: Some("shadow_pipeline".into()),
+			},
 			primitive: PrimitiveState {
 				topology: key.primitive_topology(),
 				strip_index_format: None,
@@ -363,7 +368,6 @@ impl SpecializedMeshPipeline for ShadowPipeline {
 				},
 			}),
 			multisample: MultisampleState::default(),
-			label: Some("shadow_pipeline".into()),
 		})
 	}
 }

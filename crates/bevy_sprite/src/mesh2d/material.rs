@@ -232,13 +232,18 @@ impl<M: SpecializedMaterial2d> SpecializedMeshPipeline for Material2dPipeline<M>
 			.mesh2d_pipeline
 			.specialize(key.mesh_key, layout)?;
 		if let Some(vertex_shader) = &self.vertex_shader {
-			descriptor.vertex.shader = vertex_shader.clone();
+			descriptor.vertex.meta.shader = vertex_shader.clone();
 		}
 
 		if let Some(fragment_shader) = &self.fragment_shader {
-			descriptor.fragment.as_mut().unwrap().shader = fragment_shader.clone();
+			descriptor
+				.fragment
+				.as_mut()
+				.unwrap()
+				.meta
+				.shader = fragment_shader.clone();
 		}
-		descriptor.layout = Some(vec![
+		descriptor.meta.layout = Some(vec![
 			self.mesh2d_pipeline.view_layout.clone(),
 			self.material2d_layout.clone(),
 			self.mesh2d_pipeline.mesh_layout.clone(),

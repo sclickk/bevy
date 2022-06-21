@@ -38,8 +38,8 @@ use bevy_utils::HashMap;
 /// runs indefinitely.
 #[derive(Default)]
 pub struct Schedule {
-	stages: HashMap<BoxedStageLabel, Box<dyn Stage>>,
-	stage_order: Vec<BoxedStageLabel>,
+	stages: HashMap<Box<dyn StageLabel>, Box<dyn Stage>>,
+	stage_order: Vec<Box<dyn StageLabel>>,
 	run_criteria: BoxedRunCriteria,
 }
 

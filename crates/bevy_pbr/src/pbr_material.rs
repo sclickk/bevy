@@ -397,11 +397,12 @@ impl SpecializedMaterial for StandardMaterial {
 				.fragment
 				.as_mut()
 				.unwrap()
+				.meta
 				.shader_defs
 				.push(String::from("STANDARDMATERIAL_NORMAL_MAP"));
 		}
 		descriptor.primitive.cull_mode = key.cull_mode;
-		if let Some(label) = &mut descriptor.label {
+		if let Some(label) = &mut descriptor.meta.label {
 			*label = format!("pbr_{}", *label).into();
 		}
 		Ok(())

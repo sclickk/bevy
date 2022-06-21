@@ -78,22 +78,29 @@ impl SpecializedRenderPipeline for UiPipeline {
 
 		RenderPipelineDescriptor {
 			vertex: VertexState {
-				shader: super::UI_SHADER_HANDLE.typed::<Shader>(),
-				entry_point: "vertex".into(),
-				shader_defs: shader_defs.clone(),
+				meta: ShaderMeta {
+					shader: super::UI_SHADER_HANDLE.typed::<Shader>(),
+					entry_point: "vertex".into(),
+					shader_defs: shader_defs.clone(),
+				},
 				buffers: vec![vertex_layout],
 			},
 			fragment: Some(FragmentState {
-				shader: super::UI_SHADER_HANDLE.typed::<Shader>(),
-				shader_defs,
-				entry_point: "fragment".into(),
+				meta: ShaderMeta {
+					shader: super::UI_SHADER_HANDLE.typed::<Shader>(),
+					shader_defs,
+					entry_point: "fragment".into(),
+				},
 				targets: vec![ColorTargetState {
 					format: TextureFormat::bevy_default(),
 					blend: Some(BlendState::ALPHA_BLENDING),
 					write_mask: ColorWrites::ALL,
 				}],
 			}),
-			layout: Some(vec![self.view_layout.clone(), self.image_layout.clone()]),
+			meta: PipelineDescriptorMeta {
+				label: Some("ui_pipeline".into()),
+				layout: Some(vec![self.view_layout.clone(), self.image_layout.clone()]),
+			},
 			primitive: PrimitiveState {
 				front_face: FrontFace::Ccw,
 				cull_mode: None,
@@ -109,7 +116,6 @@ impl SpecializedRenderPipeline for UiPipeline {
 				mask: !0,
 				alpha_to_coverage_enabled: false,
 			},
-			label: Some("ui_pipeline".into()),
 		}
 	}
 }

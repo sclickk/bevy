@@ -86,13 +86,18 @@ impl Deref for ComputePipeline {
 	}
 }
 
-/// Describes a render (graphics) pipeline.
 #[derive(Clone, Debug, PartialEq)]
-pub struct RenderPipelineDescriptor {
+pub struct PipelineDescriptorMeta {
 	/// Debug label of the pipeline. This will show up in graphics debuggers for easy identification.
 	pub label: Option<Cow<'static, str>>,
 	/// The layout of bind groups for this pipeline.
 	pub layout: Option<Vec<BindGroupLayout>>,
+}
+
+/// Describes a render (graphics) pipeline.
+#[derive(Clone, Debug, PartialEq)]
+pub struct RenderPipelineDescriptor {
+	pub meta: PipelineDescriptorMeta,
 	/// The compiled vertex stage, its entry point, and the input buffers layout.
 	pub vertex: VertexState,
 	/// The properties of the pipeline at the primitive assembly and rasterization level.
@@ -107,12 +112,7 @@ pub struct RenderPipelineDescriptor {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct VertexState {
-	/// The compiled shader module for this stage.
-	pub shader: Handle<Shader>,
-	pub shader_defs: Vec<String>,
-	/// The name of the entry point in the compiled shader. There must be a
-	/// function with this name in the shader.
-	pub entry_point: Cow<'static, str>,
+	pub meta: ShaderMeta,
 	/// The format of any vertex buffers used with this pipeline.
 	pub buffers: Vec<VertexBufferLayout>,
 }
@@ -156,28 +156,27 @@ impl VertexBufferLayout {
 	}
 }
 
-/// Describes the fragment process in a render pipeline.
-#[derive(Clone, Debug, PartialEq)]
-pub struct FragmentState {
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct ShaderMeta {
 	/// The compiled shader module for this stage.
 	pub shader: Handle<Shader>,
 	pub shader_defs: Vec<String>,
 	/// The name of the entry point in the compiled shader. There must be a
 	/// function with this name in the shader.
 	pub entry_point: Cow<'static, str>,
+}
+
+/// Describes the fragment process in a render pipeline.
+#[derive(Clone, Debug, PartialEq)]
+pub struct FragmentState {
 	/// The color state of the render targets.
 	pub targets: Vec<ColorTargetState>,
+	pub meta: ShaderMeta,
 }
 
 /// Describes a compute pipeline.
 #[derive(Clone, Debug)]
 pub struct ComputePipelineDescriptor {
-	pub label: Option<Cow<'static, str>>,
-	pub layout: Option<Vec<BindGroupLayout>>,
-	/// The compiled shader module for this stage.
-	pub shader: Handle<Shader>,
-	pub shader_defs: Vec<String>,
-	/// The name of the entry point in the compiled shader. There must be a
-	/// function with this name in the shader.
-	pub entry_point: Cow<'static, str>,
+	pub descriptor_meta: PipelineDescriptorMeta,
+	pub meta: ShaderMeta,
 }

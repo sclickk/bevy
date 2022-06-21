@@ -191,7 +191,7 @@ impl SpecializedMeshPipeline for CustomPipeline {
 		layout: &MeshVertexBufferLayout,
 	) -> Result<RenderPipelineDescriptor, SpecializedMeshPipelineError> {
 		let mut descriptor = self.mesh_pipeline.specialize(key, layout)?;
-		descriptor.vertex.shader = self.shader.clone();
+		descriptor.vertex.meta.shader = self.shader.clone();
 		descriptor
 			.vertex
 			.buffers
@@ -211,8 +211,13 @@ impl SpecializedMeshPipeline for CustomPipeline {
 					},
 				],
 			});
-		descriptor.fragment.as_mut().unwrap().shader = self.shader.clone();
-		descriptor.layout = Some(vec![
+		descriptor
+			.fragment
+			.as_mut()
+			.unwrap()
+			.meta
+			.shader = self.shader.clone();
+		descriptor.meta.layout = Some(vec![
 			self.mesh_pipeline.view_layout.clone(),
 			self.mesh_pipeline.mesh_layout.clone(),
 		]);

@@ -614,22 +614,29 @@ impl SpecializedMeshPipeline for MeshPipeline {
 
 		Ok(RenderPipelineDescriptor {
 			vertex: VertexState {
-				shader: MESH_SHADER_HANDLE.typed::<Shader>(),
-				entry_point: "vertex".into(),
-				shader_defs: shader_defs.clone(),
+				meta: ShaderMeta {
+					shader: MESH_SHADER_HANDLE.typed::<Shader>(),
+					entry_point: "vertex".into(),
+					shader_defs: shader_defs.clone(),
+				},
 				buffers: vec![vertex_buffer_layout],
 			},
 			fragment: Some(FragmentState {
-				shader: MESH_SHADER_HANDLE.typed::<Shader>(),
-				shader_defs,
-				entry_point: "fragment".into(),
+				meta: ShaderMeta {
+					shader: MESH_SHADER_HANDLE.typed::<Shader>(),
+					shader_defs,
+					entry_point: "fragment".into(),
+				},
 				targets: vec![ColorTargetState {
 					format: TextureFormat::bevy_default(),
 					blend,
 					write_mask: ColorWrites::ALL,
 				}],
 			}),
-			layout: Some(bind_group_layout),
+			meta: PipelineDescriptorMeta {
+				label: Some(label),
+				layout: Some(bind_group_layout),
+			},
 			primitive: PrimitiveState {
 				front_face: FrontFace::Ccw,
 				cull_mode: Some(Face::Back),
@@ -660,7 +667,6 @@ impl SpecializedMeshPipeline for MeshPipeline {
 				mask: !0,
 				alpha_to_coverage_enabled: false,
 			},
-			label: Some(label),
 		})
 	}
 }
