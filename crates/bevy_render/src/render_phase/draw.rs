@@ -251,24 +251,24 @@ impl<P: CachedRenderPipelinePhaseItem> RenderCommand<P> for SetItemPipeline {
 }
 
 macro_rules! render_command_tuple_impl {
-    ($($name: ident),*) => {
-        impl<P: PhaseItem, $($name: RenderCommand<P>),*> RenderCommand<P> for ($($name,)*) {
-            type Param = ($($name::Param,)*);
+	($($name: ident),*) => {
+		impl<P: PhaseItem, $($name: RenderCommand<P>),*> RenderCommand<P> for ($($name,)*) {
+			type Param = ($($name::Param,)*);
 
-            #[allow(non_snake_case)]
-            fn render<'w>(
-                _view: Entity,
-                _item: &P,
-                ($($name,)*): SystemParamItem<'w, '_, Self::Param>,
-                _pass: &mut TrackedRenderPass<'w>,
-            ) -> RenderCommandResult{
-                $(if let RenderCommandResult::Failure = $name::render(_view, _item, $name, _pass) {
-                    return RenderCommandResult::Failure;
-                })*
-                RenderCommandResult::Success
-            }
-        }
-    };
+			#[allow(non_snake_case)]
+			fn render<'w>(
+				_view: Entity,
+				_item: &P,
+				($($name,)*): SystemParamItem<'w, '_, Self::Param>,
+				_pass: &mut TrackedRenderPass<'w>,
+			) -> RenderCommandResult{
+				$(if let RenderCommandResult::Failure = $name::render(_view, _item, $name, _pass) {
+					return RenderCommandResult::Failure;
+				})*
+				RenderCommandResult::Success
+			}
+		}
+	};
 }
 
 all_tuples!(render_command_tuple_impl, 0, 15, C);
