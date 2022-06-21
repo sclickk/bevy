@@ -273,36 +273,33 @@ impl RenderGraph {
 	) -> Result<(), RenderGraphError> {
 		let output_slot = output_slot.into();
 		let input_slot = input_slot.into();
-		let output_node_id = self.get_node_id(output_node)?;
-		let input_node_id = self.get_node_id(input_node)?;
-
-		let output_index = self
-			.get_node_state(output_node_id)?
-			.output_slots
-			.get_slot_index(output_slot.clone())
-			.ok_or(RenderGraphError::InvalidOutputNodeSlot(output_slot))?;
-		let input_index = self
-			.get_node_state(input_node_id)?
-			.input_slots
-			.get_slot_index(input_slot.clone())
-			.ok_or(RenderGraphError::InvalidInputNodeSlot(input_slot))?;
+		let output_node = self.get_node_id(output_node)?;
+		let input_node = self.get_node_id(input_node)?;
 
 		let edge = Edge::SlotEdge {
-			output_node: output_node_id,
-			output_index,
-			input_node: input_node_id,
-			input_index,
+			output_node,
+			output_index: self
+				.get_node_state(output_node)?
+				.output_slots
+				.get_slot_index(output_slot.clone())
+				.ok_or(RenderGraphError::InvalidOutputNodeSlot(output_slot))?,
+			input_node,
+			input_index: self
+				.get_node_state(input_node)?
+				.input_slots
+				.get_slot_index(input_slot.clone())
+				.ok_or(RenderGraphError::InvalidInputNodeSlot(input_slot))?,
 		};
 
 		self.validate_edge(&edge, EdgeExistence::Exists)?;
 
 		{
-			let output_node = self.get_node_state_mut(output_node_id)?;
+			let output_node = self.get_node_state_mut(edge.get_output_node())?;
 			output_node
 				.edges
 				.remove_output_edge(edge.clone())?;
 		}
-		let input_node = self.get_node_state_mut(input_node_id)?;
+		let input_node = self.get_node_state_mut(edge.get_input_node())?;
 		input_node.edges.remove_input_edge(edge)?;
 
 		Ok(())
@@ -315,23 +312,20 @@ impl RenderGraph {
 		output_node: impl Into<NodeLabel>,
 		input_node: impl Into<NodeLabel>,
 	) -> Result<(), RenderGraphError> {
-		let output_node_id = self.get_node_id(output_node)?;
-		let input_node_id = self.get_node_id(input_node)?;
-
 		let edge = Edge::NodeEdge {
-			output_node: output_node_id,
-			input_node: input_node_id,
+			output_node: self.get_node_id(output_node)?,
+			input_node: self.get_node_id(input_node)?,
 		};
 
 		self.validate_edge(&edge, EdgeExistence::DoesNotExist)?;
 
 		{
-			let output_node = self.get_node_state_mut(output_node_id)?;
+			let output_node = self.get_node_state_mut(edge.get_output_node())?;
 			output_node
 				.edges
 				.add_output_edge(edge.clone())?;
 		}
-		let input_node = self.get_node_state_mut(input_node_id)?;
+		let input_node = self.get_node_state_mut(edge.get_input_node())?;
 		input_node.edges.add_input_edge(edge)?;
 
 		Ok(())
