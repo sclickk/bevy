@@ -90,21 +90,20 @@ pub struct TransformPlugin;
 
 impl Plugin for TransformPlugin {
 	fn build(&self, app: &mut App) {
-		app
-			.register_type::<Transform>()
-			.register_type::<GlobalTransform>()
-			// Adding these to startup ensures the first update is "correct"
-			.add_startup_system_to_stage(
-				StartupStage::PostStartup,
-				systems::transform_propagate_system
-					.label(TransformSystem::TransformPropagate)
-					.after(HierarchySystem::ParentUpdate),
-			)
-			.add_system_to_stage(
-				CoreStage::PostUpdate,
-				systems::transform_propagate_system
-					.label(TransformSystem::TransformPropagate)
-					.after(HierarchySystem::ParentUpdate),
-			);
+		app.register_type::<Transform>();
+		app.register_type::<GlobalTransform>();
+		// Adding these to startup ensures the first update is "correct"
+		app.add_startup_system_to_stage(
+			StartupStage::PostStartup,
+			systems::transform_propagate_system
+				.label(TransformSystem::TransformPropagate)
+				.after(HierarchySystem::ParentUpdate),
+		);
+		app.add_system_to_stage(
+			CoreStage::PostUpdate,
+			systems::transform_propagate_system
+				.label(TransformSystem::TransformPropagate)
+				.after(HierarchySystem::ParentUpdate),
+		);
 	}
 }

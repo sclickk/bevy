@@ -291,14 +291,13 @@ pub struct AnimationPlugin {}
 
 impl Plugin for AnimationPlugin {
 	fn build(&self, app: &mut App) {
-		app
-			.add_asset::<AnimationClip>()
-			.register_type::<AnimationPlayer>()
-			.add_system_to_stage(
-				CoreStage::PostUpdate,
-				animation_player
-					.before(TransformSystem::TransformPropagate)
-					.after(HierarchySystem::ParentUpdate),
-			);
+		app.add_asset::<AnimationClip>();
+		app.register_type::<AnimationPlayer>();
+		app.add_system_to_stage(
+			CoreStage::PostUpdate,
+			animation_player
+				.before(TransformSystem::TransformPropagate)
+				.after(HierarchySystem::ParentUpdate),
+		);
 	}
 }

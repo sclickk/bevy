@@ -10,13 +10,13 @@ use rand::Rng;
 use std::time::{Duration, Instant};
 
 fn main() {
-	App::new()
-		.add_plugins(DefaultPlugins)
-		.add_startup_system(setup_env)
-		.add_startup_system(add_assets)
-		.add_startup_system(spawn_tasks)
-		.add_system(handle_tasks)
-		.run();
+	let mut app = App::new();
+	app.add_plugins(DefaultPlugins);
+	app.add_startup_system(setup_env);
+	app.add_startup_system(add_assets);
+	app.add_startup_system(spawn_tasks);
+	app.add_system(handle_tasks);
+	app.run();
 }
 
 // Number of cubes to spawn across the x, y, and z axis

@@ -353,7 +353,8 @@ impl App {
 	/// );
 	/// ```
 	pub fn add_system_set(&mut self, system_set: SystemSet) -> &mut Self {
-		self.add_system_set_to_stage(CoreStage::Update, system_set)
+		self.add_system_set_to_stage(CoreStage::Update, system_set);
+		self
 	}
 
 	/// Adds a system to the [`Stage`] identified by `stage_label`.
@@ -406,11 +407,7 @@ impl App {
 	///         .with_system(system_c),
 	/// );
 	/// ```
-	pub fn add_system_set_to_stage(
-		&mut self,
-		stage_label: impl StageLabel,
-		system_set: SystemSet,
-	) -> &mut Self {
+	pub fn add_system_set_to_stage(&mut self, stage_label: impl StageLabel, system_set: SystemSet) {
 		use std::any::TypeId;
 		assert!(
 			stage_label.type_id() != TypeId::of::<StartupStage>(),
@@ -419,7 +416,6 @@ impl App {
 		self
 			.schedule
 			.add_system_set_to_stage(stage_label, system_set);
-		self
 	}
 
 	/// Adds a system to the [startup stage](Self::add_default_stages) of the app's [`Schedule`].
@@ -444,7 +440,8 @@ impl App {
 		&mut self,
 		system: impl IntoSystemDescriptor<Params>,
 	) -> &mut Self {
-		self.add_startup_system_to_stage(StartupStage::Startup, system)
+		self.add_startup_system_to_stage(StartupStage::Startup, system);
+		self
 	}
 
 	/// Adds a [`SystemSet`] to the [startup stage](Self::add_default_stages).
@@ -467,8 +464,8 @@ impl App {
 	///         .with_system(startup_system_c),
 	/// );
 	/// ```
-	pub fn add_startup_system_set(&mut self, system_set: SystemSet) -> &mut Self {
-		self.add_startup_system_set_to_stage(StartupStage::Startup, system_set)
+	pub fn add_startup_system_set(&mut self, system_set: SystemSet) {
+		self.add_startup_system_set_to_stage(StartupStage::Startup, system_set);
 	}
 
 	/// Adds a system to the [startup schedule](Self::add_default_stages), in the stage
@@ -491,13 +488,12 @@ impl App {
 		&mut self,
 		stage_label: impl StageLabel,
 		system: impl IntoSystemDescriptor<Params>,
-	) -> &mut Self {
+	) {
 		self
 			.schedule
 			.stage(StartupSchedule, |schedule: &mut Schedule| {
 				schedule.add_system_to_stage(stage_label, system)
 			});
-		self
 	}
 
 	/// Adds a [`SystemSet`] to the [startup schedule](Self::add_default_stages), in the stage
@@ -528,13 +524,12 @@ impl App {
 		&mut self,
 		stage_label: impl StageLabel,
 		system_set: SystemSet,
-	) -> &mut Self {
+	) {
 		self
 			.schedule
 			.stage(StartupSchedule, |schedule: &mut Schedule| {
 				schedule.add_system_set_to_stage(stage_label, system_set)
 			});
-		self
 	}
 
 	/// Adds a new [`State`] with the given `initial` value.
@@ -558,9 +553,9 @@ impl App {
 	where
 		T: StateData,
 	{
+		self.insert_resource(State::new(initial));
+		self.add_system_set_to_stage(stage, State::<T>::get_driver());
 		self
-			.insert_resource(State::new(initial))
-			.add_system_set_to_stage(stage, State::<T>::get_driver())
 	}
 
 	/// Adds utility stages to the [`Schedule`], giving it a standardized structure.
