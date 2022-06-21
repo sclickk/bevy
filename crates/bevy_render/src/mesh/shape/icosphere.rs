@@ -93,7 +93,7 @@ impl From<Icosphere> for Mesh {
 
 		let indices = Indices::U32(indices);
 
-		let mut mesh = Mesh::new(PrimitiveTopology::TriangleList);
+		let mut mesh = Mesh::from(PrimitiveTopology::TriangleList);
 		mesh.set_indices(Some(indices));
 		mesh.insert_attribute(Mesh::ATTRIBUTE_POSITION, points);
 		mesh.insert_attribute(Mesh::ATTRIBUTE_NORMAL, normals);

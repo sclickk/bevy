@@ -111,7 +111,7 @@ impl From<Box> for Mesh {
 			20, 21, 22, 22, 23, 20, // back
 		]);
 
-		let mut mesh = Mesh::new(PrimitiveTopology::TriangleList);
+		let mut mesh = Mesh::from(PrimitiveTopology::TriangleList);
 		mesh.insert_attribute(Mesh::ATTRIBUTE_POSITION, positions);
 		mesh.insert_attribute(Mesh::ATTRIBUTE_NORMAL, normals);
 		mesh.insert_attribute(Mesh::ATTRIBUTE_UV_0, uvs);
@@ -169,7 +169,7 @@ impl From<Quad> for Mesh {
 			uvs.push(*uv);
 		}
 
-		let mut mesh = Mesh::new(PrimitiveTopology::TriangleList);
+		let mut mesh = Mesh::from(PrimitiveTopology::TriangleList);
 		mesh.set_indices(Some(indices));
 		mesh.insert_attribute(Mesh::ATTRIBUTE_POSITION, positions);
 		mesh.insert_attribute(Mesh::ATTRIBUTE_NORMAL, normals);
@@ -213,7 +213,7 @@ impl From<Plane> for Mesh {
 			uvs.push(*uv);
 		}
 
-		let mut mesh = Mesh::new(PrimitiveTopology::TriangleList);
+		let mut mesh = Mesh::from(PrimitiveTopology::TriangleList);
 		mesh.set_indices(Some(indices));
 		mesh.insert_attribute(Mesh::ATTRIBUTE_POSITION, positions);
 		mesh.insert_attribute(Mesh::ATTRIBUTE_NORMAL, normals);

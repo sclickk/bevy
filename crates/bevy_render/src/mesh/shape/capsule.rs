@@ -369,7 +369,7 @@ impl From<Capsule> for Mesh {
 		assert_eq!(vs.len(), vert_len);
 		assert_eq!(tris.len(), fs_len);
 
-		let mut mesh = Mesh::new(PrimitiveTopology::TriangleList);
+		let mut mesh = Mesh::from(PrimitiveTopology::TriangleList);
 		mesh.insert_attribute(Mesh::ATTRIBUTE_POSITION, vs);
 		mesh.insert_attribute(Mesh::ATTRIBUTE_NORMAL, vns);
 		mesh.insert_attribute(Mesh::ATTRIBUTE_UV_0, vts);

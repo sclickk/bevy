@@ -48,7 +48,7 @@ pub struct Mesh {
 /// # use bevy_render::mesh::{Mesh, Indices};
 /// # use bevy_render::render_resource::PrimitiveTopology;
 /// fn create_triangle() -> Mesh {
-///     let mut mesh = Mesh::new(PrimitiveTopology::TriangleList);
+///     let mut mesh = Mesh::from(PrimitiveTopology::TriangleList);
 ///     mesh.insert_attribute(Mesh::ATTRIBUTE_POSITION, vec![[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [1.0, 1.0, 0.0]]);
 ///     mesh.set_indices(Some(Indices::U32(vec![0,1,2])));
 ///     mesh
@@ -82,17 +82,6 @@ impl Mesh {
 	/// Per vertex joint transform matrix index. Use in conjunction with [`Mesh::insert_attribute`]
 	pub const ATTRIBUTE_JOINT_INDEX: MeshVertexAttribute =
 		MeshVertexAttribute::new("Vertex_JointIndex", 6, VertexFormat::Uint16x4);
-
-	/// Construct a new mesh. You need to provide a [`PrimitiveTopology`] so that the
-	/// renderer knows how to treat the vertex data. Most of the time this will be
-	/// [`PrimitiveTopology::TriangleList`].
-	pub fn new(primitive_topology: PrimitiveTopology) -> Self {
-		Mesh {
-			primitive_topology,
-			attributes: Default::default(),
-			indices: None,
-		}
-	}
 
 	/// Returns the topology of the mesh.
 	pub fn primitive_topology(&self) -> PrimitiveTopology {
@@ -388,6 +377,19 @@ impl Mesh {
 		}
 
 		None
+	}
+}
+
+impl From<PrimitiveTopology> for Mesh {
+	/// Construct a new mesh. You need to provide a [`PrimitiveTopology`] so that the
+	/// renderer knows how to treat the vertex data. Most of the time this will be
+	/// [`PrimitiveTopology::TriangleList`].
+	fn from(primitive_topology: PrimitiveTopology) -> Self {
+		Mesh {
+			primitive_topology,
+			attributes: Default::default(),
+			indices: None,
+		}
 	}
 }
 

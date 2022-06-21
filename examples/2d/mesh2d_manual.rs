@@ -46,7 +46,7 @@ fn star(
 	// that is, how triangles are built from the vertices. We will use a
 	// triangle list, meaning that each vertex of the triangle has to be
 	// specified.
-	let mut star = Mesh::new(PrimitiveTopology::TriangleList);
+	let mut star = Mesh::from(PrimitiveTopology::TriangleList);
 
 	// Vertices need to have a position attribute. We will use the following
 	// vertices (I hope you can spot the star in the schema).

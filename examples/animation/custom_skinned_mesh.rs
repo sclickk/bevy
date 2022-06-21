@@ -52,7 +52,7 @@ fn setup(
 		]));
 
 	// Create a mesh
-	let mut mesh = Mesh::new(PrimitiveTopology::TriangleList);
+	let mut mesh = Mesh::from(PrimitiveTopology::TriangleList);
 	// Set mesh vertex positions
 	mesh.insert_attribute(
 		Mesh::ATTRIBUTE_POSITION,

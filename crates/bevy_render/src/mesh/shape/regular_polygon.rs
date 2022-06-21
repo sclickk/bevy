@@ -51,7 +51,7 @@ impl From<RegularPolygon> for Mesh {
 			indices.extend_from_slice(&[0, i + 1, i]);
 		}
 
-		let mut mesh = Mesh::new(PrimitiveTopology::TriangleList);
+		let mut mesh = Mesh::from(PrimitiveTopology::TriangleList);
 		mesh.insert_attribute(Mesh::ATTRIBUTE_POSITION, positions);
 		mesh.insert_attribute(Mesh::ATTRIBUTE_NORMAL, normals);
 		mesh.insert_attribute(Mesh::ATTRIBUTE_UV_0, uvs);
