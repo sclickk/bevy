@@ -444,17 +444,17 @@ pub trait SparseSetIndex: Clone + PartialEq + Eq + Hash {
 }
 
 macro_rules! impl_sparse_set_index {
-    ($($ty:ty),+) => {
-        $(impl SparseSetIndex for $ty {
-            fn sparse_set_index(&self) -> usize {
-                *self as usize
-            }
+	($($ty:ty),+) => {
+		$(impl SparseSetIndex for $ty {
+			fn sparse_set_index(&self) -> usize {
+				*self as usize
+			}
 
-            fn get_sparse_set_index(value: usize) -> Self {
-                value as $ty
-            }
-        })*
-    };
+			fn get_sparse_set_index(value: usize) -> Self {
+				value as $ty
+			}
+		})*
+	};
 }
 
 impl_sparse_set_index!(u8, u16, u32, u64, usize);
