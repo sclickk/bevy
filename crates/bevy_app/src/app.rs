@@ -235,13 +235,12 @@ impl App {
 		target: impl StageLabel,
 		label: impl StageLabel,
 		stage: S,
-	) -> &mut Self {
+	) {
 		self
 			.schedule
 			.stage(StartupSchedule, |schedule: &mut Schedule| {
 				schedule.add_stage_after(target, label, stage)
 			});
-		self
 	}
 
 	/// Adds a [startup stage](Self::add_default_stages) with the given `label`, immediately
@@ -267,13 +266,12 @@ impl App {
 		target: impl StageLabel,
 		label: impl StageLabel,
 		stage: S,
-	) -> &mut Self {
+	) {
 		self
 			.schedule
 			.stage(StartupSchedule, |schedule: &mut Schedule| {
 				schedule.add_stage_before(target, label, stage)
 			});
-		self
 	}
 
 	/// Fetches the [`Stage`] of type `T` marked with `label` from the [`Schedule`], then
@@ -300,13 +298,8 @@ impl App {
 	///     stage.add_system(my_system)
 	/// });
 	/// ```
-	pub fn stage<T: Stage, F: FnOnce(&mut T) -> &mut T>(
-		&mut self,
-		label: impl StageLabel,
-		func: F,
-	) -> &mut Self {
+	pub fn stage<T: Stage, F: FnOnce(&mut T) -> &mut T>(&mut self, label: impl StageLabel, func: F) {
 		self.schedule.stage(label, func);
-		self
 	}
 
 	/// Adds a system to the [update stage](Self::add_default_stages) of the app's [`Schedule`].
@@ -349,9 +342,8 @@ impl App {
 	///         .with_system(system_c),
 	/// );
 	/// ```
-	pub fn add_system_set(&mut self, system_set: SystemSet) -> &mut Self {
+	pub fn add_system_set(&mut self, system_set: SystemSet) {
 		self.add_system_set_to_stage(CoreStage::Update, system_set);
-		self
 	}
 
 	/// Adds a system to the [`Stage`] identified by `stage_label`.

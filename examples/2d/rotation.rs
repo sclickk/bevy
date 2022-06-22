@@ -10,18 +10,18 @@ const TIME_STEP: f32 = 1.0 / 60.0;
 const BOUNDS: Vec2 = const_vec2!([1200.0, 640.0]);
 
 fn main() {
-	App::new()
-		.add_plugins(DefaultPlugins)
-		.add_startup_system(setup)
-		.add_system_set(
-			SystemSet::new()
-				.with_run_criteria(FixedTimestep::step(TIME_STEP as f64))
-				.with_system(player_movement_system)
-				.with_system(snap_to_player_system)
-				.with_system(rotate_to_player_system),
-		)
-		.add_system(bevy::window::close_on_esc)
-		.run();
+	let mut app = App::new();
+	app.add_plugins(DefaultPlugins);
+	app.add_startup_system(setup);
+	app.add_system_set(
+		SystemSet::new()
+			.with_run_criteria(FixedTimestep::step(TIME_STEP as f64))
+			.with_system(player_movement_system)
+			.with_system(snap_to_player_system)
+			.with_system(rotate_to_player_system),
+	);
+	app.add_system(bevy::window::close_on_esc);
+	app.run();
 }
 
 /// player component

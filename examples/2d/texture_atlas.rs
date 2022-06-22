@@ -4,15 +4,15 @@
 use bevy::{asset::LoadState, prelude::*, render::texture::ImageSettings};
 
 fn main() {
-	App::new()
-		.init_resource::<RpgSpriteHandles>()
-		.insert_resource(ImageSettings::default_nearest()) // prevents blurry sprites
-		.add_plugins(DefaultPlugins)
-		.add_state(AppState::Setup)
-		.add_system_set(SystemSet::on_enter(AppState::Setup).with_system(load_textures))
-		.add_system_set(SystemSet::on_update(AppState::Setup).with_system(check_textures))
-		.add_system_set(SystemSet::on_enter(AppState::Finished).with_system(setup))
-		.run();
+	let mut app = App::new();
+	app.init_resource::<RpgSpriteHandles>();
+	app.insert_resource(ImageSettings::default_nearest()); // prevents blurry sprites
+	app.add_plugins(DefaultPlugins);
+	app.add_state(AppState::Setup);
+	app.add_system_set(SystemSet::on_enter(AppState::Setup).with_system(load_textures));
+	app.add_system_set(SystemSet::on_update(AppState::Setup).with_system(check_textures));
+	app.add_system_set(SystemSet::on_enter(AppState::Finished).with_system(setup));
+	app.run();
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]

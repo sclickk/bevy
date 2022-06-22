@@ -40,50 +40,50 @@ struct PostPhysics;
 struct Done(bool);
 
 fn main() {
-	App::new()
-		.add_plugins(DefaultPlugins)
-		.init_resource::<Done>()
-		// Note that the system sets added in this example set their run criteria explicitly.
-		// See the `ecs/state.rs` example for a pattern where run criteria are set implicitly for common
-		// use cases- typically state transitions.
-		// Also note that a system set has a single run criterion at most, which means using `.with_run_criteria(...)`
-		// after `SystemSet::on_update(...)` would override the state transition criterion.
-		.add_system_set(
-			SystemSet::new()
-				// This label is added to all systems in this set.
-				// The label can then be referred to elsewhere (other sets).
-				.label(Physics)
-				// This criteria ensures this whole system set only runs when this system's
-				// output says so (ShouldRun::Yes)
-				.with_run_criteria(run_for_a_second)
-				.with_system(update_velocity)
-				// Make movement run after update_velocity
-				.with_system(movement.after(update_velocity)),
-		)
-		.add_system_set(
-			SystemSet::new()
-				.label(PostPhysics)
-				// This whole set runs after `Physics` (which in this case is a label for
-				// another set).
-				// There is also `.before(..)`.
-				.after(Physics)
-				// This shows that we can modify existing run criteria results.
-				// Here we create a _not done_ criteria by piping the output of
-				// the `is_done` system and inverting the output.
-				// Notice a string literal also works as a label.
-				.with_run_criteria(RunCriteria::pipe("is_done_label", inverse))
-				// `collision` and `sfx` are not ordered with respect to
-				// each other, and may run in any order
-				.with_system(collision)
-				.with_system(sfx),
-		)
-		.add_system(
-			exit
-				.after(PostPhysics)
-				// Label the run criteria such that the `PostPhysics` set can reference it
-				.with_run_criteria(is_done.label("is_done_label")),
-		)
-		.run();
+	let mut app = App::new();
+	app.add_plugins(DefaultPlugins);
+	app.init_resource::<Done>();
+	// Note that the system sets added in this example set their run criteria explicitly.
+	// See the `ecs/state.rs` example for a pattern where run criteria are set implicitly for common
+	// use cases- typically state transitions.
+	// Also note that a system set has a single run criterion at most, which means using `.with_run_criteria(...)`
+	// after `SystemSet::on_update(...)` would override the state transition criterion.
+	app.add_system_set(
+		SystemSet::new()
+			// This label is added to all systems in this set.
+			// The label can then be referred to elsewhere (other sets).
+			.label(Physics)
+			// This criteria ensures this whole system set only runs when this system's
+			// output says so (ShouldRun::Yes)
+			.with_run_criteria(run_for_a_second)
+			.with_system(update_velocity)
+			// Make movement run after update_velocity
+			.with_system(movement.after(update_velocity)),
+	);
+	app.add_system_set(
+		SystemSet::new()
+			.label(PostPhysics)
+			// This whole set runs after `Physics` (which in this case is a label for
+			// another set).
+			// There is also `.before(..)`.
+			.after(Physics)
+			// This shows that we can modify existing run criteria results.
+			// Here we create a _not done_ criteria by piping the output of
+			// the `is_done` system and inverting the output.
+			// Notice a string literal also works as a label.
+			.with_run_criteria(RunCriteria::pipe("is_done_label", inverse))
+			// `collision` and `sfx` are not ordered with respect to
+			// each other, and may run in any order
+			.with_system(collision)
+			.with_system(sfx),
+	);
+	app.add_system(
+		exit
+			.after(PostPhysics)
+			// Label the run criteria such that the `PostPhysics` set can reference it
+			.with_run_criteria(is_done.label("is_done_label")),
+	);
+	app.run();
 }
 
 /// Example of a run criteria.
