@@ -87,20 +87,20 @@ impl Plugin for AssetPlugin {
 		}
 
 		app.add_stage_before(
-				bevy_app::CoreStage::PreUpdate,
-				AssetStage::LoadAssets,
-				SystemStage::parallel(),
-			);
+			bevy_app::CoreStage::PreUpdate,
+			AssetStage::LoadAssets,
+			SystemStage::parallel(),
+		);
 		app.add_stage_after(
-				bevy_app::CoreStage::PostUpdate,
-				AssetStage::AssetEvents,
-				SystemStage::parallel(),
-			);
+			bevy_app::CoreStage::PostUpdate,
+			AssetStage::AssetEvents,
+			SystemStage::parallel(),
+		);
 		app.register_type::<HandleId>();
 		app.add_system_to_stage(
-				bevy_app::CoreStage::PreUpdate,
-				asset_server::free_unused_assets_system,
-			);
+			bevy_app::CoreStage::PreUpdate,
+			asset_server::free_unused_assets_system,
+		);
 
 		#[cfg(all(
 			feature = "filesystem_watcher",
