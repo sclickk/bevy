@@ -113,7 +113,7 @@ fn queue_custom(
 		.unwrap();
 
 	let key = MeshPipelineKey::from_msaa_samples(msaa.samples)
-		| MeshPipelineKey::from_primitive_topology(PrimitiveTopology::TriangleList);
+		| MeshPipelineKey::from(PrimitiveTopology::TriangleList);
 
 	for (view, mut transparent_phase) in views.iter_mut() {
 		let view_matrix = view.transform.compute_matrix();

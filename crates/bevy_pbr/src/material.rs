@@ -379,7 +379,7 @@ pub fn queue_material_meshes<M: SpecializedMaterial>(
 				if let Some(material) = render_materials.get(material_handle) {
 					if let Some(mesh) = render_meshes.get(mesh_handle) {
 						let mut mesh_key =
-							MeshPipelineKey::from_primitive_topology(mesh.primitive_topology) | msaa_key;
+							MeshPipelineKey::from(mesh.primitive_topology) | msaa_key;
 						let alpha_mode = M::alpha_mode(material);
 						if let AlphaMode::Blend = alpha_mode {
 							mesh_key |= MeshPipelineKey::TRANSPARENT_MAIN_PASS;

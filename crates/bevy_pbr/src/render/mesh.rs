@@ -537,13 +537,6 @@ impl MeshPipelineKey {
 		((self.bits >> Self::MSAA_SHIFT_BITS) & Self::MSAA_MASK_BITS) + 1
 	}
 
-	pub fn from_primitive_topology(primitive_topology: PrimitiveTopology) -> Self {
-		let primitive_topology_bits = ((primitive_topology as u32)
-			& Self::PRIMITIVE_TOPOLOGY_MASK_BITS)
-			<< Self::PRIMITIVE_TOPOLOGY_SHIFT_BITS;
-		MeshPipelineKey::from_bits(primitive_topology_bits).unwrap()
-	}
-
 	pub fn primitive_topology(&self) -> PrimitiveTopology {
 		let primitive_topology_bits =
 			(self.bits >> Self::PRIMITIVE_TOPOLOGY_SHIFT_BITS) & Self::PRIMITIVE_TOPOLOGY_MASK_BITS;
@@ -555,6 +548,15 @@ impl MeshPipelineKey {
 			x if x == PrimitiveTopology::TriangleStrip as u32 => PrimitiveTopology::TriangleStrip,
 			_ => PrimitiveTopology::default(),
 		}
+	}
+}
+
+impl From<PrimitiveTopology> for MeshPipelineKey {
+	fn from(primitive_topology: PrimitiveTopology) -> Self {
+		let primitive_topology_bits = ((primitive_topology as u32)
+			& Self::PRIMITIVE_TOPOLOGY_MASK_BITS)
+			<< Self::PRIMITIVE_TOPOLOGY_SHIFT_BITS;
+		MeshPipelineKey::from_bits(primitive_topology_bits).unwrap()
 	}
 }
 

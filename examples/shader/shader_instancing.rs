@@ -122,7 +122,7 @@ fn queue_custom(
 		let view_row_2 = view_matrix.row(2);
 		for (entity, mesh_uniform, mesh_handle) in material_meshes.iter() {
 			if let Some(mesh) = meshes.get(mesh_handle) {
-				let key = msaa_key | MeshPipelineKey::from_primitive_topology(mesh.primitive_topology);
+				let key = msaa_key | MeshPipelineKey::from(mesh.primitive_topology);
 				let pipeline = pipelines
 					.specialize(&mut pipeline_cache, &custom_pipeline, key, &mesh.layout)
 					.unwrap();
