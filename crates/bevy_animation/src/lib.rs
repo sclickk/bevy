@@ -124,15 +124,13 @@ impl AnimationPlayer {
 	}
 
 	/// Set the animation to repeat
-	pub fn repeat(&mut self) -> &mut Self {
+	pub fn repeat(&mut self) {
 		self.repeat = true;
-		self
 	}
 
 	/// Stop the animation from repeating
-	pub fn stop_repeating(&mut self) -> &mut Self {
+	pub fn stop_repeating(&mut self) {
 		self.repeat = false;
-		self
 	}
 
 	/// Pause the animation
@@ -156,9 +154,8 @@ impl AnimationPlayer {
 	}
 
 	/// Set the speed of the animation playback
-	pub fn set_speed(&mut self, speed: f32) -> &mut Self {
+	pub fn set_speed(&mut self, speed: f32) {
 		self.speed = speed;
-		self
 	}
 
 	/// Time elapsed playing the animation
@@ -167,9 +164,8 @@ impl AnimationPlayer {
 	}
 
 	/// Seek to a specific time in the animation
-	pub fn set_elapsed(&mut self, elapsed: f32) -> &mut Self {
+	pub fn set_elapsed(&mut self, elapsed: f32) {
 		self.elapsed = elapsed;
-		self
 	}
 }
 

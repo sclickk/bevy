@@ -201,7 +201,8 @@ fn keyboard_animation_control(
 			// delay the animation change for one frame
 			*changing = true;
 			// set the current animation to its start and pause it to reset to its starting state
-			player.set_elapsed(0.0).pause();
+			player.set_elapsed(0.0);
+			player.pause();
 		}
 	}
 }
