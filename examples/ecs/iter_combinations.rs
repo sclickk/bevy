@@ -9,24 +9,24 @@ struct FixedUpdateStage;
 const DELTA_TIME: f64 = 0.01;
 
 fn main() {
-	App::new()
-		.add_plugins(DefaultPlugins)
-		.insert_resource(AmbientLight {
-			brightness: 0.03,
-			..Default::default()
-		})
-		.add_startup_system(generate_bodies)
-		.add_stage_after(
-			CoreStage::Update,
-			FixedUpdateStage,
-			SystemStage::parallel()
-				.with_run_criteria(FixedTimestep::step(DELTA_TIME))
-				.with_system(interact_bodies)
-				.with_system(integrate),
-		)
-		.add_system(look_at_star)
-		.insert_resource(ClearColor(Color::BLACK))
-		.run();
+	let mut app = App::new();
+	app.add_plugins(DefaultPlugins);
+	app.insert_resource(AmbientLight {
+		brightness: 0.03,
+		..Default::default()
+	});
+	app.add_startup_system(generate_bodies);
+	app.add_stage_after(
+		CoreStage::Update,
+		FixedUpdateStage,
+		SystemStage::parallel()
+			.with_run_criteria(FixedTimestep::step(DELTA_TIME))
+			.with_system(interact_bodies)
+			.with_system(integrate),
+	);
+	app.add_system(look_at_star);
+	app.insert_resource(ClearColor(Color::BLACK));
+	app.run();
 }
 
 const GRAVITY_CONSTANT: f32 = 0.001;

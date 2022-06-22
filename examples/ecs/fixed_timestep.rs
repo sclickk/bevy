@@ -11,24 +11,24 @@ const LABEL: &str = "my_fixed_timestep";
 struct FixedUpdateStage;
 
 fn main() {
-	App::new()
-		.add_plugins(DefaultPlugins)
-		// this system will run once every update (it should match your screen's refresh rate)
-		.add_system(frame_update)
-		// add a new stage that runs twice a second
-		.add_stage_after(
-			CoreStage::Update,
-			FixedUpdateStage,
-			SystemStage::parallel()
-				.with_run_criteria(
-					FixedTimestep::step(0.5)
-						// labels are optional. they provide a way to access the current
-						// FixedTimestep state from within a system
-						.with_label(LABEL),
-				)
-				.with_system(fixed_update),
-		)
-		.run();
+	let mut app = App::new();
+	app.add_plugins(DefaultPlugins);
+	// this system will run once every update (it should match your screen's refresh rate)
+	app.add_system(frame_update);
+	// add a new stage that runs twice a second
+	app.add_stage_after(
+		CoreStage::Update,
+		FixedUpdateStage,
+		SystemStage::parallel()
+			.with_run_criteria(
+				FixedTimestep::step(0.5)
+					// labels are optional. they provide a way to access the current
+					// FixedTimestep state from within a system
+					.with_label(LABEL),
+			)
+			.with_system(fixed_update),
+	);
+	app.run();
 }
 
 fn frame_update(mut last_time: Local<f64>, time: Res<Time>) {
