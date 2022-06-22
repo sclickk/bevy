@@ -187,11 +187,10 @@ impl App {
 		target: impl StageLabel,
 		label: impl StageLabel,
 		stage: S,
-	) -> &mut Self {
+	) {
 		self
 			.schedule
 			.add_stage_before(target, label, stage);
-		self
 	}
 
 	/// Adds a [`Stage`] with the given `label` to the last position of the
