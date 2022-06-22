@@ -204,13 +204,12 @@ impl App {
 	/// #
 	/// app.add_startup_stage("my_startup_stage", SystemStage::parallel());
 	/// ```
-	pub fn add_startup_stage<S: Stage>(&mut self, label: impl StageLabel, stage: S) -> &mut Self {
+	pub fn add_startup_stage<S: Stage>(&mut self, label: impl StageLabel, stage: S) {
 		self
 			.schedule
 			.stage(StartupSchedule, |schedule: &mut Schedule| {
 				schedule.add_stage(label, stage)
 			});
-		self
 	}
 
 	/// Adds a [startup stage](Self::add_default_stages) with the given `label`, immediately
