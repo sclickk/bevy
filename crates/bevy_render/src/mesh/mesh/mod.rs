@@ -323,7 +323,10 @@ impl Mesh {
 	/// if the mesh has any other topology than [`PrimitiveTopology::TriangleList`].
 	/// Consider calling [`Mesh::duplicate_vertices`] or export your mesh with normal attributes.
 	pub fn compute_flat_normals(&mut self) {
-		assert!(self.indices().is_none(), "`compute_flat_normals` can't work on indexed geometry. Consider calling `Mesh::duplicate_vertices`.");
+		assert!(
+			self.indices().is_none(),
+			"`compute_flat_normals` can't work on indexed geometry. Consider calling `Mesh::duplicate_vertices`."
+		);
 
 		assert!(
 			matches!(self.primitive_topology, PrimitiveTopology::TriangleList),
@@ -858,14 +861,17 @@ impl RenderAsset for Mesh {
 			GpuBufferInfo::NonIndexed {
 				vertex_count: mesh.count_vertices() as u32,
 			},
-			|data| GpuBufferInfo::Indexed {
-				buffer: render_device.create_buffer_with_data(&BufferInitDescriptor {
-					usage: BufferUsages::INDEX,
-					contents: data,
-					label: Some("Mesh Index Buffer"),
-				}),
-				count: mesh.indices().unwrap().len() as u32,
-				index_format: mesh.indices().unwrap().into(),
+			|data| {
+				let i = mesh.indices().unwrap();
+				GpuBufferInfo::Indexed {
+					buffer: render_device.create_buffer_with_data(&BufferInitDescriptor {
+						usage: BufferUsages::INDEX,
+						contents: data,
+						label: Some("Mesh Index Buffer"),
+					}),
+					count: i.len() as u32,
+					index_format: i.into(),
+				}
 			},
 		);
 
