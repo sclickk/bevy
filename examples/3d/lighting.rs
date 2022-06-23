@@ -4,12 +4,12 @@
 use bevy::prelude::*;
 
 fn main() {
-	App::new()
-		.add_plugins(DefaultPlugins)
-		.add_startup_system(setup)
-		.add_system(movement)
-		.add_system(animate_light_direction)
-		.run();
+	let mut app = App::new();
+	app.add_plugins(DefaultPlugins);
+	app.add_startup_system(setup);
+	app.add_system(movement);
+	app.add_system(animate_light_direction);
+	app.run();
 }
 
 #[derive(Component)]

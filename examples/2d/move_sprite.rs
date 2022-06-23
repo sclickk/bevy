@@ -3,11 +3,11 @@
 use bevy::prelude::*;
 
 fn main() {
-	App::new()
-		.add_plugins(DefaultPlugins)
-		.add_startup_system(setup)
-		.add_system(sprite_movement)
-		.run();
+	let mut app = App::new();
+	app.add_plugins(DefaultPlugins);
+	app.add_startup_system(setup);
+	app.add_system(sprite_movement);
+	app.run();
 }
 
 #[derive(Component)]

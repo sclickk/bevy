@@ -14,15 +14,15 @@ use bevy::{
 use rand::Rng;
 
 fn main() {
-	App::new()
-		.add_plugins(DefaultPlugins)
-		.insert_resource(AmbientLight {
+	let mut app = App::new();
+	app.add_plugins(DefaultPlugins);
+	app.insert_resource(AmbientLight {
 			brightness: 1.0,
 			..Default::default()
-		})
-		.add_startup_system(setup)
-		.add_system(joint_animation)
-		.run();
+		});
+	app.add_startup_system(setup);
+	app.add_system(joint_animation);
+	app.run();
 }
 
 /// Used to mark a joint to be animated in the [`joint_animation`] system.

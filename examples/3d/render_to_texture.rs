@@ -13,12 +13,12 @@ use bevy::{
 };
 
 fn main() {
-	App::new()
-		.add_plugins(DefaultPlugins)
-		.add_startup_system(setup)
-		.add_system(cube_rotator_system)
-		.add_system(rotator_system)
-		.run();
+	let mut app = App::new();
+	app.add_plugins(DefaultPlugins);
+	app.add_startup_system(setup);
+	app.add_system(cube_rotator_system);
+	app.add_system(rotator_system);
+	app.run();
 }
 
 // Marks the first pass cube (rendered to a texture.)

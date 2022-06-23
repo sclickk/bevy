@@ -19,13 +19,13 @@ use bevy::{
 use std::fmt::Debug;
 
 fn main() {
-	App::new()
-		.add_startup_system(spawn)
-		.add_system(print_components_read_only)
-		.add_system(print_components_iter_mut.after(print_components_read_only))
-		.add_system(print_components_iter.after(print_components_iter_mut))
-		.add_system(print_components_tuple.after(print_components_iter))
-		.run();
+	let mut app = App::new();
+	app.add_startup_system(spawn);
+	app.add_system(print_components_read_only);
+	app.add_system(print_components_iter_mut.after(print_components_read_only));
+	app.add_system(print_components_iter.after(print_components_iter_mut));
+	app.add_system(print_components_tuple.after(print_components_iter));
+	app.run();
 }
 
 #[derive(Component, Debug)]

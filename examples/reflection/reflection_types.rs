@@ -10,10 +10,10 @@ use bevy::{
 use serde::{Deserialize, Serialize};
 
 fn main() {
-	App::new()
-		.add_plugins(DefaultPlugins)
-		.add_startup_system(setup)
-		.run();
+	let mut app = App::new();
+	app.add_plugins(DefaultPlugins);
+	app.add_startup_system(setup);
+	app.run();
 }
 
 /// Deriving reflect on a struct will implement the `Reflect` and `Struct` traits

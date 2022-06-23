@@ -5,12 +5,12 @@
 use bevy::prelude::*;
 
 fn main() {
-	App::new()
-		.insert_resource(ClearColor(Color::rgb(0.5, 0.5, 0.9)))
-		.add_plugins(DefaultPlugins)
-		.add_startup_system(setup)
-		.add_system(change_clear_color)
-		.run();
+	let mut app = App::new();
+	app.insert_resource(ClearColor(Color::rgb(0.5, 0.5, 0.9)));
+	app.add_plugins(DefaultPlugins);
+	app.add_startup_system(setup);
+	app.add_system(change_clear_color);
+	app.run();
 }
 
 fn setup(mut commands: Commands) {

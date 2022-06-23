@@ -3,13 +3,13 @@
 use bevy::{log::info, prelude::*};
 
 fn main() {
-	App::new()
-		.add_plugins(DefaultPlugins)
-		.init_resource::<Countdown>()
-		.add_startup_system(setup)
-		.add_system(countdown)
-		.add_system(print_when_completed)
-		.run();
+	let mut app = App::new();
+	app.add_plugins(DefaultPlugins);
+	app.init_resource::<Countdown>();
+	app.add_startup_system(setup);
+	app.add_system(countdown);
+	app.add_system(print_when_completed);
+	app.run();
 }
 
 #[derive(Component, Deref, DerefMut)]

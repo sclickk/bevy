@@ -66,8 +66,8 @@ impl Plugin for CustomAssetIoPlugin {
 }
 
 fn main() {
-	App::new()
-		.add_plugins_with(DefaultPlugins, |group| {
+	let mut app = App::new();
+	app.add_plugins_with(DefaultPlugins, |group| {
 			// the custom asset io plugin must be inserted in-between the
 			// `CorePlugin' and `AssetPlugin`. It needs to be after the
 			// CorePlugin, so that the IO task pool has already been constructed.
@@ -76,9 +76,9 @@ fn main() {
 			// the AssetPlugin should still run so that other aspects of the
 			// asset system are initialized correctly.
 			group.add_before::<bevy::asset::AssetPlugin, _>(CustomAssetIoPlugin)
-		})
-		.add_startup_system(setup)
-		.run();
+		});
+	app.add_startup_system(setup);
+	app.run();
 }
 
 fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {

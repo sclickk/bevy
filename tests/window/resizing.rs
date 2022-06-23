@@ -17,26 +17,26 @@ struct Dimensions {
 }
 
 fn main() {
-	App::new()
-		.insert_resource(WindowDescriptor {
+	let mut app = App::new();
+	app.insert_resource(WindowDescriptor {
 			width: MAX_WIDTH.try_into().unwrap(),
 			height: MAX_HEIGHT.try_into().unwrap(),
 			scale_factor_override: Some(1.),
 			title: "Resizing".into(),
 			..Default::default()
-		})
-		.insert_resource(Dimensions {
+		});
+	app.insert_resource(Dimensions {
 			width: MAX_WIDTH,
 			height: MAX_HEIGHT,
-		})
-		.add_plugins(DefaultPlugins)
-		.insert_resource(Phase::ContractingY)
-		.add_system(change_window_size)
-		.add_system(sync_dimensions)
-		.add_system(bevy::window::close_on_esc)
-		.add_startup_system(setup_3d)
-		.add_startup_system(setup_2d)
-		.run();
+		});
+	app.add_plugins(DefaultPlugins);
+	app.insert_resource(Phase::ContractingY);
+	app.add_system(change_window_size);
+	app.add_system(sync_dimensions);
+	app.add_system(bevy::window::close_on_esc);
+	app.add_startup_system(setup_3d);
+	app.add_startup_system(setup_2d);
+	app.run();
 }
 
 enum Phase {

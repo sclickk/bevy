@@ -8,13 +8,13 @@
 use bevy::{prelude::*, text::Text2dBounds};
 
 fn main() {
-	App::new()
-		.add_plugins(DefaultPlugins)
-		.add_startup_system(setup)
-		.add_system(animate_translation)
-		.add_system(animate_rotation)
-		.add_system(animate_scale)
-		.run();
+	let mut app = App::new();
+	app.add_plugins(DefaultPlugins);
+	app.add_startup_system(setup);
+	app.add_system(animate_translation);
+	app.add_system(animate_rotation);
+	app.add_system(animate_scale);
+	app.run();
 }
 
 #[derive(Component)]

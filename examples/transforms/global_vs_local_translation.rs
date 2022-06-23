@@ -24,15 +24,15 @@ struct Direction(Vec3);
 struct ToggledBy(KeyCode);
 
 fn main() {
-	App::new()
-		.add_plugins(DefaultPlugins)
-		.add_startup_system(setup)
-		.init_resource::<Direction>()
-		.add_system(move_cubes_according_to_global_transform)
-		.add_system(move_cubes_according_to_local_transform)
-		.add_system(update_directional_input)
-		.add_system(toggle_movement)
-		.run();
+	let mut app = App::new();
+	app.add_plugins(DefaultPlugins);
+	app.add_startup_system(setup);
+	app.init_resource::<Direction>();
+	app.add_system(move_cubes_according_to_global_transform);
+	app.add_system(move_cubes_according_to_local_transform);
+	app.add_system(update_directional_input);
+	app.add_system(toggle_movement);
+	app.run();
 }
 
 // Startup system to setup the scene and spawn all relevant entities.

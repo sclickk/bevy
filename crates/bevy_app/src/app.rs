@@ -428,9 +428,8 @@ impl App {
 	pub fn add_startup_system<Params>(
 		&mut self,
 		system: impl IntoSystemDescriptor<Params>,
-	) -> &mut Self {
+	) {
 		self.add_startup_system_to_stage(StartupStage::Startup, system);
-		self
 	}
 
 	/// Adds a [`SystemSet`] to the [startup stage](Self::add_default_stages).

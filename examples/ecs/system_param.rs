@@ -3,11 +3,11 @@
 use bevy::{ecs::system::SystemParam, prelude::*};
 
 fn main() {
-	App::new()
-		.insert_resource(PlayerCount(0))
-		.add_startup_system(spawn)
-		.add_system(count_players)
-		.run();
+	let mut app = App::new();
+	app.insert_resource(PlayerCount(0));
+	app.add_startup_system(spawn);
+	app.add_system(count_players);
+	app.run();
 }
 
 #[derive(Component)]

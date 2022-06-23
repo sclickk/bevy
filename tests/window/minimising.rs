@@ -5,16 +5,16 @@ use bevy::{core_pipeline::clear_color::ClearColorConfig, prelude::*};
 fn main() {
 	// TODO: Combine this with `resizing` once multiple_windows is simpler than
 	// it is currently.
-	App::new()
-		.insert_resource(WindowDescriptor {
+	let mut app = App::new();
+	app.insert_resource(WindowDescriptor {
 			title: "Minimising".into(),
 			..Default::default()
-		})
-		.add_plugins(DefaultPlugins)
-		.add_system(minimise_automatically)
-		.add_startup_system(setup_3d)
-		.add_startup_system(setup_2d)
-		.run();
+		});
+	app.add_plugins(DefaultPlugins);
+	app.add_system(minimise_automatically);
+	app.add_startup_system(setup_3d);
+	app.add_startup_system(setup_2d);
+	app.run();
 }
 
 fn minimise_automatically(mut windows: ResMut<Windows>, mut frames: Local<u32>) {

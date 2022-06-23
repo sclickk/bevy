@@ -12,12 +12,12 @@ fn main() {
     R      - toggle shadow receivers (i.e. receivers become not, and not receivers become receivers)
     L      - switch between directional and point lights"
 	);
-	App::new()
-		.add_plugins(DefaultPlugins)
-		.add_startup_system(setup)
-		.add_system(toggle_light)
-		.add_system(toggle_shadows)
-		.run();
+	let mut app = App::new();
+	app.add_plugins(DefaultPlugins);
+	app.add_startup_system(setup);
+	app.add_system(toggle_light);
+	app.add_system(toggle_shadows);
+	app.run();
 }
 
 /// set up a 3D scene to test shadow biases and perspective projections

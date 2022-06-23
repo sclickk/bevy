@@ -4,11 +4,11 @@
 use bevy::prelude::*;
 
 fn main() {
-	App::new()
-		.insert_resource(ClearColor(Color::BLACK))
-		.add_plugins(DefaultPlugins)
-		.add_startup_system(setup)
-		.run();
+	let mut app = App::new();
+	app.insert_resource(ClearColor(Color::BLACK));
+	app.add_plugins(DefaultPlugins);
+	app.add_startup_system(setup);
+	app.run();
 }
 
 fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {

@@ -7,11 +7,11 @@ use bevy::{
 };
 
 fn main() {
-	App::new()
-		.add_plugins(DefaultPlugins)
-		.add_startup_system(setup)
-		.add_system(bevy::window::close_on_esc)
-		.run();
+	let mut app = App::new();
+	app.add_plugins(DefaultPlugins);
+	app.add_startup_system(setup);
+	app.add_system(bevy::window::close_on_esc);
+	app.run();
 }
 
 fn setup(

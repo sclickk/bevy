@@ -5,15 +5,15 @@
 use bevy::{asset::AssetServerSettings, prelude::*};
 
 fn main() {
-	App::new()
+	let mut app = App::new();
 		// Tell the asset server to watch for asset changes on disk:
-		.insert_resource(AssetServerSettings {
+	app.insert_resource(AssetServerSettings {
 			watch_for_changes: true,
 			..Default::default()
-		})
-		.add_plugins(DefaultPlugins)
-		.add_startup_system(setup)
-		.run();
+		});
+	app.add_plugins(DefaultPlugins);
+	app.add_startup_system(setup);
+	app.run();
 }
 
 fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {

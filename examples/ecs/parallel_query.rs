@@ -62,10 +62,10 @@ fn bounce_system(windows: Res<Windows>, mut sprites: Query<(&Transform, &mut Vel
 }
 
 fn main() {
-	App::new()
-		.add_plugins(DefaultPlugins)
-		.add_startup_system(spawn_system)
-		.add_system(move_system)
-		.add_system(bounce_system)
-		.run();
+	let mut app = App::new();
+	app.add_plugins(DefaultPlugins);
+	app.add_startup_system(spawn_system);
+	app.add_system(move_system);
+	app.add_system(bounce_system);
+	app.run();
 }

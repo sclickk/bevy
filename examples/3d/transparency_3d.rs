@@ -5,12 +5,12 @@
 use bevy::prelude::*;
 
 fn main() {
-	App::new()
-		.insert_resource(Msaa { samples: 4 })
-		.add_plugins(DefaultPlugins)
-		.add_startup_system(setup)
-		.add_system(fade_transparency)
-		.run();
+	let mut app = App::new();
+	app.insert_resource(Msaa { samples: 4 });
+	app.add_plugins(DefaultPlugins);
+	app.add_startup_system(setup);
+	app.add_system(fade_transparency);
+	app.run();
 }
 
 #[derive(Component)]

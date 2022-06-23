@@ -4,13 +4,13 @@
 use bevy::{prelude::*, winit::WinitSettings};
 
 fn main() {
-	App::new()
-		.add_plugins(DefaultPlugins)
+	let mut app = App::new();
+	app.add_plugins(DefaultPlugins);
 		// Only run the app when there is user input. This will significantly reduce CPU/GPU use.
-		.insert_resource(WinitSettings::desktop_app())
-		.add_startup_system(setup)
-		.add_system(button_system)
-		.run();
+	app.insert_resource(WinitSettings::desktop_app());
+	app.add_startup_system(setup);
+	app.add_system(button_system);
+	app.run();
 }
 
 const NORMAL_BUTTON: Color = Color::rgb(0.15, 0.15, 0.15);

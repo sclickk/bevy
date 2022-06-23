@@ -5,14 +5,14 @@ use std::f32::consts::{FRAC_PI_2, PI};
 use bevy::prelude::*;
 
 fn main() {
-	App::new()
-		.add_plugins(DefaultPlugins)
-		.insert_resource(AmbientLight {
+	let mut app = App::new();
+	app.add_plugins(DefaultPlugins);
+	app.insert_resource(AmbientLight {
 			color: Color::WHITE,
 			brightness: 1.0,
-		})
-		.add_startup_system(setup)
-		.run();
+		});
+	app.add_startup_system(setup);
+	app.run();
 }
 
 fn setup(

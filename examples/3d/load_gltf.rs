@@ -3,15 +3,15 @@
 use bevy::prelude::*;
 
 fn main() {
-	App::new()
-		.insert_resource(AmbientLight {
+	let mut app = App::new();
+	app.insert_resource(AmbientLight {
 			color: Color::WHITE,
 			brightness: 1.0 / 5.0f32,
-		})
-		.add_plugins(DefaultPlugins)
-		.add_startup_system(setup)
-		.add_system(animate_light_direction)
-		.run();
+		});
+	app.add_plugins(DefaultPlugins);
+	app.add_startup_system(setup);
+	app.add_system(animate_light_direction);
+	app.run();
 }
 
 fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {

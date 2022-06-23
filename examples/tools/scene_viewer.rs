@@ -39,27 +39,26 @@ Controls:
 "
 	);
 	let mut app = App::new();
-	app
-		.insert_resource(AmbientLight {
+	app.insert_resource(AmbientLight {
 			color: Color::WHITE,
 			brightness: 1.0 / 5.0f32,
-		})
-		.insert_resource(AssetServerSettings {
+		});
+	app.insert_resource(AssetServerSettings {
 			asset_folder: std::env::var("CARGO_MANIFEST_DIR").unwrap_or_else(|_| ".".to_string()),
 			watch_for_changes: true,
-		})
-		.insert_resource(WindowDescriptor {
+		});
+	app.insert_resource(WindowDescriptor {
 			title: "bevy scene viewer".to_string(),
 			..Default::default()
-		})
-		.init_resource::<CameraTracker>()
-		.add_plugins(DefaultPlugins)
-		.add_startup_system(setup)
-		.add_system_to_stage(CoreStage::PreUpdate, scene_load_check)
-		.add_system_to_stage(CoreStage::PreUpdate, setup_scene_after_load)
-		.add_system(update_lights)
-		.add_system(camera_controller)
-		.add_system(camera_tracker);
+		});
+	app.init_resource::<CameraTracker>();
+	app.add_plugins(DefaultPlugins);
+	app.add_startup_system(setup);
+	app.add_system_to_stage(CoreStage::PreUpdate, scene_load_check);
+	app.add_system_to_stage(CoreStage::PreUpdate, setup_scene_after_load);
+	app.add_system(update_lights);
+	app.add_system(camera_controller);
+	app.add_system(camera_tracker);
 
 	#[cfg(feature = "animation")]
 	app

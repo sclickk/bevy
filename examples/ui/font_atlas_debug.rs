@@ -4,14 +4,14 @@
 use bevy::{prelude::*, text::FontAtlasSet};
 
 fn main() {
-	App::new()
-		.init_resource::<State>()
-		.insert_resource(ClearColor(Color::BLACK))
-		.add_plugins(DefaultPlugins)
-		.add_startup_system(setup)
-		.add_system(text_update_system)
-		.add_system(atlas_render_system)
-		.run();
+	let mut app = App::new();
+	app.init_resource::<State>();
+	app.insert_resource(ClearColor(Color::BLACK));
+	app.add_plugins(DefaultPlugins);
+	app.add_startup_system(setup);
+	app.add_system(text_update_system);
+	app.add_system(atlas_render_system);
+	app.run();
 }
 
 struct State {

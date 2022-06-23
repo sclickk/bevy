@@ -3,10 +3,10 @@
 use bevy::prelude::*;
 
 fn main() {
-	App::new()
-		.add_startup_system(startup_system)
-		.add_system(normal_system)
-		.run();
+	let mut app = App::new();
+	app.add_startup_system(startup_system);
+	app.add_system(normal_system);
+	app.run();
 }
 
 /// Startup systems are run exactly once when the app starts up.

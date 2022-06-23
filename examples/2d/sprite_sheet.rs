@@ -4,12 +4,12 @@
 use bevy::{prelude::*, render::texture::ImageSettings};
 
 fn main() {
-	App::new()
-		.insert_resource(ImageSettings::default_nearest()) // prevents blurry sprites
-		.add_plugins(DefaultPlugins)
-		.add_startup_system(setup)
-		.add_system(animate_sprite)
-		.run();
+	let mut app = App::new();
+	app.insert_resource(ImageSettings::default_nearest()); // prevents blurry sprites
+	app.add_plugins(DefaultPlugins);
+	app.add_startup_system(setup);
+	app.add_system(animate_sprite);
+	app.run();
 }
 
 #[derive(Component, Deref, DerefMut)]

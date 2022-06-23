@@ -13,12 +13,12 @@ fn main() {
 	// With these constraints in mind we make sure to place the system that removes a `Component` on
 	// the `CoreStage::Update' stage, and the system that reacts on the removal on the
 	// `CoreStage::PostUpdate` stage.
-	App::new()
-		.add_plugins(DefaultPlugins)
-		.add_startup_system(setup)
-		.add_system_to_stage(CoreStage::Update, remove_component)
-		.add_system_to_stage(CoreStage::PostUpdate, react_on_removal)
-		.run();
+	let mut app = App::new();
+	app.add_plugins(DefaultPlugins);
+	app.add_startup_system(setup);
+	app.add_system_to_stage(CoreStage::Update, remove_component);
+	app.add_system_to_stage(CoreStage::PostUpdate, react_on_removal);
+	app.run();
 }
 
 // This `Struct` is just used for convenience in this example. This is the `Component` we'll be

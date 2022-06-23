@@ -9,16 +9,16 @@ use std::{
 };
 
 fn main() {
-	App::new()
-		.add_plugins(DefaultPlugins)
-		.add_startup_system(setup_contributor_selection)
-		.add_startup_system(setup)
-		.add_system(velocity_system)
-		.add_system(move_system)
-		.add_system(collision_system)
-		.add_system(select_system)
-		.init_resource::<SelectionState>()
-		.run();
+	let mut app = App::new();
+	app.add_plugins(DefaultPlugins);
+	app.add_startup_system(setup_contributor_selection);
+	app.add_startup_system(setup);
+	app.add_system(velocity_system);
+	app.add_system(move_system);
+	app.add_system(collision_system);
+	app.add_system(select_system);
+	app.init_resource::<SelectionState>();
+	app.run();
 }
 
 // Store contributors in a collection that preserves the uniqueness

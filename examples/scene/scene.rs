@@ -3,15 +3,15 @@
 use bevy::{prelude::*, reflect::TypeRegistry, utils::Duration};
 
 fn main() {
-	App::new()
-		.add_plugins(DefaultPlugins)
-		.register_type::<ComponentA>()
-		.register_type::<ComponentB>()
-		.add_startup_system(save_scene_system.exclusive_system())
-		.add_startup_system(load_scene_system)
-		.add_startup_system(infotext_system)
-		.add_system(log_system)
-		.run();
+	let mut app = App::new();
+	app.add_plugins(DefaultPlugins);
+	app.register_type::<ComponentA>();
+	app.register_type::<ComponentB>();
+	app.add_startup_system(save_scene_system.exclusive_system());
+	app.add_startup_system(load_scene_system);
+	app.add_startup_system(infotext_system);
+	app.add_system(log_system);
+	app.run();
 }
 
 // Registered components must implement the `Reflect` and `FromWorld` traits.

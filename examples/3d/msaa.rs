@@ -9,12 +9,12 @@
 use bevy::prelude::*;
 
 fn main() {
-	App::new()
-		.insert_resource(Msaa { samples: 4 })
-		.add_plugins(DefaultPlugins)
-		.add_startup_system(setup)
-		.add_system(cycle_msaa)
-		.run();
+	let mut app = App::new();
+	app.insert_resource(Msaa { samples: 4 });
+	app.add_plugins(DefaultPlugins);
+	app.add_startup_system(setup);
+	app.add_system(cycle_msaa);
+	app.run();
 }
 
 /// set up a simple 3D scene

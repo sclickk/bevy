@@ -23,11 +23,11 @@ impl Movable {
 }
 
 fn main() {
-	App::new()
-		.add_plugins(DefaultPlugins)
-		.add_startup_system(setup)
-		.add_system(move_cube)
-		.run();
+	let mut app = App::new();
+	app.add_plugins(DefaultPlugins);
+	app.add_startup_system(setup);
+	app.add_system(move_cube);
+	app.run();
 }
 
 // Startup system to setup the scene and spawn all relevant entities.

@@ -4,12 +4,12 @@ use bevy::{prelude::*, reflect::TypeRegistry};
 use std::any::TypeId;
 
 fn main() {
-	App::new()
-		.add_plugins(DefaultPlugins)
+	let mut app = App::new();
+	app.add_plugins(DefaultPlugins);
 		// You must manually register each instance of a generic type
-		.register_type::<MyType<u32>>()
-		.add_startup_system(setup)
-		.run();
+	app.register_type::<MyType<u32>>();
+	app.add_startup_system(setup);
+	app.run();
 }
 
 #[derive(Reflect)]

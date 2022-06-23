@@ -14,12 +14,12 @@ use bevy::{
 use serde::de::DeserializeSeed;
 
 fn main() {
-	App::new()
-		.add_plugins(DefaultPlugins)
-		.register_type::<Foo>()
-		.register_type::<Bar>()
-		.add_startup_system(setup)
-		.run();
+	let mut app = App::new();
+	app.add_plugins(DefaultPlugins);
+	app.register_type::<Foo>();
+	app.register_type::<Bar>();
+	app.add_startup_system(setup);
+	app.run();
 }
 
 /// Deriving `Reflect` implements the relevant reflection traits. In this case, it implements the

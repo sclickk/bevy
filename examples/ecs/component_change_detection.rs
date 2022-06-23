@@ -4,13 +4,13 @@ use bevy::prelude::*;
 use rand::Rng;
 
 fn main() {
-	App::new()
-		.add_plugins(DefaultPlugins)
-		.add_startup_system(setup)
-		.add_system(change_component)
-		.add_system(change_detection)
-		.add_system(tracker_monitoring)
-		.run();
+	let mut app = App::new();
+	app.add_plugins(DefaultPlugins);
+	app.add_startup_system(setup);
+	app.add_system(change_component);
+	app.add_system(change_detection);
+	app.add_system(tracker_monitoring);
+	app.run();
 }
 
 #[derive(Component, Debug)]

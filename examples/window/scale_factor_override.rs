@@ -4,17 +4,17 @@
 use bevy::prelude::*;
 
 fn main() {
-	App::new()
-		.insert_resource(WindowDescriptor {
+	let mut app = App::new();
+	app.insert_resource(WindowDescriptor {
 			width: 500.,
 			height: 300.,
 			..Default::default()
-		})
-		.add_plugins(DefaultPlugins)
-		.add_startup_system(setup)
-		.add_system(toggle_override)
-		.add_system(change_scale_factor)
-		.run();
+		});
+	app.add_plugins(DefaultPlugins);
+	app.add_startup_system(setup);
+	app.add_system(toggle_override);
+	app.add_system(change_scale_factor);
+	app.run();
 }
 
 fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {

@@ -3,18 +3,18 @@ use bevy::{input::touch::TouchPhase, prelude::*, window::WindowMode};
 // the `bevy_main` proc_macro generates the required ios boilerplate
 #[bevy_main]
 fn main() {
-	App::new()
-		.insert_resource(WindowDescriptor {
+	let mut app = App::new();
+	app.insert_resource(WindowDescriptor {
 			resizable: false,
 			mode: WindowMode::BorderlessFullscreen,
 			..default()
-		})
-		.add_plugins(DefaultPlugins)
-		.add_startup_system(setup_scene)
-		.add_startup_system(setup_music)
-		.add_system(touch_camera)
-		.add_system(button_handler)
-		.run();
+		});
+	app.add_plugins(DefaultPlugins);
+	app.add_startup_system(setup_scene);
+	app.add_startup_system(setup_music);
+	app.add_system(touch_camera);
+	app.add_system(button_handler);
+	app.run();
 }
 
 fn touch_camera(

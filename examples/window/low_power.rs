@@ -12,32 +12,32 @@ use bevy::{
 };
 
 fn main() {
-	App::new()
+	let mut app = App::new();
 		// Continuous rendering for games - bevy's default.
-		.insert_resource(WinitSettings::game())
+	app.insert_resource(WinitSettings::game());
 		// Power-saving reactive rendering for applications.
-		.insert_resource(WinitSettings::desktop_app())
+	app.insert_resource(WinitSettings::desktop_app());
 		// You can also customize update behavior with the fields of [`WinitConfig`]
-		.insert_resource(WinitSettings {
+	app.insert_resource(WinitSettings {
 			focused_mode: bevy::winit::UpdateMode::Continuous,
 			unfocused_mode: bevy::winit::UpdateMode::ReactiveLowPower {
 				max_wait: Duration::from_millis(10),
 			},
 			..Default::default()
-		})
+		});
 		// Turn off vsync to maximize CPU/GPU usage
-		.insert_resource(WindowDescriptor {
+	app.insert_resource(WindowDescriptor {
 			present_mode: PresentMode::Immediate,
 			..Default::default()
-		})
-		.insert_resource(ExampleMode::Game)
-		.add_plugins(DefaultPlugins)
-		.add_startup_system(test_setup::setup)
-		.add_system(test_setup::cycle_modes)
-		.add_system(test_setup::rotate_cube)
-		.add_system(test_setup::update_text)
-		.add_system(update_winit)
-		.run();
+		});
+	app.insert_resource(ExampleMode::Game);
+	app.add_plugins(DefaultPlugins);
+	app.add_startup_system(test_setup::setup);
+	app.add_system(test_setup::cycle_modes);
+	app.add_system(test_setup::rotate_cube);
+	app.add_system(test_setup::update_text);
+	app.add_system(update_winit);
+	app.run();
 }
 
 #[derive(Debug)]

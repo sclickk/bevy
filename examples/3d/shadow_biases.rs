@@ -15,14 +15,14 @@ fn main() {
     5/6    - decrease/increase direction light depth bias
     7/8    - decrease/increase direction light normal bias"
 	);
-	App::new()
-		.add_plugins(DefaultPlugins)
-		.add_startup_system(setup)
-		.add_system(adjust_point_light_biases)
-		.add_system(toggle_light)
-		.add_system(adjust_directional_light_biases)
-		.add_system(camera_controller)
-		.run();
+	let mut app = App::new();
+	app.add_plugins(DefaultPlugins);
+	app.add_startup_system(setup);
+	app.add_system(adjust_point_light_biases);
+	app.add_system(toggle_light);
+	app.add_system(adjust_directional_light_biases);
+	app.add_system(camera_controller);
+	app.run();
 }
 
 /// set up a 3D scene to test shadow biases and perspective projections

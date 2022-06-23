@@ -3,11 +3,11 @@
 use bevy::{prelude::*, reflect::TypeRegistry};
 
 fn main() {
-	App::new()
-		.add_plugins(DefaultPlugins)
-		.add_startup_system(setup)
-		.register_type::<MyType>()
-		.run();
+	let mut app = App::new();
+	app.add_plugins(DefaultPlugins);
+	app.add_startup_system(setup);
+	app.register_type::<MyType>();
+	app.run();
 }
 
 #[derive(Reflect)]

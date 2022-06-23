@@ -3,10 +3,10 @@ use bevy::prelude::*;
 // the `bevy_main` proc_macro generates the required android boilerplate
 #[bevy_main]
 fn main() {
-	App::new()
-		.add_plugins(DefaultPlugins)
-		.add_startup_system(setup)
-		.run();
+	let mut app = App::new();
+	app.add_plugins(DefaultPlugins);
+	app.add_startup_system(setup);
+	app.run();
 }
 
 /// set up a simple 3D scene
