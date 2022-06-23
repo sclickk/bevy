@@ -8,15 +8,15 @@ use bevy::{prelude::*, window::WindowDescriptor};
 
 fn main() {
 	let mut app = App::new();
-		// ClearColor must have 0 alpha, otherwise some color will bleed through
+	// ClearColor must have 0 alpha, otherwise some color will bleed through
 	app.insert_resource(ClearColor(Color::NONE));
 	app.insert_resource(WindowDescriptor {
-			// Setting `transparent` allows the `ClearColor`'s alpha value to take effect
-			transparent: true,
-			// Disabling window decorations to make it feel more like a widget than a window
-			decorations: false,
-			..Default::default()
-		});
+		// Setting `transparent` allows the `ClearColor`'s alpha value to take effect
+		transparent: true,
+		// Disabling window decorations to make it feel more like a widget than a window
+		decorations: false,
+		..Default::default()
+	});
 	app.add_startup_system(setup);
 	app.add_plugins(DefaultPlugins);
 	app.run();

@@ -17,9 +17,9 @@ fn main() {
 	let mut app = App::new();
 	app.add_plugins(DefaultPlugins);
 	app.insert_resource(AmbientLight {
-			brightness: 1.0,
-			..Default::default()
-		});
+		brightness: 1.0,
+		..Default::default()
+	});
 	app.add_startup_system(setup);
 	app.add_system(joint_animation);
 	app.run();

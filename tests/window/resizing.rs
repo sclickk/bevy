@@ -19,16 +19,16 @@ struct Dimensions {
 fn main() {
 	let mut app = App::new();
 	app.insert_resource(WindowDescriptor {
-			width: MAX_WIDTH.try_into().unwrap(),
-			height: MAX_HEIGHT.try_into().unwrap(),
-			scale_factor_override: Some(1.),
-			title: "Resizing".into(),
-			..Default::default()
-		});
+		width: MAX_WIDTH.try_into().unwrap(),
+		height: MAX_HEIGHT.try_into().unwrap(),
+		scale_factor_override: Some(1.),
+		title: "Resizing".into(),
+		..Default::default()
+	});
 	app.insert_resource(Dimensions {
-			width: MAX_WIDTH,
-			height: MAX_HEIGHT,
-		});
+		width: MAX_WIDTH,
+		height: MAX_HEIGHT,
+	});
 	app.add_plugins(DefaultPlugins);
 	app.insert_resource(Phase::ContractingY);
 	app.add_system(change_window_size);

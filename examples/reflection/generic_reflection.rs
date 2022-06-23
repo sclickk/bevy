@@ -6,7 +6,7 @@ use std::any::TypeId;
 fn main() {
 	let mut app = App::new();
 	app.add_plugins(DefaultPlugins);
-		// You must manually register each instance of a generic type
+	// You must manually register each instance of a generic type
 	app.register_type::<MyType<u32>>();
 	app.add_startup_system(setup);
 	app.run();

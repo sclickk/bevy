@@ -5,10 +5,10 @@ use bevy::{input::touch::TouchPhase, prelude::*, window::WindowMode};
 fn main() {
 	let mut app = App::new();
 	app.insert_resource(WindowDescriptor {
-			resizable: false,
-			mode: WindowMode::BorderlessFullscreen,
-			..default()
-		});
+		resizable: false,
+		mode: WindowMode::BorderlessFullscreen,
+		..default()
+	});
 	app.add_plugins(DefaultPlugins);
 	app.add_startup_system(setup_scene);
 	app.add_startup_system(setup_music);

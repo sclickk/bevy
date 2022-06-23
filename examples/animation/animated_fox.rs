@@ -6,9 +6,9 @@ fn main() {
 	let mut app = App::new();
 	app.add_plugins(DefaultPlugins);
 	app.insert_resource(AmbientLight {
-			color: Color::WHITE,
-			brightness: 1.0,
-		});
+		color: Color::WHITE,
+		brightness: 1.0,
+	});
 	app.add_startup_system(setup);
 	app.add_system(setup_scene_once_loaded);
 	app.add_system(keyboard_animation_control);

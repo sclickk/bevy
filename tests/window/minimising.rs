@@ -7,9 +7,9 @@ fn main() {
 	// it is currently.
 	let mut app = App::new();
 	app.insert_resource(WindowDescriptor {
-			title: "Minimising".into(),
-			..Default::default()
-		});
+		title: "Minimising".into(),
+		..Default::default()
+	});
 	app.add_plugins(DefaultPlugins);
 	app.add_system(minimise_automatically);
 	app.add_startup_system(setup_3d);

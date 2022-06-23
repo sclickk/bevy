@@ -6,11 +6,11 @@ use bevy::{asset::AssetServerSettings, prelude::*};
 
 fn main() {
 	let mut app = App::new();
-		// Tell the asset server to watch for asset changes on disk:
+	// Tell the asset server to watch for asset changes on disk:
 	app.insert_resource(AssetServerSettings {
-			watch_for_changes: true,
-			..Default::default()
-		});
+		watch_for_changes: true,
+		..Default::default()
+	});
 	app.add_plugins(DefaultPlugins);
 	app.add_startup_system(setup);
 	app.run();

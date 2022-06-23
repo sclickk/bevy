@@ -13,23 +13,23 @@ use bevy::{
 
 fn main() {
 	let mut app = App::new();
-		// Continuous rendering for games - bevy's default.
+	// Continuous rendering for games - bevy's default.
 	app.insert_resource(WinitSettings::game());
-		// Power-saving reactive rendering for applications.
+	// Power-saving reactive rendering for applications.
 	app.insert_resource(WinitSettings::desktop_app());
-		// You can also customize update behavior with the fields of [`WinitConfig`]
+	// You can also customize update behavior with the fields of [`WinitConfig`]
 	app.insert_resource(WinitSettings {
-			focused_mode: bevy::winit::UpdateMode::Continuous,
-			unfocused_mode: bevy::winit::UpdateMode::ReactiveLowPower {
-				max_wait: Duration::from_millis(10),
-			},
-			..Default::default()
-		});
-		// Turn off vsync to maximize CPU/GPU usage
+		focused_mode: bevy::winit::UpdateMode::Continuous,
+		unfocused_mode: bevy::winit::UpdateMode::ReactiveLowPower {
+			max_wait: Duration::from_millis(10),
+		},
+		..Default::default()
+	});
+	// Turn off vsync to maximize CPU/GPU usage
 	app.insert_resource(WindowDescriptor {
-			present_mode: PresentMode::Immediate,
-			..Default::default()
-		});
+		present_mode: PresentMode::Immediate,
+		..Default::default()
+	});
 	app.insert_resource(ExampleMode::Game);
 	app.add_plugins(DefaultPlugins);
 	app.add_startup_system(test_setup::setup);

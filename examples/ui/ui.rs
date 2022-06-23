@@ -9,7 +9,7 @@ use bevy::{
 fn main() {
 	let mut app = App::new();
 	app.add_plugins(DefaultPlugins);
-		// Only run the app when there is user input. This will significantly reduce CPU/GPU use.
+	// Only run the app when there is user input. This will significantly reduce CPU/GPU use.
 	app.insert_resource(WinitSettings::desktop_app());
 	app.add_startup_system(setup);
 	app.add_system(mouse_scroll);

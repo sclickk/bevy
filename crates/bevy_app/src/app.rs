@@ -425,10 +425,7 @@ impl App {
 	/// App::new()
 	///     .add_startup_system(my_startup_system);
 	/// ```
-	pub fn add_startup_system<Params>(
-		&mut self,
-		system: impl IntoSystemDescriptor<Params>,
-	) {
+	pub fn add_startup_system<Params>(&mut self, system: impl IntoSystemDescriptor<Params>) {
 		self.add_startup_system_to_stage(StartupStage::Startup, system);
 	}
 

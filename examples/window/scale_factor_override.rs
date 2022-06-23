@@ -6,10 +6,10 @@ use bevy::prelude::*;
 fn main() {
 	let mut app = App::new();
 	app.insert_resource(WindowDescriptor {
-			width: 500.,
-			height: 300.,
-			..Default::default()
-		});
+		width: 500.,
+		height: 300.,
+		..Default::default()
+	});
 	app.add_plugins(DefaultPlugins);
 	app.add_startup_system(setup);
 	app.add_system(toggle_override);

@@ -40,17 +40,17 @@ Controls:
 	);
 	let mut app = App::new();
 	app.insert_resource(AmbientLight {
-			color: Color::WHITE,
-			brightness: 1.0 / 5.0f32,
-		});
+		color: Color::WHITE,
+		brightness: 1.0 / 5.0f32,
+	});
 	app.insert_resource(AssetServerSettings {
-			asset_folder: std::env::var("CARGO_MANIFEST_DIR").unwrap_or_else(|_| ".".to_string()),
-			watch_for_changes: true,
-		});
+		asset_folder: std::env::var("CARGO_MANIFEST_DIR").unwrap_or_else(|_| ".".to_string()),
+		watch_for_changes: true,
+	});
 	app.insert_resource(WindowDescriptor {
-			title: "bevy scene viewer".to_string(),
-			..Default::default()
-		});
+		title: "bevy scene viewer".to_string(),
+		..Default::default()
+	});
 	app.init_resource::<CameraTracker>();
 	app.add_plugins(DefaultPlugins);
 	app.add_startup_system(setup);
