@@ -97,27 +97,23 @@ impl RenderDevice {
 	/// Creates a [`RenderPipeline`].
 	#[inline]
 	pub fn create_render_pipeline(&self, desc: &RawRenderPipelineDescriptor) -> RenderPipeline {
-		let wgpu_render_pipeline = self.device.create_render_pipeline(desc);
-		RenderPipeline::from(wgpu_render_pipeline)
+		RenderPipeline::from(self.device.create_render_pipeline(desc))
 	}
 
 	/// Creates a [`ComputePipeline`].
 	#[inline]
 	pub fn create_compute_pipeline(&self, desc: &wgpu::ComputePipelineDescriptor) -> ComputePipeline {
-		let wgpu_compute_pipeline = self.device.create_compute_pipeline(desc);
-		ComputePipeline::from(wgpu_compute_pipeline)
+		ComputePipeline::from(self.device.create_compute_pipeline(desc))
 	}
 
 	/// Creates a [`Buffer`].
 	pub fn create_buffer(&self, desc: &wgpu::BufferDescriptor) -> Buffer {
-		let wgpu_buffer = self.device.create_buffer(desc);
-		Buffer::from(wgpu_buffer)
+		Buffer::from(self.device.create_buffer(desc))
 	}
 
 	/// Creates a [`Buffer`] and initializes it with the specified data.
 	pub fn create_buffer_with_data(&self, desc: &wgpu::util::BufferInitDescriptor) -> Buffer {
-		let wgpu_buffer = self.device.create_buffer_init(desc);
-		Buffer::from(wgpu_buffer)
+		Buffer::from(self.device.create_buffer_init(desc))
 	}
 
 	/// Creates a new [`Texture`] and initializes it with the specified data.
@@ -140,16 +136,14 @@ impl RenderDevice {
 	///
 	/// `desc` specifies the general format of the texture.
 	pub fn create_texture(&self, desc: &wgpu::TextureDescriptor) -> Texture {
-		let wgpu_texture = self.device.create_texture(desc);
-		Texture::from(wgpu_texture)
+		Texture::from(self.device.create_texture(desc))
 	}
 
 	/// Creates a new [`Sampler`].
 	///
 	/// `desc` specifies the behavior of the sampler.
 	pub fn create_sampler(&self, desc: &wgpu::SamplerDescriptor) -> Sampler {
-		let wgpu_sampler = self.device.create_sampler(desc);
-		Sampler::from(wgpu_sampler)
+		Sampler::from(self.device.create_sampler(desc))
 	}
 
 	/// Initializes [`Surface`](wgpu::Surface) for presentation.
