@@ -139,7 +139,7 @@ impl<'a> RenderGraphContext<'a> {
 		let slot_index = self
 			.output_info()
 			.get_slot_index(label.clone())
-			.ok_or_else(|| OutputSlotError::InvalidSlot(label.clone()))?;
+			.ok_or(OutputSlotError::InvalidSlot(label.clone()))?;
 		let slot = self
 			.output_info()
 			.get_slot(slot_index)
@@ -165,7 +165,7 @@ impl<'a> RenderGraphContext<'a> {
 		let sub_graph = self
 			.graph
 			.get_sub_graph(&name)
-			.ok_or_else(|| RunSubGraphError::MissingSubGraph(name.clone()))?;
+			.ok_or(RunSubGraphError::MissingSubGraph(name.clone()))?;
 		if let Some(input_node) = sub_graph.input_node() {
 			for (i, input_slot) in input_node.input_slots.iter().enumerate() {
 				if let Some(input_value) = inputs.get(i) {

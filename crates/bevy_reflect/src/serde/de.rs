@@ -150,7 +150,7 @@ impl<'a, 'de> Visitor<'de> for ReflectVisitor<'a> {
 				type_fields::MAP => {
 					let _type_name = type_name
 						.take()
-						.ok_or_else(|| de::Error::missing_field(type_fields::TYPE))?;
+						.ok_or(de::Error::missing_field(type_fields::TYPE))?;
 					let map = map.next_value_seed(MapDeserializer {
 						registry: self.registry,
 					})?;
@@ -159,7 +159,7 @@ impl<'a, 'de> Visitor<'de> for ReflectVisitor<'a> {
 				type_fields::STRUCT => {
 					let type_name = type_name
 						.take()
-						.ok_or_else(|| de::Error::missing_field(type_fields::TYPE))?;
+						.ok_or(de::Error::missing_field(type_fields::TYPE))?;
 					let mut dynamic_struct = map.next_value_seed(StructDeserializer {
 						registry: self.registry,
 					})?;
@@ -169,7 +169,7 @@ impl<'a, 'de> Visitor<'de> for ReflectVisitor<'a> {
 				type_fields::TUPLE_STRUCT => {
 					let type_name = type_name
 						.take()
-						.ok_or_else(|| de::Error::missing_field(type_fields::TYPE))?;
+						.ok_or(de::Error::missing_field(type_fields::TYPE))?;
 					let mut tuple_struct = map.next_value_seed(TupleStructDeserializer {
 						registry: self.registry,
 					})?;
@@ -179,7 +179,7 @@ impl<'a, 'de> Visitor<'de> for ReflectVisitor<'a> {
 				type_fields::TUPLE => {
 					let _type_name = type_name
 						.take()
-						.ok_or_else(|| de::Error::missing_field(type_fields::TYPE))?;
+						.ok_or(de::Error::missing_field(type_fields::TYPE))?;
 					let tuple = map.next_value_seed(TupleDeserializer {
 						registry: self.registry,
 					})?;
@@ -188,7 +188,7 @@ impl<'a, 'de> Visitor<'de> for ReflectVisitor<'a> {
 				type_fields::LIST => {
 					let _type_name = type_name
 						.take()
-						.ok_or_else(|| de::Error::missing_field(type_fields::TYPE))?;
+						.ok_or(de::Error::missing_field(type_fields::TYPE))?;
 					let list = map.next_value_seed(ListDeserializer {
 						registry: self.registry,
 					})?;
@@ -197,7 +197,7 @@ impl<'a, 'de> Visitor<'de> for ReflectVisitor<'a> {
 				type_fields::ARRAY => {
 					let _type_name = type_name
 						.take()
-						.ok_or_else(|| de::Error::missing_field(type_fields::TYPE))?;
+						.ok_or(de::Error::missing_field(type_fields::TYPE))?;
 					let array = map.next_value_seed(ArrayDeserializer {
 						registry: self.registry,
 					})?;
@@ -206,21 +206,20 @@ impl<'a, 'de> Visitor<'de> for ReflectVisitor<'a> {
 				type_fields::VALUE => {
 					let type_name = type_name
 						.take()
-						.ok_or_else(|| de::Error::missing_field(type_fields::TYPE))?;
+						.ok_or(de::Error::missing_field(type_fields::TYPE))?;
 					let registration = self
 						.registry
 						.get_with_name(&type_name)
-						.ok_or_else(|| {
-							de::Error::custom(format_args!("No registration found for {}", type_name))
-						})?;
+						.ok_or(de::Error::custom(format_args!(
+							"No registration found for {}",
+							type_name
+						)))?;
 					let deserialize_reflect = registration
 						.data::<ReflectDeserialize>()
-						.ok_or_else(|| {
-							de::Error::custom(format_args!(
-								"The TypeRegistration for {} doesn't have DeserializeReflect",
-								type_name
-							))
-						})?;
+						.ok_or(de::Error::custom(format_args!(
+							"The TypeRegistration for {} doesn't have DeserializeReflect",
+							type_name
+						)))?;
 					let value = map.next_value_seed(DeserializeReflectDeserializer {
 						reflect_deserialize: deserialize_reflect,
 					})?;

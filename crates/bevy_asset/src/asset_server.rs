@@ -162,7 +162,7 @@ impl AssetServer {
 		};
 		index
 			.map(|index| self.server.loaders.read()[index].clone())
-			.ok_or_else(|| AssetServerError::MissingAssetLoader {
+			.ok_or(AssetServerError::MissingAssetLoader {
 				extensions: vec![extension.to_string()],
 			})
 	}

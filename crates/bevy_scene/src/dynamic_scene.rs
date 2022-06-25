@@ -99,14 +99,14 @@ impl DynamicScene {
 			for component in &scene_entity.components {
 				let registration = type_registry
 					.get_with_name(component.type_name())
-					.ok_or_else(|| SceneSpawnError::UnregisteredType {
+					.ok_or(SceneSpawnError::UnregisteredType {
 						type_name: component.type_name().to_string(),
 					})?;
-				let reflect_component = registration
-					.data::<ReflectComponent>()
-					.ok_or_else(|| SceneSpawnError::UnregisteredComponent {
+				let reflect_component = registration.data::<ReflectComponent>().ok_or(
+					SceneSpawnError::UnregisteredComponent {
 						type_name: component.type_name().to_string(),
-					})?;
+					},
+				)?;
 
 				// If the entity already has the given component attached,
 				// just apply the (possibly) new value, otherwise add the

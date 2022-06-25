@@ -98,7 +98,7 @@ impl ShaderCache {
 		let shader = self
 			.shaders
 			.get(handle)
-			.ok_or_else(|| PipelineCacheError::ShaderNotLoaded(handle.clone_weak()))?;
+			.ok_or(PipelineCacheError::ShaderNotLoaded(handle.clone_weak()))?;
 		let data = self
 			.data
 			.entry(handle.clone_weak())
