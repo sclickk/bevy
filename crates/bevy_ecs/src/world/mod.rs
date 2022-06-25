@@ -592,11 +592,11 @@ impl World {
 	/// Returns an iterator of entities that had components of type `T` removed
 	/// since the last call to [`World::clear_trackers`].
 	pub fn removed<T: Component>(&self) -> std::iter::Cloned<std::slice::Iter<'_, Entity>> {
-		if let Some(component_id) = self.components.get_id(TypeId::of::<T>()) {
-			self.removed_with_id(component_id)
-		} else {
-			[].iter().cloned()
-		}
+		self
+			.components
+			.get_id(TypeId::of::<T>())
+			.map(|component_id| self.removed_with_id(component_id))
+			.unwrap_or([].iter().cloned())
 	}
 
 	/// Returns an iterator of entities that had components with the given `component_id` removed
@@ -605,11 +605,11 @@ impl World {
 		&self,
 		component_id: ComponentId,
 	) -> std::iter::Cloned<std::slice::Iter<'_, Entity>> {
-		if let Some(removed) = self.removed_components.get(component_id) {
-			removed.iter().cloned()
-		} else {
-			[].iter().cloned()
-		}
+		self
+			.removed_components
+			.get(component_id)
+			.map(|removed| removed.iter().cloned())
+			.unwrap_or([].iter().cloned())
 	}
 
 	/// Inserts a new resource with standard starting values.
@@ -769,16 +769,13 @@ impl World {
 	#[inline]
 	#[track_caller]
 	pub fn resource<R: Resource>(&self) -> &R {
-		match self.get_resource() {
-			Some(x) => x,
-			None => panic!(
-				"Requested resource {} does not exist in the `World`. 
-                Did you forget to add it using `app.add_resource` / `app.init_resource`? 
-                Resources are also implicitly added via `app.add_event`,
-                and can be added by plugins.",
-				std::any::type_name::<R>()
-			),
-		}
+		self.get_resource().expect(&format!(
+			"Requested resource {} does not exist in the `World`. 
+			Did you forget to add it using `app.add_resource` / `app.init_resource`? 
+			Resources are also implicitly added via `app.add_event`,
+			and can be added by plugins.",
+			std::any::type_name::<R>(),
+		))
 	}
 
 	/// Gets a mutable reference to the resource of the given type
@@ -793,16 +790,13 @@ impl World {
 	#[inline]
 	#[track_caller]
 	pub fn resource_mut<R: Resource>(&mut self) -> Mut<'_, R> {
-		match self.get_resource_mut() {
-			Some(x) => x,
-			None => panic!(
-				"Requested resource {} does not exist in the `World`. 
-                Did you forget to add it using `app.add_resource` / `app.init_resource`? 
-                Resources are also implicitly added via `app.add_event`,
-                and can be added by plugins.",
-				std::any::type_name::<R>()
-			),
-		}
+		self.get_resource_mut().expect(&format!(
+			"Requested resource {} does not exist in the `World`. 
+			Did you forget to add it using `app.add_resource` / `app.init_resource`? 
+			Resources are also implicitly added via `app.add_event`,
+			and can be added by plugins.",
+			std::any::type_name::<R>(),
+		))
 	}
 
 	/// Gets a reference to the resource of the given type if it exists
@@ -859,15 +853,12 @@ impl World {
 	#[inline]
 	#[track_caller]
 	pub fn non_send_resource<R: 'static>(&self) -> &R {
-		match self.get_non_send_resource() {
-            Some(x) => x,
-            None => panic!(
-                "Requested non-send resource {} does not exist in the `World`. 
-                Did you forget to add it using `app.add_non_send_resource` / `app.init_non_send_resource`? 
-                Non-send resources can also be be added by plugins.",
-                std::any::type_name::<R>()
-            ),
-        }
+		self.get_non_send_resource().expect(&format!(
+			"Requested non-send resource {} does not exist in the `World`. 
+			Did you forget to add it using `app.add_non_send_resource` / `app.init_non_send_resource`? 
+			Non-send resources can also be be added by plugins.",
+			std::any::type_name::<R>(),
+		))
 	}
 
 	/// Gets a mutable reference to the non-send resource of the given type, if it exists.
@@ -879,15 +870,14 @@ impl World {
 	#[inline]
 	#[track_caller]
 	pub fn non_send_resource_mut<R: 'static>(&mut self) -> Mut<'_, R> {
-		match self.get_non_send_resource_mut() {
-            Some(x) => x,
-            None => panic!(
-                "Requested non-send resource {} does not exist in the `World`. 
-                Did you forget to add it using `app.add_non_send_resource` / `app.init_non_send_resource`? 
-                Non-send resources can also be be added by plugins.",
-                std::any::type_name::<R>()
-            ),
-        }
+		self
+			.get_non_send_resource_mut()
+			.expect(&format!(
+				"Requested non-send resource {} does not exist in the `World`. 
+			Did you forget to add it using `app.add_non_send_resource` / `app.init_non_send_resource`? 
+			Non-send resources can also be be added by plugins.",
+				std::any::type_name::<R>(),
+			))
 	}
 
 	/// Gets a reference to the non-send resource of the given type, if it exists.
@@ -1039,11 +1029,10 @@ impl World {
 			}
 		}
 
-		if invalid_entities.is_empty() {
-			Ok(())
-		} else {
-			Err(invalid_entities)
-		}
+		invalid_entities
+			.is_empty()
+			.then(|| ())
+			.ok_or(invalid_entities)
 	}
 
 	/// Temporarily removes the requested resource from this [`World`], then re-adds it before returning.
@@ -1071,17 +1060,18 @@ impl World {
 	pub fn resource_scope<R: Resource, U>(&mut self, f: impl FnOnce(&mut World, Mut<R>) -> U) -> U {
 		let last_change_tick = self.last_change_tick();
 		let change_tick = self.change_tick();
+		let res_not_exist_err = &format!("resource does not exist: {}", std::any::type_name::<R>());
 
 		let component_id = self
 			.components
 			.get_resource_id(TypeId::of::<R>())
-			.unwrap_or_else(|| panic!("resource does not exist: {}", std::any::type_name::<R>()));
+			.expect(res_not_exist_err);
 		let (ptr, mut ticks) = {
 			let resource_archetype = self.archetypes.resource_mut();
 			let unique_components = resource_archetype.unique_components_mut();
 			let column = unique_components
 				.get_mut(component_id)
-				.unwrap_or_else(|| panic!("resource does not exist: {}", std::any::type_name::<R>()));
+				.expect(res_not_exist_err);
 			assert!(
 				!column.is_empty(),
 				"resource does not exist: {}",
@@ -1109,7 +1099,7 @@ impl World {
 		let unique_components = resource_archetype.unique_components_mut();
 		let column = unique_components
 			.get_mut(component_id)
-			.unwrap_or_else(|| panic!("resource does not exist: {}", std::any::type_name::<R>()));
+			.expect(res_not_exist_err);
 
 		OwningPtr::make(value, |ptr| {
 			unsafe {
@@ -1211,9 +1201,7 @@ impl World {
 		self
 			.components()
 			.get_info(component_id)
-			.unwrap_or_else(|| {
-				panic!("insert_resource_by_id called with component id which doesn't exist in this world")
-			});
+			.expect("insert_resource_by_id called with component id which doesn't exist in this world");
 		// SAFE: component_id is valid, checked by the lines above
 		let column = self.initialize_resource_internal(component_id);
 		if column.is_empty() {
@@ -1280,13 +1268,7 @@ impl World {
 		let unique_components = resource_archetype.unique_components();
 		unique_components
 			.get(component_id)
-			.and_then(|column| {
-				if column.is_empty() {
-					None
-				} else {
-					Some(column)
-				}
-			})
+			.and_then(|column| (!column.is_empty()).then(|| column))
 	}
 
 	pub(crate) fn validate_non_send_access<T: 'static>(&self) {
