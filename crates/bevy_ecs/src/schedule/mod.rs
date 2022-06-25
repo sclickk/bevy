@@ -144,7 +144,7 @@ impl Schedule {
 			.enumerate()
 			.find(|(_i, stage_label)| &***stage_label == target)
 			.map(|(i, _)| i)
-			.unwrap_or_else(|| panic!("Target stage does not exist: {:?}.", target));
+			.expect(&format!("Target stage does not exist: {:?}.", target));
 
 		self
 			.stage_order
@@ -182,7 +182,7 @@ impl Schedule {
 			.enumerate()
 			.find(|(_i, stage_label)| &***stage_label == target)
 			.map(|(i, _)| i)
-			.unwrap_or_else(|| panic!("Target stage does not exist: {:?}.", target));
+			.expect(&format!("Target stage does not exist: {:?}.", target));
 
 		self
 			.stage_order
