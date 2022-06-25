@@ -126,6 +126,15 @@ struct TableInfo {
 	entity_rows: Vec<usize>,
 }
 
+impl From<TableId> for TableInfo {
+	fn from(id: TableId) -> Self {
+		Self {
+			id,
+			entity_rows: Default::default(),
+		}
+	}
+}
+
 pub(crate) struct ArchetypeSwapRemoveResult {
 	pub(crate) swapped_entity: Option<Entity>,
 	pub(crate) table_row: usize,
@@ -185,10 +194,7 @@ impl Archetype {
 		}
 		Self {
 			id,
-			table_info: TableInfo {
-				id: table_id,
-				entity_rows: Default::default(),
-			},
+			table_info: TableInfo::from(table_id),
 			components,
 			table_components,
 			sparse_set_components,
