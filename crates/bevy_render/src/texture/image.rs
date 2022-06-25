@@ -356,16 +356,14 @@ impl Image {
 
 	/// Whether the texture format is compressed or uncompressed
 	pub fn is_compressed(&self) -> bool {
-		let format_description = self.texture_descriptor.format.describe();
-		format_description
-			.required_features
-			.contains(wgpu::Features::TEXTURE_COMPRESSION_ASTC_LDR)
-			|| format_description
-				.required_features
-				.contains(wgpu::Features::TEXTURE_COMPRESSION_BC)
-			|| format_description
-				.required_features
-				.contains(wgpu::Features::TEXTURE_COMPRESSION_ETC2)
+		let feats = self
+			.texture_descriptor
+			.format
+			.describe()
+			.required_features;
+		feats.contains(wgpu::Features::TEXTURE_COMPRESSION_ASTC_LDR)
+			|| feats.contains(wgpu::Features::TEXTURE_COMPRESSION_BC)
+			|| feats.contains(wgpu::Features::TEXTURE_COMPRESSION_ETC2)
 	}
 }
 
