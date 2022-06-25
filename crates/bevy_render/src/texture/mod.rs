@@ -75,10 +75,10 @@ impl Plugin for ImagePlugin {
 				let device = render_app.world.resource::<RenderDevice>();
 				device.create_sampler(&default_sampler)
 			};
-			render_app
-				.insert_resource(DefaultImageSampler(default_sampler))
-				.init_resource::<TextureCache>()
-				.add_system_to_stage(RenderStage::Cleanup, update_texture_cache_system);
+
+			render_app.insert_resource(DefaultImageSampler(default_sampler));
+			render_app.init_resource::<TextureCache>();
+			render_app.add_system_to_stage(RenderStage::Cleanup, update_texture_cache_system);
 		}
 	}
 }

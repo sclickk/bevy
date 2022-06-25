@@ -277,13 +277,13 @@ impl Plugin for ColoredMesh2dPlugin {
 		);
 
 		// Register our custom draw function and pipeline, and add our render systems
-		let render_app = app.get_sub_app_mut(RenderApp).unwrap();
-		render_app
-			.add_render_command::<Transparent2d, DrawColoredMesh2d>()
-			.init_resource::<ColoredMesh2dPipeline>()
-			.init_resource::<SpecializedRenderPipelines<ColoredMesh2dPipeline>>()
-			.add_system_to_stage(RenderStage::Extract, extract_colored_mesh2d)
-			.add_system_to_stage(RenderStage::Queue, queue_colored_mesh2d);
+		if let Ok(render_app) = app.get_sub_app_mut(RenderApp) {
+			render_app.add_render_command::<Transparent2d, DrawColoredMesh2d>();
+			render_app.init_resource::<ColoredMesh2dPipeline>();
+			render_app.init_resource::<SpecializedRenderPipelines<ColoredMesh2dPipeline>>();
+			render_app.add_system_to_stage(RenderStage::Extract, extract_colored_mesh2d);
+			render_app.add_system_to_stage(RenderStage::Queue, queue_colored_mesh2d);
+		}
 	}
 }
 

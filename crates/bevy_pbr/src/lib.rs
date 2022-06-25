@@ -190,41 +190,40 @@ impl Plugin for PbrPlugin {
 			Err(_) => return,
 		};
 
-		render_app
-			.add_system_to_stage(
-				RenderStage::Extract,
-				render::extract_clusters.label(RenderLightSystems::ExtractClusters),
-			)
-			.add_system_to_stage(
-				RenderStage::Extract,
-				render::extract_lights.label(RenderLightSystems::ExtractLights),
-			)
-			.add_system_to_stage(
-				RenderStage::Prepare,
-				// this is added as an exclusive system because it contributes new views. it must run (and have Commands applied)
-				// _before_ the `prepare_views()` system is run. ideally this becomes a normal system when "stageless" features come out
-				render::prepare_lights
-					.exclusive_system()
-					.label(RenderLightSystems::PrepareLights),
-			)
-			.add_system_to_stage(
-				RenderStage::Prepare,
-				// NOTE: This needs to run after prepare_lights. As prepare_lights is an exclusive system,
-				// just adding it to the non-exclusive systems in the Prepare stage means it runs after
-				// prepare_lights.
-				render::prepare_clusters.label(RenderLightSystems::PrepareClusters),
-			)
-			.add_system_to_stage(
-				RenderStage::Queue,
-				render::queue_shadows.label(RenderLightSystems::QueueShadows),
-			)
-			.add_system_to_stage(RenderStage::Queue, render::queue_shadow_view_bind_group)
-			.add_system_to_stage(RenderStage::PhaseSort, sort_phase_system::<Shadow>)
-			.init_resource::<ShadowPipeline>()
-			.init_resource::<DrawFunctions<Shadow>>()
-			.init_resource::<LightMeta>()
-			.init_resource::<GlobalLightMeta>()
-			.init_resource::<SpecializedMeshPipelines<ShadowPipeline>>();
+		render_app.add_system_to_stage(
+			RenderStage::Extract,
+			render::extract_clusters.label(RenderLightSystems::ExtractClusters),
+		);
+		render_app.add_system_to_stage(
+			RenderStage::Extract,
+			render::extract_lights.label(RenderLightSystems::ExtractLights),
+		);
+		render_app.add_system_to_stage(
+			RenderStage::Prepare,
+			// this is added as an exclusive system because it contributes new views. it must run (and have Commands applied)
+			// _before_ the `prepare_views()` system is run. ideally this becomes a normal system when "stageless" features come out
+			render::prepare_lights
+				.exclusive_system()
+				.label(RenderLightSystems::PrepareLights),
+		);
+		render_app.add_system_to_stage(
+			RenderStage::Prepare,
+			// NOTE: This needs to run after prepare_lights. As prepare_lights is an exclusive system,
+			// just adding it to the non-exclusive systems in the Prepare stage means it runs after
+			// prepare_lights.
+			render::prepare_clusters.label(RenderLightSystems::PrepareClusters),
+		);
+		render_app.add_system_to_stage(
+			RenderStage::Queue,
+			render::queue_shadows.label(RenderLightSystems::QueueShadows),
+		);
+		render_app.add_system_to_stage(RenderStage::Queue, render::queue_shadow_view_bind_group);
+		render_app.add_system_to_stage(RenderStage::PhaseSort, sort_phase_system::<Shadow>);
+		render_app.init_resource::<ShadowPipeline>();
+		render_app.init_resource::<DrawFunctions<Shadow>>();
+		render_app.init_resource::<LightMeta>();
+		render_app.init_resource::<GlobalLightMeta>();
+		render_app.init_resource::<SpecializedMeshPipelines<ShadowPipeline>>();
 
 		let shadow_pass_node = ShadowPassNode::new(&mut render_app.world);
 		render_app.add_render_command::<Shadow, DrawShadowMesh>();

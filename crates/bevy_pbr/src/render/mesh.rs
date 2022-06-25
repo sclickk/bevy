@@ -85,14 +85,13 @@ impl Plugin for MeshRenderPlugin {
 		app.init_plugin::<UniformComponentPlugin<MeshUniform>>();
 
 		if let Ok(render_app) = app.get_sub_app_mut(RenderApp) {
-			render_app
-				.init_resource::<MeshPipeline>()
-				.init_resource::<SkinnedMeshUniform>()
-				.add_system_to_stage(RenderStage::Extract, extract_meshes)
-				.add_system_to_stage(RenderStage::Extract, extract_skinned_meshes)
-				.add_system_to_stage(RenderStage::Prepare, prepare_skinned_meshes)
-				.add_system_to_stage(RenderStage::Queue, queue_mesh_bind_group)
-				.add_system_to_stage(RenderStage::Queue, queue_mesh_view_bind_groups);
+			render_app.init_resource::<MeshPipeline>();
+			render_app.init_resource::<SkinnedMeshUniform>();
+			render_app.add_system_to_stage(RenderStage::Extract, extract_meshes);
+			render_app.add_system_to_stage(RenderStage::Extract, extract_skinned_meshes);
+			render_app.add_system_to_stage(RenderStage::Prepare, prepare_skinned_meshes);
+			render_app.add_system_to_stage(RenderStage::Queue, queue_mesh_bind_group);
+			render_app.add_system_to_stage(RenderStage::Queue, queue_mesh_view_bind_groups);
 		}
 	}
 }

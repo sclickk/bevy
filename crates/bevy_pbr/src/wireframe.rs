@@ -39,12 +39,11 @@ impl Plugin for WireframePlugin {
 		app.init_plugin::<ExtractResourcePlugin<WireframeConfig>>();
 
 		if let Ok(render_app) = app.get_sub_app_mut(RenderApp) {
-			render_app
-				.add_render_command::<Opaque3d, DrawWireframes>()
-				.init_resource::<WireframePipeline>()
-				.init_resource::<SpecializedMeshPipelines<WireframePipeline>>()
-				.add_system_to_stage(RenderStage::Extract, extract_wireframes)
-				.add_system_to_stage(RenderStage::Queue, queue_wireframes);
+			render_app.add_render_command::<Opaque3d, DrawWireframes>();
+			render_app.init_resource::<WireframePipeline>();
+			render_app.init_resource::<SpecializedMeshPipelines<WireframePipeline>>();
+			render_app.add_system_to_stage(RenderStage::Extract, extract_wireframes);
+			render_app.add_system_to_stage(RenderStage::Queue, queue_wireframes);
 		}
 	}
 }

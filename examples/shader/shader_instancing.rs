@@ -81,13 +81,12 @@ pub struct CustomMaterialPlugin;
 impl Plugin for CustomMaterialPlugin {
 	fn build(&self, app: &mut App) {
 		app.init_plugin::<ExtractComponentPlugin<InstanceMaterialData>>();
-		app
-			.sub_app_mut(RenderApp)
-			.add_render_command::<Transparent3d, DrawCustom>()
-			.init_resource::<CustomPipeline>()
-			.init_resource::<SpecializedMeshPipelines<CustomPipeline>>()
-			.add_system_to_stage(RenderStage::Queue, queue_custom)
-			.add_system_to_stage(RenderStage::Prepare, prepare_instance_buffers);
+		app.sub_app_mut(RenderApp);
+		app.add_render_command::<Transparent3d, DrawCustom>();
+		app.init_resource::<CustomPipeline>();
+		app.init_resource::<SpecializedMeshPipelines<CustomPipeline>>();
+		app.add_system_to_stage(RenderStage::Queue, queue_custom);
+		app.add_system_to_stage(RenderStage::Prepare, prepare_instance_buffers);
 	}
 }
 

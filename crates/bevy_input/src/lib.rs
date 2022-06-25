@@ -54,37 +54,34 @@ impl Plugin for InputPlugin {
 		app.add_event::<MouseButtonInput>();
 		app.add_event::<MouseMotion>();
 		app.add_event::<MouseWheel>();
-		app
-			.init_resource::<Input<MouseButton>>()
-			.add_system_to_stage(
+		app.init_resource::<Input<MouseButton>>();
+		app.add_system_to_stage(
 				CoreStage::PreUpdate,
 				mouse_button_input_system.label(InputSystem),
 			);
 		// gamepad
 		app.add_event::<GamepadEvent>();
 		app.add_event::<GamepadEventRaw>();
-		app
-			.init_resource::<GamepadSettings>()
-			.init_resource::<Gamepads>()
-			.init_resource::<Input<GamepadButton>>()
-			.init_resource::<Axis<GamepadAxis>>()
-			.init_resource::<Axis<GamepadButton>>()
-			.add_system_to_stage(
-				CoreStage::PreUpdate,
-				gamepad_event_system.label(InputSystem),
-			)
-			.add_system_to_stage(
-				CoreStage::PreUpdate,
-				gamepad_connection_system.after(InputSystem),
-			);
+		app.init_resource::<GamepadSettings>();
+		app.init_resource::<Gamepads>();
+		app.init_resource::<Input<GamepadButton>>();
+		app.init_resource::<Axis<GamepadAxis>>();
+		app.init_resource::<Axis<GamepadButton>>();
+		app.add_system_to_stage(
+			CoreStage::PreUpdate,
+			gamepad_event_system.label(InputSystem),
+		);
+		app.add_system_to_stage(
+			CoreStage::PreUpdate,
+			gamepad_connection_system.after(InputSystem),
+		);
 		// touch
 		app.add_event::<TouchInput>();
-		app
-			.init_resource::<Touches>()
-			.add_system_to_stage(
-				CoreStage::PreUpdate,
-				touch_screen_input_system.label(InputSystem),
-			);
+		app.init_resource::<Touches>();
+		app.add_system_to_stage(
+			CoreStage::PreUpdate,
+			touch_screen_input_system.label(InputSystem),
+		);
 	}
 }
 

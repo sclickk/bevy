@@ -141,14 +141,10 @@ struct LogVisibleLights;
 
 impl Plugin for LogVisibleLights {
 	fn build(&self, app: &mut App) {
-		let render_app = match app.get_sub_app_mut(RenderApp) {
-			Ok(render_app) => render_app,
-			Err(_) => return,
+		if let Ok(render_app) = app.get_sub_app_mut(RenderApp) {
+			render_app.add_system_to_stage(RenderStage::Extract, extract_time);
+			render_app.add_system_to_stage(RenderStage::Prepare, print_visible_light_count);
 		};
-
-		render_app
-			.add_system_to_stage(RenderStage::Extract, extract_time)
-			.add_system_to_stage(RenderStage::Prepare, print_visible_light_count);
 	}
 }
 

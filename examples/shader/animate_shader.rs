@@ -70,14 +70,14 @@ impl Plugin for CustomMaterialPlugin {
 			.insert_resource(TimeMeta {
 				buffer,
 				bind_group: None,
-			})
-			.init_resource::<CustomPipeline>()
-			.init_resource::<SpecializedMeshPipelines<CustomPipeline>>()
-			.add_system_to_stage(RenderStage::Extract, extract_time)
-			.add_system_to_stage(RenderStage::Extract, extract_custom_material)
-			.add_system_to_stage(RenderStage::Prepare, prepare_time)
-			.add_system_to_stage(RenderStage::Queue, queue_custom)
-			.add_system_to_stage(RenderStage::Queue, queue_time_bind_group);
+			});
+		app.init_resource::<CustomPipeline>();
+		app.init_resource::<SpecializedMeshPipelines<CustomPipeline>>();
+		app.add_system_to_stage(RenderStage::Extract, extract_time);
+		app.add_system_to_stage(RenderStage::Extract, extract_custom_material);
+		app.add_system_to_stage(RenderStage::Prepare, prepare_time);
+		app.add_system_to_stage(RenderStage::Queue, queue_custom);
+		app.add_system_to_stage(RenderStage::Queue, queue_time_bind_group);
 	}
 }
 

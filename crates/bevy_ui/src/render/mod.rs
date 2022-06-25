@@ -62,33 +62,32 @@ pub fn build_ui_render(app: &mut App) {
 		Err(_) => return,
 	};
 
-	render_app
-		.init_resource::<UiPipeline>()
-		.init_resource::<SpecializedRenderPipelines<UiPipeline>>()
-		.init_resource::<UiImageBindGroups>()
-		.init_resource::<UiMeta>()
-		.init_resource::<ExtractedUiNodes>()
-		.init_resource::<DrawFunctions<TransparentUi>>()
-		.add_render_command::<TransparentUi, DrawUi>()
-		.add_system_to_stage(
+	render_app.init_resource::<UiPipeline>();
+	render_app.init_resource::<SpecializedRenderPipelines<UiPipeline>>();
+	render_app.init_resource::<UiImageBindGroups>();
+	render_app.init_resource::<UiMeta>();
+	render_app.init_resource::<ExtractedUiNodes>();
+	render_app.init_resource::<DrawFunctions<TransparentUi>>();
+	render_app.add_render_command::<TransparentUi, DrawUi>();
+	render_app.add_system_to_stage(
 			RenderStage::Extract,
 			extract_default_ui_camera_view::<Camera2d>,
-		)
-		.add_system_to_stage(
+		);
+	render_app.add_system_to_stage(
 			RenderStage::Extract,
 			extract_default_ui_camera_view::<Camera3d>,
-		)
-		.add_system_to_stage(
+		);
+	render_app.add_system_to_stage(
 			RenderStage::Extract,
 			extract_uinodes.label(RenderUiSystem::ExtractNode),
-		)
-		.add_system_to_stage(
+		);
+	render_app.add_system_to_stage(
 			RenderStage::Extract,
 			extract_text_uinodes.after(RenderUiSystem::ExtractNode),
-		)
-		.add_system_to_stage(RenderStage::Prepare, prepare_uinodes)
-		.add_system_to_stage(RenderStage::Queue, queue_uinodes)
-		.add_system_to_stage(RenderStage::PhaseSort, sort_phase_system::<TransparentUi>);
+		);
+	render_app.add_system_to_stage(RenderStage::Prepare, prepare_uinodes);
+	render_app.add_system_to_stage(RenderStage::Queue, queue_uinodes);
+	render_app.add_system_to_stage(RenderStage::PhaseSort, sort_phase_system::<TransparentUi>);
 
 	// Render graph
 	let ui_graph_2d = get_ui_graph(render_app);

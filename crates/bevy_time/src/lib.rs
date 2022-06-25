@@ -29,13 +29,12 @@ pub struct TimeSystem;
 
 impl Plugin for TimePlugin {
 	fn build(&self, app: &mut App) {
-		app
-			.init_resource::<Time>()
-			.init_resource::<FixedTimesteps>()
-			.register_type::<Timer>()
+		app.init_resource::<Time>();
+		app.init_resource::<FixedTimesteps>();
+		app.register_type::<Timer>();
 			// time system is added as an "exclusive system" to ensure it runs before other systems
 			// in CoreStage::First
-			.add_system_to_stage(
+		app.add_system_to_stage(
 				CoreStage::First,
 				time_system
 					.exclusive_system()

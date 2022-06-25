@@ -61,9 +61,8 @@ impl<C> Default for UniformComponentPlugin<C> {
 impl<C: Component + ShaderType + WriteInto + Clone> Plugin for UniformComponentPlugin<C> {
 	fn build(&self, app: &mut App) {
 		if let Ok(render_app) = app.get_sub_app_mut(RenderApp) {
-			render_app
-				.insert_resource(ComponentUniforms::<C>::default())
-				.add_system_to_stage(RenderStage::Prepare, prepare_uniform_components::<C>);
+			render_app.insert_resource(ComponentUniforms::<C>::default());
+			render_app.add_system_to_stage(RenderStage::Prepare, prepare_uniform_components::<C>);
 		}
 	}
 }

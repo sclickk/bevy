@@ -34,10 +34,9 @@ impl Plugin for ViewPlugin {
 		app.add_plugin(VisibilityPlugin);
 
 		if let Ok(render_app) = app.get_sub_app_mut(RenderApp) {
-			render_app
-				.init_resource::<ViewUniforms>()
-				.add_system_to_stage(RenderStage::Prepare, prepare_view_uniforms)
-				.add_system_to_stage(
+			render_app.init_resource::<ViewUniforms>();
+			render_app.add_system_to_stage(RenderStage::Prepare, prepare_view_uniforms);
+			render_app.add_system_to_stage(
 					RenderStage::Prepare,
 					prepare_view_targets.after(WindowSystem::Prepare),
 				);

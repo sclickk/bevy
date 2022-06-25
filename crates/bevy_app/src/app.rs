@@ -319,7 +319,8 @@ impl App {
 	/// app.add_system(my_system);
 	/// ```
 	pub fn add_system<Params>(&mut self, system: impl IntoSystemDescriptor<Params>) -> &mut Self {
-		self.add_system_to_stage(CoreStage::Update, system)
+		self.add_system_to_stage(CoreStage::Update, system);
+		self
 	}
 
 	/// Adds a [`SystemSet`] to the [update stage](Self::add_default_stages).
@@ -363,7 +364,7 @@ impl App {
 		&mut self,
 		stage_label: impl StageLabel,
 		system: impl IntoSystemDescriptor<Params>,
-	) -> &mut Self {
+	) {
 		use std::any::TypeId;
 		assert!(
 			stage_label.type_id() != TypeId::of::<StartupStage>(),
@@ -372,7 +373,6 @@ impl App {
 		self
 			.schedule
 			.add_system_to_stage(stage_label, system);
-		self
 	}
 
 	/// Adds a [`SystemSet`] to the [`Stage`] identified by `stage_label`.

@@ -70,9 +70,8 @@ impl Plugin for GameOfLifeComputePlugin {
 		// for operation on by the compute shader and display on the sprite.
 		app.init_plugin::<ExtractResourcePlugin<GameOfLifeImage>>();
 		let render_app = app.sub_app_mut(RenderApp);
-		render_app
-			.init_resource::<GameOfLifePipeline>()
-			.add_system_to_stage(RenderStage::Queue, queue_bind_group);
+		render_app.init_resource::<GameOfLifePipeline>();
+		render_app.add_system_to_stage(RenderStage::Queue, queue_bind_group);
 
 		let mut render_graph = render_app.world.resource_mut::<RenderGraph>();
 		render_graph.add_node("game_of_life", GameOfLifeNode::default());

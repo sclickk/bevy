@@ -197,11 +197,10 @@ impl<M: SpecializedMaterial2d> Plugin for Material2dPlugin<M> {
 		app.add_plugin(ExtractComponentPlugin::<Handle<M>>::extract_visible());
 		app.init_plugin::<RenderAssetPlugin<M>>();
 		if let Ok(render_app) = app.get_sub_app_mut(RenderApp) {
-			render_app
-				.add_render_command::<Transparent2d, DrawMaterial2d<M>>()
-				.init_resource::<Material2dPipeline<M>>()
-				.init_resource::<SpecializedMeshPipelines<Material2dPipeline<M>>>()
-				.add_system_to_stage(RenderStage::Queue, queue_material2d_meshes::<M>);
+			render_app.add_render_command::<Transparent2d, DrawMaterial2d<M>>();
+			render_app.init_resource::<Material2dPipeline<M>>();
+			render_app.init_resource::<SpecializedMeshPipelines<Material2dPipeline<M>>>();
+			render_app.add_system_to_stage(RenderStage::Queue, queue_material2d_meshes::<M>);
 		}
 	}
 }
