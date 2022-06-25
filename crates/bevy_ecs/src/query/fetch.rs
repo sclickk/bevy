@@ -772,6 +772,7 @@ pub struct WriteFetch<'w, T> {
 	entities: Option<ThinSlicePtr<'w, Entity>>,
 	sparse_set: Option<&'w ComponentSparseSet>,
 
+	// TODO: Fix code duplication in Ticks in change_detection.rs
 	last_change_tick: u32,
 	change_tick: u32,
 }
@@ -1030,20 +1031,16 @@ unsafe impl<'w, T: Fetch<'w>> Fetch<'w> for OptionFetch<T> {
 
 	#[inline]
 	unsafe fn archetype_fetch(&mut self, archetype_index: usize) -> Self::Item {
-		if self.matches {
-			Some(self.fetch.archetype_fetch(archetype_index))
-		} else {
-			None
-		}
+		self
+			.matches
+			.then(|| self.fetch.archetype_fetch(archetype_index))
 	}
 
 	#[inline]
 	unsafe fn table_fetch(&mut self, table_row: usize) -> Self::Item {
-		if self.matches {
-			Some(self.fetch.table_fetch(table_row))
-		} else {
-			None
-		}
+		self
+			.matches
+			.then(|| self.fetch.table_fetch(table_row))
 	}
 
 	fn update_component_access(state: &Self::State, access: &mut FilteredAccess<ComponentId>) {
