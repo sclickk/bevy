@@ -18,7 +18,7 @@ pub(crate) fn impl_struct(derive_data: &ReflectDeriveData) -> TokenStream {
 				.ident
 				.as_ref()
 				.map(|i| i.to_string())
-				.unwrap_or_else(|| field.index.to_string())
+				.unwrap_or(field.index.to_string())
 		})
 		.collect::<Vec<String>>();
 	let field_idents = derive_data
@@ -29,7 +29,7 @@ pub(crate) fn impl_struct(derive_data: &ReflectDeriveData) -> TokenStream {
 				.ident
 				.as_ref()
 				.map(|ident| Member::Named(ident.clone()))
-				.unwrap_or_else(|| Member::Unnamed(Index::from(field.index)))
+				.unwrap_or(Member::Unnamed(Index::from(field.index)))
 		})
 		.collect::<Vec<_>>();
 	let field_types = derive_data

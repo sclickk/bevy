@@ -196,7 +196,7 @@ fn get_ident(field: &Field, index: usize, is_tuple: bool) -> Member {
 			.ident
 			.as_ref()
 			.map(|ident| Member::Named(ident.clone()))
-			.unwrap_or_else(|| Member::Unnamed(Index::from(index)))
+			.unwrap_or(Member::Unnamed(Index::from(index)))
 	}
 }
 
@@ -212,6 +212,6 @@ fn get_field_accessor(field: &Field, index: usize, is_tuple: bool) -> Lit {
 			.ident
 			.as_ref()
 			.map(|ident| Lit::Str(LitStr::new(&ident.to_string(), Span::call_site())))
-			.unwrap_or_else(|| Lit::Str(LitStr::new(&index.to_string(), Span::call_site())))
+			.unwrap_or(Lit::Str(LitStr::new(&index.to_string(), Span::call_site())))
 	}
 }
