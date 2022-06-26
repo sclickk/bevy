@@ -419,9 +419,9 @@ impl<'a> ImageType<'a> {
 	pub fn to_image_format(&self) -> Result<ImageFormat, TextureError> {
 		match self {
 			ImageType::MimeType(mime_type) => ImageFormat::from_mime_type(mime_type)
-				.ok_or_else(|| TextureError::InvalidImageMimeType(mime_type.to_string())),
+				.ok_or(TextureError::InvalidImageMimeType(mime_type.to_string())),
 			ImageType::Extension(extension) => ImageFormat::from_extension(extension)
-				.ok_or_else(|| TextureError::InvalidImageExtension(extension.to_string())),
+				.ok_or(TextureError::InvalidImageExtension(extension.to_string())),
 		}
 	}
 }
