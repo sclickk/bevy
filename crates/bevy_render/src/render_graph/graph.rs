@@ -501,8 +501,14 @@ impl RenderGraph {
 				.edges
 				.input_edges()
 				.iter()
-				.map(|edge| (edge, edge.get_output_node()))
-				.map(move |(edge, output_node_id)| (edge, self.get_node_state(output_node_id).unwrap())),
+				.map(move |edge| {
+					(
+						edge,
+						self
+							.get_node_state(edge.get_output_node())
+							.unwrap(),
+					)
+				}),
 		)
 	}
 
@@ -518,8 +524,14 @@ impl RenderGraph {
 				.edges
 				.output_edges()
 				.iter()
-				.map(|edge| (edge, edge.get_input_node()))
-				.map(move |(edge, input_node_id)| (edge, self.get_node_state(input_node_id).unwrap())),
+				.map(move |edge| {
+					(
+						edge,
+						self
+							.get_node_state(edge.get_input_node())
+							.unwrap(),
+					)
+				}),
 		)
 	}
 
