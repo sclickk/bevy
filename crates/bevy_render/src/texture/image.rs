@@ -329,7 +329,7 @@ impl Image {
 		#[allow(unused_variables)] supported_compressed_formats: CompressedImageFormats,
 		is_srgb: bool,
 	) -> Result<Image, TextureError> {
-		let format = image_type.to_image_format()?;
+		let format: ImageFormat = image_type.try_into()?;
 
 		// Load the image in the expected format.
 		// Some formats like PNG allow for R or RG textures too, so the texture
@@ -345,9 +345,13 @@ impl Image {
 			#[cfg(feature = "ktx2")]
 			ImageFormat::Ktx2 => ktx2_buffer_to_image(buffer, supported_compressed_formats, is_srgb),
 			_ => {
-				let image_crate_format = format
-					.as_image_crate_format()
-					.ok_or_else(|| TextureError::UnsupportedTextureFormat(format!("{:?}", format)))?;
+				let image_crate_format =
+					format
+						.as_image_crate_format()
+						.ok_or(TextureError::UnsupportedTextureFormat(format!(
+							"{:?}",
+							format
+						)))?;
 				let dyn_img = image::load_from_memory_with_format(buffer, image_crate_format)?;
 				Ok(image_to_texture(dyn_img, is_srgb))
 			}
@@ -416,7 +420,21 @@ pub enum ImageType<'a> {
 }
 
 impl<'a> ImageType<'a> {
+	// TODO: Deprecate!
 	pub fn to_image_format(&self) -> Result<ImageFormat, TextureError> {
+		match self {
+			ImageType::MimeType(mime_type) => ImageFormat::from_mime_type(mime_type)
+				.ok_or(TextureError::InvalidImageMimeType(mime_type.to_string())),
+			ImageType::Extension(extension) => ImageFormat::from_extension(extension)
+				.ok_or(TextureError::InvalidImageExtension(extension.to_string())),
+		}
+	}
+}
+
+impl<'a> TryInto<ImageFormat> for ImageType<'a> {
+	type Error = TextureError;
+
+	fn try_into(self) -> Result<ImageFormat, Self::Error> {
 		match self {
 			ImageType::MimeType(mime_type) => ImageFormat::from_mime_type(mime_type)
 				.ok_or(TextureError::InvalidImageMimeType(mime_type.to_string())),
