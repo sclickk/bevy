@@ -141,9 +141,7 @@ impl Schedule {
 		let target_index = self
 			.stage_order
 			.iter()
-			.enumerate()
-			.find(|(_i, stage_label)| &***stage_label == target)
-			.map(|(i, _)| i)
+			.position(|stage_label| stage_label.as_ref() == target)
 			.expect(&format!("Target stage does not exist: {:?}.", target));
 
 		self
@@ -179,9 +177,7 @@ impl Schedule {
 		let target_index = self
 			.stage_order
 			.iter()
-			.enumerate()
-			.find(|(_i, stage_label)| &***stage_label == target)
-			.map(|(i, _)| i)
+			.position(|stage_label| stage_label.as_ref() == target)
 			.expect(&format!("Target stage does not exist: {:?}.", target));
 
 		self
