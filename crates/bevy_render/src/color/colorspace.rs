@@ -7,26 +7,19 @@ pub trait SrgbColorSpace {
 impl SrgbColorSpace for f32 {
 	#[inline]
 	fn linear_to_nonlinear_srgb(self) -> f32 {
-		if self <= 0.0 {
-			return self;
-		}
-
-		if self <= 0.0031308 {
-			self * 12.92 // linear falloff in dark values
-		} else {
-			(1.055 * self.powf(1.0 / 2.4)) - 0.055 // gamma curve in other area
+		match self {
+			l if l <= 0.0 => l,
+			l if l <= 0.0031308 => l * 12.92, // linear falloff in dark values
+			l => (1.055 * l.powf(1.0 / 2.4)) - 0.055, // gamma curve in other area
 		}
 	}
 
 	#[inline]
 	fn nonlinear_to_linear_srgb(self) -> f32 {
-		if self <= 0.0 {
-			return self;
-		}
-		if self <= 0.04045 {
-			self / 12.92 // linear falloff in dark values
-		} else {
-			((self + 0.055) / 1.055).powf(2.4) // gamma curve in other area
+		match self {
+			nl if nl <= 0.0 => nl,
+			nl if nl <= 0.04045 => nl / 12.92, // linear falloff in dark values
+			nl => ((nl + 0.055) / 1.055).powf(2.4), // gamma curve in other area
 		}
 	}
 }
@@ -40,18 +33,13 @@ impl HslRepresentation {
 		let chroma = (1.0 - (2.0 * lightness - 1.0).abs()) * saturation;
 		let hue_prime = hue / 60.0;
 		let largest_component = chroma * (1.0 - (hue_prime % 2.0 - 1.0).abs());
-		let (r_temp, g_temp, b_temp) = if hue_prime < 1.0 {
-			(chroma, largest_component, 0.0)
-		} else if hue_prime < 2.0 {
-			(largest_component, chroma, 0.0)
-		} else if hue_prime < 3.0 {
-			(0.0, chroma, largest_component)
-		} else if hue_prime < 4.0 {
-			(0.0, largest_component, chroma)
-		} else if hue_prime < 5.0 {
-			(largest_component, 0.0, chroma)
-		} else {
-			(chroma, 0.0, largest_component)
+		let (r_temp, g_temp, b_temp) = match hue_prime {
+			p if p < 1.0 => (chroma, largest_component, 0.0),
+			p if p < 2.0 => (largest_component, chroma, 0.0),
+			p if p < 3.0 => (0.0, chroma, largest_component),
+			p if p < 4.0 => (0.0, largest_component, chroma),
+			p if p < 5.0 => (largest_component, 0.0, chroma),
+			_ => (chroma, 0.0, largest_component),
 		};
 		let lightness_match = lightness - chroma / 2.0;
 
