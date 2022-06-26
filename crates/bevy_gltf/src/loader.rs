@@ -555,8 +555,8 @@ async fn load_gltf<'a, 'b>(
 fn node_name(node: &Node) -> Name {
 	let name = node
 		.name()
-		.map(|s| s.to_string())
-		.unwrap_or_else(|| format!("GltfNode{}", node.index()));
+		.map(String::from)
+		.unwrap_or(format!("GltfNode{}", node.index()));
 	Name::new(name)
 }
 
