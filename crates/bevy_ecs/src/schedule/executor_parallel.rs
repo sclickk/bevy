@@ -215,11 +215,10 @@ impl ParallelExecutor {
 				}
 			}
 			// Queue the system if it has no dependencies, otherwise reset its dependency counter.
-			if system_data.dependencies_total == 0 {
-				self.queued.insert(index);
-			} else {
-				system_data.dependencies_now = system_data.dependencies_total;
-			}
+			match system_data.dependencies_total {
+				0 => self.queued.insert(index),
+				total => system_data.dependencies_now = total,
+			};
 		}
 	}
 
