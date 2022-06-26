@@ -498,7 +498,7 @@ impl ShaderProcessor {
 		let imported_shader = import_handles
 			.get(import)
 			.and_then(|handle| shaders.get(handle))
-			.ok_or_else(|| ProcessShaderError::UnresolvedImport(import.clone()))?;
+			.ok_or(ProcessShaderError::UnresolvedImport(import.clone()))?;
 		let imported_processed = self.process(imported_shader, shader_defs, shaders, import_handles)?;
 
 		match &shader.source {
