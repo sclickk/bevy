@@ -73,6 +73,10 @@ impl PluginGroupBuilder {
 		self
 	}
 
+	pub fn init<T: Plugin + Default>(&mut self) {
+		self.add(T::default());
+	}
+
 	/// Adds a [`Plugin`] in this [`PluginGroupBuilder`] before the plugin of type `Target`.
 	/// If the plugin was already the group, it is removed from its previous place. There must
 	/// be a plugin of type `Target` in the group or it will panic.

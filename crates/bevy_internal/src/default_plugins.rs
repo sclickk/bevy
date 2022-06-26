@@ -26,53 +26,53 @@ pub struct DefaultPlugins;
 
 impl PluginGroup for DefaultPlugins {
 	fn build(&mut self, group: &mut PluginGroupBuilder) {
-		group.add(bevy_log::LogPlugin::default());
-		group.add(bevy_core::CorePlugin::default());
-		group.add(bevy_time::TimePlugin::default());
-		group.add(bevy_transform::TransformPlugin::default());
-		group.add(bevy_hierarchy::HierarchyPlugin::default());
-		group.add(bevy_diagnostic::DiagnosticsPlugin::default());
-		group.add(bevy_input::InputPlugin::default());
-		group.add(bevy_window::WindowPlugin::default());
-		group.add(bevy_asset::AssetPlugin::default());
+		group.init::<bevy_log::LogPlugin>();
+		group.init::<bevy_core::CorePlugin>();
+		group.init::<bevy_time::TimePlugin>();
+		group.init::<bevy_transform::TransformPlugin>();
+		group.init::<bevy_hierarchy::HierarchyPlugin>();
+		group.init::<bevy_diagnostic::DiagnosticsPlugin>();
+		group.init::<bevy_input::InputPlugin>();
+		group.init::<bevy_window::WindowPlugin>();
+		group.init::<bevy_asset::AssetPlugin>();
 		#[cfg(feature = "debug_asset_server")]
-		group.add(bevy_asset::debug_asset_server::DebugAssetServerPlugin::default());
-		group.add(bevy_scene::ScenePlugin::default());
+		group.init::<bevy_asset::debug_asset_server>();
+		group.init::<bevy_scene::ScenePlugin>();
 
 		#[cfg(feature = "bevy_winit")]
-		group.add(bevy_winit::WinitPlugin::default());
+		group.init::<bevy_winit::WinitPlugin>();
 
 		#[cfg(feature = "bevy_render")]
-		group.add(bevy_render::RenderPlugin::default());
+		group.init::<bevy_render::RenderPlugin>();
 
 		#[cfg(feature = "bevy_core_pipeline")]
-		group.add(bevy_core_pipeline::CorePipelinePlugin::default());
+		group.init::<bevy_core_pipeline::CorePipelinePlugin>();
 
 		#[cfg(feature = "bevy_sprite")]
-		group.add(bevy_sprite::SpritePlugin::default());
+		group.init::<bevy_sprite::SpritePlugin>();
 
 		#[cfg(feature = "bevy_text")]
-		group.add(bevy_text::TextPlugin::default());
+		group.init::<bevy_text::TextPlugin>();
 
 		#[cfg(feature = "bevy_ui")]
-		group.add(bevy_ui::UiPlugin::default());
+		group.init::<bevy_ui::UiPlugin>();
 
 		#[cfg(feature = "bevy_pbr")]
-		group.add(bevy_pbr::PbrPlugin::default());
+		group.init::<bevy_pbr::PbrPlugin>();
 
 		// NOTE: Load this after renderer initialization so that it knows about the supported
 		// compressed texture formats
 		#[cfg(feature = "bevy_gltf")]
-		group.add(bevy_gltf::GltfPlugin::default());
+		group.init::<bevy_gltf::GltfPlugin>();
 
 		#[cfg(feature = "bevy_audio")]
-		group.add(bevy_audio::AudioPlugin::default());
+		group.init::<bevy_audio::AudioPlugin>();
 
 		#[cfg(feature = "bevy_gilrs")]
-		group.add(bevy_gilrs::GilrsPlugin::default());
+		group.init::<bevy_gilrs::GilrsPlugin>();
 
 		#[cfg(feature = "bevy_animation")]
-		group.add(bevy_animation::AnimationPlugin::default());
+		group.init::<bevy_animation::AnimationPlugin>();
 	}
 }
 
