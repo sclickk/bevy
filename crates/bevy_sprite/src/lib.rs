@@ -70,9 +70,9 @@ impl Plugin for SpritePlugin {
 			render_app.init_resource::<SpriteAssetEvents>();
 			render_app.add_render_command::<Transparent2d, DrawSprite>();
 			render_app.add_system_to_stage(
-					RenderStage::Extract,
-					render::extract_sprites.label(SpriteSystem::ExtractSprites),
-				);
+				RenderStage::Extract,
+				render::extract_sprites.label(SpriteSystem::ExtractSprites),
+			);
 			render_app.add_system_to_stage(RenderStage::Extract, render::extract_sprite_events);
 			render_app.add_system_to_stage(RenderStage::Queue, queue_sprites);
 		};
