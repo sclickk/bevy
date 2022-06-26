@@ -70,21 +70,21 @@ pub fn build_ui_render(app: &mut App) {
 	render_app.init_resource::<DrawFunctions<TransparentUi>>();
 	render_app.add_render_command::<TransparentUi, DrawUi>();
 	render_app.add_system_to_stage(
-			RenderStage::Extract,
-			extract_default_ui_camera_view::<Camera2d>,
-		);
+		RenderStage::Extract,
+		extract_default_ui_camera_view::<Camera2d>,
+	);
 	render_app.add_system_to_stage(
-			RenderStage::Extract,
-			extract_default_ui_camera_view::<Camera3d>,
-		);
+		RenderStage::Extract,
+		extract_default_ui_camera_view::<Camera3d>,
+	);
 	render_app.add_system_to_stage(
-			RenderStage::Extract,
-			extract_uinodes.label(RenderUiSystem::ExtractNode),
-		);
+		RenderStage::Extract,
+		extract_uinodes.label(RenderUiSystem::ExtractNode),
+	);
 	render_app.add_system_to_stage(
-			RenderStage::Extract,
-			extract_text_uinodes.after(RenderUiSystem::ExtractNode),
-		);
+		RenderStage::Extract,
+		extract_text_uinodes.after(RenderUiSystem::ExtractNode),
+	);
 	render_app.add_system_to_stage(RenderStage::Prepare, prepare_uinodes);
 	render_app.add_system_to_stage(RenderStage::Queue, queue_uinodes);
 	render_app.add_system_to_stage(RenderStage::PhaseSort, sort_phase_system::<TransparentUi>);

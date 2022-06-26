@@ -32,15 +32,15 @@ impl Plugin for TimePlugin {
 		app.init_resource::<Time>();
 		app.init_resource::<FixedTimesteps>();
 		app.register_type::<Timer>();
-			// time system is added as an "exclusive system" to ensure it runs before other systems
-			// in CoreStage::First
+		// time system is added as an "exclusive system" to ensure it runs before other systems
+		// in CoreStage::First
 		app.add_system_to_stage(
-				CoreStage::First,
-				time_system
-					.exclusive_system()
-					.at_start()
-					.label(TimeSystem),
-			);
+			CoreStage::First,
+			time_system
+				.exclusive_system()
+				.at_start()
+				.label(TimeSystem),
+		);
 	}
 }
 
