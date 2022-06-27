@@ -432,7 +432,7 @@ mod tests {
 		});
 		foo_patch.insert("g", composite);
 
-		let array = DynamicArray::from(vec![2u32, 2u32]);
+		let array = DynamicArray::from_vec(vec![2u32, 2u32]);
 		foo_patch.insert("h", array);
 
 		foo.apply(&foo_patch);
@@ -531,6 +531,41 @@ mod tests {
 		let dynamic_struct = value.take::<DynamicStruct>().unwrap();
 
 		assert!(foo.reflect_partial_eq(&dynamic_struct).unwrap());
+	}
+
+	#[test]
+	fn reflect_downcast() {
+		#[derive(Reflect, Clone, Debug, PartialEq)]
+		struct Bar {
+			y: u8,
+			z: ::glam::Mat4,
+		}
+
+		#[derive(Reflect, Clone, Debug, PartialEq)]
+		struct Foo {
+			x: i32,
+			s: String,
+			b: Bar,
+			u: usize,
+			t: (Vec3, String),
+		}
+
+		let foo = Foo {
+			x: 123,
+			s: "String".to_string(),
+			b: Bar {
+				y: 255,
+				z: ::glam::Mat4::from_cols_array(&[
+					0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0,
+				]),
+			},
+			u: 1111111111111,
+			t: (Vec3::new(3.0, 2.0, 1.0), "Tuple String".to_string()),
+		};
+
+		let foo2: Box<dyn Reflect> = Box::new(foo.clone());
+
+		assert_eq!(foo, *foo2.downcast::<Foo>().unwrap());
 	}
 
 	#[test]

@@ -24,11 +24,11 @@ pub(crate) fn impl_value(
 ) -> TokenStream {
 	let (impl_generics, ty_generics, where_clause) = generics.split_for_impl();
 	TokenStream::from(quote! {
-		impl #impl_generics #bevy_reflect_path::FromReflect for #type_name #ty_generics #where_clause  {
-			fn from_reflect(reflect: &dyn #bevy_reflect_path::Reflect) -> Option<Self> {
-				Some(reflect.any().downcast_ref::<#type_name #ty_generics>()?.clone())
+			impl #impl_generics #bevy_reflect_path::FromReflect for #type_name #ty_generics #where_clause  {
+					fn from_reflect(reflect: &dyn #bevy_reflect_path::Reflect) -> Option<Self> {
+							Some(reflect.as_any().downcast_ref::<#type_name #ty_generics>()?.clone())
+					}
 			}
-		}
 	})
 }
 

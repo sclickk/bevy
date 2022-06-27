@@ -274,8 +274,7 @@ impl Tuple for DynamicTuple {
 	}
 }
 
-// SAFE: any and any_mut both return self
-unsafe impl Reflect for DynamicTuple {
+impl Reflect for DynamicTuple {
 	#[inline]
 	fn type_name(&self) -> &str {
 		self.name()
@@ -287,12 +286,17 @@ unsafe impl Reflect for DynamicTuple {
 	}
 
 	#[inline]
-	fn any(&self) -> &dyn Any {
+	fn into_any(self: Box<Self>) -> Box<dyn Any> {
 		self
 	}
 
 	#[inline]
-	fn any_mut(&mut self) -> &mut dyn Any {
+	fn as_any(&self) -> &dyn Any {
+		self
+	}
+
+	#[inline]
+	fn as_any_mut(&mut self) -> &mut dyn Any {
 		self
 	}
 
@@ -467,8 +471,7 @@ macro_rules! impl_reflect_tuple {
             }
         }
 
-        // SAFE: any and any_mut both return self
-        unsafe impl<$($name: Reflect),*> Reflect for ($($name,)*) {
+        impl<$($name: Reflect),*> Reflect for ($($name,)*) {
             fn type_name(&self) -> &str {
                 std::any::type_name::<Self>()
             }
@@ -477,11 +480,15 @@ macro_rules! impl_reflect_tuple {
                 <Self as Typed>::type_info()
             }
 
-            fn any(&self) -> &dyn Any {
+            fn into_any(self: Box<Self>) -> Box<dyn Any> {
                 self
             }
 
-            fn any_mut(&mut self) -> &mut dyn Any {
+            fn as_any(&self) -> &dyn Any {
+                self
+            }
+
+            fn as_any_mut(&mut self) -> &mut dyn Any {
                 self
             }
 

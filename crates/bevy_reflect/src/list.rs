@@ -169,8 +169,7 @@ impl List for DynamicList {
 	}
 }
 
-// SAFE: any and any_mut both return self
-unsafe impl Reflect for DynamicList {
+impl Reflect for DynamicList {
 	#[inline]
 	fn type_name(&self) -> &str {
 		self.name.as_str()
@@ -182,12 +181,17 @@ unsafe impl Reflect for DynamicList {
 	}
 
 	#[inline]
-	fn any(&self) -> &dyn Any {
+	fn into_any(self: Box<Self>) -> Box<dyn Any> {
 		self
 	}
 
 	#[inline]
-	fn any_mut(&mut self) -> &mut dyn Any {
+	fn as_any(&self) -> &dyn Any {
+		self
+	}
+
+	#[inline]
+	fn as_any_mut(&mut self) -> &mut dyn Any {
 		self
 	}
 

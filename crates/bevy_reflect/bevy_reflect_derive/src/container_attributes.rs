@@ -206,19 +206,19 @@ impl ReflectTraits {
 	pub fn get_partial_eq_impl(&self, bevy_reflect_path: &Path) -> Option<proc_macro2::TokenStream> {
 		match &self.partial_eq {
 			TraitImpl::Implemented => Some(quote! {
-				fn reflect_partial_eq(&self, value: &dyn #bevy_reflect_path::Reflect) -> Option<bool> {
-					let value = value.any();
-					if let Some(value) = value.downcast_ref::<Self>() {
-						Some(std::cmp::PartialEq::eq(self, value))
-					} else {
-						Some(false)
+					fn reflect_partial_eq(&self, value: &dyn #bevy_reflect_path::Reflect) -> Option<bool> {
+							let value = value.as_any();
+							if let Some(value) = value.downcast_ref::<Self>() {
+									Some(std::cmp::PartialEq::eq(self, value))
+							} else {
+									Some(false)
+							}
 					}
-				}
 			}),
 			TraitImpl::Custom(impl_fn) => Some(quote! {
-				fn reflect_partial_eq(&self, value: &dyn #bevy_reflect_path::Reflect) -> Option<bool> {
-					Some(#impl_fn(self, value))
-				}
+					fn reflect_partial_eq(&self, value: &dyn #bevy_reflect_path::Reflect) -> Option<bool> {
+							Some(#impl_fn(self, value))
+					}
 			}),
 			TraitImpl::NotImplemented => None,
 		}
