@@ -334,7 +334,7 @@ pub fn queue_colored_mesh2d(
 				// Get our specialized pipeline
 				let mut mesh2d_key = mesh_key;
 				if let Some(mesh) = render_meshes.get(&mesh2d_handle.0) {
-					mesh2d_key |= Mesh2dPipelineKey::from_primitive_topology(mesh.primitive_topology);
+					mesh2d_key |= Mesh2dPipelineKey::from(mesh.primitive_topology);
 				}
 
 				let pipeline_id =

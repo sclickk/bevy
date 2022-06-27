@@ -333,8 +333,7 @@ pub fn queue_material2d_meshes<M: SpecializedMaterial2d>(
 			{
 				if let Some(material2d) = render_materials.get(material2d_handle) {
 					if let Some(mesh) = render_meshes.get(&mesh2d_handle.0) {
-						let mesh_key =
-							msaa_key | Mesh2dPipelineKey::from_primitive_topology(mesh.primitive_topology);
+						let mesh_key = msaa_key | Mesh2dPipelineKey::from(mesh.primitive_topology);
 
 						let material_key = M::key(render_device, material2d);
 						let pipeline_id = pipelines.specialize(

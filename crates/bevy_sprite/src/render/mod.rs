@@ -100,12 +100,20 @@ impl SpritePipelineKey {
 	const MSAA_SHIFT_BITS: u32 = 32 - 6;
 
 	pub fn from_msaa_samples(msaa_samples: u32) -> Self {
-		let msaa_bits = ((msaa_samples - 1) & Self::MSAA_MASK_BITS) << Self::MSAA_SHIFT_BITS;
-		SpritePipelineKey::from_bits(msaa_bits).unwrap()
+		Self::from(Msaa {
+			samples: msaa_samples,
+		})
 	}
 
 	pub fn msaa_samples(&self) -> u32 {
 		((self.bits >> Self::MSAA_SHIFT_BITS) & Self::MSAA_MASK_BITS) + 1
+	}
+}
+
+impl From<Msaa> for SpritePipelineKey {
+	fn from(msaa: Msaa) -> Self {
+		let msaa_bits = ((msaa.samples - 1) & Self::MSAA_MASK_BITS) << Self::MSAA_SHIFT_BITS;
+		SpritePipelineKey::from_bits(msaa_bits).unwrap()
 	}
 }
 
