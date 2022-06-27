@@ -132,17 +132,6 @@ impl DynamicArray {
 		}
 	}
 
-	pub fn from_vec<T: Reflect>(values: Vec<T>) -> Self {
-		Self {
-			name: String::default(),
-			values: values
-				.into_iter()
-				.map(|field| Box::new(field) as Box<dyn Reflect>)
-				.collect::<Vec<_>>()
-				.into_boxed_slice(),
-		}
-	}
-
 	#[inline]
 	pub fn name(&self) -> &str {
 		&self.name
@@ -151,6 +140,20 @@ impl DynamicArray {
 	#[inline]
 	pub fn set_name(&mut self, name: String) {
 		self.name = name;
+	}
+}
+
+impl<T: Reflect> From<Vec<T>> for DynamicArray {
+	#[inline]
+	fn from(values: Vec<T>) -> Self {
+		Self {
+			name: String::default(),
+			values: values
+				.into_iter()
+				.map(|field| Box::new(field) as Box<dyn Reflect>)
+				.collect::<Vec<_>>()
+				.into_boxed_slice(),
+		}
 	}
 }
 
