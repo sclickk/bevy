@@ -458,17 +458,17 @@ impl<T: Reflect, const N: usize> Typed for [T; N] {
 // This can be changed to use const generics once serde utilizes const generics for arrays.
 // Tracking issue: https://github.com/serde-rs/serde/issues/1937
 macro_rules! impl_array_get_type_registration {
-    ($($N:expr)+) => {
-        $(
-            impl<T: Reflect + for<'de> Deserialize<'de>> GetTypeRegistration for [T; $N] {
-                fn get_type_registration() -> TypeRegistration {
-                    let mut registration = TypeRegistration::of::<[T; $N]>();
-                    registration.insert::<ReflectDeserialize>(FromType::<[T; $N]>::from_type());
-                    registration
-                }
-            }
-        )+
-    };
+	($($N:expr)+) => {
+		$(
+			impl<T: Reflect + for<'de> Deserialize<'de>> GetTypeRegistration for [T; $N] {
+				fn get_type_registration() -> TypeRegistration {
+					let mut registration = TypeRegistration::of::<[T; $N]>();
+					registration.insert::<ReflectDeserialize>(FromType::<[T; $N]>::from_type());
+					registration
+				}
+			}
+		)+
+	};
 }
 
 impl_array_get_type_registration! {
