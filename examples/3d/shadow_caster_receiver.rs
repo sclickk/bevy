@@ -75,7 +75,7 @@ fn setup(
 		..Default::default()
 	});
 
-	println!("Using DirectionalLight");
+	info!("Using DirectionalLight");
 
 	commands.spawn_bundle(PointLightBundle {
 		transform: Transform::from_xyz(5.0, 5.0, 0.0),
@@ -125,7 +125,7 @@ fn toggle_light(
 	if input.just_pressed(KeyCode::L) {
 		for mut light in point_lights.iter_mut() {
 			light.intensity = if light.intensity == 0.0 {
-				println!("Using PointLight");
+				info!("Using PointLight");
 				100000000.0
 			} else {
 				0.0
@@ -133,7 +133,7 @@ fn toggle_light(
 		}
 		for mut light in directional_lights.iter_mut() {
 			light.illuminance = if light.illuminance == 0.0 {
-				println!("Using DirectionalLight");
+				info!("Using DirectionalLight");
 				100000.0
 			} else {
 				0.0
@@ -153,7 +153,7 @@ fn toggle_shadows(
 	)>,
 ) {
 	if input.just_pressed(KeyCode::C) {
-		println!("Toggling casters");
+		info!("Toggling casters");
 		for entity in queries.p0().iter() {
 			commands
 				.entity(entity)
@@ -164,7 +164,7 @@ fn toggle_shadows(
 		}
 	}
 	if input.just_pressed(KeyCode::R) {
-		println!("Toggling receivers");
+		info!("Toggling receivers");
 		for entity in queries.p1().iter() {
 			commands
 				.entity(entity)
