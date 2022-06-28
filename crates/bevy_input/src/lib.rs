@@ -56,9 +56,9 @@ impl Plugin for InputPlugin {
 		app.add_event::<MouseWheel>();
 		app.init_resource::<Input<MouseButton>>();
 		app.add_system_to_stage(
-				CoreStage::PreUpdate,
-				mouse_button_input_system.label(InputSystem),
-			);
+			CoreStage::PreUpdate,
+			mouse_button_input_system.label(InputSystem),
+		);
 		// gamepad
 		app.add_event::<GamepadEvent>();
 		app.add_event::<GamepadEventRaw>();
