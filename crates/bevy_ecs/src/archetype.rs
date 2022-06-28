@@ -293,11 +293,7 @@ impl Archetype {
 		let is_last = index == self.entities.len() - 1;
 		self.entities.swap_remove(index);
 		ArchetypeSwapRemoveResult {
-			swapped_entity: if is_last {
-				None
-			} else {
-				Some(self.entities[index])
-			},
+			swapped_entity: (!is_last).then(|| self.entities[index]),
 			table_row: self.table_info.entity_rows.swap_remove(index),
 		}
 	}
