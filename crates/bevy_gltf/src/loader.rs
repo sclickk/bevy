@@ -683,6 +683,8 @@ fn load_material(material: &Material, load_context: &mut LoadContext) -> Handle<
 		load_context.get_handle(path)
 	});
 
+	let double_sided = material.double_sided();
+
 	load_context.set_labeled_asset(
 		&material_label,
 		LoadedAsset::new(StandardMaterial {
@@ -692,12 +694,8 @@ fn load_material(material: &Material, load_context: &mut LoadContext) -> Handle<
 			metallic: pbr.metallic_factor(),
 			metallic_roughness_texture,
 			normal_map_texture,
-			double_sided: material.double_sided(),
-			cull_mode: if material.double_sided() {
-				None
-			} else {
-				Some(Face::Back)
-			},
+			double_sided,
+			cull_mode: (!double_sided).then(|| Face::Back),
 			occlusion_texture,
 			emissive: Color::rgba(emissive[0], emissive[1], emissive[2], 1.0),
 			emissive_texture,
