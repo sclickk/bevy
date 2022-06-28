@@ -61,7 +61,11 @@ use crate::raw_window_handle::RawWindowHandleWrapper;
 
 impl fmt::Display for WindowId {
 	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-		self.0.as_simple().fmt(f)
+		if self.is_primary() {
+			write!(f, "(primary)")
+		} else {
+			self.0.as_simple().fmt(f)
+		}
 	}
 }
 
