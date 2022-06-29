@@ -213,13 +213,16 @@ impl<'w> WorldCell<'w> {
 	/// Panics if the resource does not exist. Use [`get_resource`](WorldCell::get_resource) instead
 	/// if you want to handle this case.
 	pub fn resource<T: Resource>(&self) -> WorldBorrow<'_, T> {
-		self.get_resource().expect(&format!(
-			"Requested resource {} does not exist in the `World`. 
-			Did you forget to add it using `app.add_resource` / `app.init_resource`? 
-			Resources are also implicitly added via `app.add_event`,
-			and can be added by plugins.",
-			std::any::type_name::<T>()
-		))
+		match self.get_resource() {
+			Some(x) => x,
+			None => panic!(
+				"Requested resource {} does not exist in the `World`. 
+                Did you forget to add it using `app.insert_resource` / `app.init_resource`? 
+                Resources are also implicitly added via `app.add_event`,
+                and can be added by plugins.",
+				std::any::type_name::<T>()
+			),
+		}
 	}
 
 	/// Gets a mutable reference to the resource of the given type
@@ -249,13 +252,16 @@ impl<'w> WorldCell<'w> {
 	/// Panics if the resource does not exist. Use [`get_resource_mut`](WorldCell::get_resource_mut)
 	/// instead if you want to handle this case.
 	pub fn resource_mut<T: Resource>(&self) -> WorldBorrowMut<'_, T> {
-		self.get_resource_mut().expect(&format!(
-			"Requested resource {} does not exist in the `World`. 
-			Did you forget to add it using `app.add_resource` / `app.init_resource`? 
-			Resources are also implicitly added via `app.add_event`,
-			and can be added by plugins.",
-			std::any::type_name::<T>()
-		))
+		match self.get_resource_mut() {
+			Some(x) => x,
+			None => panic!(
+				"Requested resource {} does not exist in the `World`. 
+                Did you forget to add it using `app.insert_resource` / `app.init_resource`? 
+                Resources are also implicitly added via `app.add_event`,
+                and can be added by plugins.",
+				std::any::type_name::<T>()
+			),
+		}
 	}
 
 	/// Gets an immutable reference to the non-send resource of the given type, if it exists.
@@ -282,12 +288,15 @@ impl<'w> WorldCell<'w> {
 	/// [`get_non_send_resource`](WorldCell::get_non_send_resource) instead if you want to handle
 	/// this case.
 	pub fn non_send_resource<T: 'static>(&self) -> WorldBorrow<'_, T> {
-		self.get_non_send_resource().expect(&format!(
-			"Requested non-send resource {} does not exist in the `World`. 
-			Did you forget to add it using `app.add_non_send_resource` / `app.init_non_send_resource`? 
-			Non-send resources can also be be added by plugins.",
-			std::any::type_name::<T>(),
-		))
+		match self.get_non_send_resource() {
+            Some(x) => x,
+            None => panic!(
+                "Requested non-send resource {} does not exist in the `World`. 
+                Did you forget to add it using `app.insert_non_send_resource` / `app.init_non_send_resource`? 
+                Non-send resources can also be be added by plugins.",
+                std::any::type_name::<T>()
+            ),
+        }
 	}
 
 	/// Gets a mutable reference to the non-send resource of the given type, if it exists.
@@ -318,14 +327,15 @@ impl<'w> WorldCell<'w> {
 	/// [`get_non_send_resource_mut`](WorldCell::get_non_send_resource_mut) instead if you want to
 	/// handle this case.
 	pub fn non_send_resource_mut<T: 'static>(&self) -> WorldBorrowMut<'_, T> {
-		self
-			.get_non_send_resource_mut()
-			.expect(&format!(
-				"Requested non-send resource {} does not exist in the `World`. 
-			Did you forget to add it using `app.add_non_send_resource` / `app.init_non_send_resource`? 
-			Non-send resources can also be be added by plugins.",
-				std::any::type_name::<T>(),
-			))
+		match self.get_non_send_resource_mut() {
+            Some(x) => x,
+            None => panic!(
+                "Requested non-send resource {} does not exist in the `World`. 
+                Did you forget to add it using `app.insert_non_send_resource` / `app.init_non_send_resource`? 
+                Non-send resources can also be be added by plugins.",
+                std::any::type_name::<T>()
+            ),
+        }
 	}
 }
 
