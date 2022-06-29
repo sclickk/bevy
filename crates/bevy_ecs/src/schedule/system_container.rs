@@ -136,9 +136,6 @@ pub struct ParallelSystemContainer {
 	meta: SystemContainerMeta,
 }
 
-unsafe impl Send for ParallelSystemContainer {}
-unsafe impl Sync for ParallelSystemContainer {}
-
 impl ParallelSystemContainer {
 	pub fn name(&self) -> Cow<'static, str> {
 		GraphNode::name(self)
