@@ -1110,13 +1110,19 @@ impl World {
 		let component_id = self
 			.components
 			.get_resource_id(TypeId::of::<R>())
-			.unwrap_or_else(|| panic!("resource does not exist: {}", std::any::type_name::<R>()));
+			.expect(&format!(
+				"resource does not exist: {}",
+				std::any::type_name::<R>()
+			));
 		let (ptr, mut ticks) = {
 			let resource_archetype = self.archetypes.resource_mut();
 			let unique_components = resource_archetype.unique_components_mut();
 			let column = unique_components
 				.get_mut(component_id)
-				.unwrap_or_else(|| panic!("resource does not exist: {}", std::any::type_name::<R>()));
+				.expect(&format!(
+					"resource does not exist: {}",
+					std::any::type_name::<R>()
+				));
 			assert!(
 				!column.is_empty(),
 				"resource does not exist: {}",
@@ -1144,7 +1150,10 @@ impl World {
 		let unique_components = resource_archetype.unique_components_mut();
 		let column = unique_components
 			.get_mut(component_id)
-			.unwrap_or_else(|| panic!("resource does not exist: {}", std::any::type_name::<R>()));
+			.expect(&format!(
+				"resource does not exist: {}",
+				std::any::type_name::<R>()
+			));
 
 		OwningPtr::make(value, |ptr| {
 			unsafe {
