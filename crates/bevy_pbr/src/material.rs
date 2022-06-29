@@ -33,6 +33,7 @@ use bevy_render::{
 use bevy_utils::tracing::error;
 use std::hash::Hash;
 use std::marker::PhantomData;
+use std::ops::Deref;
 
 /// Materials are used alongside [`MaterialPlugin`] and [`MaterialMeshBundle`](crate::MaterialMeshBundle)
 /// to spawn entities that are rendered with a specific [`Material`] type. They serve as an easy to use high level
@@ -352,6 +353,7 @@ pub fn queue_material_meshes<M: SpecializedMaterial>(
 		&mut RenderPhase<Transparent3d>,
 	)>,
 ) {
+	let msaa_key: MeshPipelineKey = MeshPipelineKey::from_msaa_samples(msaa.samples);
 	for (view, visible_entities, mut opaque_phase, mut alpha_mask_phase, mut transparent_phase) in
 		views.iter_mut()
 	{
@@ -370,7 +372,6 @@ pub fn queue_material_meshes<M: SpecializedMaterial>(
 
 		let inverse_view_matrix = view.transform.compute_matrix().inverse();
 		let inverse_view_row_2 = inverse_view_matrix.row(2);
-		let msaa_key = MeshPipelineKey::from_msaa_samples(msaa.samples);
 
 		for visible_entity in &visible_entities.entities {
 			if let Ok((material_handle, mesh_handle, mesh_uniform)) = material_meshes.get(*visible_entity)
