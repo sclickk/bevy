@@ -4,19 +4,19 @@
 use bevy::{prelude::*, window::PresentMode};
 
 fn main() {
-	App::new()
-		.insert_resource(WindowDescriptor {
+	let mut app = App::new();
+	app.insert_resource(WindowDescriptor {
 			title: "I am a window!".to_string(),
 			width: 500.,
 			height: 300.,
 			present_mode: PresentMode::Fifo,
 			..Default::default()
-		})
-		.add_plugins(DefaultPlugins)
-		.add_system(change_title)
-		.add_system(toggle_cursor)
-		.add_system(cycle_cursor_icon)
-		.run();
+		});
+	app.add_plugins(DefaultPlugins);
+	app.add_system(change_title);
+	app.add_system(toggle_cursor);
+	app.add_system(cycle_cursor_icon);
+	app.run();
 }
 
 /// This system will then change the title during execution

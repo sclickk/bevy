@@ -32,7 +32,7 @@ pub(crate) fn setup_app(app: &mut App) -> &mut App {
 	#[cfg(not(target_arch = "wasm32"))]
 	let config: CiTestingConfig = {
 		let filename =
-			std::env::var("CI_TESTING_CONFIG").unwrap_or_else(|_| "ci_testing_config.ron".to_string());
+			std::env::var("CI_TESTING_CONFIG").unwrap_or("ci_testing_config.ron".into());
 		ron::from_str(
 			&std::fs::read_to_string(filename).expect("error reading CI testing configuration file"),
 		)
@@ -44,9 +44,8 @@ pub(crate) fn setup_app(app: &mut App) -> &mut App {
 		ron::from_str(config).expect("error deserializing CI testing configuration file")
 	};
 
-	app
-		.insert_resource(config)
-		.add_system(ci_testing_exit_after);
+	app.insert_resource(config);
+	app.add_system(ci_testing_exit_after);
 
 	app
 }

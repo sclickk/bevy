@@ -643,9 +643,8 @@ impl App {
 	/// App::new()
 	///    .insert_resource(MyCounter { counter: 0 });
 	/// ```
-	pub fn insert_resource<R: Resource>(&mut self, resource: R) -> &mut Self {
+	pub fn insert_resource<R: Resource>(&mut self, resource: R) {
 		self.world.insert_resource(resource);
-		self
 	}
 
 	/// Inserts a non-send [`Resource`] to the app.

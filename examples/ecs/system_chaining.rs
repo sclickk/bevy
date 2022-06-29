@@ -5,10 +5,10 @@ use anyhow::Result;
 use bevy::prelude::*;
 
 fn main() {
-	App::new()
-		.insert_resource(Message("42".to_string()))
-		.add_system(parse_message_system.chain(handler_system))
-		.run();
+	let mut app = App::new();
+	app.insert_resource(Message("42".to_string()));
+	app.add_system(parse_message_system.chain(handler_system));
+	app.run();
 }
 
 #[derive(Deref)]

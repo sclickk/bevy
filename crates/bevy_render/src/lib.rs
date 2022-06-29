@@ -146,13 +146,13 @@ impl Plugin for RenderPlugin {
 			);
 			debug!("Configured wgpu adapter Limits: {:#?}", device.limits());
 			debug!("Configured wgpu adapter Features: {:#?}", device.features());
-			app
-				.insert_resource(device.clone())
-				.insert_resource(queue.clone())
-				.insert_resource(adapter_info.clone())
-				.init_resource::<ScratchRenderWorld>()
-				.register_type::<Frustum>()
-				.register_type::<CubemapFrusta>();
+
+			app.insert_resource(device.clone());
+			app.insert_resource(queue.clone());
+			app.insert_resource(adapter_info.clone());
+			app.init_resource::<ScratchRenderWorld>();
+			app.register_type::<Frustum>();
+			app.register_type::<CubemapFrusta>();
 
 			let pipeline_cache = PipelineCache::from(device.clone());
 			let asset_server = app.world.resource::<AssetServer>().clone();

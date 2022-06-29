@@ -10,20 +10,20 @@ use bevy::{app::ScheduleRunnerSettings, prelude::*, utils::Duration};
 
 fn main() {
 	// this app runs once
-	App::new()
-		.insert_resource(ScheduleRunnerSettings::run_once())
-		.add_plugins(MinimalPlugins)
-		.add_system(hello_world_system)
-		.run();
+	let mut first_app = App::new();
+	first_app.insert_resource(ScheduleRunnerSettings::run_once());
+	first_app.add_plugins(MinimalPlugins);
+	first_app.add_system(hello_world_system);
+	first_app.run();
 
 	// this app loops forever at 60 fps
-	App::new()
-		.insert_resource(ScheduleRunnerSettings::run_loop(Duration::from_secs_f64(
+	let mut second_app = App::new();
+	second_app.insert_resource(ScheduleRunnerSettings::run_loop(Duration::from_secs_f64(
 			1.0 / 60.0,
-		)))
-		.add_plugins(MinimalPlugins)
-		.add_system(counter)
-		.run();
+		)));
+	second_app.add_plugins(MinimalPlugins);
+	second_app.add_system(counter);
+	second_app.run();
 }
 
 fn hello_world_system() {
