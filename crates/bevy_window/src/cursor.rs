@@ -79,3 +79,21 @@ pub enum CursorIcon {
 	/// Indicates that the row can be resized vertically.
 	RowResize,
 }
+
+/// Cursor description used in [`WindowDescriptor`]
+#[derive(Debug, Clone)]
+pub struct Cursor {
+	/// Sets whether the cursor is visible when the window has focus.
+	pub visible: bool,
+	/// Sets whether the window locks the cursor inside its borders when the window has focus.
+	pub locked: bool,
+}
+
+impl Default for Cursor {
+	fn default() -> Self {
+		Self {
+			visible: true,
+			locked: false,
+		}
+	}
+}

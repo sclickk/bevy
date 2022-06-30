@@ -338,7 +338,14 @@ impl Reflect for DynamicTuple {
 		tuple_partial_eq(self, value)
 	}
 
+	// TODO: Deprecate!
 	fn debug(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+		Self::fmt(self, f)
+	}
+}
+
+impl Debug for DynamicTuple {
+	fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
 		write!(f, "DynamicTuple(")?;
 		tuple_debug(self, f)?;
 		write!(f, ")")

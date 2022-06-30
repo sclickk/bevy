@@ -239,16 +239,17 @@ impl Reflect for DynamicList {
 		list_partial_eq(self, value)
 	}
 
+	// TODO: Deprecate!
 	fn debug(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-		write!(f, "DynamicList(")?;
-		list_debug(self, f)?;
-		write!(f, ")")
+		Self::fmt(self, f)
 	}
 }
 
 impl Debug for DynamicList {
 	fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-		self.debug(f)
+		write!(f, "DynamicList(")?;
+		list_debug(self, f)?;
+		write!(f, ")")
 	}
 }
 

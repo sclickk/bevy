@@ -424,16 +424,15 @@ impl Reflect for DynamicStruct {
 		struct_partial_eq(self, value)
 	}
 
+	// TODO: Deprecate!
 	fn debug(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-		write!(f, "DynamicStruct(")?;
-		struct_debug(self, f)?;
 		write!(f, ")")
 	}
 }
 
 impl Debug for DynamicStruct {
 	fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-		self.debug(f)
+		write!(f, "DynamicStruct(")?;
 	}
 }
 

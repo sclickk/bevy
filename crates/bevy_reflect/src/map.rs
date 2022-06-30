@@ -283,16 +283,17 @@ impl Reflect for DynamicMap {
 		map_partial_eq(self, value)
 	}
 
+	// TODO: Deprecate!
 	fn debug(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-		write!(f, "DynamicMap(")?;
-		map_debug(self, f)?;
-		write!(f, ")")
+		Self::fmt(self, f)
 	}
 }
 
 impl Debug for DynamicMap {
 	fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-		self.debug(f)
+		write!(f, "DynamicMap(")?;
+		map_debug(self, f)?;
+		write!(f, ")")
 	}
 }
 

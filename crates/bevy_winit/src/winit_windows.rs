@@ -62,8 +62,7 @@ impl WinitWindows {
 					}
 				}
 				if let Some(sf) = scale_factor_override {
-					winit_window_builder
-						.with_inner_size(winit::dpi::LogicalSize::new(*width, *height).to_physical::<f64>(*sf))
+					winit_window_builder.with_inner_size(winit::dpi::LogicalSize::new(*width, *height).to_physical::<f64>(*sf))
 				} else {
 					winit_window_builder.with_inner_size(winit::dpi::LogicalSize::new(*width, *height))
 				}
@@ -121,14 +120,14 @@ impl WinitWindows {
 
 		let winit_window = winit_window_builder.build(event_loop).unwrap();
 
-		if window_descriptor.cursor_locked {
+		if window_descriptor.cursor.locked {
 			match winit_window.set_cursor_grab(true) {
 				Ok(_) | Err(winit::error::ExternalError::NotSupported(_)) => {}
 				Err(err) => Err(err).unwrap(),
 			}
 		}
 
-		winit_window.set_cursor_visible(window_descriptor.cursor_visible);
+		winit_window.set_cursor_visible(window_descriptor.cursor.visible);
 
 		self
 			.window_id_to_winit

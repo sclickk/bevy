@@ -154,6 +154,7 @@ pub trait Reflect: Any + Send + Sync {
 		None
 	}
 
+	// TODO: Deprecate!
 	/// Debug formatter for the value.
 	///
 	/// Any value that is not an implementor of other `Reflect` subtraits
@@ -181,6 +182,21 @@ pub trait Reflect: Any + Send + Sync {
 	}
 }
 
+impl Debug for dyn Reflect {
+	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+		match self.reflect_ref() {
+			ReflectRef::Struct(dyn_struct) => struct_debug(dyn_struct, f),
+			ReflectRef::TupleStruct(dyn_tuple_struct) => tuple_struct_debug(dyn_tuple_struct, f),
+			ReflectRef::Tuple(dyn_tuple) => tuple_debug(dyn_tuple, f),
+			ReflectRef::List(dyn_list) => list_debug(dyn_list, f),
+			ReflectRef::Array(dyn_array) => array_debug(dyn_array, f),
+			ReflectRef::Map(dyn_map) => map_debug(dyn_map, f),
+			_ => write!(f, "Reflect({})", self.type_name()),
+		}
+	}
+}
+
+
 /// A trait for types which can be constructed from a reflected type.
 ///
 /// This trait can be derived on types which implement [`Reflect`]. Some complex
@@ -194,12 +210,6 @@ pub trait Reflect: Any + Send + Sync {
 pub trait FromReflect: Reflect + Sized {
 	/// Constructs a concrete instance of `Self` from a reflected value.
 	fn from_reflect(reflect: &dyn Reflect) -> Option<Self>;
-}
-
-impl Debug for dyn Reflect {
-	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-		self.debug(f)
-	}
 }
 
 impl Typed for dyn Reflect {

@@ -112,60 +112,6 @@ pub(crate) struct ReflectTraits {
 }
 
 impl ReflectTraits {
-	/// Create a new [`ReflectTraits`] instance from a set of nested metas.
-	pub fn from_nested_metas(nested_metas: &Punctuated<NestedMeta, Comma>) -> Self {
-		let mut traits = ReflectTraits::default();
-		for nested_meta in nested_metas.iter() {
-			match nested_meta {
-				// Handles `#[reflect( Hash, Default, ... )]`
-				NestedMeta::Meta(Meta::Path(path)) => {
-					// Get the first ident in the path (hopefully the path only contains one and not `std::hash::Hash`)
-					let ident = if let Some(segment) = path.segments.iter().next() {
-						segment.ident.to_string()
-					} else {
-						continue;
-					};
-
-					match ident.as_str() {
-						DEBUG_ATTR => traits.debug = TraitImpl::Implemented,
-						PARTIAL_EQ_ATTR => traits.partial_eq = TraitImpl::Implemented,
-						HASH_ATTR => traits.hash = TraitImpl::Implemented,
-						// We only track reflected idents for traits not considered special
-						_ => traits
-							.idents
-							.push(utility::get_reflect_ident(&ident)),
-					}
-				}
-				// Handles `#[reflect( Hash(custom_hash_fn) )]`
-				NestedMeta::Meta(Meta::List(list)) => {
-					// Get the first ident in the path (hopefully the path only contains one and not `std::hash::Hash`)
-					let ident = if let Some(segment) = list.path.segments.iter().next() {
-						segment.ident.to_string()
-					} else {
-						continue;
-					};
-
-					let list_meta = list.nested.iter().next();
-					if let Some(NestedMeta::Meta(Meta::Path(path))) = list_meta {
-						if let Some(segment) = path.segments.iter().next() {
-							// This should be the ident of the custom function
-							let trait_func_ident = TraitImpl::Custom(segment.ident.clone());
-							match ident.as_str() {
-								DEBUG_ATTR => traits.debug = trait_func_ident,
-								PARTIAL_EQ_ATTR => traits.partial_eq = trait_func_ident,
-								HASH_ATTR => traits.hash = trait_func_ident,
-								_ => {}
-							}
-						}
-					}
-				}
-				_ => {}
-			}
-		}
-
-		traits
-	}
-
 	/// Returns true if the given reflected trait name (i.e. `ReflectDefault` for `Default`)
 	/// is registered for this type.
 	pub fn contains(&self, name: &str) -> bool {
@@ -230,23 +176,78 @@ impl ReflectTraits {
 	pub fn get_debug_impl(&self) -> Option<proc_macro2::TokenStream> {
 		match &self.debug {
 			TraitImpl::Implemented => Some(quote! {
-					fn debug(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-							std::fmt::Debug::fmt(self, f)
-					}
+				fn debug(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+					std::fmt::Debug::fmt(self, f)
+				}
 			}),
 			TraitImpl::Custom(impl_fn) => Some(quote! {
-					fn debug(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-							#impl_fn(self, f)
-					}
+				fn debug(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+					#impl_fn(self, f)
+				}
 			}),
 			TraitImpl::NotImplemented => None,
 		}
 	}
 }
 
+impl From<&Punctuated<NestedMeta, Comma>> for ReflectTraits {
+	/// Create a new [`ReflectTraits`] instance from a set of nested metas.
+	fn from(nested_metas: &Punctuated<NestedMeta, Comma>) -> Self {
+		let mut traits = ReflectTraits::default();
+		for nested_meta in nested_metas.iter() {
+			match nested_meta {
+				// Handles `#[reflect( Hash, Default, ... )]`
+				NestedMeta::Meta(Meta::Path(path)) => {
+					// Get the first ident in the path (hopefully the path only contains one and not `std::hash::Hash`)
+					let ident = if let Some(segment) = path.segments.iter().next() {
+						segment.ident.to_string()
+					} else {
+						continue;
+					};
+
+					match ident.as_str() {
+						DEBUG_ATTR => traits.debug = TraitImpl::Implemented,
+						PARTIAL_EQ_ATTR => traits.partial_eq = TraitImpl::Implemented,
+						HASH_ATTR => traits.hash = TraitImpl::Implemented,
+						// We only track reflected idents for traits not considered special
+						_ => traits
+							.idents
+							.push(utility::get_reflect_ident(&ident)),
+					}
+				}
+				// Handles `#[reflect( Hash(custom_hash_fn) )]`
+				NestedMeta::Meta(Meta::List(list)) => {
+					// Get the first ident in the path (hopefully the path only contains one and not `std::hash::Hash`)
+					let ident = if let Some(segment) = list.path.segments.iter().next() {
+						segment.ident.to_string()
+					} else {
+						continue;
+					};
+
+					let list_meta = list.nested.iter().next();
+					if let Some(NestedMeta::Meta(Meta::Path(path))) = list_meta {
+						if let Some(segment) = path.segments.iter().next() {
+							// This should be the ident of the custom function
+							let trait_func_ident = TraitImpl::Custom(segment.ident.clone());
+							match ident.as_str() {
+								DEBUG_ATTR => traits.debug = trait_func_ident,
+								PARTIAL_EQ_ATTR => traits.partial_eq = trait_func_ident,
+								HASH_ATTR => traits.hash = trait_func_ident,
+								_ => {}
+							}
+						}
+					}
+				}
+				_ => {}
+			}
+		}
+
+		traits
+	}
+}
+
 impl Parse for ReflectTraits {
 	fn parse(input: ParseStream) -> syn::Result<Self> {
-		let result = Punctuated::<NestedMeta, Comma>::parse_terminated(input)?;
-		Ok(ReflectTraits::from_nested_metas(&result))
+		Ok(ReflectTraits::from(&Punctuated::<NestedMeta, Comma>::parse_terminated(input)?))
 	}
 }

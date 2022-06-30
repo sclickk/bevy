@@ -330,16 +330,17 @@ impl Reflect for DynamicTupleStruct {
 		tuple_struct_partial_eq(self, value)
 	}
 
+	// TODO: Deprecate!
 	fn debug(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-		write!(f, "DynamicTupleStruct(")?;
-		tuple_struct_debug(self, f)?;
-		write!(f, ")")
+		Self::fmt(self, f)
 	}
 }
 
 impl Debug for DynamicTupleStruct {
 	fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-		self.debug(f)
+		write!(f, "DynamicTupleStruct(")?;
+		tuple_struct_debug(self, f)?;
+		write!(f, ")")
 	}
 }
 

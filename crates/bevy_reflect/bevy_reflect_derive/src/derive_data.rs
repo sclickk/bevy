@@ -72,10 +72,10 @@ impl<'a> ReflectDeriveData<'a> {
 
 			if let Some(ident) = meta_list.path.get_ident() {
 				if ident == REFLECT_ATTRIBUTE_NAME {
-					output.traits = ReflectTraits::from_nested_metas(&meta_list.nested);
+					output.traits = ReflectTraits::from(&meta_list.nested);
 				} else if ident == REFLECT_VALUE_ATTRIBUTE_NAME {
 					force_reflect_value = true;
-					output.traits = ReflectTraits::from_nested_metas(&meta_list.nested);
+					output.traits = ReflectTraits::from(&meta_list.nested);
 				}
 			}
 		}

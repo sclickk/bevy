@@ -54,7 +54,7 @@ impl WindowId {
 	}
 }
 
-use crate::CursorIcon;
+use crate::{Cursor, CursorIcon};
 use std::fmt;
 
 use crate::raw_window_handle::RawWindowHandleWrapper;
@@ -310,8 +310,8 @@ impl Window {
 			present_mode: window_descriptor.present_mode,
 			resizable: window_descriptor.resizable,
 			decorations: window_descriptor.decorations,
-			cursor_visible: window_descriptor.cursor_visible,
-			cursor_locked: window_descriptor.cursor_locked,
+			cursor_visible: window_descriptor.cursor.visible,
+			cursor_locked: window_descriptor.cursor.locked,
 			cursor_icon: CursorIcon::Default,
 			physical_cursor_position: None,
 			raw_window_handle: RawWindowHandleWrapper::new(raw_window_handle),
@@ -788,10 +788,8 @@ pub struct WindowDescriptor {
 	pub resizable: bool,
 	/// Sets whether the window should have borders and bars.
 	pub decorations: bool,
-	/// Sets whether the cursor is visible when the window has focus.
-	pub cursor_visible: bool,
-	/// Sets whether the window locks the cursor inside its borders when the window has focus.
-	pub cursor_locked: bool,
+	/// Sets the Cursor settings.
+	pub cursor: Cursor,
 	/// Sets the [`WindowMode`](crate::WindowMode).
 	pub mode: WindowMode,
 	/// Sets whether the background of the window should be transparent.
@@ -833,8 +831,7 @@ impl Default for WindowDescriptor {
 			present_mode: PresentMode::Fifo,
 			resizable: true,
 			decorations: true,
-			cursor_locked: false,
-			cursor_visible: true,
+			cursor: Cursor::default(),
 			mode: WindowMode::Windowed,
 			transparent: false,
 			canvas: None,
