@@ -298,9 +298,9 @@ fn focus_camera(
 		game.camera_is_focus += camera_motion;
 	}
 	// look at that new camera's actual focus
-	for mut transform in transforms.p0().iter_mut() {
+	transforms.p0().for_each_mut(|mut transform| {
 		*transform = transform.looking_at(game.camera_is_focus, Vec3::Y);
-	}
+	});
 }
 
 // despawn the bonus if there is one, then spawn a new one at a random location
