@@ -871,9 +871,9 @@ impl<Q: WorldQuery, F: WorldQuery> QueryState<Q, F> {
 		let mut fetch = QF::init(world, &self.fetch_state, last_change_tick, change_tick);
 		let mut filter =
 			<QueryFetch<F> as Fetch>::init(world, &self.filter_state, last_change_tick, change_tick);
+		let tables = &world.storages().tables;
 
 		if <QueryFetch<'static, Q>>::IS_DENSE && <QueryFetch<'static, F>>::IS_DENSE {
-			let tables = &world.storages().tables;
 			for table_id in &self.matched_table_ids {
 				let table = &tables[*table_id];
 				fetch.set_table(&self.fetch_state, table);
@@ -889,7 +889,6 @@ impl<Q: WorldQuery, F: WorldQuery> QueryState<Q, F> {
 			}
 		} else {
 			let archetypes = &world.archetypes;
-			let tables = &world.storages().tables;
 			for archetype_id in &self.matched_archetype_ids {
 				let archetype = &archetypes[*archetype_id];
 				fetch.set_archetype(&self.fetch_state, archetype, tables);
