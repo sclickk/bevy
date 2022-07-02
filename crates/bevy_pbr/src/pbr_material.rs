@@ -277,14 +277,19 @@ impl RenderAsset for StandardMaterial {
 			}
 		}
 		// NOTE: 0.5 is from the glTF default - do we want this?
-		let mut alpha_cutoff = 0.5;
-		match material.alpha_mode {
-			AlphaMode::Opaque => flags |= StandardMaterialFlags::ALPHA_MODE_OPAQUE,
-			AlphaMode::Mask(c) => {
-				alpha_cutoff = c;
-				flags |= StandardMaterialFlags::ALPHA_MODE_MASK;
+		let alpha_cutoff = match material.alpha_mode {
+			AlphaMode::Opaque => {
+				flags |= StandardMaterialFlags::ALPHA_MODE_OPAQUE;
+				0.5
 			}
-			AlphaMode::Blend => flags |= StandardMaterialFlags::ALPHA_MODE_BLEND,
+			AlphaMode::Mask(c) => {
+				flags |= StandardMaterialFlags::ALPHA_MODE_MASK;
+				c
+			}
+			AlphaMode::Blend => {
+				flags |= StandardMaterialFlags::ALPHA_MODE_BLEND;
+				0.5
+			}
 		};
 
 		let value = StandardMaterialUniformData {
