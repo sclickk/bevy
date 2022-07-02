@@ -107,7 +107,7 @@ fn rotate_cube(
 ) {
 	// Calculate the point to circle around. (The position of the center_sphere)
 	let mut center: Vec3 = Vec3::ZERO;
-	for sphere in center_spheres.iter() {
+	for sphere in center_spheres.into_iter() {
 		center += sphere.translation;
 	}
 	// Update the rotation of the cube(s).
@@ -132,7 +132,7 @@ fn scale_down_sphere_proportional_to_cube_travel_distance(
 	// First we need to calculate the length of between
 	// the current position of the orbiting cube and the spawn position.
 	let mut distances = 0.0;
-	for (cube_transform, cube_state) in cubes.iter() {
+	for (cube_transform, cube_state) in cubes.into_iter() {
 		distances += (cube_state.start_pos - cube_transform.translation).length();
 	}
 	// Now we use the calculated value to scale the sphere in the center accordingly.

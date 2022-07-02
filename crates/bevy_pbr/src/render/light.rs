@@ -282,14 +282,32 @@ impl ShadowPipelineKey {
 	const PRIMITIVE_TOPOLOGY_MASK_BITS: u32 = 0b111;
 	const PRIMITIVE_TOPOLOGY_SHIFT_BITS: u32 = 32 - 3;
 
-	pub fn from_primitive_topology(primitive_topology: PrimitiveTopology) -> Self {
+	#[deprecated]
+	pub fn primitive_topology(&self) -> PrimitiveTopology {
+		let primitive_topology_bits =
+			(self.bits >> Self::PRIMITIVE_TOPOLOGY_SHIFT_BITS) & Self::PRIMITIVE_TOPOLOGY_MASK_BITS;
+		match primitive_topology_bits {
+			x if x == PrimitiveTopology::PointList as u32 => PrimitiveTopology::PointList,
+			x if x == PrimitiveTopology::LineList as u32 => PrimitiveTopology::LineList,
+			x if x == PrimitiveTopology::LineStrip as u32 => PrimitiveTopology::LineStrip,
+			x if x == PrimitiveTopology::TriangleList as u32 => PrimitiveTopology::TriangleList,
+			x if x == PrimitiveTopology::TriangleStrip as u32 => PrimitiveTopology::TriangleStrip,
+			_ => PrimitiveTopology::default(),
+		}
+	}
+}
+
+impl From<PrimitiveTopology> for ShadowPipelineKey {
+	fn from(primitive_topology: PrimitiveTopology) -> Self {
 		let primitive_topology_bits = ((primitive_topology as u32)
 			& Self::PRIMITIVE_TOPOLOGY_MASK_BITS)
 			<< Self::PRIMITIVE_TOPOLOGY_SHIFT_BITS;
 		Self::from_bits(primitive_topology_bits).unwrap()
 	}
+}
 
-	pub fn primitive_topology(&self) -> PrimitiveTopology {
+impl Into<PrimitiveTopology> for ShadowPipelineKey {
+	fn into(self) -> PrimitiveTopology {
 		let primitive_topology_bits =
 			(self.bits >> Self::PRIMITIVE_TOPOLOGY_SHIFT_BITS) & Self::PRIMITIVE_TOPOLOGY_MASK_BITS;
 		match primitive_topology_bits {
@@ -343,7 +361,7 @@ impl SpecializedMeshPipeline for ShadowPipeline {
 				label: Some("shadow_pipeline".into()),
 			},
 			primitive: PrimitiveState {
-				topology: key.primitive_topology(),
+				topology: key.into(),
 				strip_index_format: None,
 				front_face: FrontFace::Ccw,
 				cull_mode: None,
@@ -465,40 +483,41 @@ pub fn extract_lights(
 	*previous_point_lights_len = point_lights_values.len();
 	commands.insert_or_spawn_batch(point_lights_values);
 
-	for (entity, directional_light, visible_entities, transform, visibility) in
-		directional_lights.iter_mut()
-	{
-		if !visibility.is_visible {
-			continue;
-		}
-
-		// Calulate the directional light shadow map texel size using the largest x,y dimension of
-		// the orthographic projection divided by the shadow map resolution
-		// NOTE: When using various PCF kernel sizes, this will need to be adjusted, according to:
-		// https://catlikecoding.com/unity/tutorials/custom-srp/directional-shadows/
-		let largest_dimension = (directional_light.shadow_projection.right
-			- directional_light.shadow_projection.left)
-			.max(directional_light.shadow_projection.top - directional_light.shadow_projection.bottom);
-		let directional_light_texel_size = largest_dimension / directional_light_shadow_map.size as f32;
-		let render_visible_entities = std::mem::take(visible_entities.into_inner());
-		commands.get_or_spawn(entity).insert_bundle((
-			ExtractedDirectionalLight {
-				color: directional_light.color,
-				illuminance: directional_light.illuminance,
-				direction: transform.forward(),
-				projection: directional_light
-					.shadow_projection
-					.get_projection_matrix(),
-				shadows_enabled: directional_light.shadows_enabled,
-				shadow_depth_bias: directional_light.shadow_depth_bias,
-				// The factor of SQRT_2 is for the worst-case diagonal offset
-				shadow_normal_bias: directional_light.shadow_normal_bias
-					* directional_light_texel_size
-					* std::f32::consts::SQRT_2,
-			},
-			render_visible_entities,
-		));
-	}
+	directional_lights.for_each_mut(
+		|(entity, directional_light, visible_entities, transform, visibility)| {
+			if visibility.is_visible {
+				// Calulate the directional light shadow map texel size using the largest x,y dimension of
+				// the orthographic projection divided by the shadow map resolution
+				// NOTE: When using various PCF kernel sizes, this will need to be adjusted, according to:
+				// https://catlikecoding.com/unity/tutorials/custom-srp/directional-shadows/
+				let largest_dimension = (directional_light.shadow_projection.right
+					- directional_light.shadow_projection.left)
+					.max(
+						directional_light.shadow_projection.top - directional_light.shadow_projection.bottom,
+					);
+				let directional_light_texel_size =
+					largest_dimension / directional_light_shadow_map.size as f32;
+				let render_visible_entities = std::mem::take(visible_entities.into_inner());
+				commands.get_or_spawn(entity).insert_bundle((
+					ExtractedDirectionalLight {
+						color: directional_light.color,
+						illuminance: directional_light.illuminance,
+						direction: transform.forward(),
+						projection: directional_light
+							.shadow_projection
+							.get_projection_matrix(),
+						shadows_enabled: directional_light.shadows_enabled,
+						shadow_depth_bias: directional_light.shadow_depth_bias,
+						// The factor of SQRT_2 is for the worst-case diagonal offset
+						shadow_normal_bias: directional_light.shadow_normal_bias
+							* directional_light_texel_size
+							* std::f32::consts::SQRT_2,
+					},
+					render_visible_entities,
+				));
+			}
+		},
+	)
 }
 
 pub(crate) const POINT_LIGHT_NEAR_Z: f32 = 0.1f32;
@@ -665,8 +684,8 @@ pub fn prepare_lights(
 	let cube_face_projection =
 		Mat4::perspective_infinite_reverse_rh(std::f32::consts::FRAC_PI_2, 1.0, POINT_LIGHT_NEAR_Z);
 	let cube_face_rotations = CUBE_MAP_FACES
-		.iter()
-		.map(|CubeMapFace { target, up }| GlobalTransform::identity().looking_at(*target, *up))
+		.into_iter()
+		.map(|CubeMapFace { target, up }| GlobalTransform::identity().looking_at(target, up))
 		.collect::<Vec<_>>();
 
 	global_light_meta.entity_to_index.clear();
@@ -735,7 +754,7 @@ pub fn prepare_lights(
 		.write_buffer(&render_device, &render_queue);
 
 	// set up light data for each view
-	for (entity, extracted_view, clusters) in views.iter() {
+	views.for_each(|(entity, extracted_view, clusters)| {
 		let point_light_depth_texture = texture_cache.get(
 			&render_device,
 			TextureDescriptor {
@@ -977,7 +996,7 @@ pub fn prepare_lights(
 				offset: light_meta.view_gpu_lights.push(gpu_lights),
 			},
 		));
-	}
+	});
 
 	light_meta
 		.view_gpu_lights
@@ -1375,7 +1394,7 @@ pub fn queue_shadows(
 			for entity in visible_entities.iter().copied() {
 				if let Ok(mesh_handle) = casting_meshes.get(entity) {
 					if let Some(mesh) = render_meshes.get(mesh_handle) {
-						let key = ShadowPipelineKey::from_primitive_topology(mesh.primitive_topology);
+						let key = ShadowPipelineKey::from(mesh.primitive_topology);
 						let pipeline_id =
 							pipelines.specialize(&mut pipeline_cache, &shadow_pipeline, key, &mesh.layout);
 
