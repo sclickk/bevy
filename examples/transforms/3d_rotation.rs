@@ -42,7 +42,7 @@ fn setup(
 	// Add a light source so we can see clearly.
 	commands.spawn_bundle(PointLightBundle {
 		transform: Transform::from_translation(Vec3::ONE * 3.0),
-		..default()
+		..Default::default()
 	});
 }
 

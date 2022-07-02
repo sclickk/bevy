@@ -18,5 +18,5 @@ pub fn derive_extract_resource(input: TokenStream) -> TokenStream {
 
 #[proc_macro_derive(AsBindGroup, attributes(uniform, texture, sampler, bind_group_data))]
 pub fn derive_as_bind_group(input: TokenStream) -> TokenStream {
-    as_bind_group::derive_as_bind_group(input)
+	as_bind_group::derive_as_bind_group(input)
 }

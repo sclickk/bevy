@@ -2,11 +2,11 @@ pub use bevy_render_macros::AsBindGroup;
 use encase::ShaderType;
 
 use crate::{
-    prelude::Image,
-    render_asset::RenderAssets,
-    render_resource::{BindGroupLayout, Buffer, Sampler, TextureView},
-    renderer::RenderDevice,
-    texture::FallbackImage,
+	prelude::Image,
+	render_asset::RenderAssets,
+	render_resource::{BindGroupLayout, Buffer, Sampler, TextureView},
+	renderer::RenderDevice,
+	texture::FallbackImage,
 };
 use bevy_reflect::Uuid;
 use std::{ops::Deref, sync::Arc};
@@ -239,52 +239,52 @@ impl Deref for BindGroup {
 /// }
 /// ```
 pub trait AsBindGroup: Sized {
-    /// Data that will be stored alongside the "prepared" bind group.
-    type Data: Send + Sync;
+	/// Data that will be stored alongside the "prepared" bind group.
+	type Data: Send + Sync;
 
-    /// Creates a bind group for `self` matching the layout defined in [`AsBindGroup::bind_group_layout`].
-    fn as_bind_group(
-        &self,
-        layout: &BindGroupLayout,
-        render_device: &RenderDevice,
-        images: &RenderAssets<Image>,
-        fallback_image: &FallbackImage,
-    ) -> Result<PreparedBindGroup<Self>, AsBindGroupError>;
+	/// Creates a bind group for `self` matching the layout defined in [`AsBindGroup::bind_group_layout`].
+	fn as_bind_group(
+		&self,
+		layout: &BindGroupLayout,
+		render_device: &RenderDevice,
+		images: &RenderAssets<Image>,
+		fallback_image: &FallbackImage,
+	) -> Result<PreparedBindGroup<Self>, AsBindGroupError>;
 
-    /// Creates the bind group layout matching all bind groups returned by [`AsBindGroup::as_bind_group`]
-    fn bind_group_layout(render_device: &RenderDevice) -> BindGroupLayout;
+	/// Creates the bind group layout matching all bind groups returned by [`AsBindGroup::as_bind_group`]
+	fn bind_group_layout(render_device: &RenderDevice) -> BindGroupLayout;
 }
 
 /// An error that occurs during [`AsBindGroup::as_bind_group`] calls.
 pub enum AsBindGroupError {
-    /// The bind group could not be generated. Try again next frame.
-    RetryNextUpdate,
+	/// The bind group could not be generated. Try again next frame.
+	RetryNextUpdate,
 }
 
 /// A prepared bind group returned as a result of [`AsBindGroup::as_bind_group`].
 pub struct PreparedBindGroup<T: AsBindGroup> {
-    pub bindings: Vec<OwnedBindingResource>,
-    pub bind_group: BindGroup,
-    pub data: T::Data,
+	pub bindings: Vec<OwnedBindingResource>,
+	pub bind_group: BindGroup,
+	pub data: T::Data,
 }
 
 /// An owned binding resource of any type (ex: a [`Buffer`], [`TextureView`], etc).
 /// This is used by types like [`PreparedBindGroup`] to hold a single list of all
 /// render resources used by bindings.
 pub enum OwnedBindingResource {
-    Buffer(Buffer),
-    TextureView(TextureView),
-    Sampler(Sampler),
+	Buffer(Buffer),
+	TextureView(TextureView),
+	Sampler(Sampler),
 }
 
 impl OwnedBindingResource {
-    pub fn get_binding(&self) -> BindingResource {
-        match self {
-            OwnedBindingResource::Buffer(buffer) => buffer.as_entire_binding(),
-            OwnedBindingResource::TextureView(view) => BindingResource::TextureView(view),
-            OwnedBindingResource::Sampler(sampler) => BindingResource::Sampler(sampler),
-        }
-    }
+	pub fn get_binding(&self) -> BindingResource {
+		match self {
+			OwnedBindingResource::Buffer(buffer) => buffer.as_entire_binding(),
+			OwnedBindingResource::TextureView(view) => BindingResource::TextureView(view),
+			OwnedBindingResource::Sampler(sampler) => BindingResource::Sampler(sampler),
+		}
+	}
 }
 
 /// Converts a value to a [`ShaderType`] for use in a bind group.
@@ -293,17 +293,17 @@ impl OwnedBindingResource {
 /// sometimes additional runtime metadata is required.
 /// This exists largely to make some [`AsBindGroup`] use cases easier.
 pub trait AsBindGroupShaderType<T: ShaderType> {
-    /// Return the `T` [`ShaderType`] for `self`. When used in [`AsBindGroup`]
-    /// derives, it is safe to assume that all images in `self` exist.
-    fn as_bind_group_shader_type(&self, images: &RenderAssets<Image>) -> T;
+	/// Return the `T` [`ShaderType`] for `self`. When used in [`AsBindGroup`]
+	/// derives, it is safe to assume that all images in `self` exist.
+	fn as_bind_group_shader_type(&self, images: &RenderAssets<Image>) -> T;
 }
 
 impl<T, U: ShaderType> AsBindGroupShaderType<U> for T
 where
-    for<'a> &'a T: Into<U>,
+	for<'a> &'a T: Into<U>,
 {
-    #[inline]
-    fn as_bind_group_shader_type(&self, _images: &RenderAssets<Image>) -> U {
-        self.into()
-    }
+	#[inline]
+	fn as_bind_group_shader_type(&self, _images: &RenderAssets<Image>) -> U {
+		self.into()
+	}
 }

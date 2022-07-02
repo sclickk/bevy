@@ -810,7 +810,7 @@ pub fn prepare_lights(
 				cluster_factors_zw.y,
 			),
 			cluster_dimensions: clusters.dimensions.extend(n_clusters),
-			n_directional_lights: directional_lights.iter().len() as u32,
+			n_directional_lights: directional_lights.into_iter().len() as u32,
 		};
 
 		// TODO: this should select lights based on relevance to the view instead of the first ones that show up in a query

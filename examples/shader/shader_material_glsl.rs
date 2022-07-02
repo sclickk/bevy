@@ -74,8 +74,8 @@ impl Material for CustomMaterial {
 		descriptor
 			.fragment
 			.as_mut()
-			.meta
 			.unwrap()
+			.meta
 			.entry_point = "main".into();
 		Ok(())
 	}

@@ -528,30 +528,30 @@ impl ShaderProcessor {
 
 /// A reference to a shader asset.
 pub enum ShaderRef {
-    /// Use the "default" shader for the current context.
-    Default,
-    /// A handle to a shader stored in the [`Assets<Shader>`](bevy_asset::Assets) resource
-    Handle(Handle<Shader>),
-    /// An asset path leading to a shader
-    Path(AssetPath<'static>),
+	/// Use the "default" shader for the current context.
+	Default,
+	/// A handle to a shader stored in the [`Assets<Shader>`](bevy_asset::Assets) resource
+	Handle(Handle<Shader>),
+	/// An asset path leading to a shader
+	Path(AssetPath<'static>),
 }
 
 impl From<Handle<Shader>> for ShaderRef {
-    fn from(handle: Handle<Shader>) -> Self {
-        Self::Handle(handle)
-    }
+	fn from(handle: Handle<Shader>) -> Self {
+		Self::Handle(handle)
+	}
 }
 
 impl From<AssetPath<'static>> for ShaderRef {
-    fn from(path: AssetPath<'static>) -> Self {
-        Self::Path(path)
-    }
+	fn from(path: AssetPath<'static>) -> Self {
+		Self::Path(path)
+	}
 }
 
 impl From<&'static str> for ShaderRef {
-    fn from(path: &'static str) -> Self {
-        Self::Path(AssetPath::from(path))
-    }
+	fn from(path: &'static str) -> Self {
+		Self::Path(AssetPath::from(path))
+	}
 }
 
 #[cfg(test)]
