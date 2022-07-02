@@ -133,7 +133,7 @@ fn print_light_count(time: Res<Time>, mut timer: Local<PrintingTimer>, lights: Q
 	timer.0.tick(time.delta());
 
 	if timer.0.just_finished() {
-		info!("Lights: {}", lights.iter().len(),);
+		info!("Lights: {}", lights.into_iter().len(),);
 	}
 }
 
@@ -160,7 +160,7 @@ fn print_visible_light_count(
 	if timer.0.just_finished() {
 		info!(
 			"Visible Lights: {}, Rendered Lights: {}",
-			visible.iter().len(),
+			visible.into_iter().len(),
 			global_light_meta.entity_to_index.len()
 		);
 	}

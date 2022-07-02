@@ -157,15 +157,13 @@ fn print_mesh_count(
 	sprites: Query<(&Handle<Mesh>, &ComputedVisibility)>,
 ) {
 	timer.tick(time.delta());
+	let sprites = sprites.into_iter();
 
 	if timer.just_finished() {
 		info!(
 			"Meshes: {} - Visible Meshes {}",
-			sprites.iter().len(),
-			sprites
-				.iter()
-				.filter(|(_, cv)| cv.is_visible)
-				.count(),
+			sprites.len(),
+			sprites.filter(|(_, cv)| cv.is_visible).count(),
 		);
 	}
 }
