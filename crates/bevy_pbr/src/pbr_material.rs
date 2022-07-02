@@ -177,6 +177,24 @@ pub struct GpuStandardMaterial {
 	pub cull_mode: Option<Face>,
 }
 
+// impl From<StandardMaterial> for GpuStandardMaterial {
+// 	fn from(material: StandardMaterial) -> Self {
+// 		let mut flags = StandardMaterialFlags::NONE;
+// 		let has_normal_map = material.normal_map_texture.is_some();
+
+// 		GpuStandardMaterial {
+// 			buffer,
+// 			bind_group,
+// 			flags,
+// 			has_normal_map,
+// 			base_color_texture: material.base_color_texture,
+// 			alpha_mode: material.alpha_mode,
+// 			depth_bias: material.depth_bias,
+// 			cull_mode: material.cull_mode,
+// 		}
+// 	}
+// }
+
 impl RenderAsset for StandardMaterial {
 	type ExtractedAsset = StandardMaterial;
 	type PreparedAsset = GpuStandardMaterial;
@@ -311,53 +329,24 @@ impl RenderAsset for StandardMaterial {
 			usage: BufferUsages::UNIFORM | BufferUsages::COPY_DST,
 			contents: buffer.as_ref(),
 		});
+
 		let bind_group = render_device.create_bind_group(&BindGroupDescriptor {
-			entries: &[
-				BindGroupEntry {
-					binding: 0,
-					resource: buffer.as_entire_binding(),
-				},
-				BindGroupEntry {
-					binding: 1,
-					resource: BindingResource::TextureView(base_color_texture_view),
-				},
-				BindGroupEntry {
-					binding: 2,
-					resource: BindingResource::Sampler(base_color_sampler),
-				},
-				BindGroupEntry {
-					binding: 3,
-					resource: BindingResource::TextureView(emissive_texture_view),
-				},
-				BindGroupEntry {
-					binding: 4,
-					resource: BindingResource::Sampler(emissive_sampler),
-				},
-				BindGroupEntry {
-					binding: 5,
-					resource: BindingResource::TextureView(metallic_roughness_texture_view),
-				},
-				BindGroupEntry {
-					binding: 6,
-					resource: BindingResource::Sampler(metallic_roughness_sampler),
-				},
-				BindGroupEntry {
-					binding: 7,
-					resource: BindingResource::TextureView(occlusion_texture_view),
-				},
-				BindGroupEntry {
-					binding: 8,
-					resource: BindingResource::Sampler(occlusion_sampler),
-				},
-				BindGroupEntry {
-					binding: 9,
-					resource: BindingResource::TextureView(normal_map_texture_view),
-				},
-				BindGroupEntry {
-					binding: 10,
-					resource: BindingResource::Sampler(normal_map_sampler),
-				},
-			],
+			entries: &(0u32..)
+				.zip([
+					buffer.as_entire_binding(),
+					BindingResource::TextureView(base_color_texture_view),
+					BindingResource::Sampler(base_color_sampler),
+					BindingResource::TextureView(emissive_texture_view),
+					BindingResource::Sampler(emissive_sampler),
+					BindingResource::TextureView(metallic_roughness_texture_view),
+					BindingResource::Sampler(metallic_roughness_sampler),
+					BindingResource::TextureView(occlusion_texture_view),
+					BindingResource::Sampler(occlusion_sampler),
+					BindingResource::TextureView(normal_map_texture_view),
+					BindingResource::Sampler(normal_map_sampler),
+				])
+				.map(|(binding, resource)| BindGroupEntry { binding, resource })
+				.collect::<Vec<BindGroupEntry>>(),
 			label: Some("pbr_standard_material_bind_group"),
 			layout: &pbr_pipeline.material_layout,
 		});
@@ -425,109 +414,49 @@ impl SpecializedMaterial for StandardMaterial {
 	fn bind_group_layout(
 		render_device: &RenderDevice,
 	) -> bevy_render::render_resource::BindGroupLayout {
+		let texture = BindingType::Texture {
+			multisampled: false,
+			sample_type: TextureSampleType::Float { filterable: true },
+			view_dimension: TextureViewDimension::D2,
+		};
+		let sampler = BindingType::Sampler(SamplerBindingType::Filtering);
+
 		render_device.create_bind_group_layout(&BindGroupLayoutDescriptor {
-			entries: &[
-				BindGroupLayoutEntry {
-					binding: 0,
-					visibility: ShaderStages::FRAGMENT,
-					ty: BindingType::Buffer {
+			entries: &(0u32..)
+				.zip([
+					BindingType::Buffer {
 						ty: BufferBindingType::Uniform,
 						has_dynamic_offset: false,
 						min_binding_size: Some(StandardMaterialUniformData::min_size()),
 					},
-					count: None,
-				},
-				// Base Color Texture
-				BindGroupLayoutEntry {
-					binding: 1,
+					// Base Color Texture
+					texture,
+					// Base Color Texture Sampler
+					sampler,
+					// Emissive Texture
+					texture,
+					// Emissive Texture Sampler
+					sampler,
+					// Metallic Roughness Texture
+					texture,
+					// Metallic Roughness Texture Sampler
+					sampler,
+					// Occlusion Texture
+					texture,
+					// Occlusion Texture Sampler
+					sampler,
+					// Normal Map Texture
+					texture,
+					// Normal Map Texture Sampler
+					sampler,
+				])
+				.map(|(binding, ty)| BindGroupLayoutEntry {
+					binding,
 					visibility: ShaderStages::FRAGMENT,
-					ty: BindingType::Texture {
-						multisampled: false,
-						sample_type: TextureSampleType::Float { filterable: true },
-						view_dimension: TextureViewDimension::D2,
-					},
+					ty,
 					count: None,
-				},
-				// Base Color Texture Sampler
-				BindGroupLayoutEntry {
-					binding: 2,
-					visibility: ShaderStages::FRAGMENT,
-					ty: BindingType::Sampler(SamplerBindingType::Filtering),
-					count: None,
-				},
-				// Emissive Texture
-				BindGroupLayoutEntry {
-					binding: 3,
-					visibility: ShaderStages::FRAGMENT,
-					ty: BindingType::Texture {
-						multisampled: false,
-						sample_type: TextureSampleType::Float { filterable: true },
-						view_dimension: TextureViewDimension::D2,
-					},
-					count: None,
-				},
-				// Emissive Texture Sampler
-				BindGroupLayoutEntry {
-					binding: 4,
-					visibility: ShaderStages::FRAGMENT,
-					ty: BindingType::Sampler(SamplerBindingType::Filtering),
-					count: None,
-				},
-				// Metallic Roughness Texture
-				BindGroupLayoutEntry {
-					binding: 5,
-					visibility: ShaderStages::FRAGMENT,
-					ty: BindingType::Texture {
-						multisampled: false,
-						sample_type: TextureSampleType::Float { filterable: true },
-						view_dimension: TextureViewDimension::D2,
-					},
-					count: None,
-				},
-				// Metallic Roughness Texture Sampler
-				BindGroupLayoutEntry {
-					binding: 6,
-					visibility: ShaderStages::FRAGMENT,
-					ty: BindingType::Sampler(SamplerBindingType::Filtering),
-					count: None,
-				},
-				// Occlusion Texture
-				BindGroupLayoutEntry {
-					binding: 7,
-					visibility: ShaderStages::FRAGMENT,
-					ty: BindingType::Texture {
-						multisampled: false,
-						sample_type: TextureSampleType::Float { filterable: true },
-						view_dimension: TextureViewDimension::D2,
-					},
-					count: None,
-				},
-				// Occlusion Texture Sampler
-				BindGroupLayoutEntry {
-					binding: 8,
-					visibility: ShaderStages::FRAGMENT,
-					ty: BindingType::Sampler(SamplerBindingType::Filtering),
-					count: None,
-				},
-				// Normal Map Texture
-				BindGroupLayoutEntry {
-					binding: 9,
-					visibility: ShaderStages::FRAGMENT,
-					ty: BindingType::Texture {
-						multisampled: false,
-						sample_type: TextureSampleType::Float { filterable: true },
-						view_dimension: TextureViewDimension::D2,
-					},
-					count: None,
-				},
-				// Normal Map Texture Sampler
-				BindGroupLayoutEntry {
-					binding: 10,
-					visibility: ShaderStages::FRAGMENT,
-					ty: BindingType::Sampler(SamplerBindingType::Filtering),
-					count: None,
-				},
-			],
+				})
+				.collect::<Vec<BindGroupLayoutEntry>>(),
 			label: Some("pbr_material_layout"),
 		})
 	}
