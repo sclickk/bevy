@@ -154,7 +154,7 @@ fn queue_custom(
 	for (view, mut transparent_phase) in views.iter_mut() {
 		let view_matrix = view.transform.compute_matrix();
 		let view_row_2 = view_matrix.row(2);
-		for (entity, mesh_handle, mesh_uniform, is_red) in material_meshes.iter() {
+		for (entity, mesh_handle, mesh_uniform, is_red) in material_meshes.into_iter() {
 			if let Some(mesh) = render_meshes.get(mesh_handle) {
 				let key = msaa_key | MeshPipelineKey::from(mesh.primitive_topology);
 				let pipeline = pipelines

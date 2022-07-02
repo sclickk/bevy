@@ -119,7 +119,7 @@ fn queue_custom(
 	for (view, mut transparent_phase) in views.iter_mut() {
 		let view_matrix = view.transform.compute_matrix();
 		let view_row_2 = view_matrix.row(2);
-		for (entity, mesh_uniform, mesh_handle) in material_meshes.iter() {
+		for (entity, mesh_uniform, mesh_handle) in material_meshes.into_iter() {
 			if let Some(mesh) = meshes.get(mesh_handle) {
 				let key = msaa_key | MeshPipelineKey::from(mesh.primitive_topology);
 				let pipeline = pipelines
@@ -147,7 +147,7 @@ fn prepare_instance_buffers(
 	query: Query<(Entity, &InstanceMaterialData)>,
 	render_device: Res<RenderDevice>,
 ) {
-	for (entity, instance_data) in query.iter() {
+	for (entity, instance_data) in query.into_iter() {
 		let buffer = render_device.create_buffer_with_data(&BufferInitDescriptor {
 			label: Some("instance data buffer"),
 			contents: bytemuck::cast_slice(instance_data.as_slice()),
