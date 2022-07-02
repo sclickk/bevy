@@ -4,6 +4,8 @@
 //! replacing the path as appropriate.
 //! With no arguments it will load the `FieldHelmet` glTF model from the repository assets subdirectory.
 
+use bevy::diagnostic::FrameTimeDiagnosticsPlugin;
+use bevy::diagnostic::LogDiagnosticsPlugin;
 use bevy::{
 	asset::{AssetServerSettings, LoadState},
 	gltf::Gltf,
@@ -44,7 +46,7 @@ Controls:
 		brightness: 1.0 / 5.0f32,
 	});
 	app.insert_resource(AssetServerSettings {
-		asset_folder: std::env::var("CARGO_MANIFEST_DIR").unwrap_or_else(|_| ".".to_string()),
+		asset_folder: std::env::var("CARGO_MANIFEST_DIR").unwrap_or(".".into()),
 		watch_for_changes: true,
 	});
 	app.insert_resource(WindowDescriptor {
@@ -53,6 +55,8 @@ Controls:
 	});
 	app.init_resource::<CameraTracker>();
 	app.add_plugins(DefaultPlugins);
+	app.init_plugin::<LogDiagnosticsPlugin>();
+	app.init_plugin::<FrameTimeDiagnosticsPlugin>();
 	app.add_startup_system(setup);
 	app.add_system_to_stage(CoreStage::PreUpdate, scene_load_check);
 	app.add_system_to_stage(CoreStage::PreUpdate, setup_scene_after_load);
@@ -80,7 +84,7 @@ struct SceneHandle {
 fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
 	let scene_path = std::env::args()
 		.nth(1)
-		.unwrap_or_else(|| "assets/models/FlightHelmet/FlightHelmet.gltf".to_string());
+		.unwrap_or("assets/models/FlightHelmet/FlightHelmet.gltf".to_string());
 	info!("Loading {}", scene_path);
 	commands.insert_resource(SceneHandle {
 		handle: asset_server.load(&scene_path),
@@ -224,7 +228,7 @@ fn setup_scene_after_load(
 
 		let mut min = Vec3A::splat(f32::MAX);
 		let mut max = Vec3A::splat(f32::MIN);
-		for (transform, maybe_aabb) in meshes.iter() {
+		for (transform, maybe_aabb) in meshes.into_iter() {
 			let aabb = maybe_aabb.unwrap();
 			// If the Aabb had not been rotated, applying the non-uniform scale would produce the
 			// correct bounds. However, it could very well be rotated and so we first convert to
