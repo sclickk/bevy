@@ -387,7 +387,7 @@ pub struct ExtractedClustersPointLights {
 }
 
 pub fn extract_clusters(mut commands: Commands, views: Query<(Entity, &Clusters), With<Camera>>) {
-	for (entity, clusters) in views.iter() {
+	for (entity, clusters) in views.into_iter() {
 		commands.get_or_spawn(entity).insert_bundle((
 			ExtractedClustersPointLights {
 				data: clusters.lights.clone(),
@@ -671,7 +671,7 @@ pub fn prepare_lights(
 
 	global_light_meta.entity_to_index.clear();
 
-	let mut point_lights: Vec<_> = point_lights.iter().collect::<Vec<_>>();
+	let mut point_lights: Vec<_> = point_lights.into_iter().collect::<Vec<_>>();
 
 	#[cfg(not(feature = "webgl"))]
 	let max_point_light_shadow_maps = point_lights
@@ -855,7 +855,7 @@ pub fn prepare_lights(
 		}
 
 		for (i, (light_entity, light)) in directional_lights
-			.iter()
+			.into_iter()
 			.enumerate()
 			.take(MAX_DIRECTIONAL_LIGHTS)
 		{
@@ -1273,7 +1273,7 @@ pub fn prepare_clusters(
 		mesh_pipeline.clustered_forward_buffer_binding_type,
 		BufferBindingType::Storage { .. }
 	);
-	for (entity, cluster_config, extracted_clusters) in views.iter() {
+	for (entity, cluster_config, extracted_clusters) in views.into_iter() {
 		let mut view_clusters_bindings =
 			ViewClusterBindings::new(mesh_pipeline.clustered_forward_buffer_binding_type);
 		view_clusters_bindings.clear();
