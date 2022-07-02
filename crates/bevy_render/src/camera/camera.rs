@@ -366,7 +366,7 @@ pub fn camera_system<T: CameraProjection + Component>(
 		.collect();
 
 	let mut added_cameras = vec![];
-	for entity in &mut queries.p1().iter() {
+	for entity in &mut queries.p1().into_iter() {
 		added_cameras.push(entity);
 	}
 	for (entity, mut camera, mut camera_projection) in queries.p0().iter_mut() {
@@ -408,7 +408,7 @@ pub fn extract_cameras(
 		&VisibleEntities,
 	)>,
 ) {
-	for (entity, camera, camera_render_graph, transform, visible_entities) in query.iter() {
+	for (entity, camera, camera_render_graph, transform, visible_entities) in query.into_iter() {
 		if !camera.is_active {
 			continue;
 		}
