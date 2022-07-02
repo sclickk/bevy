@@ -23,29 +23,29 @@ pub fn transform_propagate_system(
 	)>,
 	children_query: Query<(&Children, Changed<Children>), (With<Parent>, With<GlobalTransform>)>,
 ) {
-	for (children, transform, transform_changed, mut global_transform, entity) in
-		root_query.iter_mut()
-	{
-		let mut changed = transform_changed;
-		if transform_changed {
-			*global_transform = GlobalTransform::from(*transform);
-		}
-
-		if let Some((children, changed_children)) = children {
-			// If our `Children` has changed, we need to recalculate everything below us
-			changed |= changed_children;
-			for child in children.iter() {
-				let _ = propagate_recursive(
-					&global_transform,
-					&mut transform_query,
-					&children_query,
-					*child,
-					entity,
-					changed,
-				);
+	root_query.for_each_mut(
+		|(children, transform, transform_changed, mut global_transform, entity)| {
+			let mut changed = transform_changed;
+			if transform_changed {
+				*global_transform = GlobalTransform::from(*transform);
 			}
-		}
-	}
+
+			if let Some((children, changed_children)) = children {
+				// If our `Children` has changed, we need to recalculate everything below us
+				changed |= changed_children;
+				for child in children.into_iter() {
+					let _ = propagate_recursive(
+						&global_transform,
+						&mut transform_query,
+						&children_query,
+						*child,
+						entity,
+						changed,
+					);
+				}
+			}
+		},
+	);
 }
 
 fn propagate_recursive(
@@ -80,7 +80,7 @@ fn propagate_recursive(
 	let (children, changed_children) = children_query.get(entity).map_err(drop)?;
 	// If our `Children` has changed, we need to recalculate everything below us
 	changed |= changed_children;
-	for child in children.iter() {
+	for child in children.into_iter() {
 		let _ = propagate_recursive(
 			&global_matrix,
 			transform_query,
@@ -256,7 +256,7 @@ mod test {
 			world
 				.get::<Children>(parent)
 				.unwrap()
-				.iter()
+				.into_iter()
 				.cloned()
 				.collect::<Vec<_>>(),
 			vec![children[1]]
@@ -266,7 +266,7 @@ mod test {
 			world
 				.get::<Children>(children[1])
 				.unwrap()
-				.iter()
+				.into_iter()
 				.cloned()
 				.collect::<Vec<_>>(),
 			vec![children[0]]

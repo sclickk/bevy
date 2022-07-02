@@ -263,6 +263,7 @@ impl AssetLoader for ShaderLoader {
 			};
 
 			let shader_imports = SHADER_IMPORT_PROCESSOR.get_imports(&shader);
+			// TODO: Use some Option function for this.
 			if shader_imports.import_path.is_some() {
 				shader.import_path = shader_imports.import_path;
 			} else {
@@ -471,19 +472,19 @@ impl ShaderProcessor {
 			}
 		}
 
-		if scopes.len() != 1 {
-			return Err(ProcessShaderError::NotEnoughEndIfs);
-		}
+		(scopes.len() == 1)
+			.then(|| {
+				let processed_source = Cow::from(final_string);
 
-		let processed_source = Cow::from(final_string);
-
-		match &shader.source {
-			Source::Wgsl(_source) => Ok(ProcessedShader::Wgsl(processed_source)),
-			Source::Glsl(_source, stage) => Ok(ProcessedShader::Glsl(processed_source, *stage)),
-			Source::SpirV(_source) => {
-				unreachable!("SpirV has early return");
-			}
-		}
+				match &shader.source {
+					Source::Wgsl(_source) => ProcessedShader::Wgsl(processed_source),
+					Source::Glsl(_source, stage) => ProcessedShader::Glsl(processed_source, *stage),
+					Source::SpirV(_source) => {
+						unreachable!("SpirV has early return");
+					}
+				}
+			})
+			.ok_or(ProcessShaderError::NotEnoughEndIfs)
 	}
 
 	fn apply_import(

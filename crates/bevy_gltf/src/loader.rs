@@ -949,7 +949,7 @@ fn texture_sampler<'a>(texture: &gltf::Texture) -> SamplerDescriptor<'a> {
 				MagFilter::Nearest => FilterMode::Nearest,
 				MagFilter::Linear => FilterMode::Linear,
 			})
-			.unwrap_or(SamplerDescriptor::default().mag_filter),
+			.unwrap_or_else(|| SamplerDescriptor::default().mag_filter),
 
 		min_filter: gltf_sampler
 			.min_filter()
@@ -961,7 +961,7 @@ fn texture_sampler<'a>(texture: &gltf::Texture) -> SamplerDescriptor<'a> {
 					FilterMode::Linear
 				}
 			})
-			.unwrap_or(SamplerDescriptor::default().min_filter),
+			.unwrap_or_else(|| SamplerDescriptor::default().min_filter),
 
 		mipmap_filter: gltf_sampler
 			.min_filter()
@@ -972,7 +972,7 @@ fn texture_sampler<'a>(texture: &gltf::Texture) -> SamplerDescriptor<'a> {
 				| MinFilter::LinearMipmapNearest => FilterMode::Nearest,
 				MinFilter::NearestMipmapLinear | MinFilter::LinearMipmapLinear => FilterMode::Linear,
 			})
-			.unwrap_or(SamplerDescriptor::default().mipmap_filter),
+			.unwrap_or_else(|| SamplerDescriptor::default().mipmap_filter),
 
 		..Default::default()
 	}

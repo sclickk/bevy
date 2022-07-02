@@ -454,18 +454,6 @@ pub enum ImageType<'a> {
 	Extension(&'a str),
 }
 
-impl<'a> ImageType<'a> {
-	// TODO: Deprecate!
-	pub fn to_image_format(&self) -> Result<ImageFormat, TextureError> {
-		match self {
-			ImageType::MimeType(mime_type) => ImageFormat::from_mime_type(mime_type)
-				.ok_or(TextureError::InvalidImageMimeType(mime_type.to_string())),
-			ImageType::Extension(extension) => ImageFormat::from_extension(extension)
-				.ok_or(TextureError::InvalidImageExtension(extension.to_string())),
-		}
-	}
-}
-
 impl<'a> TryInto<ImageFormat> for ImageType<'a> {
 	type Error = TextureError;
 

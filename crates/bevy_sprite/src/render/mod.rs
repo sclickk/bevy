@@ -247,7 +247,7 @@ pub fn extract_sprites(
 ) {
 	let mut extracted_sprites = render_world.resource_mut::<ExtractedSprites>();
 	extracted_sprites.sprites.clear();
-	for (visibility, sprite, transform, handle) in sprite_query.iter() {
+	for (visibility, sprite, transform, handle) in sprite_query.into_iter() {
 		if !visibility.is_visible {
 			continue;
 		}
@@ -268,7 +268,7 @@ pub fn extract_sprites(
 				anchor: sprite.anchor.as_vec(),
 			});
 	}
-	for (visibility, atlas_sprite, transform, texture_atlas_handle) in atlas_query.iter() {
+	for (visibility, atlas_sprite, transform, texture_atlas_handle) in atlas_query.into_iter() {
 		if !visibility.is_visible {
 			continue;
 		}
@@ -412,7 +412,7 @@ pub fn queue_sprites(
 		let mut colored_index = 0;
 
 		// FIXME: VisibleEntities is ignored
-		for mut transparent_phase in views.iter_mut() {
+		views.for_each_mut(|mut transparent_phase| {
 			let extracted_sprites = &mut extracted_sprites.sprites;
 			let image_bind_groups = &mut *image_bind_groups;
 
@@ -562,7 +562,8 @@ pub fn queue_sprites(
 					});
 				}
 			}
-		}
+		});
+
 		sprite_meta
 			.vertices
 			.write_buffer(&render_device, &render_queue);

@@ -248,6 +248,8 @@ impl From<&Punctuated<NestedMeta, Comma>> for ReflectTraits {
 
 impl Parse for ReflectTraits {
 	fn parse(input: ParseStream) -> syn::Result<Self> {
-		Ok(ReflectTraits::from(&Punctuated::<NestedMeta, Comma>::parse_terminated(input)?))
+		Ok(ReflectTraits::from(
+			&Punctuated::<NestedMeta, Comma>::parse_terminated(input)?,
+		))
 	}
 }
