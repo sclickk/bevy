@@ -166,7 +166,7 @@ fn toggle_movement(
 ) {
 	// Update the currently movable entities and remove their Move component if the assigned key was pressed to disable their movement.
 	// This will also make them transparent so they can be identified as 'disabled' in the scene.
-	for (entity, material_handle, toggled_by) in movable_entities.iter() {
+	for (entity, material_handle, toggled_by) in movable_entities.into_iter() {
 		if keyboard_input.just_pressed(toggled_by.0) {
 			materials
 				.get_mut(material_handle)
@@ -178,7 +178,7 @@ fn toggle_movement(
 	}
 	// Update the currently non-movable entities and add a Move component if the assigned key was pressed to enable their movement.
 	// This will also make them opaque so they can be identified as 'enabled' in the scene.
-	for (entity, material_handle, toggled_by) in static_entities.iter() {
+	for (entity, material_handle, toggled_by) in static_entities.into_iter() {
 		if keyboard_input.just_pressed(toggled_by.0) {
 			materials
 				.get_mut(material_handle)

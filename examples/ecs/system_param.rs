@@ -27,7 +27,7 @@ struct PlayerCounter<'w, 's> {
 
 impl<'w, 's> PlayerCounter<'w, 's> {
 	fn count(&mut self) {
-		self.count.0 = self.players.iter().len();
+		self.count.0 = self.players.into_iter().len();
 	}
 }
 

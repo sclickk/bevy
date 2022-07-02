@@ -114,7 +114,7 @@ fn score_check_system(
 	mut game_state: ResMut<GameState>,
 	query: Query<(&Player, &Score)>,
 ) {
-	for (player, score) in query.iter() {
+	for (player, score) in query.into_iter() {
 		if score.value == game_rules.winning_score {
 			game_state.winning_player = Some(player.name.clone());
 		}

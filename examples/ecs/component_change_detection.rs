@@ -33,7 +33,7 @@ fn change_component(time: Res<Time>, mut query: Query<(Entity, &mut MyComponent)
 // There are query filters for `Changed<T>` and `Added<T>`
 // Only entities matching the filters will be in the query
 fn change_detection(query: Query<(Entity, &MyComponent), Changed<MyComponent>>) {
-	for (entity, component) in query.iter() {
+	for (entity, component) in query.into_iter() {
 		info!("{:?} changed: {:?}", entity, component,);
 	}
 }
@@ -46,7 +46,7 @@ fn tracker_monitoring(
 		Option<ChangeTrackers<MyComponent>>,
 	)>,
 ) {
-	for (entity, component, trackers) in query.iter() {
+	for (entity, component, trackers) in query.into_iter() {
 		info!("{:?}: {:?} -> {:?}", entity, component, trackers);
 	}
 }

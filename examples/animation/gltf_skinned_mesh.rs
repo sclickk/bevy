@@ -50,7 +50,7 @@ fn joint_animation(
 	mut transform_query: Query<&mut Transform>,
 ) {
 	// Iter skinned mesh entity
-	for skinned_mesh_parent in parent_query.iter() {
+	parent_query.for_each(|skinned_mesh_parent| {
 		// Mesh node is the parent of the skinned mesh entity.
 		let mesh_node_entity = skinned_mesh_parent.0;
 		// Get `Children` in the mesh node.
@@ -72,5 +72,5 @@ fn joint_animation(
 			Vec3::Z,
 			0.5 * PI * time.time_since_startup().as_secs_f32().sin(),
 		);
-	}
+	})
 }

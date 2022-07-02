@@ -30,7 +30,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
 /// The sprite is animated by changing its translation depending on the time that has passed since
 /// the last frame.
 fn sprite_movement(time: Res<Time>, mut sprite_position: Query<(&mut Direction, &mut Transform)>) {
-	for (mut logo, mut transform) in sprite_position.iter_mut() {
+	sprite_position.for_each_mut(|(mut logo, mut transform)| {
 		match *logo {
 			Direction::Up => transform.translation.y += 150. * time.delta_seconds(),
 			Direction::Down => transform.translation.y -= 150. * time.delta_seconds(),
@@ -41,5 +41,5 @@ fn sprite_movement(time: Res<Time>, mut sprite_position: Query<(&mut Direction, 
 		} else if transform.translation.y < -200. {
 			*logo = Direction::Up;
 		}
-	}
+	});
 }

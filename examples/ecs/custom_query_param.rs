@@ -56,7 +56,7 @@ fn print_components_read_only(
 	query: Query<ReadOnlyCustomQuery<ComponentC, ComponentD>, QueryFilter<ComponentC, ComponentD>>,
 ) {
 	println!("Print components (read_only):");
-	for e in query.iter() {
+	for e in query.into_iter() {
 		println!("Entity: {:?}", e.entity);
 		println!("A: {:?}", e.a);
 		println!("B: {:?}", e.b);
@@ -145,7 +145,7 @@ fn print_components_iter(
 	query: Query<CustomQuery<ComponentC, ComponentD>, QueryFilter<ComponentC, ComponentD>>,
 ) {
 	println!("Print components (iter):");
-	for e in query.iter() {
+	for e in query.into_iter() {
 		// Re-declaring the variable to illustrate the type of the actual iterator item.
 		let e: CustomQueryReadOnlyItem<'_, _, _> = e;
 		println!("Entity: {:?}", e.entity);
@@ -177,7 +177,7 @@ fn print_components_tuple(
 	>,
 ) {
 	println!("Print components (tuple):");
-	for (entity, a, b, nested, (generic_c, generic_d)) in query.iter() {
+	for (entity, a, b, nested, (generic_c, generic_d)) in query.into_iter() {
 		println!("Entity: {:?}", entity);
 		println!("A: {:?}", a);
 		println!("B: {:?}", b);

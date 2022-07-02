@@ -154,23 +154,23 @@ fn toggle_shadows(
 ) {
 	if input.just_pressed(KeyCode::C) {
 		info!("Toggling casters");
-		for entity in queries.p0().iter() {
+		for entity in queries.p0().into_iter() {
 			commands
 				.entity(entity)
 				.remove::<NotShadowCaster>();
 		}
-		for entity in queries.p2().iter() {
+		for entity in queries.p2().into_iter() {
 			commands.entity(entity).insert(NotShadowCaster);
 		}
 	}
 	if input.just_pressed(KeyCode::R) {
 		info!("Toggling receivers");
-		for entity in queries.p1().iter() {
+		for entity in queries.p1().into_iter() {
 			commands
 				.entity(entity)
 				.remove::<NotShadowReceiver>();
 		}
-		for entity in queries.p3().iter() {
+		for entity in queries.p3().into_iter() {
 			commands
 				.entity(entity)
 				.insert(NotShadowReceiver);

@@ -46,12 +46,12 @@ fn animate_light_direction(
 	time: Res<Time>,
 	mut query: Query<&mut Transform, With<DirectionalLight>>,
 ) {
-	for mut transform in query.iter_mut() {
+	query.for_each_mut(|mut transform| {
 		transform.rotation = Quat::from_euler(
 			EulerRot::ZYX,
 			0.0,
 			time.seconds_since_startup() as f32 * std::f32::consts::TAU / 10.0,
 			-std::f32::consts::FRAC_PI_4,
 		);
-	}
+	});
 }
