@@ -134,6 +134,17 @@ fn setup_contributor_selection(mut commands: Commands, asset_server: Res<AssetSe
 fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
 	commands.init_bundle::<Camera2dBundle>();
 
+	let section = |value: String| -> TextSection {
+		TextSection {
+			value,
+			style: TextStyle {
+				font: asset_server.load("fonts/FiraSans-Bold.ttf"),
+				font_size: 60.0,
+				color: Color::WHITE,
+			},
+		}
+	};
+
 	commands
 		.spawn()
 		.insert(ContributorDisplay)
@@ -144,22 +155,8 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
 			},
 			text: Text {
 				sections: vec![
-					TextSection {
-						value: "Contributor showcase".to_string(),
-						style: TextStyle {
-							font: asset_server.load("fonts/FiraSans-Bold.ttf"),
-							font_size: 60.0,
-							color: Color::WHITE,
-						},
-					},
-					TextSection {
-						value: "".to_string(),
-						style: TextStyle {
-							font: asset_server.load("fonts/FiraSans-Bold.ttf"),
-							font_size: 60.0,
-							color: Color::WHITE,
-						},
-					},
+					section("Contributor showcase".to_string()),
+					section("".to_string()),
 				],
 				..Default::default()
 			},
