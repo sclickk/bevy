@@ -65,11 +65,11 @@ impl Plugin for DebugAssetServerPlugin {
 				.build()
 		});
 		let mut debug_asset_app = App::new();
-		
+
 		debug_asset_app.insert_resource(AssetServerSettings {
-				asset_folder: "crates".to_string(),
-				watch_for_changes: true,
-			});
+			asset_folder: "crates".to_string(),
+			watch_for_changes: true,
+		});
 		debug_asset_app.add_plugin(AssetPlugin);
 		app.insert_non_send_resource(DebugAssetApp(debug_asset_app));
 		app.add_system(run_debug_asset_app);

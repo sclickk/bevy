@@ -67,9 +67,9 @@ impl Plugin for CustomMaterialPlugin {
 		app.sub_app_mut(RenderApp);
 		app.add_render_command::<Transparent3d, DrawCustom>();
 		app.insert_resource(TimeMeta {
-				buffer,
-				bind_group: None,
-			});
+			buffer,
+			bind_group: None,
+		});
 		app.init_resource::<CustomPipeline>();
 		app.init_resource::<SpecializedMeshPipelines<CustomPipeline>>();
 		app.add_system_to_stage(RenderStage::Extract, extract_time);

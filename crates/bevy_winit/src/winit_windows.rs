@@ -62,7 +62,8 @@ impl WinitWindows {
 					}
 				}
 				if let Some(sf) = scale_factor_override {
-					winit_window_builder.with_inner_size(winit::dpi::LogicalSize::new(*width, *height).to_physical::<f64>(*sf))
+					winit_window_builder
+						.with_inner_size(winit::dpi::LogicalSize::new(*width, *height).to_physical::<f64>(*sf))
 				} else {
 					winit_window_builder.with_inner_size(winit::dpi::LogicalSize::new(*width, *height))
 				}

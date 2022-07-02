@@ -6,9 +6,9 @@ use bevy::{prelude::*, render::settings::WgpuSettings};
 fn main() {
 	let mut app = App::new();
 	app.insert_resource(WgpuSettings {
-			backends: None,
-			..Default::default()
-		});
+		backends: None,
+		..Default::default()
+	});
 	app.add_plugins(DefaultPlugins);
 	app.run();
 }

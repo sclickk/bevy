@@ -6,12 +6,12 @@ use bevy::{prelude::*, window::PresentMode};
 fn main() {
 	let mut app = App::new();
 	app.insert_resource(WindowDescriptor {
-			title: "I am a window!".to_string(),
-			width: 500.,
-			height: 300.,
-			present_mode: PresentMode::Fifo,
-			..Default::default()
-		});
+		title: "I am a window!".to_string(),
+		width: 500.,
+		height: 300.,
+		present_mode: PresentMode::Fifo,
+		..Default::default()
+	});
 	app.add_plugins(DefaultPlugins);
 	app.add_system(change_title);
 	app.add_system(toggle_cursor);

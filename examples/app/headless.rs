@@ -19,8 +19,8 @@ fn main() {
 	// this app loops forever at 60 fps
 	let mut second_app = App::new();
 	second_app.insert_resource(ScheduleRunnerSettings::run_loop(Duration::from_secs_f64(
-			1.0 / 60.0,
-		)));
+		1.0 / 60.0,
+	)));
 	second_app.add_plugins(MinimalPlugins);
 	second_app.add_system(counter);
 	second_app.run();

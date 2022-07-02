@@ -71,10 +71,10 @@ impl Diagnostic {
 		if name.chars().count() > MAX_DIAGNOSTIC_NAME_WIDTH {
 			// This could be a false positive due to a unicode width being shorter
 			warn!(
-                "Diagnostic {:?} has name longer than {} characters, and so might overflow in the LogDiagnosticsPlugin\
-                Consider using a shorter name.",
-                name, MAX_DIAGNOSTIC_NAME_WIDTH
-            );
+				"Diagnostic {:?} has name longer than {} characters, and so might overflow in the LogDiagnosticsPlugin\
+				Consider using a shorter name.",
+				name, MAX_DIAGNOSTIC_NAME_WIDTH
+			);
 		}
 		Diagnostic {
 			id,
