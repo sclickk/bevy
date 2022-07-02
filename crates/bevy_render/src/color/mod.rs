@@ -127,12 +127,7 @@ impl Color {
 
 	/// New `Color` from sRGB colorspace.
 	pub const fn rgb(r: f32, g: f32, b: f32) -> Color {
-		Color::Rgba {
-			red: r,
-			green: g,
-			blue: b,
-			alpha: 1.0,
-		}
+		Self::rgba(r, g, b, 1.0)
 	}
 
 	/// New `Color` from sRGB colorspace.
@@ -147,12 +142,7 @@ impl Color {
 
 	/// New `Color` from linear RGB colorspace.
 	pub const fn rgb_linear(r: f32, g: f32, b: f32) -> Color {
-		Color::RgbaLinear {
-			red: r,
-			green: g,
-			blue: b,
-			alpha: 1.0,
-		}
+		Self::rgba_linear(r, g, b, 1.0)
 	}
 
 	/// New `Color` from linear RGB colorspace.
@@ -167,12 +157,7 @@ impl Color {
 
 	/// New `Color` with HSL representation in sRGB colorspace.
 	pub const fn hsl(hue: f32, saturation: f32, lightness: f32) -> Color {
-		Color::Hsla {
-			hue,
-			saturation,
-			lightness,
-			alpha: 1.0,
-		}
+		Self::hsla(hue, saturation, lightness, 1.0)
 	}
 
 	/// New `Color` with HSL representation in sRGB colorspace.
@@ -189,37 +174,31 @@ impl Color {
 	pub fn hex<T: AsRef<str>>(hex: T) -> Result<Color, HexColorError> {
 		let hex = hex.as_ref();
 
-		// RGB
-		if hex.len() == 3 {
-			let mut data = [0; 6];
-			for (i, ch) in hex.chars().enumerate() {
-				data[i * 2] = ch as u8;
-				data[i * 2 + 1] = ch as u8;
+		match hex.len() {
+			// RGB
+			3 => {
+				let mut data = [0; 6];
+				for (i, ch) in hex.chars().enumerate() {
+					data[i * 2] = ch as u8;
+					data[i * 2 + 1] = ch as u8;
+				}
+				decode_rgb(&data)
 			}
-			return decode_rgb(&data);
-		}
-
-		// RGBA
-		if hex.len() == 4 {
-			let mut data = [0; 8];
-			for (i, ch) in hex.chars().enumerate() {
-				data[i * 2] = ch as u8;
-				data[i * 2 + 1] = ch as u8;
+			// RGBA
+			4 => {
+				let mut data = [0; 8];
+				for (i, ch) in hex.chars().enumerate() {
+					data[i * 2] = ch as u8;
+					data[i * 2 + 1] = ch as u8;
+				}
+				decode_rgba(&data)
 			}
-			return decode_rgba(&data);
+			// RRGGBB
+			6 => decode_rgb(hex.as_bytes()),
+			// RRGGBBAA
+			8 => decode_rgba(hex.as_bytes()),
+			_ => Err(HexColorError::Length),
 		}
-
-		// RRGGBB
-		if hex.len() == 6 {
-			return decode_rgb(hex.as_bytes());
-		}
-
-		// RRGGBBAA
-		if hex.len() == 8 {
-			return decode_rgba(hex.as_bytes());
-		}
-
-		Err(HexColorError::Length)
 	}
 
 	/// New `Color` from sRGB colorspace.
