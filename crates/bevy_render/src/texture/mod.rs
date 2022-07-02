@@ -2,6 +2,7 @@
 mod basis;
 #[cfg(feature = "dds")]
 mod dds;
+mod fallback_image;
 #[cfg(feature = "hdr")]
 mod hdr_texture_loader;
 #[allow(clippy::module_inception)]
@@ -21,6 +22,7 @@ pub use dds::*;
 #[cfg(feature = "hdr")]
 pub use hdr_texture_loader::*;
 
+pub use fallback_image::*;
 pub use image_texture_loader::*;
 pub use texture_cache::*;
 
@@ -78,6 +80,7 @@ impl Plugin for ImagePlugin {
 
 			render_app.insert_resource(DefaultImageSampler(default_sampler));
 			render_app.init_resource::<TextureCache>();
+			render_app.init_resource::<FallbackImage>();
 			render_app.add_system_to_stage(RenderStage::Cleanup, update_texture_cache_system);
 		}
 	}

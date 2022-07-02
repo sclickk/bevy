@@ -362,68 +362,67 @@ pub fn derive_world_query_impl(ast: DeriveInput) -> TokenStream {
 		}
 	};
 
-	let tokens = TokenStream::from(quote! {
-		#fetch_impl
+	TokenStream::from(quote! {
+			#fetch_impl
 
-		#state_impl
+	#state_impl
 
-		#read_only_fetch_impl
+	#read_only_fetch_impl
 
-		#read_only_world_query_impl
+	#read_only_world_query_impl
 
-		// SAFETY: if the worldquery is mutable this defers to soundness of the `#field_types: WorldQuery` impl, otherwise
-		// if the world query is immutable then `#read_only_struct_name #user_ty_generics` is the same type as `#struct_name #user_ty_generics`
-		unsafe impl #user_impl_generics #path::query::WorldQuery for #struct_name #user_ty_generics #user_where_clauses {
-			type ReadOnly = #read_only_struct_name #user_ty_generics;
-			type State = #state_struct_name #user_ty_generics;
-			fn shrink<'__wlong: '__wshort, '__wshort>(item: #path::query::#item_type_alias<'__wlong, Self>)
-				-> #path::query::#item_type_alias<'__wshort, Self> {
-					#item_struct_name {
-						#(
-							 #field_idents : < #field_types as #path::query::WorldQuery> :: shrink( item.#field_idents ),
-						)*
-						#(
-							#ignored_field_idents: item.#ignored_field_idents,
-						)*
-					}
+	// SAFETY: if the worldquery is mutable this defers to soundness of the `#field_types: WorldQuery` impl, otherwise
+	// if the world query is immutable then `#read_only_struct_name #user_ty_generics` is the same type as `#struct_name #user_ty_generics`
+	unsafe impl #user_impl_generics #path::query::WorldQuery for #struct_name #user_ty_generics #user_where_clauses {
+		type ReadOnly = #read_only_struct_name #user_ty_generics;
+		type State = #state_struct_name #user_ty_generics;
+		fn shrink<'__wlong: '__wshort, '__wshort>(item: #path::query::#item_type_alias<'__wlong, Self>)
+			-> #path::query::#item_type_alias<'__wshort, Self> {
+				#item_struct_name {
+					#(
+						 #field_idents : < #field_types as #path::query::WorldQuery> :: shrink( item.#field_idents ),
+					)*
+					#(
+						#ignored_field_idents: item.#ignored_field_idents,
+					)*
 				}
+			}
+	}
+
+	impl #user_impl_generics_with_world #path::query::WorldQueryGats<'__w> for #struct_name #user_ty_generics #user_where_clauses {
+		type Fetch = #fetch_struct_name #user_ty_generics_with_world;
+		type _State = #state_struct_name #user_ty_generics;
+	}
+
+	/// SAFETY: each item in the struct is read only
+	unsafe impl #user_impl_generics #path::query::ReadOnlyWorldQuery
+		for #read_only_struct_name #user_ty_generics #user_where_clauses {}
+
+	#[allow(dead_code)]
+	const _: () = {
+		fn assert_readonly<T>()
+		where
+			T: #path::query::ReadOnlyWorldQuery,
+		{
 		}
 
-		impl #user_impl_generics_with_world #path::query::WorldQueryGats<'__w> for #struct_name #user_ty_generics #user_where_clauses {
-			type Fetch = #fetch_struct_name #user_ty_generics_with_world;
-			type _State = #state_struct_name #user_ty_generics;
+		// We generate a readonly assertion for every struct member.
+		fn assert_all #user_impl_generics_with_world () #user_where_clauses_with_world {
+			#read_only_asserts
 		}
+	};
 
-		/// SAFETY: each item in the struct is read only
-		unsafe impl #user_impl_generics #path::query::ReadOnlyWorldQuery
-			for #read_only_struct_name #user_ty_generics #user_where_clauses {}
-
-		#[allow(dead_code)]
-		const _: () = {
-			fn assert_readonly<T>()
-			where
-				T: #path::query::ReadOnlyWorldQuery,
-			{
-			}
-
-			// We generate a readonly assertion for every struct member.
-			fn assert_all #user_impl_generics_with_world () #user_where_clauses_with_world {
-				#read_only_asserts
-			}
-		};
-
-		// The original struct will most likely be left unused. As we don't want our users having
-		// to specify `#[allow(dead_code)]` for their custom queries, we are using this cursed
-		// workaround.
-		#[allow(dead_code)]
-		const _: () = {
-			fn dead_code_workaround #user_impl_generics (q: #struct_name #user_ty_generics) #user_where_clauses {
-				#(q.#field_idents;)*
-				#(q.#ignored_field_idents;)*
-			}
-		};
-	});
-	tokens
+			// The original struct will most likely be left unused. As we don't want our users having
+			// to specify `#[allow(dead_code)]` for their custom queries, we are using this cursed
+			// workaround.
+			#[allow(dead_code)]
+			const _: () = {
+					fn dead_code_workaround #user_impl_generics (q: #struct_name #user_ty_generics) #user_where_clauses {
+							#(q.#field_idents;)*
+							#(q.#ignored_field_idents;)*
+					}
+			};
+	})
 }
 
 struct WorldQueryFieldInfo {

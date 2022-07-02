@@ -16,6 +16,8 @@ use bevy::{
 	scene::InstanceId,
 };
 
+use std::f32::consts::TAU;
+
 #[derive(Debug, Hash, PartialEq, Eq, Clone, SystemLabel)]
 struct CameraControllerCheckSystem;
 
@@ -338,8 +340,8 @@ fn update_lights(
 			transform.rotation = Quat::from_euler(
 				EulerRot::ZYX,
 				0.0,
-				time.seconds_since_startup() as f32 * std::f32::consts::TAU / 30.0,
-				-std::f32::consts::FRAC_PI_4,
+				time.seconds_since_startup() as f32 * TAU / 30.0,
+				-TAU / 8.,
 			);
 		}
 	}

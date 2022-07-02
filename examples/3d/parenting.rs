@@ -17,9 +17,9 @@ struct Rotator;
 
 /// rotates the parent, which will result in the child also rotating
 fn rotator_system(time: Res<Time>, mut query: Query<&mut Transform, With<Rotator>>) {
-	for mut transform in query.iter_mut() {
-		transform.rotation *= Quat::from_rotation_x(3.0 * time.delta_seconds());
-	}
+	query.for_each_mut(|mut transform| {
+		transform.rotate_x(3.0 * time.delta_seconds());
+	});
 }
 
 /// set up a simple scene with a "parent" cube and a "child" cube

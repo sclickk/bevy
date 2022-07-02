@@ -201,16 +201,12 @@ fn update_fox_rings(
 	foxes: Res<Foxes>,
 	mut rings: Query<(&Ring, &RotationDirection, &mut Transform)>,
 ) {
-	if !foxes.moving {
-		return;
-	}
-
-	let dt = time.delta_seconds();
-	for (ring, rotation_direction, mut transform) in rings.iter_mut() {
-		let angular_velocity = foxes.speed / ring.radius;
-		transform.rotate(Quat::from_rotation_y(
-			rotation_direction.sign() * angular_velocity * dt,
-		));
+	if foxes.moving {
+		let dt = time.delta_seconds();
+		rings.for_each_mut(|(ring, rotation_direction, mut transform)| {
+			let angular_velocity = foxes.speed / ring.radius;
+			transform.rotate_y(rotation_direction.sign() * angular_velocity * dt);
+		});
 	}
 }
 

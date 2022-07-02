@@ -298,10 +298,10 @@ fn collision_system(
 fn move_system(time: Res<Time>, mut query: Query<(&Velocity, &mut Transform)>) {
 	let delta = time.delta_seconds();
 
-	for (velocity, mut transform) in query.iter_mut() {
+	query.for_each_mut(|(velocity, mut transform)| {
 		transform.translation += delta * velocity.translation;
-		transform.rotate(Quat::from_rotation_z(velocity.rotation * delta));
-	}
+		transform.rotate_z(velocity.rotation * delta);
+	});
 }
 
 enum LoadContributorsError {

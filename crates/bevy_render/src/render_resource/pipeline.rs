@@ -167,7 +167,7 @@ pub struct ShaderMeta {
 }
 
 /// Describes the fragment process in a render pipeline.
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct FragmentState {
 	/// The color state of the render targets.
 	pub targets: Vec<ColorTargetState>,
