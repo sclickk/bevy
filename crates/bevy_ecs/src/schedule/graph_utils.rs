@@ -29,7 +29,7 @@ where
 		.flat_map(|(index, container)| {
 			container
 				.labels()
-				.iter()
+				.into_iter()
 				.cloned()
 				.map(move |label| (label, index))
 		}) {

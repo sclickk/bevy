@@ -194,7 +194,7 @@ impl From<&Punctuated<NestedMeta, Comma>> for ReflectTraits {
 	/// Create a new [`ReflectTraits`] instance from a set of nested metas.
 	fn from(nested_metas: &Punctuated<NestedMeta, Comma>) -> Self {
 		let mut traits = ReflectTraits::default();
-		for nested_meta in nested_metas.iter() {
+		for nested_meta in nested_metas.into_iter() {
 			match nested_meta {
 				// Handles `#[reflect( Hash, Default, ... )]`
 				NestedMeta::Meta(Meta::Path(path)) => {

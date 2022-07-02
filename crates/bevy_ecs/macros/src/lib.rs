@@ -338,7 +338,7 @@ pub fn derive_system_param(input: TokenStream) -> TokenStream {
 	let mut field_types = Vec::new();
 	let mut ignored_fields = Vec::new();
 	let mut ignored_field_types = Vec::new();
-	for (i, (field, attrs)) in field_attributes.iter().enumerate() {
+	for (i, (field, attrs)) in field_attributes.into_iter().enumerate() {
 		if attrs.ignore {
 			ignored_fields.push(field.ident.as_ref().unwrap());
 			ignored_field_types.push(&field.ty);

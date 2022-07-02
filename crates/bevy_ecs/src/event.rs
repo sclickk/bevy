@@ -330,7 +330,7 @@ impl<E: Event> ManualEventReader<E> {
 		debug_assert_eq!(unread_count, self.len(events));
 		self.last_event_count = events.event_count - unread_count;
 		// Iterate the oldest first, then the newer events
-		let iterator = a.iter().chain(b.iter());
+		let iterator = a.into_iter().chain(b.into_iter());
 		iterator
 			.map(|e| (&e.event, e.event_id))
 			.with_exact_size(unread_count)

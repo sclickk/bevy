@@ -139,7 +139,7 @@ pub fn extract_meshes(
 	>,
 ) {
 	let mut caster_values = Vec::with_capacity(*previous_caster_len);
-	for (entity, computed_visibility, transform, handle, not_receiver) in caster_query.iter() {
+	for (entity, computed_visibility, transform, handle, not_receiver) in caster_query.into_iter() {
 		if !computed_visibility.is_visible {
 			continue;
 		}
@@ -164,7 +164,7 @@ pub fn extract_meshes(
 	commands.insert_or_spawn_batch(caster_values);
 
 	let mut not_caster_values = Vec::with_capacity(*previous_not_caster_len);
-	for (entity, computed_visibility, transform, mesh, not_receiver) in not_caster_query.iter() {
+	for (entity, computed_visibility, transform, mesh, not_receiver) in not_caster_query.into_iter() {
 		if !computed_visibility.is_visible {
 			continue;
 		}
@@ -209,7 +209,7 @@ impl SkinnedMeshJoints {
 		buffer: &mut Vec<Mat4>,
 	) -> Option<Self> {
 		let inverse_bindposes = inverse_bindposes.get(&skin.inverse_bindposes)?;
-		let bindposes = inverse_bindposes.iter();
+		let bindposes = inverse_bindposes.into_iter();
 		let skin_joints = skin.joints.iter();
 		let start = buffer.len();
 		for (inverse_bindpose, joint) in bindposes.zip(skin_joints).take(MAX_JOINTS) {
@@ -248,7 +248,7 @@ pub fn extract_skinned_meshes(
 	let mut joints = Vec::with_capacity(*previous_joint_len);
 	let mut last_start = 0;
 
-	for (entity, computed_visibility, skin) in query.iter() {
+	for (entity, computed_visibility, skin) in query.into_iter() {
 		if !computed_visibility.is_visible {
 			continue;
 		}

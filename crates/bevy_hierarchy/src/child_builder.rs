@@ -482,7 +482,7 @@ impl<'w> BuildWorldChildren for WorldChildBuilder<'w> {
 			.current_entity
 			.expect("Cannot add children without a parent. Try creating an entity first.");
 
-		for child in children.iter() {
+		for child in children.into_iter() {
 			self
 				.world
 				.entity_mut(*child)

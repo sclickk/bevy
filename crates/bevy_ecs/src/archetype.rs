@@ -168,7 +168,7 @@ impl Archetype {
 		let mut components =
 			SparseSet::with_capacity(table_components.len() + sparse_set_components.len());
 		for (component_id, archetype_component_id) in table_components
-			.iter()
+			.into_iter()
 			.zip(table_archetype_components)
 		{
 			components.insert(
@@ -181,7 +181,7 @@ impl Archetype {
 		}
 
 		for (component_id, archetype_component_id) in sparse_set_components
-			.iter()
+			.into_iter()
 			.zip(sparse_set_archetype_components)
 		{
 			components.insert(

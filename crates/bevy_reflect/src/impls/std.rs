@@ -210,7 +210,7 @@ impl<K: Reflect + Eq + Hash, V: Reflect> Map for HashMap<K, V> {
 
 	fn get_at(&self, index: usize) -> Option<(&dyn Reflect, &dyn Reflect)> {
 		self
-			.iter()
+			.into_iter()
 			.nth(index)
 			.map(|(key, value)| (key as &dyn Reflect, value as &dyn Reflect))
 	}

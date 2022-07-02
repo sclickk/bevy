@@ -406,7 +406,7 @@ pub fn add_clusters(
 	mut commands: Commands,
 	cameras: Query<(Entity, Option<&ClusterConfig>), (With<Camera>, Without<Clusters>)>,
 ) {
-	for (entity, config) in cameras.iter() {
+	for (entity, config) in cameras.into_iter() {
 		let config = config.copied().unwrap_or_default();
 		// actual settings here don't matter - they will be overwritten in assign_lights_to_clusters
 		commands
@@ -662,7 +662,7 @@ pub(crate) fn assign_lights_to_clusters(
 	// collect just the relevant light query data into a persisted vec to avoid reallocating each frame
 	lights.extend(
 		lights_query
-			.iter()
+			.into_iter()
 			.filter(|(.., visibility)| visibility.is_visible)
 			.map(
 				|(entity, transform, light, _visibility)| PointLightAssignmentData {
@@ -1305,7 +1305,7 @@ pub fn check_light_mesh_visibility(
 	}
 
 	// Point lights
-	for visible_lights in visible_point_lights.iter() {
+	for visible_lights in visible_point_lights.into_iter() {
 		for light_entity in visible_lights.entities.iter().copied() {
 			if let Ok((
 				point_light,
