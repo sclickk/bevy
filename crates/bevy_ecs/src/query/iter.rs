@@ -118,25 +118,23 @@ where
 		last_change_tick: u32,
 		change_tick: u32,
 	) -> QueryManyIter<'w, 's, Q, QF, F, I> {
-		let fetch = QF::init(
-			world,
-			&query_state.fetch_state,
-			last_change_tick,
-			change_tick,
-		);
-		let filter = QueryFetch::<F>::init(
-			world,
-			&query_state.filter_state,
-			last_change_tick,
-			change_tick,
-		);
 		QueryManyIter {
 			query_state,
 			entities: &world.entities,
 			archetypes: &world.archetypes,
 			tables: &world.storages.tables,
-			fetch,
-			filter,
+			fetch: QF::init(
+				world,
+				&query_state.fetch_state,
+				last_change_tick,
+				change_tick,
+			),
+			filter: QueryFetch::<F>::init(
+				world,
+				&query_state.filter_state,
+				last_change_tick,
+				change_tick,
+			),
 			entity_iter: entity_list.into_iter(),
 		}
 	}
@@ -432,21 +430,19 @@ where
 		last_change_tick: u32,
 		change_tick: u32,
 	) -> Self {
-		let fetch = QF::init(
-			world,
-			&query_state.fetch_state,
-			last_change_tick,
-			change_tick,
-		);
-		let filter = QueryFetch::<F>::init(
-			world,
-			&query_state.filter_state,
-			last_change_tick,
-			change_tick,
-		);
 		QueryIterationCursor {
-			fetch,
-			filter,
+			fetch: QF::init(
+				world,
+				&query_state.fetch_state,
+				last_change_tick,
+				change_tick,
+			),
+			filter: QueryFetch::<F>::init(
+				world,
+				&query_state.filter_state,
+				last_change_tick,
+				change_tick,
+			),
 			table_id_iter: query_state.matched_table_ids.iter(),
 			archetype_id_iter: query_state.matched_archetype_ids.iter(),
 			current_len: 0,
@@ -458,19 +454,15 @@ where
 	/// retrieve item returned from most recent `next` call again.
 	#[inline]
 	unsafe fn peek_last(&mut self) -> Option<QF::Item> {
-		if self.current_index > 0 {
+		(self.current_index > 0).then(|| {
 			if Self::IS_DENSE {
-				Some(self.fetch.table_fetch(self.current_index - 1))
+				self.fetch.table_fetch(self.current_index - 1)
 			} else {
-				Some(
-					self
-						.fetch
-						.archetype_fetch(self.current_index - 1),
-				)
+				self
+					.fetch
+					.archetype_fetch(self.current_index - 1)
 			}
-		} else {
-			None
-		}
+		})
 	}
 
 	// NOTE: If you are changing query iteration code, remember to update the following places, where relevant:
