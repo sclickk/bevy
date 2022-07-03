@@ -125,7 +125,7 @@ pub fn calculate_bounds(
 	meshes: Res<Assets<Mesh>>,
 	without_aabb: Query<(Entity, &Handle<Mesh>), (Without<Aabb>, Without<NoFrustumCulling>)>,
 ) {
-	for (entity, mesh_handle) in without_aabb.iter() {
+	for (entity, mesh_handle) in without_aabb.into_iter() {
 		if let Some(mesh) = meshes.get(mesh_handle) {
 			if let Some(aabb) = mesh.compute_aabb() {
 				commands.entity(entity).insert(aabb);
