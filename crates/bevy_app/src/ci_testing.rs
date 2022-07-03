@@ -31,8 +31,7 @@ fn ci_testing_exit_after(
 pub(crate) fn setup_app(app: &mut App) -> &mut App {
 	#[cfg(not(target_arch = "wasm32"))]
 	let config: CiTestingConfig = {
-		let filename =
-			std::env::var("CI_TESTING_CONFIG").unwrap_or("ci_testing_config.ron".into());
+		let filename = std::env::var("CI_TESTING_CONFIG").unwrap_or("ci_testing_config.ron".into());
 		ron::from_str(
 			&std::fs::read_to_string(filename).expect("error reading CI testing configuration file"),
 		)
