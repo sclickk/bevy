@@ -186,7 +186,7 @@ pub fn extract_uinodes(
 ) {
 	let mut extracted_uinodes = render_world.resource_mut::<ExtractedUiNodes>();
 	extracted_uinodes.uinodes.clear();
-	for (uinode, transform, color, image, visibility, clip) in uinode_query.iter() {
+	for (uinode, transform, color, image, visibility, clip) in uinode_query.into_iter() {
 		if !visibility.is_visible {
 			continue;
 		}
@@ -228,7 +228,7 @@ pub fn extract_default_ui_camera_view<T: Component>(
 	render_world: Res<RenderWorld>,
 	query: Query<(Entity, &Camera, Option<&CameraUi>), With<T>>,
 ) {
-	for (entity, camera, camera_ui) in query.iter() {
+	for (entity, camera, camera_ui) in query.into_iter() {
 		// ignore cameras with disabled ui
 		if let Some(&CameraUi {
 			is_enabled: false, ..
@@ -287,7 +287,7 @@ pub fn extract_text_uinodes(
 
 	let scale_factor = windows.scale_factor(WindowId::primary()) as f32;
 
-	for (entity, uinode, transform, text, visibility, clip) in uinode_query.iter() {
+	for (entity, uinode, transform, text, visibility, clip) in uinode_query.into_iter() {
 		if !visibility.is_visible {
 			continue;
 		}
@@ -544,7 +544,7 @@ pub fn queue_uinodes(
 			.unwrap();
 		let pipeline = pipelines.specialize(&mut pipeline_cache, &ui_pipeline, UiPipelineKey {});
 		for mut transparent_phase in views.iter_mut() {
-			for (entity, batch) in ui_batches.iter() {
+			for (entity, batch) in ui_batches.into_iter() {
 				image_bind_groups
 					.values
 					.entry(batch.image.clone_weak())

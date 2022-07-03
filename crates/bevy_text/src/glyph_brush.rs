@@ -57,7 +57,7 @@ impl GlyphBrush {
 		}
 
 		let sections_data = sections
-			.iter()
+			.into_iter()
 			.map(|section| {
 				let handle = &self.handles[section.font_id.0];
 				let font = fonts.get(handle).ok_or(TextError::NoSuchFont)?;

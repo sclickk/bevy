@@ -41,7 +41,7 @@ impl FontAtlasSet {
 			.get(&FloatOrd(font_size))
 			.map_or(false, |font_atlas| {
 				font_atlas
-					.iter()
+					.into_iter()
 					.any(|atlas| atlas.has_glyph(glyph_id, glyph_position.into()))
 			})
 	}
@@ -122,7 +122,7 @@ impl FontAtlasSet {
 			.get(&FloatOrd(font_size))
 			.and_then(|font_atlases| {
 				font_atlases
-					.iter()
+					.into_iter()
 					.find_map(|atlas| {
 						atlas
 							.get_glyph_index(glyph_id, position.into())

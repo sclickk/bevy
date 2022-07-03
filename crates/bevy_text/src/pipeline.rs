@@ -63,7 +63,7 @@ impl<ID: Hash + Eq> TextPipeline<ID> {
 	) -> Result<(), TextError> {
 		let mut scaled_fonts = Vec::new();
 		let sections = sections
-			.iter()
+			.into_iter()
 			.map(|section| {
 				let font = fonts
 					.get(&section.style.font)
