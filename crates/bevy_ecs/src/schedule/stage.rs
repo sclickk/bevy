@@ -517,8 +517,8 @@ impl SystemStage {
 				.unwrap();
 				if !conflicts.is_empty() {
 					let names = conflicts
-						.iter()
-						.map(|id| world.components().get_info(*id).unwrap().name())
+						.into_iter()
+						.map(|id| world.components().get_info(id).unwrap().name())
 						.collect::<Vec<_>>();
 					writeln!(string, "    conflicts: {:?}", names).unwrap();
 				}

@@ -124,7 +124,7 @@ pub fn extract_core_2d_camera_phases(
 	mut commands: Commands,
 	cameras_2d: Query<(Entity, &Camera), With<Camera2d>>,
 ) {
-	for (entity, camera) in cameras_2d.iter() {
+	for (entity, camera) in cameras_2d.into_iter() {
 		if camera.is_active {
 			commands
 				.get_or_spawn(entity)

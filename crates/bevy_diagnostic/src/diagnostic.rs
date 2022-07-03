@@ -110,11 +110,7 @@ impl Diagnostic {
 	/// Return the mean (average) of this diagnostic's values.
 	/// N.B. this a cheap operation as the sum is cached.
 	pub fn average(&self) -> Option<f64> {
-		if !self.history.is_empty() {
-			Some(self.sum / self.history.len() as f64)
-		} else {
-			None
-		}
+		(!self.history.is_empty()).then(|| self.sum / self.history.len() as f64)
 	}
 
 	/// Return the number of elements for this diagnostic.
