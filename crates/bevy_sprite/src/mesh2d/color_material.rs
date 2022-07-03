@@ -153,21 +153,16 @@ impl RenderAsset for ColorMaterial {
 			usage: BufferUsages::UNIFORM | BufferUsages::COPY_DST,
 			contents: buffer.as_ref(),
 		});
+
 		let bind_group = render_device.create_bind_group(&BindGroupDescriptor {
-			entries: &[
-				BindGroupEntry {
-					binding: 0,
-					resource: buffer.as_entire_binding(),
-				},
-				BindGroupEntry {
-					binding: 1,
-					resource: BindingResource::TextureView(texture_view),
-				},
-				BindGroupEntry {
-					binding: 2,
-					resource: BindingResource::Sampler(sampler),
-				},
-			],
+			entries: &(0..)
+				.zip([
+					buffer.as_entire_binding(),
+					BindingResource::TextureView(texture_view),
+					BindingResource::Sampler(sampler),
+				])
+				.map(|(binding, resource)| BindGroupEntry { binding, resource })
+				.collect::<Vec<BindGroupEntry>>(),
 			label: Some("color_material_bind_group"),
 			layout: &color_pipeline.material2d_layout,
 		});
@@ -195,36 +190,29 @@ impl Material2d for ColorMaterial {
 		render_device: &RenderDevice,
 	) -> bevy_render::render_resource::BindGroupLayout {
 		render_device.create_bind_group_layout(&BindGroupLayoutDescriptor {
-			entries: &[
-				BindGroupLayoutEntry {
-					binding: 0,
-					visibility: ShaderStages::FRAGMENT,
-					ty: BindingType::Buffer {
+			entries: &(0u32..)
+				.zip([
+					BindingType::Buffer {
 						ty: BufferBindingType::Uniform,
 						has_dynamic_offset: false,
 						min_binding_size: Some(ColorMaterialUniformData::min_size()),
 					},
-					count: None,
-				},
-				// Texture
-				BindGroupLayoutEntry {
-					binding: 1,
-					visibility: ShaderStages::FRAGMENT,
-					ty: BindingType::Texture {
+					// Texture,
+					BindingType::Texture {
 						multisampled: false,
 						sample_type: TextureSampleType::Float { filterable: true },
 						view_dimension: TextureViewDimension::D2,
 					},
-					count: None,
-				},
-				// Texture Sampler
-				BindGroupLayoutEntry {
-					binding: 2,
+					// Texture sampler
+					BindingType::Sampler(SamplerBindingType::Filtering),
+				])
+				.map(|(binding, ty)| BindGroupLayoutEntry {
+					binding,
 					visibility: ShaderStages::FRAGMENT,
-					ty: BindingType::Sampler(SamplerBindingType::Filtering),
+					ty,
 					count: None,
-				},
-			],
+				})
+				.collect::<Vec<BindGroupLayoutEntry>>(),
 			label: Some("color_material_layout"),
 		})
 	}
