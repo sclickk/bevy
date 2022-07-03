@@ -4,6 +4,7 @@
 use bevy::{
 	diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin},
 	prelude::*,
+	window::PresentMode,
 };
 
 struct Foxes {
@@ -16,10 +17,11 @@ fn main() {
 	let mut app = App::new();
 	app.insert_resource(WindowDescriptor {
 		title: "🦊🦊🦊 Many Foxes! 🦊🦊🦊".to_string(),
+		present_mode: PresentMode::Immediate,
 		..Default::default()
 	});
 	app.add_plugins(DefaultPlugins);
-	app.add_plugin(FrameTimeDiagnosticsPlugin);
+	app.init_plugin::<FrameTimeDiagnosticsPlugin>();
 	app.init_plugin::<LogDiagnosticsPlugin>();
 	app.insert_resource(Foxes {
 		count: std::env::args()

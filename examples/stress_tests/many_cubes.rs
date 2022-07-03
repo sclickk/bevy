@@ -14,10 +14,15 @@ use bevy::{
 	diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin},
 	math::{DVec2, DVec3},
 	prelude::*,
+	window::PresentMode,
 };
 
 fn main() {
 	let mut app = App::new();
+	app.insert_resource(WindowDescriptor {
+		present_mode: PresentMode::Immediate,
+		..Default::default()
+	});
 	app.add_plugins(DefaultPlugins);
 	app.init_plugin::<FrameTimeDiagnosticsPlugin>();
 	app.init_plugin::<LogDiagnosticsPlugin>();

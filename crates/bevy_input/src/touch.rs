@@ -354,11 +354,11 @@ mod test {
 
 		let touch_event = Touch {
 			id: 4,
-			start_position: Vec2::new(0.0, 0.0),
+			start_position: Vec2::ZERO,
 			start_force: None,
-			previous_position: Vec2::new(0.0, 0.0),
+			previous_position: Vec2::ZERO,
 			previous_force: None,
-			position: Vec2::new(0.0, 0.0),
+			position: Vec2::ZERO,
 			force: None,
 		};
 
@@ -387,7 +387,7 @@ mod test {
 
 		let touch_event = TouchInput {
 			phase: TouchPhase::Started,
-			position: Vec2::new(4.0, 4.0),
+			position: Vec2::splat(4.0),
 			force: None,
 			id: 4,
 		};
@@ -405,7 +405,7 @@ mod test {
 
 		let moved_touch_event = TouchInput {
 			phase: TouchPhase::Moved,
-			position: Vec2::new(5.0, 5.0),
+			position: Vec2::splat(5.0),
 			force: None,
 			id: touch_event.id,
 		};
@@ -426,7 +426,7 @@ mod test {
 
 		let cancel_touch_event = TouchInput {
 			phase: TouchPhase::Cancelled,
-			position: Vec2::new(1.0, 1.0),
+			position: Vec2::ONE,
 			force: None,
 			id: touch_event.id,
 		};
@@ -447,7 +447,7 @@ mod test {
 
 		let end_touch_event = TouchInput {
 			phase: TouchPhase::Ended,
-			position: Vec2::new(4.0, 4.0),
+			position: Vec2::splat(4.0),
 			force: None,
 			id: 4,
 		};
@@ -472,7 +472,7 @@ mod test {
 
 		let touch_event = TouchInput {
 			phase: TouchPhase::Started,
-			position: Vec2::new(4.0, 4.0),
+			position: Vec2::splat(4.0),
 			force: None,
 			id: 4,
 		};
@@ -494,7 +494,7 @@ mod test {
 
 		let touch_event = TouchInput {
 			phase: TouchPhase::Ended,
-			position: Vec2::new(4.0, 4.0),
+			position: Vec2::splat(4.0),
 			force: None,
 			id: 4,
 		};
@@ -516,7 +516,7 @@ mod test {
 
 		let touch_event = TouchInput {
 			phase: TouchPhase::Cancelled,
-			position: Vec2::new(4.0, 4.0),
+			position: Vec2::splat(4.0),
 			force: None,
 			id: 4,
 		};
