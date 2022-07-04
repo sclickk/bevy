@@ -1269,34 +1269,31 @@ pub fn check_light_mesh_visibility(
 
 		let view_mask = maybe_view_mask.copied().unwrap_or_default();
 
-		for (
-			entity,
-			visibility,
-			mut computed_visibility,
-			maybe_entity_mask,
-			maybe_aabb,
-			maybe_transform,
-		) in visible_entity_query.iter_mut()
-		{
-			if !visibility.is_visible {
-				continue;
-			}
+		visible_entity_query.for_each_mut(
+			|(
+				entity,
+				visibility,
+				mut computed_visibility,
+				maybe_entity_mask,
+				maybe_aabb,
+				maybe_transform,
+			)| {
+				if visibility.is_visible {
+					let entity_mask = maybe_entity_mask.copied().unwrap_or_default();
+					if view_mask.intersects(&entity_mask) {
+						// If we have an aabb and transform, do frustum culling
+						if let (Some(aabb), Some(transform)) = (maybe_aabb, maybe_transform) {
+							if !frustum.intersects_obb(aabb, &transform.compute_matrix(), true) {
+								return;
+							}
+						}
 
-			let entity_mask = maybe_entity_mask.copied().unwrap_or_default();
-			if !view_mask.intersects(&entity_mask) {
-				continue;
-			}
-
-			// If we have an aabb and transform, do frustum culling
-			if let (Some(aabb), Some(transform)) = (maybe_aabb, maybe_transform) {
-				if !frustum.intersects_obb(aabb, &transform.compute_matrix(), true) {
-					continue;
+						computed_visibility.is_visible = true;
+						visible_entities.entities.push(entity);
+					}
 				}
-			}
-
-			computed_visibility.is_visible = true;
-			visible_entities.entities.push(entity);
-		}
+			},
+		);
 
 		// TODO: check for big changes in visible entities len() vs capacity() (ex: 2x) and resize
 		// to prevent holding unneeded memory

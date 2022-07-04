@@ -188,7 +188,7 @@ pub fn check_visibility(
 		computed_visibility.is_visible = false;
 	}
 
-	for (mut visible_entities, frustum, maybe_view_mask) in view_query.iter_mut() {
+	view_query.for_each_mut(|(mut visible_entities, frustum, maybe_view_mask)| {
 		let view_mask = maybe_view_mask.copied().unwrap_or_default();
 		visible_entities.entities.clear();
 		visible_entity_query.p1().par_for_each_mut(
@@ -241,5 +241,5 @@ pub fn check_visibility(
 		for cell in thread_queues.iter_mut() {
 			visible_entities.entities.append(cell.get_mut());
 		}
-	}
+	});
 }

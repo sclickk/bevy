@@ -1,13 +1,10 @@
 //! A simplified implementation of the classic game "Breakout".
 
 use bevy::{
+	diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin},
 	prelude::*,
 	sprite::collide_aabb::{collide, Collision},
 	time::FixedTimestep,
-	diagnostic::{
-		LogDiagnosticsPlugin,
-		FrameTimeDiagnosticsPlugin,
-	}
 };
 
 // Defines the amount of time that should elapse between each physics step.

@@ -74,15 +74,13 @@ pub fn ui_focus_system(
 	let mouse_released =
 		mouse_button_input.just_released(MouseButton::Left) || touches_input.any_just_released();
 	if mouse_released {
-		for (_entity, _node, _global_transform, interaction, _focus_policy, _clip) in
-			node_query.iter_mut()
-		{
+		node_query.for_each_mut(|(_, _, _, interaction, _, _)| {
 			if let Some(mut interaction) = interaction {
 				if *interaction == Interaction::Clicked {
 					*interaction = Interaction::None;
 				}
 			}
-		}
+		});
 	}
 
 	let mouse_clicked =
