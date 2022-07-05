@@ -1,3 +1,4 @@
+use bevy_render::render_resource::Extent3d;
 use bevy_math::Vec2;
 use bevy_reflect::Reflect;
 use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Sub, SubAssign};
@@ -43,6 +44,15 @@ impl<T: Default + Reflect + PartialEq> Default for UiRect<T> {
 pub struct Size<T: Reflect + PartialEq = f32> {
 	pub width: T,
 	pub height: T,
+}
+
+impl From<Extent3d> for Size {
+	fn from(extent3d: Extent3d) -> Self {
+		Self {
+			width: extent3d.width as f32,
+			height: extent3d.height as f32,
+		}
+	}
 }
 
 impl<T: Reflect + PartialEq> Size<T> {

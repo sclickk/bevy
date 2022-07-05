@@ -27,10 +27,7 @@ pub fn image_node_system(
 ) {
 	query.for_each_mut(|(mut calculated_size, image)| {
 		if let Some(texture) = textures.get(image) {
-			let size = Size {
-				width: texture.texture_descriptor.size.width as f32,
-				height: texture.texture_descriptor.size.height as f32,
-			};
+			let size = Size::from(texture.texture_descriptor.size);
 			// Update only if size has changed to avoid needless layout calculations
 			if size != calculated_size.size {
 				calculated_size.size = size;
