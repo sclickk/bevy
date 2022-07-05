@@ -348,7 +348,7 @@ impl<'w> BuildWorldChildren for EntityMut<'w> {
 			let mut builder = WorldChildBuilder {
 				current_entity: None,
 				parent_entities: vec![entity],
-				// SAFE: self.update_location() is called below. It is impossible to make EntityMut
+				// SAFETY: self.update_location() is called below. It is impossible to make EntityMut
 				// function calls on `self` within the scope defined here
 				world: unsafe { self.world_mut() },
 			};
@@ -362,7 +362,7 @@ impl<'w> BuildWorldChildren for EntityMut<'w> {
 	fn push_children(&mut self, children: &[Entity]) -> &mut Self {
 		let parent = self.id();
 		{
-			// SAFE: parent entity is not modified and its location is updated manually
+			// SAFETY: parent entity is not modified and its location is updated manually
 			let world = unsafe { self.world_mut() };
 			for child in children.iter() {
 				world
@@ -386,7 +386,7 @@ impl<'w> BuildWorldChildren for EntityMut<'w> {
 	fn insert_children(&mut self, index: usize, children: &[Entity]) -> &mut Self {
 		let parent = self.id();
 		{
-			// SAFE: parent entity is not modified and its location is updated manually
+			// SAFETY: parent entity is not modified and its location is updated manually
 			let world = unsafe { self.world_mut() };
 			for child in children.iter() {
 				world
@@ -410,7 +410,7 @@ impl<'w> BuildWorldChildren for EntityMut<'w> {
 
 	fn remove_children(&mut self, children: &[Entity]) -> &mut Self {
 		let parent = self.id();
-		// SAFE: This doesn't change the parent's location
+		// SAFETY: This doesn't change the parent's location
 		let world = unsafe { self.world_mut() };
 		for child in children.iter() {
 			let mut child = world.entity_mut(*child);

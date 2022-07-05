@@ -292,9 +292,8 @@ impl<'w, 's, Q: WorldQuery, F: WorldQuery> Query<'w, 's, Q, F> {
 	/// # bevy_ecs::system::assert_is_system(report_names_system);
 	/// ```
 	#[inline]
-	#[deprecated]
 	pub fn iter(&self) -> QueryIter<'_, 's, Q, ROQueryFetch<'_, Q>, F> {
-		// SAFE: system runs without conflicts with other systems.
+		// SAFETY: system runs without conflicts with other systems.
 		// same-system queries have runtime borrow checks when they conflict
 		unsafe {
 			self
@@ -324,11 +323,14 @@ impl<'w, 's, Q: WorldQuery, F: WorldQuery> Query<'w, 's, Q, F> {
 	/// # bevy_ecs::system::assert_is_system(gravity_system);
 	/// ```
 	#[inline]
-	// #[deprecated]
 	pub fn iter_mut(&mut self) -> QueryIter<'_, '_, Q, QueryFetch<'_, Q>, F> {
-		// SAFE: system runs without conflicts with other systems.
+		// SAFETY: system runs without conflicts with other systems.
 		// same-system queries have runtime borrow checks when they conflict
-		self.into_iter()
+		unsafe {
+			self
+				.state
+				.iter_unchecked_manual(self.world, self.last_change_tick, self.change_tick)
+		}
 	}
 
 	/// Returns an [`Iterator`] over all possible combinations of `K` query results without repetition.
@@ -340,7 +342,7 @@ impl<'w, 's, Q: WorldQuery, F: WorldQuery> Query<'w, 's, Q, F> {
 	/// - if K > N: empty set (no K-sized combinations exist)
 	#[inline]
 	pub fn iter_combinations<const K: usize>(&self) -> QueryCombinationIter<'_, '_, Q, F, K> {
-		// SAFE: system runs without conflicts with other systems.
+		// SAFETY: system runs without conflicts with other systems.
 		// same-system queries have runtime borrow checks when they conflict
 		unsafe {
 			self.state.iter_combinations_unchecked_manual(
@@ -375,7 +377,7 @@ impl<'w, 's, Q: WorldQuery, F: WorldQuery> Query<'w, 's, Q, F> {
 	/// For immutable access see [`Query::iter_combinations`].
 	#[inline]
 	pub fn iter_combinations_mut<const K: usize>(&mut self) -> QueryCombinationIter<'_, '_, Q, F, K> {
-		// SAFE: system runs without conflicts with other systems.
+		// SAFETY: system runs without conflicts with other systems.
 		// same-system queries have runtime borrow checks when they conflict
 		unsafe {
 			self.state.iter_combinations_unchecked_manual(
@@ -444,7 +446,7 @@ impl<'w, 's, Q: WorldQuery, F: WorldQuery> Query<'w, 's, Q, F> {
 	/// this call does not result in multiple mutable references to the same component
 	#[inline]
 	pub unsafe fn iter_unsafe(&'s self) -> QueryIter<'w, 's, Q, QueryFetch<'w, Q>, F> {
-		// SEMI-SAFE: system runs without conflicts with other systems.
+		// SEMI-SAFETY: system runs without conflicts with other systems.
 		// same-system queries have runtime borrow checks when they conflict
 		self
 			.state
@@ -461,7 +463,7 @@ impl<'w, 's, Q: WorldQuery, F: WorldQuery> Query<'w, 's, Q, F> {
 	pub unsafe fn iter_combinations_unsafe<const K: usize>(
 		&self,
 	) -> QueryCombinationIter<'_, '_, Q, F, K> {
-		// SEMI-SAFE: system runs without conflicts with other systems.
+		// SEMI-SAFETY: system runs without conflicts with other systems.
 		// same-system queries have runtime borrow checks when they conflict
 		self.state.iter_combinations_unchecked_manual(
 			self.world,
@@ -518,7 +520,7 @@ impl<'w, 's, Q: WorldQuery, F: WorldQuery> Query<'w, 's, Q, F> {
 	/// ```
 	#[inline]
 	pub fn for_each<'this>(&'this self, f: impl FnMut(ROQueryItem<'this, Q>)) {
-		// SAFE: system runs without conflicts with other systems.
+		// SAFETY: system runs without conflicts with other systems.
 		// same-system queries have runtime borrow checks when they conflict
 		unsafe {
 			self
@@ -555,7 +557,7 @@ impl<'w, 's, Q: WorldQuery, F: WorldQuery> Query<'w, 's, Q, F> {
 	/// ```
 	#[inline]
 	pub fn for_each_mut<'a, FN: FnMut(QueryItem<'a, Q>)>(&'a mut self, f: FN) {
-		// SAFE: system runs without conflicts with other systems. same-system queries have runtime
+		// SAFETY: system runs without conflicts with other systems. same-system queries have runtime
 		// borrow checks when they conflict
 		unsafe {
 			self
@@ -600,7 +602,7 @@ impl<'w, 's, Q: WorldQuery, F: WorldQuery> Query<'w, 's, Q, F> {
 		batch_size: usize,
 		f: impl Fn(ROQueryItem<'this, Q>) + Send + Sync + Clone,
 	) {
-		// SAFE: system runs without conflicts with other systems. same-system queries have runtime
+		// SAFETY: system runs without conflicts with other systems. same-system queries have runtime
 		// borrow checks when they conflict
 		unsafe {
 			self
@@ -629,7 +631,7 @@ impl<'w, 's, Q: WorldQuery, F: WorldQuery> Query<'w, 's, Q, F> {
 		batch_size: usize,
 		f: FN,
 	) {
-		// SAFE: system runs without conflicts with other systems. same-system queries have runtime
+		// SAFETY: system runs without conflicts with other systems. same-system queries have runtime
 		// borrow checks when they conflict
 		unsafe {
 			self
@@ -680,7 +682,7 @@ impl<'w, 's, Q: WorldQuery, F: WorldQuery> Query<'w, 's, Q, F> {
 	) where
 		EntityList::Item: Borrow<Entity>,
 	{
-		// SAFE: system runs without conflicts with other systems.
+		// SAFETY: system runs without conflicts with other systems.
 		// same-system queries have runtime borrow checks when they conflict
 		unsafe {
 			self.state.many_for_each_unchecked_manual(
@@ -726,7 +728,7 @@ impl<'w, 's, Q: WorldQuery, F: WorldQuery> Query<'w, 's, Q, F> {
 	/// ```
 	#[inline]
 	pub fn get(&self, entity: Entity) -> Result<ROQueryItem<'_, Q>, QueryEntityError> {
-		// SAFE: system runs without conflicts with other systems.
+		// SAFETY: system runs without conflicts with other systems.
 		// same-system queries have runtime borrow checks when they conflict
 		unsafe {
 			self
@@ -753,7 +755,7 @@ impl<'w, 's, Q: WorldQuery, F: WorldQuery> Query<'w, 's, Q, F> {
 		&self,
 		entities: [Entity; N],
 	) -> Result<[ROQueryItem<'_, Q>; N], QueryEntityError> {
-		// SAFE: it is the scheduler's responsibility to ensure that `Query` is never handed out on the wrong `World`.
+		// SAFETY: it is the scheduler's responsibility to ensure that `Query` is never handed out on the wrong `World`.
 		unsafe {
 			self.state.get_many_read_only_manual(
 				self.world,
@@ -830,7 +832,7 @@ impl<'w, 's, Q: WorldQuery, F: WorldQuery> Query<'w, 's, Q, F> {
 	/// ```
 	#[inline]
 	pub fn get_mut(&mut self, entity: Entity) -> Result<QueryItem<'_, Q>, QueryEntityError> {
-		// SAFE: system runs without conflicts with other systems.
+		// SAFETY: system runs without conflicts with other systems.
 		// same-system queries have runtime borrow checks when they conflict
 		unsafe {
 			self
@@ -855,7 +857,7 @@ impl<'w, 's, Q: WorldQuery, F: WorldQuery> Query<'w, 's, Q, F> {
 		&mut self,
 		entities: [Entity; N],
 	) -> Result<[QueryItem<'_, Q>; N], QueryEntityError> {
-		// SAFE: scheduler ensures safe Query world access
+		// SAFETY: scheduler ensures safe Query world access
 		unsafe {
 			self.state.get_many_unchecked_manual(
 				self.world,
@@ -926,7 +928,7 @@ impl<'w, 's, Q: WorldQuery, F: WorldQuery> Query<'w, 's, Q, F> {
 		&'s self,
 		entity: Entity,
 	) -> Result<QueryItem<'w, Q>, QueryEntityError> {
-		// SEMI-SAFE: system runs without conflicts with other systems.
+		// SEMI-SAFETY: system runs without conflicts with other systems.
 		// same-system queries have runtime borrow checks when they conflict
 		self
 			.state
@@ -1022,7 +1024,7 @@ impl<'w, 's, Q: WorldQuery, F: WorldQuery> Query<'w, 's, Q, F> {
 		&mut self,
 		entity: Entity,
 	) -> Result<Mut<'_, T>, QueryComponentError> {
-		// SAFE: unique access to query (preventing aliased access)
+		// SAFETY: unique access to query (preventing aliased access)
 		unsafe { self.get_component_unchecked_mut(entity) }
 	}
 
@@ -1128,6 +1130,9 @@ impl<'w, 's, Q: WorldQuery, F: WorldQuery> Query<'w, 's, Q, F> {
 	/// ```
 	#[inline]
 	pub fn get_single(&self) -> Result<ROQueryItem<'_, Q>, QuerySingleError> {
+		// SAFETY:
+		// the query ensures that the components it accesses are not mutably accessible somewhere else
+		// and the query is read only.
 		unsafe {
 			self
 				.state
@@ -1192,6 +1197,9 @@ impl<'w, 's, Q: WorldQuery, F: WorldQuery> Query<'w, 's, Q, F> {
 	/// ```
 	#[inline]
 	pub fn get_single_mut(&mut self) -> Result<QueryItem<'_, Q>, QuerySingleError> {
+		// SAFETY:
+		// the query ensures mutable access to the components it accesses, and the query
+		// is uniquely borrowed
 		unsafe {
 			self
 				.state
@@ -1254,7 +1262,7 @@ impl<'w, 's, Q: WorldQuery, F: WorldQuery> Query<'w, 's, Q, F> {
 	/// ```
 	#[inline]
 	pub fn contains(&self, entity: Entity) -> bool {
-		// SAFE: NopFetch does not access any members while &self ensures no one has exclusive access
+		// SAFETY: NopFetch does not access any members while &self ensures no one has exclusive access
 		unsafe {
 			self
 				.state
@@ -1369,7 +1377,7 @@ impl<'w, 's, Q: ReadOnlyWorldQuery, F: WorldQuery> Query<'w, 's, Q, F> {
 	/// ```
 	#[inline]
 	pub fn get_inner(&'s self, entity: Entity) -> Result<ROQueryItem<'w, Q>, QueryEntityError> {
-		// SAFE: system runs without conflicts with other systems.
+		// SAFETY: system runs without conflicts with other systems.
 		// same-system queries have runtime borrow checks when they conflict
 		unsafe {
 			self
@@ -1408,7 +1416,7 @@ impl<'w, 's, Q: ReadOnlyWorldQuery, F: WorldQuery> Query<'w, 's, Q, F> {
 	/// ```
 	#[inline]
 	pub fn iter_inner(&'s self) -> QueryIter<'w, 's, Q, ROQueryFetch<'w, Q>, F> {
-		// SAFE: system runs without conflicts with other systems.
+		// SAFETY: system runs without conflicts with other systems.
 		// same-system queries have runtime borrow checks when they conflict
 		unsafe {
 			self

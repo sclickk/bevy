@@ -20,8 +20,9 @@ pub struct CorePipelinePlugin;
 
 impl Plugin for CorePipelinePlugin {
 	fn build(&self, app: &mut App) {
+		app.register_type::<ClearColor>();
 		app.init_resource::<ClearColor>();
-		app.init_plugin::<ExtractResourcePlugin<ClearColor>>();
+		app.add_plugin(ExtractResourcePlugin::<ClearColor>::default());
 		app.add_plugin(Core2dPlugin);
 		app.add_plugin(Core3dPlugin);
 	}

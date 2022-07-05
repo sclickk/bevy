@@ -428,7 +428,7 @@ impl Archetypes {
 
 	#[inline]
 	pub fn empty(&self) -> &Archetype {
-		// SAFE: empty archetype always exists
+		// SAFETY: empty archetype always exists
 		unsafe {
 			self
 				.archetypes
@@ -438,7 +438,7 @@ impl Archetypes {
 
 	#[inline]
 	pub(crate) fn empty_mut(&mut self) -> &mut Archetype {
-		// SAFE: empty archetype always exists
+		// SAFETY: empty archetype always exists
 		unsafe {
 			self
 				.archetypes
@@ -448,7 +448,7 @@ impl Archetypes {
 
 	#[inline]
 	pub fn resource(&self) -> &Archetype {
-		// SAFE: resource archetype always exists
+		// SAFETY: resource archetype always exists
 		unsafe {
 			self
 				.archetypes
@@ -458,7 +458,7 @@ impl Archetypes {
 
 	#[inline]
 	pub(crate) fn resource_mut(&mut self) -> &mut Archetype {
-		// SAFE: resource archetype always exists
+		// SAFETY: resource archetype always exists
 		unsafe {
 			self
 				.archetypes

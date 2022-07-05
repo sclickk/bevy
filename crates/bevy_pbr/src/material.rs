@@ -342,99 +342,88 @@ pub fn queue_material_meshes<M: Material>(
 ) where
 	M::Data: PartialEq + Eq + Hash + Clone,
 {
-	views.for_each_mut(|(view, visible_entities, mut opaque_phase, mut alpha_mask_phase, mut transparent_phase)| {
-		let draw_opaque_pbr = opaque_draw_functions
-			.read()
-			.get_id::<DrawMaterial<M>>()
-			.unwrap();
-		let draw_alpha_mask_pbr = alpha_mask_draw_functions
-			.read()
-			.get_id::<DrawMaterial<M>>()
-			.unwrap();
-		let draw_transparent_pbr = transparent_draw_functions
-			.read()
-			.get_id::<DrawMaterial<M>>()
-			.unwrap();
+	views.for_each_mut(
+		|(view, visible_entities, mut opaque_phase, mut alpha_mask_phase, mut transparent_phase)| {
+			let draw_opaque_pbr = opaque_draw_functions
+				.read()
+				.get_id::<DrawMaterial<M>>()
+				.unwrap();
+			let draw_alpha_mask_pbr = alpha_mask_draw_functions
+				.read()
+				.get_id::<DrawMaterial<M>>()
+				.unwrap();
+			let draw_transparent_pbr = transparent_draw_functions
+				.read()
+				.get_id::<DrawMaterial<M>>()
+				.unwrap();
 
-		let inverse_view_matrix = view.transform.compute_matrix().inverse();
-		let inverse_view_row_2 = inverse_view_matrix.row(2);
+			let rangefinder = view.rangefinder3d();
+			// let msaa_key = MeshPipelineKey::from_msaa_samples(msaa.samples);
 
-		for visible_entity in &visible_entities.entities {
-			if let Ok((material_handle, mesh_handle, mesh_uniform)) = material_meshes.get(*visible_entity)
-			{
-				if let Some(material) = render_materials.get(material_handle) {
-					if let Some(mesh) = render_meshes.get(mesh_handle) {
-						let mut mesh_key = MeshPipelineKey::from(mesh.primitive_topology)
-							| MeshPipelineKey::from_msaa_samples(msaa.samples);
-						let alpha_mode = material.properties.alpha_mode;
-						if let AlphaMode::Blend = alpha_mode {
-							mesh_key |= MeshPipelineKey::TRANSPARENT_MAIN_PASS;
-						}
-
-						let pipeline_id = pipelines.specialize(
-							&mut pipeline_cache,
-							&material_pipeline,
-							MaterialPipelineKey {
-								mesh_key,
-								bind_group_data: material.key.clone(),
-							},
-							&mesh.layout,
-						);
-						let pipeline_id = match pipeline_id {
-							Ok(id) => id,
-							Err(err) => {
-								error!("{}", err);
-								continue;
+			for visible_entity in &visible_entities.entities {
+				if let Ok((material_handle, mesh_handle, mesh_uniform)) =
+					material_meshes.get(*visible_entity)
+				{
+					if let Some(material) = render_materials.get(material_handle) {
+						if let Some(mesh) = render_meshes.get(mesh_handle) {
+							let mut mesh_key = MeshPipelineKey::from(mesh.primitive_topology)
+								| MeshPipelineKey::from_msaa_samples(msaa.samples);
+							let alpha_mode = material.properties.alpha_mode;
+							if let AlphaMode::Blend = alpha_mode {
+								mesh_key |= MeshPipelineKey::TRANSPARENT_MAIN_PASS;
 							}
-						};
 
-						// NOTE: row 2 of the inverse view matrix dotted with column 3 of the model matrix
-						// gives the z component of translation of the mesh in view space
-						let mesh_z = inverse_view_row_2.dot(mesh_uniform.transform.col(3))
-							+ material.properties.depth_bias;
-						match alpha_mode {
-							AlphaMode::Opaque => {
-								opaque_phase.add(Opaque3d {
-									entity: *visible_entity,
-									draw_function: draw_opaque_pbr,
-									pipeline: pipeline_id,
-									// NOTE: Front-to-back ordering for opaque with ascending sort means near should have the
-									// lowest sort key and getting further away should increase. As we have
-									// -z in front of the camera, values in view space decrease away from the
-									// camera. Flipping the sign of mesh_z results in the correct front-to-back ordering
-									distance: -mesh_z,
-								});
-							}
-							AlphaMode::Mask(_) => {
-								alpha_mask_phase.add(AlphaMask3d {
-									entity: *visible_entity,
-									draw_function: draw_alpha_mask_pbr,
-									pipeline: pipeline_id,
-									// NOTE: Front-to-back ordering for alpha mask with ascending sort means near should have the
-									// lowest sort key and getting further away should increase. As we have
-									// -z in front of the camera, values in view space decrease away from the
-									// camera. Flipping the sign of mesh_z results in the correct front-to-back ordering
-									distance: -mesh_z,
-								});
-							}
-							AlphaMode::Blend => {
-								transparent_phase.add(Transparent3d {
-									entity: *visible_entity,
-									draw_function: draw_transparent_pbr,
-									pipeline: pipeline_id,
-									// NOTE: Back-to-front ordering for transparent with ascending sort means far should have the
-									// lowest sort key and getting closer should increase. As we have
-									// -z in front of the camera, the largest distance is -far with values increasing toward the
-									// camera. As such we can just use mesh_z as the distance
-									distance: mesh_z,
-								});
+							let pipeline_id = pipelines.specialize(
+								&mut pipeline_cache,
+								&material_pipeline,
+								MaterialPipelineKey {
+									mesh_key,
+									bind_group_data: material.key.clone(),
+								},
+								&mesh.layout,
+							);
+							let pipeline_id = match pipeline_id {
+								Ok(id) => id,
+								Err(err) => {
+									error!("{}", err);
+									continue;
+								}
+							};
+
+							let distance =
+								rangefinder.distance(&mesh_uniform.transform) + material.properties.depth_bias;
+							match alpha_mode {
+								AlphaMode::Opaque => {
+									opaque_phase.add(Opaque3d {
+										entity: *visible_entity,
+										draw_function: draw_opaque_pbr,
+										pipeline: pipeline_id,
+										distance,
+									});
+								}
+								AlphaMode::Mask(_) => {
+									alpha_mask_phase.add(AlphaMask3d {
+										entity: *visible_entity,
+										draw_function: draw_alpha_mask_pbr,
+										pipeline: pipeline_id,
+										distance,
+									});
+								}
+								AlphaMode::Blend => {
+									transparent_phase.add(Transparent3d {
+										entity: *visible_entity,
+										draw_function: draw_transparent_pbr,
+										pipeline: pipeline_id,
+										distance,
+									});
+								}
 							}
 						}
 					}
 				}
 			}
-		}
-	});
+		},
+	);
 }
 
 /// Common [`Material`] properties, calculated for a specific material instance.

@@ -478,7 +478,7 @@ impl Components {
 
 	#[inline]
 	pub fn init_resource<T: Resource>(&mut self) -> ComponentId {
-		// SAFE: The [`ComponentDescriptor`] matches the [`TypeId`]
+		// SAFETY: The [`ComponentDescriptor`] matches the [`TypeId`]
 		unsafe {
 			self.get_or_insert_resource_with(TypeId::of::<T>(), || {
 				ComponentDescriptor::new_resource::<T>()
@@ -488,7 +488,7 @@ impl Components {
 
 	#[inline]
 	pub fn init_non_send<T: Any>(&mut self) -> ComponentId {
-		// SAFE: The [`ComponentDescriptor`] matches the [`TypeId`]
+		// SAFETY: The [`ComponentDescriptor`] matches the [`TypeId`]
 		unsafe {
 			self.get_or_insert_resource_with(TypeId::of::<T>(), || {
 				ComponentDescriptor::new_non_send::<T>(StorageType::default())

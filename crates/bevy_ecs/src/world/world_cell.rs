@@ -199,7 +199,7 @@ impl<'w> WorldCell<'w> {
 		let resource_archetype = self.world.archetypes.resource();
 		let archetype_component_id = resource_archetype.get_archetype_component_id(component_id)?;
 		Some(WorldBorrow::new(
-			// SAFE: ComponentId matches TypeId
+			// SAFETY: ComponentId matches TypeId
 			unsafe { self.world.get_resource_with_id(component_id)? },
 			archetype_component_id,
 			self.access.clone(),
@@ -234,7 +234,7 @@ impl<'w> WorldCell<'w> {
 		let resource_archetype = self.world.archetypes.resource();
 		let archetype_component_id = resource_archetype.get_archetype_component_id(component_id)?;
 		Some(WorldBorrowMut::new(
-			// SAFE: ComponentId matches TypeId and access is checked by WorldBorrowMut
+			// SAFETY: ComponentId matches TypeId and access is checked by WorldBorrowMut
 			unsafe {
 				self
 					.world
@@ -273,7 +273,7 @@ impl<'w> WorldCell<'w> {
 		let resource_archetype = self.world.archetypes.resource();
 		let archetype_component_id = resource_archetype.get_archetype_component_id(component_id)?;
 		Some(WorldBorrow::new(
-			// SAFE: ComponentId matches TypeId
+			// SAFETY: ComponentId matches TypeId
 			unsafe { self.world.get_non_send_with_id(component_id)? },
 			archetype_component_id,
 			self.access.clone(),
@@ -308,7 +308,7 @@ impl<'w> WorldCell<'w> {
 		let resource_archetype = self.world.archetypes.resource();
 		let archetype_component_id = resource_archetype.get_archetype_component_id(component_id)?;
 		Some(WorldBorrowMut::new(
-			// SAFE: ComponentId matches TypeId and access is checked by WorldBorrowMut
+			// SAFETY: ComponentId matches TypeId and access is checked by WorldBorrowMut
 			unsafe {
 				self
 					.world

@@ -750,14 +750,25 @@ impl App {
 	/// ```
 	/// # use bevy_app::prelude::*;
 	/// #
+	/// # // Dummies created to avoid using `bevy_log`,
+	/// # // which pulls in too many dependencies and breaks rust-analyzer
+	/// # pub mod bevy_log {
+	/// #     use bevy_app::prelude::*;
+	/// #     #[derive(Default)]
+	/// #     pub struct LogPlugin;
+	/// #     impl Plugin for LogPlugin{
+	/// #        fn build(&self, app: &mut App) {}
+	/// #     }
+	/// # }
 	/// App::new().add_plugin(bevy_log::LogPlugin::default());
 	/// ```
-	pub fn add_plugin<T>(&mut self, plugin: T)
+	pub fn add_plugin<T>(&mut self, plugin: T) -> &mut Self
 	where
 		T: Plugin,
 	{
 		debug!("added plugin: {}", plugin.name());
 		plugin.build(self);
+		self
 	}
 
 	/// Alternatyive to add_plugin(default());
@@ -780,13 +791,7 @@ impl App {
 	///
 	/// ## Examples
 	/// ```
-	/// # use bevy_app::{prelude::*, PluginGroupBuilder};
-	/// #
-	/// # // Dummy created to avoid using bevy_internal, which pulls in to many dependencies.
-	/// # struct MinimalPlugins;
-	/// # impl PluginGroup for MinimalPlugins {
-	/// #     fn build(&mut self, group: &mut PluginGroupBuilder){;}
-	/// # }
+	/// # use bevy_app::{prelude::*, PluginGroupBuilder, NoopPluginGroup as MinimalPlugins};
 	/// #
 	/// App::new()
 	///     .add_plugins(MinimalPlugins);
@@ -810,7 +815,16 @@ impl App {
 	/// ```
 	/// # use bevy_app::{prelude::*, PluginGroupBuilder};
 	/// #
-	/// # // Dummies created to avoid using bevy_internal which pulls in too many dependencies.
+	/// # // Dummies created to avoid using `bevy_internal` and `bevy_log`,
+	/// # // which pulls in too many dependencies and breaks rust-analyzer
+	/// # pub mod bevy_log {
+	/// #     use bevy_app::prelude::*;
+	/// #     #[derive(Default)]
+	/// #     pub struct LogPlugin;
+	/// #     impl Plugin for LogPlugin{
+	/// #        fn build(&self, app: &mut App) {}
+	/// #     }
+	/// # }
 	/// # struct DefaultPlugins;
 	/// # impl PluginGroup for DefaultPlugins {
 	/// #     fn build(&mut self, group: &mut PluginGroupBuilder){

@@ -35,8 +35,9 @@ impl Plugin for WireframePlugin {
 			Shader::from_wgsl
 		);
 
+		app.register_type::<WireframeConfig>();
 		app.init_resource::<WireframeConfig>();
-		app.init_plugin::<ExtractResourcePlugin<WireframeConfig>>();
+		app.add_plugin(ExtractResourcePlugin::<WireframeConfig>::default());
 
 		if let Ok(render_app) = app.get_sub_app_mut(RenderApp) {
 			render_app.add_render_command::<Opaque3d, DrawWireframes>();
@@ -59,7 +60,8 @@ fn extract_wireframes(mut commands: Commands, query: Query<Entity, With<Wirefram
 #[reflect(Component, Default)]
 pub struct Wireframe;
 
-#[derive(Debug, Clone, Default, ExtractResource)]
+#[derive(Debug, Clone, Default, ExtractResource, Reflect)]
+#[reflect(Resource)]
 pub struct WireframeConfig {
 	/// Whether to show wireframes for all meshes. If `false`, only meshes with a [Wireframe] component will be rendered.
 	pub global: bool,
@@ -125,9 +127,8 @@ fn queue_wireframes(
 		.get_id::<DrawWireframes>()
 		.unwrap();
 	let msaa_key = MeshPipelineKey::from_msaa_samples(msaa.samples);
-	views.for_each_mut(|(view, visible_entities, mut opaque_phase)| {
-		let view_matrix = view.transform.compute_matrix();
-		let view_row_2 = view_matrix.row(2);
+	for (view, visible_entities, mut opaque_phase) in views.iter_mut() {
+		let rangefinder = view.rangefinder3d();
 
 		let add_render_phase =
 			|(entity, mesh_handle, mesh_uniform): (Entity, &Handle<Mesh>, &MeshUniform)| {
@@ -146,7 +147,7 @@ fn queue_wireframes(
 						entity,
 						pipeline: pipeline_id,
 						draw_function: draw_custom,
-						distance: view_row_2.dot(mesh_uniform.transform.col(3)),
+						distance: rangefinder.distance(&mesh_uniform.transform),
 					});
 				}
 			};
@@ -166,7 +167,7 @@ fn queue_wireframes(
 				.filter_map(|visible_entity| query.get(*visible_entity).ok())
 				.for_each(add_render_phase);
 		}
-	})
+	}
 }
 
 type DrawWireframes = (
