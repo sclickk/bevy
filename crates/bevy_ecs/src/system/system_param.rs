@@ -430,12 +430,12 @@ unsafe impl<T: Resource> SystemParamState for ResMutState<T> {
 			.combined_access_mut();
 		if combined_access.has_write(component_id) {
 			panic!(
-                "error[B0002]: ResMut<{}> in system {} conflicts with a previous ResMut<{0}> access. Consider removing the duplicate access.",
-                std::any::type_name::<T>(), system_meta.name);
+				"error[B0002]: ResMut<{}> in system {} conflicts with a previous ResMut<{0}> access. Consider removing the duplicate access.",
+				std::any::type_name::<T>(), system_meta.name);
 		} else if combined_access.has_read(component_id) {
 			panic!(
-                "error[B0002]: ResMut<{}> in system {} conflicts with a previous Res<{0}> access. Consider removing the duplicate access.",
-                std::any::type_name::<T>(), system_meta.name);
+				"error[B0002]: ResMut<{}> in system {} conflicts with a previous Res<{0}> access. Consider removing the duplicate access.",
+				std::any::type_name::<T>(), system_meta.name);
 		}
 		combined_access.add_write(component_id);
 
@@ -566,14 +566,18 @@ impl<'w> SystemParam for &'w World {
 
 unsafe impl SystemParamState for WorldState {
 	fn init(_world: &mut World, system_meta: &mut SystemMeta) -> Self {
+		fn compatability_error() -> ! {
+			panic!("&World conflicts with a previous mutable system parameter. Allowing this would break Rust's mutability rules")
+		}
+
 		let mut access = Access::default();
 		access.read_all();
-		if !system_meta
+
+		(!system_meta
 			.archetype_component_access
-			.is_compatible(&access)
-		{
-			panic!("&World conflicts with a previous mutable system parameter. Allowing this would break Rust's mutability rules");
-		}
+			.is_compatible(&access))
+		.then(compatability_error);
+
 		system_meta
 			.archetype_component_access
 			.extend(&access);
@@ -581,13 +585,12 @@ unsafe impl SystemParamState for WorldState {
 		let mut filtered_access = FilteredAccess::default();
 
 		filtered_access.read_all();
-		if !system_meta
+		(!system_meta
 			.component_access_set
 			.get_conflicts_single(&filtered_access)
-			.is_empty()
-		{
-			panic!("&World conflicts with a previous mutable system parameter. Allowing this would break Rust's mutability rules");
-		}
+			.is_empty())
+		.then(compatability_error);
+
 		system_meta
 			.component_access_set
 			.add(filtered_access);
@@ -888,11 +891,11 @@ unsafe impl<T: 'static> SystemParamState for NonSendState<T> {
 			.component_access_set
 			.combined_access_mut();
 		assert!(
-            !combined_access.has_write(component_id),
-            "error[B0002]: NonSend<{}> in system {} conflicts with a previous mutable resource access ({0}). Consider removing the duplicate access.",
-            std::any::type_name::<T>(),
-            system_meta.name,
-        );
+			!combined_access.has_write(component_id),
+			"error[B0002]: NonSend<{}> in system {} conflicts with a previous mutable resource access ({0}). Consider removing the duplicate access.",
+			std::any::type_name::<T>(),
+			system_meta.name,
+		);
 		combined_access.add_read(component_id);
 
 		let resource_archetype = world.archetypes.resource();
@@ -1002,12 +1005,12 @@ unsafe impl<T: 'static> SystemParamState for NonSendMutState<T> {
 			.combined_access_mut();
 		if combined_access.has_write(component_id) {
 			panic!(
-                "error[B0002]: NonSendMut<{}> in system {} conflicts with a previous mutable resource access ({0}). Consider removing the duplicate access.",
-                std::any::type_name::<T>(), system_meta.name);
+				"error[B0002]: NonSendMut<{}> in system {} conflicts with a previous mutable resource access ({0}). Consider removing the duplicate access.",
+				std::any::type_name::<T>(), system_meta.name);
 		} else if combined_access.has_read(component_id) {
 			panic!(
-                "error[B0002]: NonSendMut<{}> in system {} conflicts with a previous immutable resource access ({0}). Consider removing the duplicate access.",
-                std::any::type_name::<T>(), system_meta.name);
+				"error[B0002]: NonSendMut<{}> in system {} conflicts with a previous immutable resource access ({0}). Consider removing the duplicate access.",
+				std::any::type_name::<T>(), system_meta.name);
 		}
 		combined_access.add_write(component_id);
 

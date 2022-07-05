@@ -17,6 +17,7 @@ use bevy_render::{
 		skinning::{SkinnedMesh, SkinnedMeshInverseBindposes},
 		GpuBufferInfo, Mesh, MeshVertexBufferLayout,
 	},
+	prelude::Msaa,
 	render_asset::RenderAssets,
 	render_phase::{EntityRenderCommand, RenderCommandResult, TrackedRenderPass},
 	render_resource::*,
@@ -527,15 +528,16 @@ impl MeshPipelineKey {
 	const PRIMITIVE_TOPOLOGY_MASK_BITS: u32 = 0b111;
 	const PRIMITIVE_TOPOLOGY_SHIFT_BITS: u32 = Self::MSAA_SHIFT_BITS - 3;
 
-	pub fn from_msaa_samples(msaa_samples: u32) -> Self {
-		let msaa_bits = ((msaa_samples - 1) & Self::MSAA_MASK_BITS) << Self::MSAA_SHIFT_BITS;
-		MeshPipelineKey::from_bits(msaa_bits).unwrap()
+	// TODO: Deprecate and use From<Msaa>
+	pub fn from_msaa_samples(samples: u32) -> Self {
+		Self::from(Msaa { samples })
 	}
 
 	pub fn msaa_samples(&self) -> u32 {
 		((self.bits >> Self::MSAA_SHIFT_BITS) & Self::MSAA_MASK_BITS) + 1
 	}
 
+	#[deprecated]
 	pub fn primitive_topology(&self) -> PrimitiveTopology {
 		let primitive_topology_bits =
 			(self.bits >> Self::PRIMITIVE_TOPOLOGY_SHIFT_BITS) & Self::PRIMITIVE_TOPOLOGY_MASK_BITS;
@@ -550,12 +552,34 @@ impl MeshPipelineKey {
 	}
 }
 
+impl From<Msaa> for MeshPipelineKey {
+	fn from(msaa: Msaa) -> Self {
+		let msaa_bits = ((msaa.samples - 1) & Self::MSAA_MASK_BITS) << Self::MSAA_SHIFT_BITS;
+		MeshPipelineKey::from_bits(msaa_bits).unwrap()
+	}
+}
+
 impl From<PrimitiveTopology> for MeshPipelineKey {
 	fn from(primitive_topology: PrimitiveTopology) -> Self {
 		let primitive_topology_bits = ((primitive_topology as u32)
 			& Self::PRIMITIVE_TOPOLOGY_MASK_BITS)
 			<< Self::PRIMITIVE_TOPOLOGY_SHIFT_BITS;
 		MeshPipelineKey::from_bits(primitive_topology_bits).unwrap()
+	}
+}
+
+impl Into<PrimitiveTopology> for MeshPipelineKey {
+	fn into(self) -> PrimitiveTopology {
+		let primitive_topology_bits =
+			(self.bits >> Self::PRIMITIVE_TOPOLOGY_SHIFT_BITS) & Self::PRIMITIVE_TOPOLOGY_MASK_BITS;
+		match primitive_topology_bits {
+			x if x == PrimitiveTopology::PointList as u32 => PrimitiveTopology::PointList,
+			x if x == PrimitiveTopology::LineList as u32 => PrimitiveTopology::LineList,
+			x if x == PrimitiveTopology::LineStrip as u32 => PrimitiveTopology::LineStrip,
+			x if x == PrimitiveTopology::TriangleList as u32 => PrimitiveTopology::TriangleList,
+			x if x == PrimitiveTopology::TriangleStrip as u32 => PrimitiveTopology::TriangleStrip,
+			_ => PrimitiveTopology::default(),
+		}
 	}
 }
 
@@ -597,21 +621,21 @@ impl SpecializedMeshPipeline for MeshPipeline {
 
 		let vertex_buffer_layout = layout.get_layout(&vertex_attributes)?;
 
-		let (label, blend, depth_write_enabled);
-		if key.contains(MeshPipelineKey::TRANSPARENT_MAIN_PASS) {
-			label = "transparent_mesh_pipeline".into();
-			blend = Some(BlendState::ALPHA_BLENDING);
-			// For the transparent pass, fragments that are closer will be alpha blended
-			// but their depth is not written to the depth buffer
-			depth_write_enabled = false;
-		} else {
-			label = "opaque_mesh_pipeline".into();
-			blend = Some(BlendState::REPLACE);
+		let depth_write_enabled = !key.contains(MeshPipelineKey::TRANSPARENT_MAIN_PASS);
+
+		let (label, blend) = if depth_write_enabled {
 			// For the opaque and alpha mask passes, fragments that are closer will replace
 			// the current fragment value in the output and the depth is written to the
 			// depth buffer
-			depth_write_enabled = true;
-		}
+			("opaque_mesh_pipeline".into(), Some(BlendState::REPLACE))
+		} else {
+			// For the transparent pass, fragments that are closer will be alpha blended
+			// but their depth is not written to the depth buffer
+			(
+				"transparent_mesh_pipeline".into(),
+				Some(BlendState::ALPHA_BLENDING),
+			)
+		};
 
 		Ok(RenderPipelineDescriptor {
 			vertex: VertexState {
@@ -644,7 +668,7 @@ impl SpecializedMeshPipeline for MeshPipeline {
 				unclipped_depth: false,
 				polygon_mode: PolygonMode::Fill,
 				conservative: false,
-				topology: key.primitive_topology(),
+				topology: key.into(),
 				strip_index_format: None,
 			},
 			depth_stencil: Some(DepthStencilState {
@@ -782,62 +806,34 @@ pub fn queue_mesh_view_bind_groups(
 		light_meta.view_gpu_lights.binding(),
 		global_light_meta.gpu_point_lights.binding(),
 	) {
-		for (entity, view_shadow_bindings, view_cluster_bindings) in views.iter() {
-			let view_bind_group = render_device.create_bind_group(&BindGroupDescriptor {
-				entries: &[
-					BindGroupEntry {
-						binding: 0,
-						resource: view_binding.clone(),
-					},
-					BindGroupEntry {
-						binding: 1,
-						resource: light_binding.clone(),
-					},
-					BindGroupEntry {
-						binding: 2,
-						resource: BindingResource::TextureView(
-							&view_shadow_bindings.point_light_depth_texture_view,
-						),
-					},
-					BindGroupEntry {
-						binding: 3,
-						resource: BindingResource::Sampler(&shadow_pipeline.point_light_sampler),
-					},
-					BindGroupEntry {
-						binding: 4,
-						resource: BindingResource::TextureView(
-							&view_shadow_bindings.directional_light_depth_texture_view,
-						),
-					},
-					BindGroupEntry {
-						binding: 5,
-						resource: BindingResource::Sampler(&shadow_pipeline.directional_light_sampler),
-					},
-					BindGroupEntry {
-						binding: 6,
-						resource: point_light_binding.clone(),
-					},
-					BindGroupEntry {
-						binding: 7,
-						resource: view_cluster_bindings
-							.light_index_lists_binding()
-							.unwrap(),
-					},
-					BindGroupEntry {
-						binding: 8,
-						resource: view_cluster_bindings
-							.offsets_and_counts_binding()
-							.unwrap(),
-					},
-				],
-				label: Some("mesh_view_bind_group"),
-				layout: &mesh_pipeline.view_layout,
-			});
-
+		for (entity, view_shadow_bindings, view_cluster_bindings) in views.into_iter() {
 			commands
 				.entity(entity)
 				.insert(MeshViewBindGroup {
-					value: view_bind_group,
+					value: render_device.create_bind_group(&BindGroupDescriptor {
+						entries: &(0u32..)
+							.zip([
+								view_binding.clone(),
+								light_binding.clone(),
+								BindingResource::TextureView(&view_shadow_bindings.point_light_depth_texture_view),
+								BindingResource::Sampler(&shadow_pipeline.point_light_sampler),
+								BindingResource::TextureView(
+									&view_shadow_bindings.directional_light_depth_texture_view,
+								),
+								BindingResource::Sampler(&shadow_pipeline.directional_light_sampler),
+								point_light_binding.clone(),
+								view_cluster_bindings
+									.light_index_lists_binding()
+									.unwrap(),
+								view_cluster_bindings
+									.offsets_and_counts_binding()
+									.unwrap(),
+							])
+							.map(|(binding, resource)| BindGroupEntry { binding, resource })
+							.collect::<Vec<BindGroupEntry>>(),
+						label: Some("mesh_view_bind_group"),
+						layout: &mesh_pipeline.view_layout,
+					}),
 				});
 		}
 	}

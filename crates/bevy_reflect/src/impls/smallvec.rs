@@ -11,19 +11,11 @@ where
 	T::Item: FromReflect + Clone,
 {
 	fn get(&self, index: usize) -> Option<&dyn Reflect> {
-		if index < SmallVec::len(self) {
-			Some(&self[index] as &dyn Reflect)
-		} else {
-			None
-		}
+		(index < SmallVec::len(self)).then(|| &self[index] as &dyn Reflect)
 	}
 
 	fn get_mut(&mut self, index: usize) -> Option<&mut dyn Reflect> {
-		if index < SmallVec::len(self) {
-			Some(&mut self[index] as &mut dyn Reflect)
-		} else {
-			None
-		}
+		(index < SmallVec::len(self)).then(|| &mut self[index] as &mut dyn Reflect)
 	}
 
 	fn len(&self) -> usize {

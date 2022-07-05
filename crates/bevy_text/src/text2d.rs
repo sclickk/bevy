@@ -150,46 +150,49 @@ pub fn update_text2d_layout(
 	let factor_changed = scale_factor_changed.iter().last().is_some();
 	let scale_factor = windows.scale_factor(WindowId::primary());
 
-	for (entity, text_changed, text, maybe_bounds, mut calculated_size) in text_query.iter_mut() {
-		if factor_changed || text_changed || queue.remove(&entity) {
-			let text_bounds = match maybe_bounds {
-				Some(bounds) => Vec2::new(
-					scale_value(bounds.size.x, scale_factor),
-					scale_value(bounds.size.y, scale_factor),
-				),
-				None => Vec2::new(f32::MAX, f32::MAX),
-			};
-			match text_pipeline.queue_text(
-				entity,
-				&fonts,
-				&text.sections,
-				scale_factor,
-				text.alignment,
-				text_bounds,
-				&mut *font_atlas_set_storage,
-				&mut *texture_atlases,
-				&mut *textures,
-			) {
-				Err(TextError::NoSuchFont) => {
-					// There was an error processing the text layout, let's add this entity to the
-					// queue for further processing
-					queue.insert(entity);
-				}
-				Err(e @ TextError::FailedToAddGlyph(_)) => {
-					panic!("Fatal error when processing text: {}.", e);
-				}
-				Ok(()) => {
-					let text_layout_info = text_pipeline
-						.get_glyphs(&entity)
-						.expect("Failed to get glyphs from the pipeline that have just been computed");
-					calculated_size.size = Vec2::new(
-						scale_value(text_layout_info.size.x, 1. / scale_factor),
-						scale_value(text_layout_info.size.y, 1. / scale_factor),
-					);
+	text_query.for_each_mut(
+		|(entity, text_changed, text, maybe_bounds, mut calculated_size)| {
+			if factor_changed || text_changed || queue.remove(&entity) {
+				let text_bounds = maybe_bounds
+					.map(|bounds| {
+						Vec2::new(
+							scale_value(bounds.size.x, scale_factor),
+							scale_value(bounds.size.y, scale_factor),
+						)
+					})
+					.unwrap_or(Vec2::new(f32::MAX, f32::MAX));
+				match text_pipeline.queue_text(
+					entity,
+					&fonts,
+					&text.sections,
+					scale_factor,
+					text.alignment,
+					text_bounds,
+					&mut *font_atlas_set_storage,
+					&mut *texture_atlases,
+					&mut *textures,
+				) {
+					Err(TextError::NoSuchFont) => {
+						// There was an error processing the text layout, let's add this entity to the
+						// queue for further processing
+						queue.insert(entity);
+					}
+					Err(e @ TextError::FailedToAddGlyph(_)) => {
+						panic!("Fatal error when processing text: {}.", e);
+					}
+					Ok(()) => {
+						let text_layout_info = text_pipeline
+							.get_glyphs(&entity)
+							.expect("Failed to get glyphs from the pipeline that have just been computed");
+						calculated_size.size = Vec2::new(
+							scale_value(text_layout_info.size.x, 1. / scale_factor),
+							scale_value(text_layout_info.size.y, 1. / scale_factor),
+						);
+					}
 				}
 			}
-		}
-	}
+		},
+	);
 }
 
 pub fn scale_value(value: f32, factor: f64) -> f32 {

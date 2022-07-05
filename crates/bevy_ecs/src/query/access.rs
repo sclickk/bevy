@@ -63,13 +63,10 @@ impl<T: SparseSetIndex> Access<T> {
 
 	/// Returns `true` if this can access the element given by `index`.
 	pub fn has_read(&self, index: T) -> bool {
-		if self.reads_all {
-			true
-		} else {
-			self
+		self.reads_all
+			|| self
 				.reads_and_writes
 				.contains(index.sparse_set_index())
-		}
 	}
 
 	/// Returns `true` if this can exclusively access the element given by `index`.
@@ -324,21 +321,15 @@ impl<T: SparseSetIndex> FilteredAccessSet<T> {
 
 	/// Returns `true` if this and `other` can be active at the same time.
 	pub fn is_compatible(&self, other: &FilteredAccessSet<T>) -> bool {
-		if self
+		self
 			.combined_access
 			.is_compatible(other.combined_access())
-		{
-			return true;
-		}
-		for filtered in &self.filtered_accesses {
-			for other_filtered in &other.filtered_accesses {
-				if !filtered.is_compatible(other_filtered) {
-					return false;
-				}
-			}
-		}
-
-		true
+			|| self.filtered_accesses.iter().any(|filtered| {
+				other
+					.filtered_accesses
+					.iter()
+					.any(|other_filtered| filtered.is_compatible(other_filtered))
+			})
 	}
 
 	/// Returns a vector of elements that this set and `other` cannot access at the same time.

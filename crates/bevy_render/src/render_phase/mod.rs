@@ -70,9 +70,9 @@ pub fn sort_phase_system<I: PhaseItem>(mut render_phases: Query<&mut RenderPhase
 
 /// This system batches the [`PhaseItem`]s of all [`RenderPhase`]s of this type.
 pub fn batch_phase_system<I: BatchedPhaseItem>(mut render_phases: Query<&mut RenderPhase<I>>) {
-	for mut phase in render_phases.iter_mut() {
-		phase.batch();
-	}
+	render_phases.for_each_mut(|mut phase| {
+		phase.sort();
+	});
 }
 
 #[cfg(test)]

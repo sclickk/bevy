@@ -183,23 +183,27 @@ pub fn ktx2_buffer_to_image(
 
 	// Assign the data and fill in the rest of the metadata now the possible
 	// error cases have been handled
-	let mut image = Image::default();
-	image.texture_descriptor.format = texture_format;
-	image.data = levels.into_iter().flatten().collect::<Vec<_>>();
-	image.texture_descriptor.size = Extent3d {
-		width,
-		height,
-		depth_or_array_layers: if layer_count > 1 { layer_count } else { depth }.max(1),
-	};
-	image.texture_descriptor.mip_level_count = level_count;
-	image.texture_descriptor.dimension = if depth > 1 {
-		TextureDimension::D3
-	} else if image.is_compressed() || height > 1 {
-		TextureDimension::D2
-	} else {
-		TextureDimension::D1
-	};
-	Ok(image)
+	Ok(Image {
+		data: levels.into_iter().flatten().collect::<Vec<_>>(),
+		texture_descriptor: wgpu::TextureDescriptor {
+			format: texture_format,
+			size: Extent3d {
+				width,
+				height,
+				depth_or_array_layers: if layer_count > 1 { layer_count } else { depth }.max(1),
+			},
+			mip_level_count: level_count,
+			dimension: if depth > 1 {
+				TextureDimension::D3
+			} else if image.is_compressed() || height > 1 {
+				TextureDimension::D2
+			} else {
+				TextureDimension::D1
+			},
+			..Default::default()
+		},
+		..Default::default()
+	})
 }
 
 #[cfg(feature = "basis-universal")]

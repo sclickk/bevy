@@ -91,25 +91,7 @@ pub struct SystemStage {
 
 impl SystemStage {
 	pub fn new(executor: Box<dyn ParallelSystemExecutor>) -> Self {
-		SystemStage {
-			world_id: None,
-			executor,
-			stage_run_criteria: Default::default(),
-			run_criteria: vec![],
-			uninitialized_run_criteria: vec![],
-			exclusive_at_start: Default::default(),
-			exclusive_before_commands: Default::default(),
-			exclusive_at_end: Default::default(),
-			parallel: vec![],
-			systems_modified: true,
-			executor_modified: true,
-			uninitialized_parallel: vec![],
-			uninitialized_at_start: vec![],
-			uninitialized_before_commands: vec![],
-			uninitialized_at_end: vec![],
-			last_tick_check: Default::default(),
-			apply_buffers: true,
-		}
+		Self::from(executor)
 	}
 
 	pub fn single<Params>(system: impl IntoSystemDescriptor<Params>) -> Self {
@@ -662,6 +644,30 @@ impl SystemStage {
 				.push(temp[index].take().unwrap());
 		}
 		Ok(labels)
+	}
+}
+
+impl From<Box<dyn ParallelSystemExecutor>> for SystemStage {
+	fn from(executor: Box<dyn ParallelSystemExecutor>) -> Self {
+		SystemStage {
+			world_id: None,
+			executor,
+			stage_run_criteria: Default::default(),
+			run_criteria: vec![],
+			uninitialized_run_criteria: vec![],
+			exclusive_at_start: Default::default(),
+			exclusive_before_commands: Default::default(),
+			exclusive_at_end: Default::default(),
+			parallel: vec![],
+			systems_modified: true,
+			executor_modified: true,
+			uninitialized_parallel: vec![],
+			uninitialized_at_start: vec![],
+			uninitialized_before_commands: vec![],
+			uninitialized_at_end: vec![],
+			last_tick_check: Default::default(),
+			apply_buffers: true,
+		}
 	}
 }
 

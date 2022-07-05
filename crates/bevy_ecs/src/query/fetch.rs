@@ -1099,6 +1099,7 @@ unsafe impl<'w, T: Fetch<'w>> Fetch<'w> for OptionFetch<T> {
 #[derive(Clone)]
 pub struct ChangeTrackers<T: Component> {
 	pub(crate) component_ticks: ComponentTicks,
+	// TODO: Fix code duplication with these!
 	pub(crate) last_change_tick: u32,
 	pub(crate) change_tick: u32,
 	marker: PhantomData<T>,

@@ -1,6 +1,7 @@
 use crate::{ButtonState, Input};
 use bevy_ecs::{event::EventReader, system::ResMut};
 use bevy_math::Vec2;
+use std::fmt;
 
 /// A mouse button input event.
 ///
@@ -40,6 +41,17 @@ pub enum MouseButton {
 	/// Another mouse button with the associated number.
 	Other(u16),
 }
+
+// impl fmt::Display for MouseButton {
+// 	fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+// 		write!(fmt, "{}", match self {
+// 			Self::Left => "Left Mouse Button",
+// 			Self::Right => "Right Mouse Button",
+// 			Self::Middle => "Scroll Wheel Button",
+// 			Self::Other(x) => format!("Mouse Button {}", x).into(),
+// 		})
+// 	}
+// }
 
 /// An event reporting the change in physical position of a pointing device.
 ///

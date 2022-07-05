@@ -1,4 +1,4 @@
-use std::path::PathBuf;
+use std::{fmt, path::PathBuf};
 
 use super::{WindowDescriptor, WindowId};
 use bevy_math::{IVec2, Vec2};
@@ -58,6 +58,13 @@ pub struct WindowCloseRequested {
 pub struct WindowClosed {
 	pub id: WindowId,
 }
+
+impl fmt::Display for WindowClosed {
+	fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+		write!(fmt, "Window {} was closed.", self.id)
+	}
+}
+
 /// An event reporting that the mouse cursor has moved on a window.
 ///
 /// The event is sent only if the cursor is over one of the application's windows.
@@ -91,6 +98,12 @@ pub struct CursorLeft {
 pub struct ReceivedCharacter {
 	pub id: WindowId,
 	pub char: char,
+}
+
+impl fmt::Display for ReceivedCharacter {
+	fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+		write!(fmt, "Window {} received character: {}", self.id, self.char)
+	}
 }
 
 /// An event that indicates a window has received or lost focus.

@@ -118,17 +118,15 @@ impl Edges {
 
 	/// Removes an edge from the `input_edges` if it exists.
 	pub(crate) fn remove_input_edge(&mut self, edge: Edge) -> Result<(), RenderGraphError> {
-		if let Some((index, _)) = self
+		self
 			.input_edges
 			.iter()
-			.enumerate()
-			.find(|(_i, e)| **e == edge)
-		{
-			self.input_edges.swap_remove(index);
-			Ok(())
-		} else {
-			Err(RenderGraphError::EdgeDoesNotExist(edge))
-		}
+			.position(|e| *e == edge)
+			.map(|index| {
+				self.input_edges.swap_remove(index);
+				()
+			})
+			.ok_or(RenderGraphError::EdgeDoesNotExist(edge))
 	}
 
 	/// Adds an edge to the `output_edges` if it does not already exist.
@@ -142,17 +140,15 @@ impl Edges {
 
 	/// Removes an edge from the `output_edges` if it exists.
 	pub(crate) fn remove_output_edge(&mut self, edge: Edge) -> Result<(), RenderGraphError> {
-		if let Some((index, _)) = self
+		self
 			.output_edges
 			.iter()
-			.enumerate()
-			.find(|(_i, e)| **e == edge)
-		{
-			self.output_edges.swap_remove(index);
-			Ok(())
-		} else {
-			Err(RenderGraphError::EdgeDoesNotExist(edge))
-		}
+			.position(|e| *e == edge)
+			.map(|index| {
+				self.output_edges.swap_remove(index);
+				()
+			})
+			.ok_or(RenderGraphError::EdgeDoesNotExist(edge))
 	}
 
 	/// Checks whether the input edge already exists.

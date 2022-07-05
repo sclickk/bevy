@@ -63,6 +63,8 @@ impl ScheduleRunnerSettings {
 #[derive(Default)]
 pub struct ScheduleRunnerPlugin;
 
+impl ScheduleRunnerPlugin {}
+
 impl Plugin for ScheduleRunnerPlugin {
 	fn build(&self, app: &mut App) {
 		let settings = app
@@ -76,6 +78,7 @@ impl Plugin for ScheduleRunnerPlugin {
 					app.update();
 				}
 				RunMode::Loop { wait } => {
+					// TODO: Move into seperate fn in ScheduleRunnerPlugin
 					let mut tick =
 						move |app: &mut App, wait: Option<Duration>| -> Result<Option<Duration>, AppExit> {
 							let start_time = Instant::now();

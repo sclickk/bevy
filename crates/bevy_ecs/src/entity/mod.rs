@@ -533,11 +533,9 @@ impl Entities {
 	pub fn get(&self, entity: Entity) -> Option<EntityLocation> {
 		if (entity.id as usize) < self.meta.len() {
 			let meta = &self.meta[entity.id as usize];
-			if meta.generation != entity.generation || meta.location.archetype_id == ArchetypeId::INVALID
-			{
-				return None;
-			}
-			Some(meta.location)
+			(!(meta.generation != entity.generation
+				|| meta.location.archetype_id == ArchetypeId::INVALID))
+				.then(|| meta.location)
 		} else {
 			None
 		}
@@ -587,15 +585,13 @@ impl Entities {
 				.meta
 				.resize(new_meta_len, EntityMeta::EMPTY);
 			self.len += -current_free_cursor as u32;
-			for (id, meta) in self
-				.meta
-				.iter_mut()
-				.enumerate()
+			for (id, meta) in (0u32..)
+				.zip(self.meta.iter_mut())
 				.skip(old_meta_len)
 			{
 				init(
 					Entity {
-						id: id as u32,
+						id,
 						generation: meta.generation,
 					},
 					&mut meta.location,

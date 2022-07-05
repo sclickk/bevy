@@ -159,12 +159,9 @@ impl Frustum {
 	pub fn intersects_sphere(&self, sphere: &Sphere, intersect_far: bool) -> bool {
 		let sphere_center = sphere.center.extend(1.0);
 		let max = if intersect_far { 6 } else { 5 };
-		for plane in &self.planes[..max] {
-			if plane.normal_d().dot(sphere_center) + sphere.radius <= 0.0 {
-				return false;
-			}
-		}
-		true
+		!self.planes[..max]
+			.into_iter()
+			.any(|plane| plane.normal_d().dot(sphere_center) + sphere.radius <= 0.0)
 	}
 
 	#[inline]
@@ -173,20 +170,18 @@ impl Frustum {
 			.transform_point3a(aabb.center)
 			.extend(1.0);
 		let axes = [
-			Vec3A::from(model_to_world.x_axis),
-			Vec3A::from(model_to_world.y_axis),
-			Vec3A::from(model_to_world.z_axis),
-		];
+			model_to_world.x_axis,
+			model_to_world.y_axis,
+			model_to_world.z_axis,
+		]
+		.map(Vec3A::from);
 
 		let max = if intersect_far { 6 } else { 5 };
-		for plane in &self.planes[..max] {
-			let p_normal = Vec3A::from(plane.normal_d());
-			let relative_radius = aabb.relative_radius(&p_normal, &axes);
-			if plane.normal_d().dot(aabb_center_world) + relative_radius <= 0.0 {
-				return false;
-			}
-		}
-		true
+		!self.planes[..max].into_iter().any(|plane| {
+			let p_normal = plane.normal_d();
+			let relative_radius = aabb.relative_radius(&p_normal.into(), &axes);
+			p_normal.dot(aabb_center_world) + relative_radius <= 0.0
+		})
 	}
 }
 

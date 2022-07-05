@@ -1,3 +1,4 @@
+// use crate::render_resource::ShaderType;
 use bevy_utils::Uuid;
 use std::{
 	ops::{Bound, Deref, RangeBounds},
@@ -83,3 +84,22 @@ impl<'a> Deref for BufferSlice<'a> {
 		&self.value
 	}
 }
+
+// // TODO: Use this to fix code duplication in uniform)buffer and storage)buffeer
+// struct DynamicBuffer<T: ShaderType> {
+// 	values: Vec<T>,
+// 	// scratch: DynamicUniformBufferWrapper<Vec<u8>>,
+// 	buffer: Option<Buffer>,
+// 	capacity: usize,
+// }
+
+// impl<T: ShaderType> Default for DynamicBuffer<T> {
+// 	fn default() -> Self {
+// 		Self {
+// 			values: Vec::new(),
+// 			// scratch: DynamicUniformBufferWrapper::new(Vec::new()),
+// 			buffer: None,
+// 			capacity: 0,
+// 		}
+// 	}
+// }

@@ -29,11 +29,13 @@ impl PluginGroupBuilder {
 		self
 			.order
 			.iter()
-			.position(|&ty| ty == TypeId::of::<Target>())
-			.expect(&format!(
-				"Plugin does not exist in group: {}.",
-				std::any::type_name::<Target>()
-			))
+			.position(|ty| *ty == TypeId::of::<Target>())
+			.unwrap_or_else(|| {
+				panic!(
+					"Plugin does not exist in group: {}.",
+					std::any::type_name::<Target>()
+				)
+			})
 	}
 
 	// Insert the new plugin as enabled, and removes its previous ordering if it was
@@ -73,6 +75,7 @@ impl PluginGroupBuilder {
 		self
 	}
 
+	/// Alternative to add(default)
 	pub fn init<T: Plugin + Default>(&mut self) {
 		self.add(T::default());
 	}

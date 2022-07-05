@@ -122,7 +122,7 @@ pub fn derive_as_bind_group(input: TokenStream) -> TokenStream {
 	};
 
 	// Read field-level attributes
-	for field in fields.iter() {
+	for field in fields.into_iter() {
 		for attr in &field.attrs {
 			let attr_ident = if let Some(ident) = attr.path.get_ident() {
 				ident
@@ -250,7 +250,7 @@ pub fn derive_as_bind_group(input: TokenStream) -> TokenStream {
 	// Produce impls for fields with uniform bindings
 	let struct_name = &ast.ident;
 	let mut field_struct_impls = Vec::new();
-	for (binding_index, binding_state) in binding_states.iter().enumerate() {
+	for (binding_index, binding_state) in binding_states.into_iter().enumerate() {
 		let binding_index = binding_index as u32;
 		if let BindingState::OccupiedMergableUniform { uniform_fields } = binding_state {
 			let binding_vec_index = bind_group_entries.len();
@@ -307,7 +307,7 @@ pub fn derive_as_bind_group(input: TokenStream) -> TokenStream {
 				});
 
 				let field_name = uniform_fields
-					.iter()
+					.into_iter()
 					.map(|f| f.ident.as_ref().unwrap());
 				binding_impls.push(quote! {{
                     let mut buffer = #render_path::render_resource::encase::UniformBuffer::new(Vec::new());

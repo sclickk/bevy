@@ -9,6 +9,7 @@ use bevy_reflect::{Reflect, TypeUuid};
 use bevy_render::{
 	extract_component::{ComponentUniforms, DynamicUniformIndex, UniformComponentPlugin},
 	mesh::{GpuBufferInfo, Mesh, MeshVertexBufferLayout},
+	prelude::Msaa,
 	render_asset::RenderAssets,
 	render_phase::{EntityRenderCommand, RenderCommandResult, TrackedRenderPass},
 	render_resource::*,
@@ -273,16 +274,38 @@ impl Mesh2dPipelineKey {
 	const PRIMITIVE_TOPOLOGY_MASK_BITS: u32 = 0b111;
 	const PRIMITIVE_TOPOLOGY_SHIFT_BITS: u32 = Self::MSAA_SHIFT_BITS - 3;
 
-	pub fn from_msaa_samples(msaa_samples: u32) -> Self {
-		let msaa_bits = ((msaa_samples - 1) & Self::MSAA_MASK_BITS) << Self::MSAA_SHIFT_BITS;
-		Mesh2dPipelineKey::from_bits(msaa_bits).unwrap()
+	pub fn from_msaa_samples(samples: u32) -> Self {
+		Self::from(Msaa { samples })
 	}
 
 	pub fn msaa_samples(&self) -> u32 {
 		((self.bits >> Self::MSAA_SHIFT_BITS) & Self::MSAA_MASK_BITS) + 1
 	}
 
+	#[deprecated]
 	pub fn primitive_topology(&self) -> PrimitiveTopology {
+		let primitive_topology_bits =
+			(self.bits >> Self::PRIMITIVE_TOPOLOGY_SHIFT_BITS) & Self::PRIMITIVE_TOPOLOGY_MASK_BITS;
+		match primitive_topology_bits {
+			x if x == PrimitiveTopology::PointList as u32 => PrimitiveTopology::PointList,
+			x if x == PrimitiveTopology::LineList as u32 => PrimitiveTopology::LineList,
+			x if x == PrimitiveTopology::LineStrip as u32 => PrimitiveTopology::LineStrip,
+			x if x == PrimitiveTopology::TriangleList as u32 => PrimitiveTopology::TriangleList,
+			x if x == PrimitiveTopology::TriangleStrip as u32 => PrimitiveTopology::TriangleStrip,
+			_ => PrimitiveTopology::default(),
+		}
+	}
+}
+
+impl From<Msaa> for Mesh2dPipelineKey {
+	fn from(msaa: Msaa) -> Self {
+		let msaa_bits = ((msaa.samples - 1) & Self::MSAA_MASK_BITS) << Self::MSAA_SHIFT_BITS;
+		Mesh2dPipelineKey::from_bits(msaa_bits).unwrap()
+	}
+}
+
+impl Into<PrimitiveTopology> for Mesh2dPipelineKey {
+	fn into(self) -> PrimitiveTopology {
 		let primitive_topology_bits =
 			(self.bits >> Self::PRIMITIVE_TOPOLOGY_SHIFT_BITS) & Self::PRIMITIVE_TOPOLOGY_MASK_BITS;
 		match primitive_topology_bits {
@@ -363,7 +386,7 @@ impl SpecializedMeshPipeline for Mesh2dPipeline {
 				unclipped_depth: false,
 				polygon_mode: PolygonMode::Fill,
 				conservative: false,
-				topology: key.primitive_topology(),
+				topology: key.into(),
 				strip_index_format: None,
 			},
 			depth_stencil: None,

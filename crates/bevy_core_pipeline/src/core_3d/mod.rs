@@ -78,6 +78,7 @@ impl Plugin for Core3dPlugin {
 	}
 }
 
+// TODO: MAJOR CODE REDUCTION NEEDED: (Opaque|AlphaMask|Transparent)3d
 pub struct Opaque3d {
 	pub distance: f32,
 	pub pipeline: CachedRenderPipelineId,

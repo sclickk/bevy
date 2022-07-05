@@ -161,6 +161,7 @@ macro_rules! impl_debug {
 
 pub(crate) struct Ticks<'a> {
 	pub(crate) component_ticks: &'a mut ComponentTicks,
+	// TODO: Fix code duplication in WriteFetch in fetch.rs
 	pub(crate) last_change_tick: u32,
 	pub(crate) change_tick: u32,
 }

@@ -8,9 +8,9 @@ use wgpu::{TextureDescriptor, TextureViewDescriptor};
 
 /// The internal representation of a [`CachedTexture`] used to track whether it was recently used
 /// and is currently taken.
-struct CachedTextureMeta {
-	texture: Texture,
-	default_view: TextureView,
+pub(crate) struct CachedTextureMeta {
+	pub(crate) texture: Texture,
+	pub(crate) default_view: TextureView,
 	taken: bool,
 	frames_since_last_use: usize,
 }

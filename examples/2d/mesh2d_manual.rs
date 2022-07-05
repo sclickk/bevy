@@ -185,7 +185,7 @@ impl SpecializedRenderPipeline for ColoredMesh2dPipeline {
 				unclipped_depth: false,
 				polygon_mode: PolygonMode::Fill,
 				conservative: false,
-				topology: key.primitive_topology(),
+				topology: key.into(),
 				strip_index_format: None,
 			},
 			depth_stencil: None,

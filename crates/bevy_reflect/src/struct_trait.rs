@@ -83,20 +83,18 @@ impl StructInfo {
 	/// * `fields`: The fields of this struct in the order they are defined
 	///
 	pub fn new<T: Reflect>(fields: &[NamedField]) -> Self {
-		let field_indices = fields
-			.iter()
-			.enumerate()
-			.map(|(index, field)| {
-				let name = field.name().clone();
-				(name, index)
-			})
-			.collect::<HashMap<_, _>>();
-
 		Self {
 			type_name: std::any::type_name::<T>(),
 			type_id: TypeId::of::<T>(),
 			fields: fields.to_vec().into_boxed_slice(),
-			field_indices,
+			field_indices: fields
+				.into_iter()
+				.enumerate()
+				.map(|(index, field)| {
+					let name = field.name().clone();
+					(name, index)
+				})
+				.collect::<HashMap<_, _>>(),
 		}
 	}
 
@@ -154,6 +152,12 @@ pub struct FieldIter<'a> {
 
 impl<'a> FieldIter<'a> {
 	pub fn new(value: &'a dyn Struct) -> Self {
+		Self::from(value)
+	}
+}
+
+impl<'a> From<&'a dyn Struct> for FieldIter<'a> {
+	fn from(value: &'a dyn Struct) -> Self {
 		FieldIter {
 			struct_val: value,
 			index: 0,
@@ -296,11 +300,10 @@ impl Struct for DynamicStruct {
 
 	#[inline]
 	fn field_mut(&mut self, name: &str) -> Option<&mut dyn Reflect> {
-		if let Some(index) = self.field_indices.get(name) {
-			Some(&mut *self.fields[*index])
-		} else {
-			None
-		}
+		self
+			.field_indices
+			.get(name)
+			.map(|index| &mut *self.fields[*index])
 	}
 
 	#[inline]
@@ -426,13 +429,15 @@ impl Reflect for DynamicStruct {
 
 	// TODO: Deprecate!
 	fn debug(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-		write!(f, ")")
+		Self::fmt(self, f)
 	}
 }
 
 impl Debug for DynamicStruct {
 	fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
 		write!(f, "DynamicStruct(")?;
+		struct_debug(self, f)?;
+		write!(f, ")")
 	}
 }
 

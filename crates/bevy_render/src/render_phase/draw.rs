@@ -349,9 +349,9 @@ impl AddRenderCommand for App {
 			.unwrap_or_else(|| {
 				panic!(
 					"DrawFunctions<{}> must be added to the world as a resource \
-                     before adding render commands to it",
+				before adding render commands to it",
 					std::any::type_name::<P>(),
-				);
+				)
 			});
 		draw_functions
 			.write()

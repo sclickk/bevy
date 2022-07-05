@@ -142,7 +142,7 @@ impl Schedule {
 			.stage_order
 			.iter()
 			.position(|stage_label| stage_label.as_ref() == target)
-			.expect(&format!("Target stage does not exist: {:?}.", target));
+			.unwrap_or_else(|| panic!("Target stage does not exist: {:?}.", target));
 
 		self
 			.stage_order
@@ -178,7 +178,7 @@ impl Schedule {
 			.stage_order
 			.iter()
 			.position(|stage_label| stage_label.as_ref() == target)
-			.expect(&format!("Target stage does not exist: {:?}.", target));
+			.unwrap_or_else(|| panic!("Target stage does not exist: {:?}.", target));
 
 		self
 			.stage_order
@@ -290,7 +290,7 @@ impl Schedule {
 	) -> &mut Self {
 		let stage = self
 			.get_stage_mut::<T>(&label)
-			.unwrap_or_else(move || panic!("stage '{:?}' does not exist or is the wrong type", label));
+			.unwrap_or_else(|| panic!("stage '{:?}' does not exist or is the wrong type", label));
 		func(stage);
 		self
 	}

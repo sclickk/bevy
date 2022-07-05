@@ -185,9 +185,9 @@ fn extract_components<C: ExtractComponent>(
 	mut query: StaticSystemParam<Query<(Entity, C::Query), C::Filter>>,
 ) {
 	let mut values = Vec::with_capacity(*previous_len);
-	for (entity, query_item) in query.iter_mut() {
+	query.for_each_mut(|(entity, query_item)| {
 		values.push((entity, (C::extract_component(query_item),)));
-	}
+	});
 	*previous_len = values.len();
 	commands.insert_or_spawn_batch(values);
 }
@@ -199,11 +199,11 @@ fn extract_visible_components<C: ExtractComponent>(
 	mut query: StaticSystemParam<Query<(Entity, Read<ComputedVisibility>, C::Query), C::Filter>>,
 ) {
 	let mut values = Vec::with_capacity(*previous_len);
-	for (entity, computed_visibility, query_item) in query.iter_mut() {
+	query.for_each_mut(|(entity, computed_visibility, query_item)| {
 		if computed_visibility.is_visible {
 			values.push((entity, (C::extract_component(query_item),)));
 		}
-	}
+	});
 	*previous_len = values.len();
 	commands.insert_or_spawn_batch(values);
 }

@@ -292,6 +292,7 @@ impl<'w, 's, Q: WorldQuery, F: WorldQuery> Query<'w, 's, Q, F> {
 	/// # bevy_ecs::system::assert_is_system(report_names_system);
 	/// ```
 	#[inline]
+	#[deprecated]
 	pub fn iter(&self) -> QueryIter<'_, 's, Q, ROQueryFetch<'_, Q>, F> {
 		// SAFE: system runs without conflicts with other systems.
 		// same-system queries have runtime borrow checks when they conflict
@@ -323,14 +324,11 @@ impl<'w, 's, Q: WorldQuery, F: WorldQuery> Query<'w, 's, Q, F> {
 	/// # bevy_ecs::system::assert_is_system(gravity_system);
 	/// ```
 	#[inline]
+	// #[deprecated]
 	pub fn iter_mut(&mut self) -> QueryIter<'_, '_, Q, QueryFetch<'_, Q>, F> {
 		// SAFE: system runs without conflicts with other systems.
 		// same-system queries have runtime borrow checks when they conflict
-		unsafe {
-			self
-				.state
-				.iter_unchecked_manual(self.world, self.last_change_tick, self.change_tick)
-		}
+		self.into_iter()
 	}
 
 	/// Returns an [`Iterator`] over all possible combinations of `K` query results without repetition.
@@ -1276,7 +1274,13 @@ impl<'w, 's, Q: WorldQuery, F: WorldQuery> IntoIterator for &'w Query<'_, 's, Q,
 	type IntoIter = QueryIter<'w, 's, Q, ROQueryFetch<'w, Q>, F>;
 
 	fn into_iter(self) -> Self::IntoIter {
-		self.iter()
+		// SAFE: system runs without conflicts with other systems.
+		// same-system queries have runtime borrow checks when they conflict
+		unsafe {
+			self
+				.state
+				.iter_unchecked_manual(self.world, self.last_change_tick, self.change_tick)
+		}
 	}
 }
 
@@ -1285,7 +1289,13 @@ impl<'w, Q: WorldQuery, F: WorldQuery> IntoIterator for &'w mut Query<'_, '_, Q,
 	type IntoIter = QueryIter<'w, 'w, Q, QueryFetch<'w, Q>, F>;
 
 	fn into_iter(self) -> Self::IntoIter {
-		self.iter_mut()
+		// SAFE: system runs without conflicts with other systems.
+		// same-system queries have runtime borrow checks when they conflict
+		unsafe {
+			self
+				.state
+				.iter_unchecked_manual(self.world, self.last_change_tick, self.change_tick)
+		}
 	}
 }
 
