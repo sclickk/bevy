@@ -89,6 +89,7 @@ pub struct FileTextureError {
 	error: TextureError,
 	path: String,
 }
+
 impl std::fmt::Display for FileTextureError {
 	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
 		write!(

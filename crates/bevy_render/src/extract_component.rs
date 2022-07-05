@@ -109,7 +109,7 @@ fn prepare_uniform_components<C: Component>(
 {
 	component_uniforms.uniforms.clear();
 	let entities = components
-		.iter()
+		.into_iter()
 		.map(|(entity, component)| {
 			(
 				entity,

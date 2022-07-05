@@ -96,7 +96,7 @@ impl From<Box> for Mesh {
 		let mut normals = Vec::with_capacity(24);
 		let mut uvs = Vec::with_capacity(24);
 
-		for (position, normal, uv) in vertices.iter() {
+		for (position, normal, uv) in vertices.into_iter() {
 			positions.push(*position);
 			normals.push(*normal);
 			uvs.push(*uv);
