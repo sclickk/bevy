@@ -254,10 +254,7 @@ pub fn prepare_core_3d_depth_textures(
 				.clone();
 			commands
 				.entity(entity)
-				.insert(ViewDepthTexture {
-					texture: cached_texture.texture,
-					view: cached_texture.default_view,
-				});
+				.insert(ViewDepthTexture::from(cached_texture));
 		}
 	}
 }

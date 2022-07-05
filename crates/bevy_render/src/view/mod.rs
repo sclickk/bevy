@@ -15,7 +15,7 @@ use crate::{
 	render_asset::RenderAssets,
 	render_resource::{DynamicUniformBuffer, ShaderType, Texture, TextureView},
 	renderer::{RenderDevice, RenderQueue},
-	texture::{BevyDefault, TextureCache},
+	texture::{BevyDefault, CachedTexture, TextureCache},
 	RenderApp, RenderStage,
 };
 use bevy_app::{App, Plugin};
@@ -128,6 +128,15 @@ impl ViewTarget {
 pub struct ViewDepthTexture {
 	pub texture: Texture,
 	pub view: TextureView,
+}
+
+impl From<CachedTexture> for ViewDepthTexture {
+	fn from(texture: CachedTexture) -> Self {
+		Self {
+			texture: texture.texture,
+			view: texture.default_view,
+		}
+	}
 }
 
 fn prepare_view_uniforms(
