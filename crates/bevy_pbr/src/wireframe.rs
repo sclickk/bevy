@@ -49,9 +49,9 @@ impl Plugin for WireframePlugin {
 }
 
 fn extract_wireframes(mut commands: Commands, query: Query<Entity, With<Wireframe>>) {
-	for entity in query.iter() {
+	query.for_each(|entity| {
 		commands.get_or_spawn(entity).insert(Wireframe);
-	}
+	});
 }
 
 /// Controls whether an entity should rendered in wireframe-mode if the [`WireframePlugin`] is enabled
@@ -125,7 +125,7 @@ fn queue_wireframes(
 		.get_id::<DrawWireframes>()
 		.unwrap();
 	let msaa_key = MeshPipelineKey::from_msaa_samples(msaa.samples);
-	for (view, visible_entities, mut opaque_phase) in views.iter_mut() {
+	views.for_each_mut(|(view, visible_entities, mut opaque_phase)| {
 		let view_matrix = view.transform.compute_matrix();
 		let view_row_2 = view_matrix.row(2);
 
@@ -166,7 +166,7 @@ fn queue_wireframes(
 				.filter_map(|visible_entity| query.get(*visible_entity).ok())
 				.for_each(add_render_phase);
 		}
-	}
+	})
 }
 
 type DrawWireframes = (

@@ -59,12 +59,12 @@ pub fn text_system(
 	#[allow(clippy::float_cmp)]
 	if *last_scale_factor == scale_factor {
 		// Adds all entities where the text or the style has changed to the local queue
-		for entity in text_queries.p0().iter() {
+		for entity in text_queries.p0().into_iter() {
 			queued_text.entities.push(entity);
 		}
 	} else {
 		// If the scale factor has changed, queue all text
-		for entity in text_queries.p1().iter() {
+		for entity in text_queries.p1().into_iter() {
 			queued_text.entities.push(entity);
 		}
 		*last_scale_factor = scale_factor;

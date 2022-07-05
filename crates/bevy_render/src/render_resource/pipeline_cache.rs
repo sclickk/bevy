@@ -273,12 +273,12 @@ impl LayoutCache {
 		bind_group_layouts: &[BindGroupLayout],
 	) -> &wgpu::PipelineLayout {
 		let key = bind_group_layouts
-			.iter()
+			.into_iter()
 			.map(|l| l.id())
 			.collect();
 		self.layouts.entry(key).or_insert_with(|| {
 			let bind_group_layouts = bind_group_layouts
-				.iter()
+				.into_iter()
 				.map(|l| l.value())
 				.collect::<Vec<_>>();
 			render_device.create_pipeline_layout(&PipelineLayoutDescriptor {

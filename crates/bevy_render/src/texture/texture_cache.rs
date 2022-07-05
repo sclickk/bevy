@@ -42,7 +42,7 @@ impl TextureCache {
 		match self.textures.entry(descriptor) {
 			Entry::Occupied(mut entry) => entry
 				.get_mut()
-				.iter_mut()
+				.into_iter()
 				.find(|texture| !texture.taken)
 				.map(|texture| {
 					texture.frames_since_last_use = 0;
