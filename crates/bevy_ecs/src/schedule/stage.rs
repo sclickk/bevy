@@ -1721,13 +1721,13 @@ mod tests {
 					(
 						systems[index_a]
 							.labels()
-							.iter()
+							.into_iter()
 							.find(|a| (&***a).type_id() == std::any::TypeId::of::<&str>())
 							.unwrap()
 							.clone(),
 						systems[index_b]
 							.labels()
-							.iter()
+							.into_iter()
 							.find(|a| (&***a).type_id() == std::any::TypeId::of::<&str>())
 							.unwrap()
 							.clone(),
@@ -2184,7 +2184,7 @@ mod tests {
 	#[test]
 	fn archetype_update_single_executor() {
 		fn query_count_system(mut entity_count: ResMut<usize>, query: Query<crate::entity::Entity>) {
-			*entity_count = query.iter().count();
+			*entity_count = query.into_iter().count();
 		}
 
 		let mut world = World::new();
@@ -2206,7 +2206,7 @@ mod tests {
 	#[test]
 	fn archetype_update_parallel_executor() {
 		fn query_count_system(mut entity_count: ResMut<usize>, query: Query<crate::entity::Entity>) {
-			*entity_count = query.iter().count();
+			*entity_count = query.into_iter().count();
 		}
 
 		let mut world = World::new();
@@ -2234,7 +2234,7 @@ mod tests {
 		struct Foo;
 
 		fn even_number_of_entities_critiera(query: Query<&Foo>) -> ShouldRun {
-			if query.iter().len() % 2 == 0 {
+			if query.into_iter().len() % 2 == 0 {
 				ShouldRun::Yes
 			} else {
 				ShouldRun::No
@@ -2246,7 +2246,7 @@ mod tests {
 		}
 
 		fn count_entities(query: Query<&Foo>, mut res: ResMut<Vec<usize>>) {
-			res.push(query.iter().len());
+			res.push(query.into_iter().len());
 		}
 
 		let mut world = World::new();
@@ -2273,7 +2273,7 @@ mod tests {
 		struct Foo;
 
 		fn even_number_of_entities_critiera(query: Query<&Foo>) -> ShouldRun {
-			if query.iter().len() % 2 == 0 {
+			if query.into_iter().len() % 2 == 0 {
 				ShouldRun::Yes
 			} else {
 				ShouldRun::No
@@ -2285,7 +2285,7 @@ mod tests {
 		}
 
 		fn count_entities(query: Query<&Foo>, mut res: ResMut<Vec<usize>>) {
-			res.push(query.iter().len());
+			res.push(query.into_iter().len());
 		}
 
 		let mut world = World::new();

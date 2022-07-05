@@ -470,7 +470,7 @@ impl InnerMeshVertexBufferLayout {
 		attribute_descriptors: &[VertexAttributeDescriptor],
 	) -> Result<VertexBufferLayout, MissingVertexAttributeError> {
 		let mut attributes = Vec::with_capacity(attribute_descriptors.len());
-		for attribute_descriptor in attribute_descriptors.iter() {
+		for attribute_descriptor in attribute_descriptors.into_iter() {
 			if let Some(index) = self
 				.attribute_ids
 				.iter()
@@ -752,8 +752,8 @@ impl Indices {
 	/// Returns an iterator over the indices.
 	pub fn iter(&self) -> impl Iterator<Item = usize> + '_ {
 		match self {
-			Indices::U16(vec) => IndicesIter::U16(vec.iter()),
-			Indices::U32(vec) => IndicesIter::U32(vec.iter()),
+			Indices::U16(vec) => IndicesIter::U16(vec.into_iter()),
+			Indices::U32(vec) => IndicesIter::U32(vec.into_iter()),
 		}
 	}
 

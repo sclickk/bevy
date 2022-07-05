@@ -62,9 +62,8 @@ pub(crate) fn type_uuid_derive(input: proc_macro::TokenStream) -> proc_macro::To
 	let uuid = uuid.expect("No `#[uuid = \"xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\"` attribute found.");
 	let bytes = uuid
 		.as_bytes()
-		.iter()
-		.map(|byte| format!("{:#X}", byte))
-		.map(|byte_str| syn::parse_str::<LitInt>(&byte_str).unwrap());
+		.into_iter()
+		.map(|byte| syn::parse_str::<LitInt>(&format!("{:#X}", byte)).unwrap());
 
 	let base = quote! { #bevy_reflect_path::Uuid::from_bytes([#( #bytes ),*]) };
 	let type_uuid = ast.generics.type_params().fold(base, |acc, param| {

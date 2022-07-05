@@ -342,7 +342,7 @@ impl Entities {
 
 		ReserveEntitiesIterator {
 			meta: &self.meta[..],
-			id_iter: self.pending[freelist_range].iter(),
+			id_iter: self.pending[freelist_range].into_iter(),
 			id_range: new_id_start..new_id_end,
 		}
 	}
