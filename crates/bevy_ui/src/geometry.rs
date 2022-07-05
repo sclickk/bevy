@@ -1,6 +1,6 @@
-use bevy_render::render_resource::Extent3d;
 use bevy_math::Vec2;
 use bevy_reflect::Reflect;
+use bevy_render::render_resource::Extent3d;
 use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Sub, SubAssign};
 
 /// A rect, as defined by its "side" locations

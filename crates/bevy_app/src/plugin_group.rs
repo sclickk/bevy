@@ -157,7 +157,7 @@ impl PluginGroupBuilder {
 pub struct NoopPluginGroup;
 
 impl PluginGroup for NoopPluginGroup {
-    fn build(&mut self, _: &mut PluginGroupBuilder) {}
+	fn build(&mut self, _: &mut PluginGroupBuilder) {}
 }
 
 #[cfg(test)]
