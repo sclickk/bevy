@@ -254,7 +254,7 @@ pub fn flex_node_system(
 		query: Query<(Entity, &Style, Option<&CalculatedSize>), F>,
 	) {
 		// update changed nodes
-		for (entity, style, calculated_size) in query.iter() {
+		for (entity, style, calculated_size) in query.into_iter() {
 			// TODO: remove node from old hierarchy if its root has changed
 			if let Some(calculated_size) = calculated_size {
 				flex_surface.upsert_leaf(entity, style, *calculated_size, scaling_factor);
@@ -264,7 +264,7 @@ pub fn flex_node_system(
 		}
 	}
 
-	for (entity, style, calculated_size) in changed_size_query.iter() {
+	for (entity, style, calculated_size) in changed_size_query.into_iter() {
 		flex_surface.upsert_leaf(entity, style, *calculated_size, logical_to_physical_factor);
 	}
 
@@ -272,11 +272,11 @@ pub fn flex_node_system(
 
 	// update window children (for now assuming all Nodes live in the primary window)
 	if let Some(primary_window) = windows.get_primary() {
-		flex_surface.set_window_children(primary_window.id(), root_node_query.iter());
+		flex_surface.set_window_children(primary_window.id(), root_node_query.into_iter());
 	}
 
 	// update children
-	for (entity, children) in children_query.iter() {
+	for (entity, children) in children_query.into_iter() {
 		flex_surface.update_children(entity, children);
 	}
 

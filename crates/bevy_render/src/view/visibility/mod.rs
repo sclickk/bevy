@@ -151,7 +151,7 @@ pub fn calculate_bounds(
 pub fn update_frusta<T: Component + CameraProjection + Send + Sync + 'static>(
 	mut views: Query<(&GlobalTransform, &T, &mut Frustum)>,
 ) {
-	for (transform, projection, mut frustum) in views.iter_mut() {
+	views.for_each_mut(|(transform, projection, mut frustum)| {
 		let view_projection = projection.get_projection_matrix() * transform.compute_matrix().inverse();
 		*frustum = Frustum::from_view_projection(
 			&view_projection,
@@ -159,7 +159,7 @@ pub fn update_frusta<T: Component + CameraProjection + Send + Sync + 'static>(
 			&transform.back(),
 			projection.far(),
 		);
-	}
+	});
 }
 
 /// System updating the visibility of entities each frame.

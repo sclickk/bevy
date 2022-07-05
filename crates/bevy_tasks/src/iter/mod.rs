@@ -40,7 +40,7 @@ where
 					s.spawn(async move { batch.count() });
 				}
 			})
-			.iter()
+			.into_iter()
 			.sum()
 	}
 

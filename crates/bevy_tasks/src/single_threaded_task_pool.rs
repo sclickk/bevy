@@ -82,7 +82,7 @@ impl TaskPool {
 
 		scope
 			.results
-			.iter()
+			.into_iter()
 			.map(|result| result.lock().unwrap().take().unwrap())
 			.collect()
 	}
