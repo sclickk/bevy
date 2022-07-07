@@ -61,8 +61,8 @@ impl DynamicScene {
 					.and_then(|info| type_registry.get(info.type_id().unwrap()))
 					.and_then(|registration| registration.data::<ReflectComponent>());
 				if let Some(reflect_component) = reflect_component {
-					for (i, entity) in archetype.entities().into_iter().enumerate() {
-						if let Some(component) = reflect_component.reflect_component(world, *entity) {
+					for (i, entity) in archetype.entities().iter().enumerate() {
+						if let Some(component) = reflect_component.reflect(world, *entity) {
 							scene.entities[entities_offset + i]
 								.components
 								.push(component.clone_value());
@@ -115,9 +115,9 @@ impl DynamicScene {
 					.entity(entity)
 					.contains_type_id(registration.type_id())
 				{
-					reflect_component.apply_component(world, entity, &**component);
+					reflect_component.apply(world, entity, &**component);
 				} else {
-					reflect_component.add_component(world, entity, &**component);
+					reflect_component.add(world, entity, &**component);
 				}
 			}
 		}

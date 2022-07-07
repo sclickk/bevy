@@ -201,17 +201,17 @@ impl SceneSpawner {
 
 						let reflect_component = type_registry
 							.get(component_info.type_id().unwrap())
-							.ok_or(SceneSpawnError::UnregisteredType {
+							.ok_or_else(|| SceneSpawnError::UnregisteredType {
 								type_name: component_info.name().to_string(),
 							})
 							.and_then(|registration| {
-								registration.data::<ReflectComponent>().ok_or(
-									SceneSpawnError::UnregisteredComponent {
+								registration
+									.data::<ReflectComponent>()
+									.ok_or_else(|| SceneSpawnError::UnregisteredComponent {
 										type_name: component_info.name().to_string(),
-									},
-								)
+									})
 							})?;
-						reflect_component.copy_component(&scene.world, world, *scene_entity, entity);
+						reflect_component.copy(&scene.world, world, *scene_entity, entity);
 					}
 				}
 			}
