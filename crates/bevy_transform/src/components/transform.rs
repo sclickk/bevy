@@ -44,7 +44,7 @@ impl Transform {
 		translation: Vec3::ZERO,
 		rotation: Quat::IDENTITY,
 		scale: Vec3::ONE,
-	}; 
+	};
 
 	/// Creates a new [`Transform`] at the position `(x, y, z)`. In 2d, the `z` component
 	/// is used for z-ordering elements: higher `z`-value will be in front of lower
