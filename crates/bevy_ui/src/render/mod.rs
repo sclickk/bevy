@@ -98,7 +98,7 @@ pub fn build_ui_render(app: &mut App) {
 		graph_2d.add_sub_graph(draw_ui_graph::NAME, ui_graph_2d);
 		graph_2d.add_node(
 			draw_ui_graph::node::UI_PASS,
-			RunGraphOnViewNode::new(draw_ui_graph::NAME),
+			RunGraphOnViewNode::from(draw_ui_graph::NAME),
 		);
 		graph_2d
 			.add_node_edge(
@@ -120,7 +120,7 @@ pub fn build_ui_render(app: &mut App) {
 		graph_3d.add_sub_graph(draw_ui_graph::NAME, ui_graph_3d);
 		graph_3d.add_node(
 			draw_ui_graph::node::UI_PASS,
-			RunGraphOnViewNode::new(draw_ui_graph::NAME),
+			RunGraphOnViewNode::from(draw_ui_graph::NAME),
 		);
 		graph_3d
 			.add_node_edge(

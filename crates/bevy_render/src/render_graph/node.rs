@@ -340,7 +340,10 @@ pub struct RunGraphOnViewNode {
 
 impl RunGraphOnViewNode {
 	pub const IN_VIEW: &'static str = "view";
-	pub fn new<T: Into<Cow<'static, str>>>(graph_name: T) -> Self {
+}
+
+impl<T: Into<Cow<'static, str>>> From<T> for RunGraphOnViewNode {
+	fn from(graph_name: T) -> Self {
 		Self {
 			graph_name: graph_name.into(),
 		}
