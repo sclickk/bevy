@@ -140,7 +140,7 @@ pub fn build_ui_render(app: &mut App) {
 }
 
 fn get_ui_graph(render_app: &mut App) -> RenderGraph {
-	let ui_pass_node = UiPassNode::new(&mut render_app.world);
+	let ui_pass_node = UiPassNode::from(&mut render_app.world);
 	let mut ui_graph = RenderGraph::default();
 	ui_graph.add_node(draw_ui_graph::node::UI_PASS, ui_pass_node);
 	let input_node_id = ui_graph.set_input(vec![SlotInfo::new(

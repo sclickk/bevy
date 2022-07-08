@@ -29,8 +29,10 @@ pub struct UiPassNode {
 
 impl UiPassNode {
 	pub const IN_VIEW: &'static str = "view";
+}
 
-	pub fn new(world: &mut World) -> Self {
+impl From<&mut World> for UiPassNode {
+	fn from(world: &mut World) -> Self {
 		Self {
 			ui_view_query: world.query_filtered(),
 			default_camera_view_query: world.query(),
