@@ -33,7 +33,7 @@ use bevy_transform::TransformSystem;
 use bevy_window::ModifiesWindows;
 use update::{ui_z_system, update_clipping_system};
 
-use crate::prelude::CameraUi;
+use crate::prelude::UiCameraConfig;
 
 /// The basic plugin for Bevy UI
 #[derive(Default)]
@@ -50,7 +50,7 @@ pub enum UiSystem {
 
 impl Plugin for UiPlugin {
 	fn build(&self, app: &mut App) {
-		app.init_plugin::<ExtractComponentPlugin<CameraUi>>();
+		app.init_plugin::<ExtractComponentPlugin<UiCameraConfig>>();
 		app.init_resource::<FlexSurface>();
 		app.register_type::<AlignContent>();
 		app.register_type::<AlignItems>();
@@ -64,7 +64,7 @@ impl Plugin for UiPlugin {
 		app.register_type::<Interaction>();
 		app.register_type::<JustifyContent>();
 		app.register_type::<Node>();
-		// NOTE: used by Style::aspect_ratio;
+		// NOTE: used by Style::aspect_ratio
 		app.register_type::<Option<f32>>();
 		app.register_type::<Overflow>();
 		app.register_type::<PositionType>();
