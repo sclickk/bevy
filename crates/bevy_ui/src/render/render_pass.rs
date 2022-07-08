@@ -105,7 +105,7 @@ impl Node for UiPassNode {
 			.begin_render_pass(&pass_descriptor);
 
 		let mut draw_functions = draw_functions.write();
-		let mut tracked_pass = TrackedRenderPass::new(render_pass);
+		let mut tracked_pass = TrackedRenderPass::from(render_pass);
 		for item in &transparent_phase.items {
 			let draw_function = draw_functions
 				.get_mut(item.draw_function)

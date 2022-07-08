@@ -82,7 +82,7 @@ impl Node for MainPass2dNode {
 				.begin_render_pass(&pass_descriptor);
 
 			let mut draw_functions = draw_functions.write();
-			let mut tracked_pass = TrackedRenderPass::new(render_pass);
+			let mut tracked_pass = TrackedRenderPass::from(render_pass);
 			if let Some(viewport) = camera.viewport.as_ref() {
 				tracked_pass.set_camera_viewport(viewport);
 			}
