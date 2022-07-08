@@ -416,7 +416,7 @@ impl Components {
 
 	#[inline]
 	pub fn is_empty(&self) -> bool {
-		self.components.len() == 0
+		self.components.is_empty()
 	}
 
 	#[inline]
