@@ -163,9 +163,9 @@ impl GpuPointLights {
 bitflags::bitflags! {
 	#[repr(transparent)]
 	struct PointLightFlags: u32 {
-		const SHADOWS_ENABLED            = (1 << 0);
-		const NONE                       = 0;
-		const UNINITIALIZED              = 0xFFFF;
+		const SHADOWS_ENABLED = (1 << 0);
+		const NONE            = 0;
+		const UNINITIALIZED   = 0xFFFF;
 	}
 }
 
@@ -183,9 +183,9 @@ pub struct GpuDirectionalLight {
 bitflags::bitflags! {
 	#[repr(transparent)]
 	struct DirectionalLightFlags: u32 {
-		const SHADOWS_ENABLED            = (1 << 0);
-		const NONE                       = 0;
-		const UNINITIALIZED              = 0xFFFF;
+		const SHADOWS_ENABLED = (1 << 0);
+		const NONE            = 0;
+		const UNINITIALIZED   = 0xFFFF;
 	}
 }
 

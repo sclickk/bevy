@@ -84,6 +84,7 @@ where
 
 #[derive(Debug, PartialEq, Eq, Clone, Hash)]
 struct DriverLabel(TypeId);
+
 impl RunCriteriaLabel for DriverLabel {
 	fn dyn_clone(&self) -> Box<dyn RunCriteriaLabel> {
 		Box::new(self.clone())

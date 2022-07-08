@@ -1429,9 +1429,7 @@ impl World {
 		self.archetypes.clear_entities();
 		self.entities.clear();
 	}
-}
 
-impl World {
 	/// Gets a resource to the resource with the id [`ComponentId`] if it exists.
 	/// The returned pointer must not be used to modify the resource, and must not be
 	/// dereferenced after the immutable borrow of the [`World`] ends.
