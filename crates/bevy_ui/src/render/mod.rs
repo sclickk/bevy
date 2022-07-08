@@ -186,27 +186,25 @@ pub fn extract_uinodes(
 ) {
 	let mut extracted_uinodes = render_world.resource_mut::<ExtractedUiNodes>();
 	extracted_uinodes.uinodes.clear();
-	for (uinode, transform, color, image, visibility, clip) in uinode_query.into_iter() {
-		if !visibility.is_visible {
-			continue;
+	uinode_query.for_each(|(uinode, transform, color, image, visibility, clip)| {
+		if visibility.is_visible {
+			let image = image.0.clone_weak();
+			// Skip loading images
+			if images.contains(&image) {
+				extracted_uinodes.uinodes.push(ExtractedUiNode {
+					transform: transform.compute_matrix(),
+					color: color.0,
+					rect: bevy_sprite::Rect {
+						min: Vec2::ZERO,
+						max: uinode.size,
+					},
+					image,
+					atlas_size: None,
+					clip: clip.map(|clip| clip.clip),
+				});
+			}
 		}
-		let image = image.0.clone_weak();
-		// Skip loading images
-		if !images.contains(&image) {
-			continue;
-		}
-		extracted_uinodes.uinodes.push(ExtractedUiNode {
-			transform: transform.compute_matrix(),
-			color: color.0,
-			rect: bevy_sprite::Rect {
-				min: Vec2::ZERO,
-				max: uinode.size,
-			},
-			image,
-			atlas_size: None,
-			clip: clip.map(|clip| clip.clip),
-		});
-	}
+	});
 }
 
 /// The UI camera is "moved back" by this many units (plus the [`UI_CAMERA_TRANSFORM_OFFSET`]) and also has a view
