@@ -307,7 +307,7 @@ mod test {
 			.world
 			.spawn()
 			.insert_bundle((
-				Transform::identity(),
+				Transform::IDENTITY,
 				GlobalTransform::default(),
 				Parent(parent),
 			))
@@ -317,7 +317,7 @@ mod test {
 			.world
 			.spawn()
 			.insert_bundle((
-				Transform::identity(),
+				Transform::IDENTITY,
 				GlobalTransform::default(),
 				Parent(child),
 			))
@@ -355,13 +355,13 @@ mod test {
 
 		let child = world
 			.spawn()
-			.insert_bundle((Transform::identity(), GlobalTransform::default()))
+			.insert_bundle((Transform::IDENTITY, GlobalTransform::default()))
 			.id();
 
 		let grandchild = world
 			.spawn()
 			.insert_bundle((
-				Transform::identity(),
+				Transform::IDENTITY,
 				GlobalTransform::default(),
 				Parent(child),
 			))

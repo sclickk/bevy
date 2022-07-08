@@ -1154,7 +1154,7 @@ mod test {
 			GltfNode {
 				children: vec![],
 				mesh: None,
-				transform: bevy_transform::prelude::Transform::identity(),
+				transform: bevy_transform::prelude::Transform::IDENTITY,
 			}
 		}
 	}
