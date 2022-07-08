@@ -167,12 +167,12 @@ impl<'a> RenderGraphContext<'a> {
 			.get_sub_graph(&name)
 			.ok_or(RunSubGraphError::MissingSubGraph(name.clone()))?;
 		if let Some(input_node) = sub_graph.input_node() {
-			for (i, input_slot) in input_node.input_slots.iter().enumerate() {
-				if let Some(input_value) = inputs.get(i) {
+			for (slot_index, input_slot) in input_node.input_slots.iter().enumerate() {
+				if let Some(input_value) = inputs.get(slot_index) {
 					if input_slot.slot_type != input_value.slot_type() {
 						return Err(RunSubGraphError::MismatchedInputSlotType {
 							graph_name: name,
-							slot_index: i,
+							slot_index,
 							actual: input_value.slot_type(),
 							expected: input_slot.slot_type,
 							label: input_slot.name.clone().into(),
@@ -180,7 +180,7 @@ impl<'a> RenderGraphContext<'a> {
 					}
 				} else {
 					return Err(RunSubGraphError::MissingInput {
-						slot_index: i,
+						slot_index,
 						slot_name: input_slot.name.clone(),
 						graph_name: name,
 					});
