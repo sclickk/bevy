@@ -502,26 +502,12 @@ impl MeshPipelineKey {
 	pub fn msaa_samples(&self) -> u32 {
 		((self.bits >> Self::MSAA_SHIFT_BITS) & Self::MSAA_MASK_BITS) + 1
 	}
-
-	#[deprecated]
-	pub fn primitive_topology(&self) -> PrimitiveTopology {
-		let primitive_topology_bits =
-			(self.bits >> Self::PRIMITIVE_TOPOLOGY_SHIFT_BITS) & Self::PRIMITIVE_TOPOLOGY_MASK_BITS;
-		match primitive_topology_bits {
-			x if x == PrimitiveTopology::PointList as u32 => PrimitiveTopology::PointList,
-			x if x == PrimitiveTopology::LineList as u32 => PrimitiveTopology::LineList,
-			x if x == PrimitiveTopology::LineStrip as u32 => PrimitiveTopology::LineStrip,
-			x if x == PrimitiveTopology::TriangleList as u32 => PrimitiveTopology::TriangleList,
-			x if x == PrimitiveTopology::TriangleStrip as u32 => PrimitiveTopology::TriangleStrip,
-			_ => PrimitiveTopology::default(),
-		}
-	}
 }
 
 impl From<Msaa> for MeshPipelineKey {
 	fn from(msaa: Msaa) -> Self {
 		let msaa_bits = ((msaa.samples - 1) & Self::MSAA_MASK_BITS) << Self::MSAA_SHIFT_BITS;
-		MeshPipelineKey::from_bits(msaa_bits).unwrap()
+		Self::from_bits(msaa_bits).unwrap()
 	}
 }
 
@@ -530,7 +516,7 @@ impl From<PrimitiveTopology> for MeshPipelineKey {
 		let primitive_topology_bits = ((primitive_topology as u32)
 			& Self::PRIMITIVE_TOPOLOGY_MASK_BITS)
 			<< Self::PRIMITIVE_TOPOLOGY_SHIFT_BITS;
-		MeshPipelineKey::from_bits(primitive_topology_bits).unwrap()
+		Self::from_bits(primitive_topology_bits).unwrap()
 	}
 }
 
@@ -772,7 +758,7 @@ pub fn queue_mesh_view_bind_groups(
 		light_meta.view_gpu_lights.binding(),
 		global_light_meta.gpu_point_lights.binding(),
 	) {
-		for (entity, view_shadow_bindings, view_cluster_bindings) in views.into_iter() {
+		views.for_each(|(entity, view_shadow_bindings, view_cluster_bindings)| {
 			commands
 				.entity(entity)
 				.insert(MeshViewBindGroup {
@@ -801,7 +787,7 @@ pub fn queue_mesh_view_bind_groups(
 						layout: &mesh_pipeline.view_layout,
 					}),
 				});
-		}
+		});
 	}
 }
 
