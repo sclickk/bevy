@@ -232,9 +232,9 @@ impl Camera {
 #[reflect(Component)]
 pub struct CameraRenderGraph(Cow<'static, str>);
 
-impl CameraRenderGraph {
+impl<T: Into<Cow<'static, str>>> From<T> for CameraRenderGraph {
 	#[inline]
-	pub fn new<T: Into<Cow<'static, str>>>(name: T) -> Self {
+	fn from(name: T) -> Self {
 		Self(name.into())
 	}
 }

@@ -770,7 +770,7 @@ fn load_node(
 			VisibleEntities::default(),
 			Frustum::default(),
 			Camera3d::default(),
-			CameraRenderGraph::new(bevy_core_pipeline::core_3d::graph::NAME),
+			CameraRenderGraph::from(bevy_core_pipeline::core_3d::graph::NAME),
 		));
 
 		*active_camera_found = true;

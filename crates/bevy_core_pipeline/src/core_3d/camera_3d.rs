@@ -72,7 +72,7 @@ pub struct Camera3dBundle {
 impl Default for Camera3dBundle {
 	fn default() -> Self {
 		Self {
-			camera_render_graph: CameraRenderGraph::new(crate::core_3d::graph::NAME),
+			camera_render_graph: CameraRenderGraph::from(crate::core_3d::graph::NAME),
 			camera: Default::default(),
 			projection: Default::default(),
 			visible_entities: Default::default(),
