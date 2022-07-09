@@ -228,7 +228,7 @@ impl Plugin for PbrPlugin {
 		render_app.init_resource::<GlobalLightMeta>();
 		render_app.init_resource::<SpecializedMeshPipelines<ShadowPipeline>>();
 
-		let shadow_pass_node = ShadowPassNode::new(&mut render_app.world);
+		let shadow_pass_node = ShadowPassNode::from(&mut render_app.world);
 		render_app.add_render_command::<Shadow, DrawShadowMesh>();
 		let mut graph = render_app.world.resource_mut::<RenderGraph>();
 		let draw_3d_graph = graph

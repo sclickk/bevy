@@ -1459,8 +1459,10 @@ pub struct ShadowPassNode {
 
 impl ShadowPassNode {
 	pub const IN_VIEW: &'static str = "view";
+}
 
-	pub fn new(world: &mut World) -> Self {
+impl From<&mut World> for ShadowPassNode {
+	fn from(world: &mut World) -> Self {
 		Self {
 			main_view_query: QueryState::new(world),
 			view_light_query: QueryState::new(world),
