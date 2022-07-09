@@ -997,17 +997,11 @@ pub(crate) fn assign_lights_to_clusters(
 					light_center_ndc,
 					view_light_sphere.center.z,
 				);
-				let z_center = if light_center_ndc.z <= 1.0 {
-					Some(cluster_coordinates.z)
-				} else {
-					None
-				};
-				let y_center = if light_center_ndc.y > 1.0 {
-					None
-				} else if light_center_ndc.y < -1.0 {
-					Some(clusters.dimensions.y + 1)
-				} else {
-					Some(cluster_coordinates.y)
+				let z_center = (light_center_ndc.z <= 1.0).then(|| cluster_coordinates.z);
+				let y_center = match light_center_ndc.y {
+					y if y > 1.0 => None,
+					y if y < -1.0 => Some(clusters.dimensions.y + 1),
+					_ => Some(cluster_coordinates.y)
 				};
 				for z in min_cluster.z..=max_cluster.z {
 					let mut z_light = view_light_sphere.clone();
@@ -1122,10 +1116,7 @@ fn project_to_plane_z(z_light: Sphere, z_plane: Plane) -> Option<Sphere> {
 	// => pz = d / nz
 	let z = z_plane.d() / z_plane.normal_d().z;
 	let distance_to_plane = z - z_light.center.z;
-	if distance_to_plane.abs() > z_light.radius {
-		return None;
-	}
-	Some(Sphere {
+	(distance_to_plane.abs() < z_light.radius).then(|| Sphere {
 		center: Vec3A::from(z_light.center.xy().extend(z)),
 		// hypotenuse length = radius
 		// pythagorus = (distance to plane)^2 + b^2 = radius^2
@@ -1141,10 +1132,7 @@ fn project_to_plane_y(y_light: Sphere, y_plane: Plane, is_orthographic: bool) ->
 		-y_light.center.yz().dot(y_plane.normal_d().yz())
 	};
 
-	if distance_to_plane.abs() > y_light.radius {
-		return None;
-	}
-	Some(Sphere {
+	(distance_to_plane.abs() < y_light.radius).then(|| Sphere {
 		center: y_light.center + distance_to_plane * y_plane.normal(),
 		radius: (y_light.radius * y_light.radius - distance_to_plane * distance_to_plane).sqrt(),
 	})
