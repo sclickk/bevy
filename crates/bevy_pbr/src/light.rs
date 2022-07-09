@@ -907,7 +907,6 @@ pub(crate) fn assign_lights_to_clusters(
 				y_planes.push(Plane::new(normal.extend(d)));
 			}
 		} else {
-			let x_slices = clusters.dimensions.x as f32;
 			for x in 0..=clusters.dimensions.x {
 				let x_proportion = x as f32 / x_slices;
 				let x_pos = x_proportion * 2.0 - 1.0;
