@@ -125,31 +125,28 @@ fn extract_render_asset<A: RenderAsset>(
 	mut events: EventReader<AssetEvent<A>>,
 	assets: Res<Assets<A>>,
 ) {
-	let mut changed_assets = HashSet::default();
+	let mut changed = HashSet::default();
 	let mut removed = Vec::new();
 	for event in events.iter() {
 		match event {
 			AssetEvent::Created { handle } | AssetEvent::Modified { handle } => {
-				changed_assets.insert(handle);
+				changed.insert(handle);
 			}
 			AssetEvent::Removed { handle } => {
-				changed_assets.remove(handle);
+				changed.remove(handle);
 				removed.push(handle.clone_weak());
 			}
 		}
 	}
 
-	let mut extracted_assets = Vec::new();
-	for handle in changed_assets.drain() {
+	let mut extracted = Vec::new();
+	for handle in changed.drain() {
 		if let Some(asset) = assets.get(handle) {
-			extracted_assets.push((handle.clone_weak(), asset.extract_asset()));
+			extracted.push((handle.clone_weak(), asset.extract_asset()));
 		}
 	}
 
-	commands.insert_resource(ExtractedAssets {
-		extracted: extracted_assets,
-		removed,
-	});
+	commands.insert_resource(ExtractedAssets { extracted, removed });
 }
 
 // TODO: consider storing inside system?
@@ -178,8 +175,8 @@ fn prepare_assets<R: RenderAsset>(
 	let mut queued_assets = std::mem::take(&mut prepare_next_frame.assets);
 	for (handle, extracted_asset) in queued_assets.drain(..) {
 		match R::prepare_asset(extracted_asset, &mut param) {
-			Ok(prepared_asset) => {
-				render_assets.insert(handle, prepared_asset);
+			Ok(prepared) => {
+				render_assets.insert(handle, prepared);
 			}
 			Err(PrepareAssetError::RetryNextUpdate(extracted_asset)) => {
 				prepare_next_frame
@@ -195,8 +192,8 @@ fn prepare_assets<R: RenderAsset>(
 
 	for (handle, extracted_asset) in std::mem::take(&mut extracted_assets.extracted) {
 		match R::prepare_asset(extracted_asset, &mut param) {
-			Ok(prepared_asset) => {
-				render_assets.insert(handle, prepared_asset);
+			Ok(prepared) => {
+				render_assets.insert(handle, prepared);
 			}
 			Err(PrepareAssetError::RetryNextUpdate(extracted_asset)) => {
 				prepare_next_frame
