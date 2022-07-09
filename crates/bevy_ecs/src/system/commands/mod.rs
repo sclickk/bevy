@@ -122,9 +122,8 @@ impl<'w, 's> Commands<'w, 's> {
 	/// # bevy_ecs::system::assert_is_system(example_system);
 	/// ```
 	pub fn spawn<'a>(&'a mut self) -> EntityCommands<'w, 's, 'a> {
-		let entity = self.entities.reserve_entity();
 		EntityCommands {
-			entity,
+			entity: self.entities.reserve_entity(),
 			commands: self,
 		}
 	}
