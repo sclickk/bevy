@@ -1079,13 +1079,6 @@ enum ViewClusterBuffers {
 }
 
 impl ViewClusterBuffers {
-	fn new(buffer_binding_type: BufferBindingType) -> Self {
-		match buffer_binding_type {
-			BufferBindingType::Storage { .. } => Self::storage(),
-			BufferBindingType::Uniform => Self::uniform(),
-		}
-	}
-
 	fn uniform() -> Self {
 		ViewClusterBuffers::Uniform {
 			cluster_light_index_lists: UniformBuffer::default(),
@@ -1101,6 +1094,15 @@ impl ViewClusterBuffers {
 	}
 }
 
+impl From<BufferBindingType> for ViewClusterBuffers {
+	fn from(buffer_binding_type: BufferBindingType) -> Self {
+		match buffer_binding_type {
+			BufferBindingType::Storage { .. } => Self::storage(),
+			BufferBindingType::Uniform => Self::uniform(),
+		}
+	}
+}
+
 #[derive(Component)]
 pub struct ViewClusterBindings {
 	n_indices: usize,
@@ -1112,14 +1114,6 @@ impl ViewClusterBindings {
 	pub const MAX_OFFSETS: usize = 16384 / 4;
 	const MAX_UNIFORM_ITEMS: usize = Self::MAX_OFFSETS / 4;
 	pub const MAX_INDICES: usize = 16384;
-
-	pub fn new(buffer_binding_type: BufferBindingType) -> Self {
-		Self {
-			n_indices: 0,
-			n_offsets: 0,
-			buffers: ViewClusterBuffers::new(buffer_binding_type),
-		}
-	}
 
 	pub fn clear(&mut self) {
 		match &mut self.buffers {
@@ -1266,6 +1260,16 @@ impl ViewClusterBindings {
 	}
 }
 
+impl From<BufferBindingType> for ViewClusterBindings {
+	fn from(buffer_binding_type: BufferBindingType) -> Self {
+		Self {
+			n_indices: 0,
+			n_offsets: 0,
+			buffers: ViewClusterBuffers::from(buffer_binding_type),
+		}
+	}
+}
+
 pub fn prepare_clusters(
 	mut commands: Commands,
 	render_device: Res<RenderDevice>,
@@ -1288,7 +1292,7 @@ pub fn prepare_clusters(
 	);
 	for (entity, cluster_config, extracted_clusters) in views.into_iter() {
 		let mut view_clusters_bindings =
-			ViewClusterBindings::new(mesh_pipeline.clustered_forward_buffer_binding_type);
+			ViewClusterBindings::from(mesh_pipeline.clustered_forward_buffer_binding_type);
 		view_clusters_bindings.clear();
 
 		let mut indices_full = false;
