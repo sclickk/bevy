@@ -185,8 +185,8 @@ pub fn update_text2d_layout(
 							.get_glyphs(&entity)
 							.expect("Failed to get glyphs from the pipeline that have just been computed");
 						calculated_size.size = Vec2::new(
-							scale_value(text_layout_info.size.x, 1. / scale_factor),
-							scale_value(text_layout_info.size.y, 1. / scale_factor),
+							scale_value(text_layout_info.size.x, scale_factor.recip()),
+							scale_value(text_layout_info.size.y, scale_factor.recip()),
 						);
 					}
 				}
