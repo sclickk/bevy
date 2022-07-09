@@ -28,8 +28,10 @@ pub struct MainPass2dNode {
 
 impl MainPass2dNode {
 	pub const IN_VIEW: &'static str = "view";
+}
 
-	pub fn new(world: &mut World) -> Self {
+impl From<&mut World> for MainPass2dNode {
+	fn from(world: &mut World) -> Self {
 		Self {
 			query: world.query_filtered(),
 		}

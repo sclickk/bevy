@@ -59,7 +59,7 @@ impl Plugin for Core3dPlugin {
 		render_app.add_system_to_stage(RenderStage::PhaseSort, sort_phase_system::<AlphaMask3d>);
 		render_app.add_system_to_stage(RenderStage::PhaseSort, sort_phase_system::<Transparent3d>);
 
-		let pass_node_3d = MainPass3dNode::new(&mut render_app.world);
+		let pass_node_3d = MainPass3dNode::from(&mut render_app.world);
 		let mut graph = render_app.world.resource_mut::<RenderGraph>();
 
 		let mut draw_3d_graph = RenderGraph::default();

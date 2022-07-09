@@ -47,7 +47,7 @@ impl Plugin for Core2dPlugin {
 		render_app.add_system_to_stage(RenderStage::PhaseSort, sort_phase_system::<Transparent2d>);
 		render_app.add_system_to_stage(RenderStage::PhaseSort, batch_phase_system::<Transparent2d>);
 
-		let pass_node_2d = MainPass2dNode::new(&mut render_app.world);
+		let pass_node_2d = MainPass2dNode::from(&mut render_app.world);
 		let mut graph = render_app.world.resource_mut::<RenderGraph>();
 
 		let mut draw_2d_graph = RenderGraph::default();
