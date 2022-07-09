@@ -105,13 +105,6 @@ pub enum GpuPointLights {
 }
 
 impl GpuPointLights {
-	fn new(buffer_binding_type: BufferBindingType) -> Self {
-		match buffer_binding_type {
-			BufferBindingType::Storage { .. } => Self::storage(),
-			BufferBindingType::Uniform => Self::uniform(),
-		}
-	}
-
 	fn uniform() -> Self {
 		Self::Uniform(UniformBuffer::default())
 	}
@@ -155,6 +148,15 @@ impl GpuPointLights {
 		match buffer_binding_type {
 			BufferBindingType::Storage { .. } => GpuPointLightsStorage::min_size(),
 			BufferBindingType::Uniform => GpuPointLightsUniform::min_size(),
+		}
+	}
+}
+
+impl From<BufferBindingType> for GpuPointLights {
+	fn from(buffer_binding_type: BufferBindingType) -> Self {
+		match buffer_binding_type {
+			BufferBindingType::Storage { .. } => Self::storage(),
+			BufferBindingType::Uniform => Self::uniform(),
 		}
 	}
 }
@@ -604,7 +606,7 @@ impl FromWorld for GlobalLightMeta {
 impl From<BufferBindingType> for GlobalLightMeta {
 	fn from(buffer_binding_type: BufferBindingType) -> Self {
 		Self {
-			gpu_point_lights: GpuPointLights::new(buffer_binding_type),
+			gpu_point_lights: GpuPointLights::from(buffer_binding_type),
 			entity_to_index: HashMap::default(),
 		}
 	}
