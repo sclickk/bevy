@@ -1149,25 +1149,23 @@ pub fn update_directional_light_frusta(
 		Or<(Changed<GlobalTransform>, Changed<DirectionalLight>)>,
 	>,
 ) {
-	for (transform, directional_light, mut frustum, visibility) in views.iter_mut() {
+	views.for_each_mut(|(transform, directional_light, mut frustum, visibility)| {
 		// The frustum is used for culling meshes to the light for shadow mapping
 		// so if shadow mapping is disabled for this light, then the frustum is
 		// not needed.
-		if !directional_light.shadows_enabled || !visibility.is_visible {
-			continue;
+		if directional_light.shadows_enabled && visibility.is_visible {
+			let view_projection = directional_light
+				.shadow_projection
+				.get_projection_matrix()
+				* transform.compute_matrix().inverse();
+			*frustum = Frustum::from_view_projection(
+				&view_projection,
+				&transform.translation,
+				&transform.back(),
+				directional_light.shadow_projection.far(),
+			);
 		}
-
-		let view_projection = directional_light
-			.shadow_projection
-			.get_projection_matrix()
-			* transform.compute_matrix().inverse();
-		*frustum = Frustum::from_view_projection(
-			&view_projection,
-			&transform.translation,
-			&transform.back(),
-			directional_light.shadow_projection.far(),
-		);
-	}
+	});
 }
 
 // NOTE: Run this after assign_lights_to_clusters!
@@ -1181,41 +1179,38 @@ pub fn update_point_light_frusta(
 	let projection =
 		Mat4::perspective_infinite_reverse_rh(std::f32::consts::FRAC_PI_2, 1.0, POINT_LIGHT_NEAR_Z);
 	let view_rotations = CUBE_MAP_FACES
-		.iter()
-		.map(|CubeMapFace { target, up }| GlobalTransform::identity().looking_at(*target, *up))
+		.into_iter()
+		.map(|CubeMapFace { target, up }| GlobalTransform::IDENTITY.looking_at(target, up))
 		.collect::<Vec<_>>();
-
-	for (entity, transform, point_light, mut cubemap_frusta) in views.iter_mut() {
+	views.for_each_mut(|(entity, transform, point_light, mut cubemap_frusta)| {
 		// The frusta are used for culling meshes to the light for shadow mapping
 		// so if shadow mapping is disabled for this light, then the frusta are
 		// not needed.
 		// Also, if the light is not relevant for any cluster, it will not be in the
 		// global lights set and so there is no need to update its frusta.
-		if !point_light.shadows_enabled || !global_lights.entities.contains(&entity) {
-			continue;
+		if point_light.shadows_enabled && global_lights.entities.contains(&entity) {
+			// ignore scale because we don't want to effectively scale light radius and range
+			// by applying those as a view transform to shadow map rendering of objects
+			// and ignore rotation because we want the shadow map projections to align with the axes
+			let view_translation = GlobalTransform::from_translation(transform.translation);
+			let view_backward = transform.back();
+
+			for (view_rotation, frustum) in view_rotations
+				.iter()
+				.zip(cubemap_frusta.iter_mut())
+			{
+				let view = view_translation * *view_rotation;
+				let view_projection = projection * view.compute_matrix().inverse();
+
+				*frustum = Frustum::from_view_projection(
+					&view_projection,
+					&transform.translation,
+					&view_backward,
+					point_light.range,
+				);
+			}
 		}
-
-		// ignore scale because we don't want to effectively scale light radius and range
-		// by applying those as a view transform to shadow map rendering of objects
-		// and ignore rotation because we want the shadow map projections to align with the axes
-		let view_translation = GlobalTransform::from_translation(transform.translation);
-		let view_backward = transform.back();
-
-		for (view_rotation, frustum) in view_rotations
-			.iter()
-			.zip(cubemap_frusta.iter_mut())
-		{
-			let view = view_translation * *view_rotation;
-			let view_projection = projection * view.compute_matrix().inverse();
-
-			*frustum = Frustum::from_view_projection(
-				&view_projection,
-				&transform.translation,
-				&view_backward,
-				point_light.range,
-			);
-		}
-	}
+	});
 }
 
 pub fn check_light_mesh_visibility(
@@ -1247,50 +1242,48 @@ pub fn check_light_mesh_visibility(
 	>,
 ) {
 	// Directonal lights
-	for (directional_light, frustum, mut visible_entities, maybe_view_mask, visibility) in
-		directional_lights.iter_mut()
-	{
-		visible_entities.entities.clear();
+	directional_lights.for_each_mut(
+		|(directional_light, frustum, mut visible_entities, maybe_view_mask, visibility)| {
+			visible_entities.entities.clear();
 
-		// NOTE: If shadow mapping is disabled for the light then it must have no visible entities
-		if !directional_light.shadows_enabled || !visibility.is_visible {
-			continue;
-		}
+			// NOTE: If shadow mapping is disabled for the light then it must have no visible entities
+			if directional_light.shadows_enabled && visibility.is_visible {
+				let view_mask = maybe_view_mask.copied().unwrap_or_default();
 
-		let view_mask = maybe_view_mask.copied().unwrap_or_default();
+				visible_entity_query.for_each_mut(
+					|(
+						entity,
+						visibility,
+						mut computed_visibility,
+						maybe_entity_mask,
+						maybe_aabb,
+						maybe_transform,
+					)| {
+						if visibility.is_visible {
+							let entity_mask = maybe_entity_mask.copied().unwrap_or_default();
+							if view_mask.intersects(&entity_mask) {
+								// If we have an aabb and transform, do frustum culling
+								if let (Some(aabb), Some(transform)) = (maybe_aabb, maybe_transform) {
+									if !frustum.intersects_obb(aabb, &transform.compute_matrix(), true) {
+										return;
+									}
+								}
 
-		visible_entity_query.for_each_mut(
-			|(
-				entity,
-				visibility,
-				mut computed_visibility,
-				maybe_entity_mask,
-				maybe_aabb,
-				maybe_transform,
-			)| {
-				if visibility.is_visible {
-					let entity_mask = maybe_entity_mask.copied().unwrap_or_default();
-					if view_mask.intersects(&entity_mask) {
-						// If we have an aabb and transform, do frustum culling
-						if let (Some(aabb), Some(transform)) = (maybe_aabb, maybe_transform) {
-							if !frustum.intersects_obb(aabb, &transform.compute_matrix(), true) {
-								return;
+								computed_visibility.is_visible = true;
+								visible_entities.entities.push(entity);
 							}
 						}
+					},
+				);
 
-						computed_visibility.is_visible = true;
-						visible_entities.entities.push(entity);
-					}
-				}
-			},
-		);
-
-		// TODO: check for big changes in visible entities len() vs capacity() (ex: 2x) and resize
-		// to prevent holding unneeded memory
-	}
+				// TODO: check for big changes in visible entities len() vs capacity() (ex: 2x) and resize
+				// to prevent holding unneeded memory
+			}
+		},
+	);
 
 	// Point lights
-	for visible_lights in visible_point_lights.into_iter() {
+	visible_point_lights.for_each(|visible_lights| {
 		for light_entity in visible_lights.entities.iter().copied() {
 			if let Ok((
 				point_light,
@@ -1305,62 +1298,59 @@ pub fn check_light_mesh_visibility(
 				}
 
 				// NOTE: If shadow mapping is disabled for the light then it must have no visible entities
-				if !point_light.shadows_enabled {
-					continue;
-				}
+				if point_light.shadows_enabled {
+					let view_mask = maybe_view_mask.copied().unwrap_or_default();
+					let light_sphere = Sphere {
+						center: Vec3A::from(transform.translation),
+						radius: point_light.range,
+					};
 
-				let view_mask = maybe_view_mask.copied().unwrap_or_default();
-				let light_sphere = Sphere {
-					center: Vec3A::from(transform.translation),
-					radius: point_light.range,
-				};
-
-				visible_entity_query.for_each_mut(
-					|(
-						entity,
-						visibility,
-						mut computed_visibility,
-						maybe_entity_mask,
-						maybe_aabb,
-						maybe_transform,
-					)| {
-						{
-							if visibility.is_visible {
-								let entity_mask = maybe_entity_mask.copied().unwrap_or_default();
-								if view_mask.intersects(&entity_mask) {
-									// If we have an aabb and transform, do frustum culling
-									if let (Some(aabb), Some(transform)) = (maybe_aabb, maybe_transform) {
-										let model_to_world = transform.compute_matrix();
-										// Do a cheap sphere vs obb test to prune out most meshes outside the sphere of the light
-										if !light_sphere.intersects_obb(aabb, &model_to_world) {
-											return;
-										}
-										for (frustum, visible_entities) in cubemap_frusta
-											.iter()
-											.zip(cubemap_visible_entities.iter_mut())
-										{
-											if frustum.intersects_obb(aabb, &model_to_world, true) {
-												computed_visibility.is_visible = true;
+					visible_entity_query.for_each_mut(
+						|(
+							entity,
+							visibility,
+							mut computed_visibility,
+							maybe_entity_mask,
+							maybe_aabb,
+							maybe_transform,
+						)| {
+							{
+								if visibility.is_visible {
+									let entity_mask = maybe_entity_mask.copied().unwrap_or_default();
+									if view_mask.intersects(&entity_mask) {
+										// If we have an aabb and transform, do frustum culling
+										if let (Some(aabb), Some(transform)) = (maybe_aabb, maybe_transform) {
+											let model_to_world = transform.compute_matrix();
+											// Do a cheap sphere vs obb test to prune out most meshes outside the sphere of the light
+											if !light_sphere.intersects_obb(aabb, &model_to_world) {
+												return;
+											}
+											for (frustum, visible_entities) in cubemap_frusta
+												.iter()
+												.zip(cubemap_visible_entities.iter_mut())
+											{
+												if frustum.intersects_obb(aabb, &model_to_world, true) {
+													computed_visibility.is_visible = true;
+													visible_entities.entities.push(entity);
+												}
+											}
+										} else {
+											computed_visibility.is_visible = true;
+											for visible_entities in cubemap_visible_entities.iter_mut() {
 												visible_entities.entities.push(entity);
 											}
-										}
-									} else {
-										computed_visibility.is_visible = true;
-										for visible_entities in cubemap_visible_entities.iter_mut() {
-											visible_entities.entities.push(entity);
 										}
 									}
 								}
 							}
-						}
-					},
-				);
-
-				// TODO: check for big changes in visible entities len() vs capacity() (ex: 2x) and resize
-				// to prevent holding unneeded memory
+						},
+					);
+					// TODO: check for big changes in visible entities len() vs capacity() (ex: 2x) and resize
+					// to prevent holding unneeded memory
+				}
 			}
 		}
-	}
+	});
 }
 
 #[cfg(test)]
