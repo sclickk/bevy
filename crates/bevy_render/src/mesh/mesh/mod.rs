@@ -118,6 +118,16 @@ impl Mesh {
 			.get(&id.into())
 			.map(|data| &data.values)
 	}
+	/// Removes the data for a vertex attribute
+	pub fn remove_attribute(
+		&mut self,
+		attribute: impl Into<MeshVertexAttributeId>,
+	) -> Option<VertexAttributeValues> {
+		self
+			.attributes
+			.remove(&attribute.into())
+			.map(|data| data.values)
+	}
 
 	/// Retrieves the data currently set to the vertex attribute with the specified `name` mutably.
 	#[inline]

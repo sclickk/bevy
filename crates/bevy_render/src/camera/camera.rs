@@ -4,6 +4,7 @@ use crate::{
 	render_asset::RenderAssets,
 	render_resource::TextureView,
 	view::{ExtractedView, ExtractedWindows, VisibleEntities},
+	Extract,
 };
 use bevy_asset::{AssetEvent, Assets, Handle};
 use bevy_derive::{Deref, DerefMut};
@@ -395,13 +396,15 @@ pub struct ExtractedCamera {
 
 pub fn extract_cameras(
 	mut commands: Commands,
-	query: Query<(
-		Entity,
-		&Camera,
-		&CameraRenderGraph,
-		&GlobalTransform,
-		&VisibleEntities,
-	)>,
+	query: Extract<
+		Query<(
+			Entity,
+			&Camera,
+			&CameraRenderGraph,
+			&GlobalTransform,
+			&VisibleEntities,
+		)>,
+	>,
 ) {
 	for (entity, camera, camera_render_graph, transform, visible_entities) in query.into_iter() {
 		if !camera.is_active {

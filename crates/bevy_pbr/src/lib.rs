@@ -20,8 +20,10 @@ pub mod prelude {
 	#[doc(hidden)]
 	pub use crate::{
 		alpha::AlphaMode,
-		bundle::{DirectionalLightBundle, MaterialMeshBundle, PbrBundle, PointLightBundle},
-		light::{AmbientLight, DirectionalLight, PointLight},
+		bundle::{
+			DirectionalLightBundle, MaterialMeshBundle, PbrBundle, PointLightBundle, SpotLightBundle,
+		},
+		light::{AmbientLight, DirectionalLight, PointLight, SpotLight},
 		material::{Material, MaterialPlugin},
 		pbr_material::StandardMaterial,
 	};
@@ -123,8 +125,9 @@ impl Plugin for PbrPlugin {
 		app.register_type::<CubemapVisibleEntities>();
 		app.register_type::<DirectionalLight>();
 		app.register_type::<PointLight>();
+		app.register_type::<SpotLight>();
 		app.add_plugin(MeshRenderPlugin);
-		app.init_plugin::<MaterialPlugin<StandardMaterial>>();
+		app.add_plugin(MaterialPlugin::<StandardMaterial>::default());
 		app.register_type::<AmbientLight>();
 		app.register_type::<DirectionalLightShadowMap>();
 		app.register_type::<PointLightShadowMap>();
@@ -132,7 +135,7 @@ impl Plugin for PbrPlugin {
 		app.init_resource::<GlobalVisiblePointLights>();
 		app.init_resource::<DirectionalLightShadowMap>();
 		app.init_resource::<PointLightShadowMap>();
-		app.init_plugin::<ExtractResourcePlugin<AmbientLight>>();
+		app.add_plugin(ExtractResourcePlugin::<AmbientLight>::default());
 		app.add_system_to_stage(
 			CoreStage::PostUpdate,
 			// NOTE: Clusters need to have been added before update_clusters is run so
@@ -152,13 +155,20 @@ impl Plugin for PbrPlugin {
 		app.add_system_to_stage(
 			CoreStage::PostUpdate,
 			update_directional_light_frusta
-				.label(SimulationLightSystems::UpdateDirectionalLightFrusta)
+				.label(SimulationLightSystems::UpdateLightFrusta)
 				.after(TransformSystem::TransformPropagate),
 		);
 		app.add_system_to_stage(
 			CoreStage::PostUpdate,
 			update_point_light_frusta
-				.label(SimulationLightSystems::UpdatePointLightFrusta)
+				.label(SimulationLightSystems::UpdateLightFrusta)
+				.after(TransformSystem::TransformPropagate)
+				.after(SimulationLightSystems::AssignLightsToClusters),
+		);
+		app.add_system_to_stage(
+			CoreStage::PostUpdate,
+			update_spot_light_frusta
+				.label(SimulationLightSystems::UpdateLightFrusta)
 				.after(TransformSystem::TransformPropagate)
 				.after(SimulationLightSystems::AssignLightsToClusters),
 		);
@@ -168,8 +178,7 @@ impl Plugin for PbrPlugin {
 				.label(SimulationLightSystems::CheckLightVisibility)
 				.after(TransformSystem::TransformPropagate)
 				.after(VisibilitySystems::CalculateBounds)
-				.after(SimulationLightSystems::UpdateDirectionalLightFrusta)
-				.after(SimulationLightSystems::UpdatePointLightFrusta)
+				.after(SimulationLightSystems::UpdateLightFrusta)
 				// NOTE: This MUST be scheduled AFTER the core renderer visibility check
 				// because that resets entity ComputedVisibility for the first view
 				// which would override any results from this otherwise
@@ -228,7 +237,7 @@ impl Plugin for PbrPlugin {
 		render_app.init_resource::<GlobalLightMeta>();
 		render_app.init_resource::<SpecializedMeshPipelines<ShadowPipeline>>();
 
-		let shadow_pass_node = ShadowPassNode::from(&mut render_app.world);
+		let shadow_pass_node = ShadowPassNode::new(&mut render_app.world);
 		render_app.add_render_command::<Shadow, DrawShadowMesh>();
 		let mut graph = render_app.world.resource_mut::<RenderGraph>();
 		let draw_3d_graph = graph

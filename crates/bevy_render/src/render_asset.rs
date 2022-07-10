@@ -1,4 +1,4 @@
-use crate::{RenderApp, RenderStage};
+use crate::{Extract, RenderApp, RenderStage};
 use bevy_app::{App, Plugin};
 use bevy_asset::{Asset, AssetEvent, Assets, Handle};
 use bevy_ecs::{
@@ -122,15 +122,15 @@ pub type RenderAssets<A> = HashMap<Handle<A>, <A as RenderAsset>::PreparedAsset>
 /// into the "render world".
 fn extract_render_asset<A: RenderAsset>(
 	mut commands: Commands,
-	mut events: EventReader<AssetEvent<A>>,
-	assets: Res<Assets<A>>,
+	mut events: Extract<EventReader<AssetEvent<A>>>,
+	assets: Extract<Res<Assets<A>>>,
 ) {
 	let mut changed = HashSet::default();
 	let mut removed = Vec::new();
 	for event in events.iter() {
 		match event {
 			AssetEvent::Created { handle } | AssetEvent::Modified { handle } => {
-				changed.insert(handle);
+				changed.insert(handle.clone_weak());
 			}
 			AssetEvent::Removed { handle } => {
 				changed.remove(handle);
@@ -141,8 +141,8 @@ fn extract_render_asset<A: RenderAsset>(
 
 	let mut extracted = Vec::new();
 	for handle in changed.drain() {
-		if let Some(asset) = assets.get(handle) {
-			extracted.push((handle.clone_weak(), asset.extract_asset()));
+		if let Some(asset) = assets.get(&handle) {
+			extracted.push((handle, asset.extract_asset()));
 		}
 	}
 

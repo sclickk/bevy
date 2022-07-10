@@ -21,7 +21,7 @@ use bevy_render::{
 	renderer::{RenderDevice, RenderQueue},
 	texture::Image,
 	view::{ExtractedView, ViewUniforms, Visibility},
-	RenderApp, RenderStage, RenderWorld,
+	Extract, RenderApp, RenderStage,
 };
 use bevy_sprite::{Rect, SpriteAssetEvents, TextureAtlas};
 use bevy_text::{DefaultTextPipeline, Text};
@@ -173,38 +173,41 @@ pub struct ExtractedUiNodes {
 }
 
 pub fn extract_uinodes(
-	mut render_world: ResMut<RenderWorld>,
-	images: Res<Assets<Image>>,
-	uinode_query: Query<(
-		&Node,
-		&GlobalTransform,
-		&UiColor,
-		&UiImage,
-		&Visibility,
-		Option<&CalculatedClip>,
-	)>,
+	mut extracted_uinodes: ResMut<ExtractedUiNodes>,
+	images: Extract<Res<Assets<Image>>>,
+	uinode_query: Extract<
+		Query<(
+			&Node,
+			&GlobalTransform,
+			&UiColor,
+			&UiImage,
+			&Visibility,
+			Option<&CalculatedClip>,
+		)>,
+	>,
 ) {
-	let mut extracted_uinodes = render_world.resource_mut::<ExtractedUiNodes>();
 	extracted_uinodes.uinodes.clear();
-	uinode_query.for_each(|(uinode, transform, color, image, visibility, clip)| {
-		if visibility.is_visible {
-			let image = image.0.clone_weak();
-			// Skip loading images
-			if images.contains(&image) {
-				extracted_uinodes.uinodes.push(ExtractedUiNode {
-					transform: transform.compute_matrix(),
-					color: color.0,
-					rect: bevy_sprite::Rect {
-						min: Vec2::ZERO,
-						max: uinode.size,
-					},
-					image,
-					atlas_size: None,
-					clip: clip.map(|clip| clip.clip),
-				});
-			}
+	for (uinode, transform, color, image, visibility, clip) in uinode_query.iter() {
+		if !visibility.is_visible {
+			continue;
 		}
-	});
+		let image = image.0.clone_weak();
+		// Skip loading images
+		if !images.contains(&image) {
+			continue;
+		}
+		extracted_uinodes.uinodes.push(ExtractedUiNode {
+			transform: transform.compute_matrix(),
+			color: color.0,
+			rect: bevy_sprite::Rect {
+				min: Vec2::ZERO,
+				max: uinode.size,
+			},
+			image,
+			atlas_size: None,
+			clip: clip.map(|clip| clip.clip),
+		});
+	}
 }
 
 /// The UI camera is "moved back" by this many units (plus the [`UI_CAMERA_TRANSFORM_OFFSET`]) and also has a view
@@ -223,8 +226,7 @@ pub struct DefaultCameraView(pub Entity);
 
 pub fn extract_default_ui_camera_view<T: Component>(
 	mut commands: Commands,
-	render_world: Res<RenderWorld>,
-	query: Query<(Entity, &Camera, Option<&UiCameraConfig>), With<T>>,
+	query: Extract<Query<(Entity, &Camera, Option<&UiCameraConfig>), With<T>>>,
 ) {
 	for (entity, camera, camera_ui) in query.iter() {
 		// ignore cameras with disabled ui
@@ -242,10 +244,8 @@ pub fn extract_default_ui_camera_view<T: Component>(
 				..Default::default()
 			};
 			projection.update(logical_size.x, logical_size.y);
-			// This roundabout approach is required because spawn().id() won't work in this context
-			let default_camera_view = render_world.entities().reserve_entity();
-			commands
-				.get_or_spawn(default_camera_view)
+			let default_camera_view = commands
+				.spawn()
 				.insert(ExtractedView {
 					projection: projection.get_projection_matrix(),
 					transform: GlobalTransform::from_xyz(
@@ -255,7 +255,8 @@ pub fn extract_default_ui_camera_view<T: Component>(
 					),
 					width: physical_size.x,
 					height: physical_size.y,
-				});
+				})
+				.id();
 			commands.get_or_spawn(entity).insert_bundle((
 				DefaultCameraView(default_camera_view),
 				RenderPhase::<TransparentUi>::default(),
@@ -265,24 +266,23 @@ pub fn extract_default_ui_camera_view<T: Component>(
 }
 
 pub fn extract_text_uinodes(
-	mut render_world: ResMut<RenderWorld>,
-	texture_atlases: Res<Assets<TextureAtlas>>,
-	text_pipeline: Res<DefaultTextPipeline>,
-	windows: Res<Windows>,
-	uinode_query: Query<(
-		Entity,
-		&Node,
-		&GlobalTransform,
-		&Text,
-		&Visibility,
-		Option<&CalculatedClip>,
-	)>,
+	mut extracted_uinodes: ResMut<ExtractedUiNodes>,
+	texture_atlases: Extract<Res<Assets<TextureAtlas>>>,
+	text_pipeline: Extract<Res<DefaultTextPipeline>>,
+	windows: Extract<Res<Windows>>,
+	uinode_query: Extract<
+		Query<(
+			Entity,
+			&Node,
+			&GlobalTransform,
+			&Text,
+			&Visibility,
+			Option<&CalculatedClip>,
+		)>,
+	>,
 ) {
-	let mut extracted_uinodes = render_world.resource_mut::<ExtractedUiNodes>();
-
 	let scale_factor = windows.scale_factor(WindowId::primary()) as f32;
-
-	for (entity, uinode, transform, text, visibility, clip) in uinode_query.into_iter() {
+	for (entity, uinode, transform, text, visibility, clip) in uinode_query.iter() {
 		if !visibility.is_visible {
 			continue;
 		}

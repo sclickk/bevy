@@ -26,7 +26,7 @@ use bevy_render::{
 		BevyDefault, DefaultImageSampler, GpuImage, Image, ImageSampler, TextureFormatPixelInfo,
 	},
 	view::{ComputedVisibility, ViewUniform, ViewUniformOffset, ViewUniforms},
-	RenderApp, RenderStage,
+	Extract, RenderApp, RenderStage,
 };
 use bevy_transform::components::GlobalTransform;
 use std::num::NonZeroU64;
@@ -118,14 +118,16 @@ pub fn extract_meshes(
 	mut commands: Commands,
 	mut prev_caster_commands_len: Local<usize>,
 	mut prev_not_caster_commands_len: Local<usize>,
-	meshes_query: Query<(
-		Entity,
-		&ComputedVisibility,
-		&GlobalTransform,
-		&Handle<Mesh>,
-		Option<With<NotShadowReceiver>>,
-		Option<With<NotShadowCaster>>,
-	)>,
+	meshes_query: Extract<
+		Query<(
+			Entity,
+			&ComputedVisibility,
+			&GlobalTransform,
+			&Handle<Mesh>,
+			Option<With<NotShadowReceiver>>,
+			Option<With<NotShadowCaster>>,
+		)>,
+	>,
 ) {
 	let mut caster_commands = Vec::with_capacity(*prev_caster_commands_len);
 	let mut not_caster_commands = Vec::with_capacity(*prev_not_caster_commands_len);
@@ -204,12 +206,12 @@ impl SkinnedMeshJoints {
 }
 
 pub fn extract_skinned_meshes(
-	query: Query<(Entity, &ComputedVisibility, &SkinnedMesh)>,
-	inverse_bindposes: Res<Assets<SkinnedMeshInverseBindposes>>,
-	joint_query: Query<&GlobalTransform>,
 	mut commands: Commands,
 	mut previous_len: Local<usize>,
 	mut previous_joint_len: Local<usize>,
+	query: Extract<Query<(Entity, &ComputedVisibility, &SkinnedMesh)>>,
+	inverse_bindposes: Extract<Res<Assets<SkinnedMeshInverseBindposes>>>,
+	joint_query: Extract<Query<&GlobalTransform>>,
 ) {
 	let mut values = Vec::with_capacity(*previous_len);
 	let mut joints = Vec::with_capacity(*previous_joint_len);
@@ -546,10 +548,14 @@ impl SpecializedMeshPipeline for MeshPipeline {
 		let mut vertex_attributes = vec![
 			Mesh::ATTRIBUTE_POSITION.at_shader_location(0),
 			Mesh::ATTRIBUTE_NORMAL.at_shader_location(1),
-			Mesh::ATTRIBUTE_UV_0.at_shader_location(2),
 		];
 
 		let mut shader_defs = Vec::new();
+		if layout.contains(Mesh::ATTRIBUTE_UV_0) {
+			shader_defs.push(String::from("VERTEX_UVS"));
+			vertex_attributes.push(Mesh::ATTRIBUTE_UV_0.at_shader_location(2));
+		}
+
 		if layout.contains(Mesh::ATTRIBUTE_TANGENT) {
 			shader_defs.push(String::from("VERTEX_TANGENTS"));
 			vertex_attributes.push(Mesh::ATTRIBUTE_TANGENT.at_shader_location(3));
