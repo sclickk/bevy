@@ -129,7 +129,7 @@ fn setup(
 		let joint_1 = commands
 			.spawn_bundle((
 				AnimatedJoint,
-				Transform::identity(),
+				Transform::IDENTITY,
 				GlobalTransform::identity(),
 			))
 			.id();

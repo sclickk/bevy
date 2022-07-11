@@ -1,10 +1,10 @@
 use crate::MainWorld;
 use bevy_ecs::{
-    prelude::*,
-    system::{
-        ReadOnlySystemParamFetch, ResState, SystemMeta, SystemParam, SystemParamFetch,
-        SystemParamState, SystemState,
-    },
+	prelude::*,
+	system::{
+		ReadOnlySystemParamFetch, ResState, SystemMeta, SystemParam, SystemParamFetch,
+		SystemParamState, SystemState,
+	},
 };
 use std::ops::{Deref, DerefMut};
 
@@ -44,77 +44,77 @@ use std::ops::{Deref, DerefMut};
 /// [Window]: bevy_window::Window
 pub struct Extract<'w, 's, P: SystemParam + 'static>
 where
-    P::Fetch: ReadOnlySystemParamFetch,
+	P::Fetch: ReadOnlySystemParamFetch,
 {
-    item: <P::Fetch as SystemParamFetch<'w, 's>>::Item,
+	item: <P::Fetch as SystemParamFetch<'w, 's>>::Item,
 }
 
 impl<'w, 's, P: SystemParam> SystemParam for Extract<'w, 's, P>
 where
-    P::Fetch: ReadOnlySystemParamFetch,
+	P::Fetch: ReadOnlySystemParamFetch,
 {
-    type Fetch = ExtractState<P>;
+	type Fetch = ExtractState<P>;
 }
 
 #[doc(hidden)]
 pub struct ExtractState<P: SystemParam> {
-    state: SystemState<P>,
-    main_world_state: ResState<MainWorld>,
+	state: SystemState<P>,
+	main_world_state: ResState<MainWorld>,
 }
 
 // SAFETY: only accesses MainWorld resource with read only system params using ResState,
 // which is initialized in init()
 unsafe impl<P: SystemParam + 'static> SystemParamState for ExtractState<P> {
-    fn init(world: &mut World, system_meta: &mut SystemMeta) -> Self {
-        let mut main_world = world.resource_mut::<MainWorld>();
-        Self {
-            state: SystemState::new(&mut main_world),
-            main_world_state: ResState::init(world, system_meta),
-        }
-    }
+	fn init(world: &mut World, system_meta: &mut SystemMeta) -> Self {
+		let mut main_world = world.resource_mut::<MainWorld>();
+		Self {
+			state: SystemState::new(&mut main_world),
+			main_world_state: ResState::init(world, system_meta),
+		}
+	}
 }
 
 impl<'w, 's, P: SystemParam + 'static> SystemParamFetch<'w, 's> for ExtractState<P>
 where
-    P::Fetch: ReadOnlySystemParamFetch,
+	P::Fetch: ReadOnlySystemParamFetch,
 {
-    type Item = Extract<'w, 's, P>;
+	type Item = Extract<'w, 's, P>;
 
-    unsafe fn get_param(
-        state: &'s mut Self,
-        system_meta: &SystemMeta,
-        world: &'w World,
-        change_tick: u32,
-    ) -> Self::Item {
-        let main_world = ResState::<MainWorld>::get_param(
-            &mut state.main_world_state,
-            system_meta,
-            world,
-            change_tick,
-        );
-        let item = state.state.get(main_world.into_inner());
-        Extract { item }
-    }
+	unsafe fn get_param(
+		state: &'s mut Self,
+		system_meta: &SystemMeta,
+		world: &'w World,
+		change_tick: u32,
+	) -> Self::Item {
+		let main_world = ResState::<MainWorld>::get_param(
+			&mut state.main_world_state,
+			system_meta,
+			world,
+			change_tick,
+		);
+		let item = state.state.get(main_world.into_inner());
+		Extract { item }
+	}
 }
 
 impl<'w, 's, P: SystemParam> Deref for Extract<'w, 's, P>
 where
-    P::Fetch: ReadOnlySystemParamFetch,
+	P::Fetch: ReadOnlySystemParamFetch,
 {
-    type Target = <P::Fetch as SystemParamFetch<'w, 's>>::Item;
+	type Target = <P::Fetch as SystemParamFetch<'w, 's>>::Item;
 
-    #[inline]
-    fn deref(&self) -> &Self::Target {
-        &self.item
-    }
+	#[inline]
+	fn deref(&self) -> &Self::Target {
+		&self.item
+	}
 }
 
 impl<'w, 's, P: SystemParam> DerefMut for Extract<'w, 's, P>
 where
-    P::Fetch: ReadOnlySystemParamFetch,
+	P::Fetch: ReadOnlySystemParamFetch,
 {
-    #[inline]
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.item
-    }
+	#[inline]
+	fn deref_mut(&mut self) -> &mut Self::Target {
+		&mut self.item
+	}
 }

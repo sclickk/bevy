@@ -78,13 +78,13 @@ pub struct PointLightBundle {
 /// A component bundle for spot light entities
 #[derive(Debug, Bundle, Default)]
 pub struct SpotLightBundle {
-    pub spot_light: SpotLight,
-    pub visible_entities: VisibleEntities,
-    pub frustum: Frustum,
-    pub transform: Transform,
-    pub global_transform: GlobalTransform,
-    /// Enables or disables the light
-    pub visibility: Visibility,
+	pub spot_light: SpotLight,
+	pub visible_entities: VisibleEntities,
+	pub frustum: Frustum,
+	pub transform: Transform,
+	pub global_transform: GlobalTransform,
+	/// Enables or disables the light
+	pub visibility: Visibility,
 }
 
 /// A component bundle for [`DirectionalLight`] entities.

@@ -1438,35 +1438,38 @@ pub fn update_point_light_frusta(
 		.into_iter()
 		.map(|CubeMapFace { target, up }| GlobalTransform::identity().looking_at(target, up))
 		.collect::<Vec<_>>();
-	views.for_each_mut(|(entity, transform, point_light, mut cubemap_frusta)| {
+
+	for (entity, transform, point_light, mut cubemap_frusta) in views.iter_mut() {
 		// The frusta are used for culling meshes to the light for shadow mapping
 		// so if shadow mapping is disabled for this light, then the frusta are
 		// not needed.
 		// Also, if the light is not relevant for any cluster, it will not be in the
 		// global lights set and so there is no need to update its frusta.
-		if point_light.shadows_enabled && global_lights.entities.contains(&entity) {
-			// ignore scale because we don't want to effectively scale light radius and range
-			// by applying those as a view transform to shadow map rendering of objects
-			// and ignore rotation because we want the shadow map projections to align with the axes
-			let view_translation = GlobalTransform::from_translation(transform.translation);
-			let view_backward = transform.back();
-
-			for (view_rotation, frustum) in view_rotations
-				.iter()
-				.zip(cubemap_frusta.iter_mut())
-			{
-				let view = view_translation * *view_rotation;
-				let view_projection = projection * view.compute_matrix().inverse();
-
-				*frustum = Frustum::from_view_projection(
-					&view_projection,
-					&transform.translation,
-					&view_backward,
-					point_light.range,
-				);
-			}
+		if !point_light.shadows_enabled || !global_lights.entities.contains(&entity) {
+			continue;
 		}
-	});
+
+		// ignore scale because we don't want to effectively scale light radius and range
+		// by applying those as a view transform to shadow map rendering of objects
+		// and ignore rotation because we want the shadow map projections to align with the axes
+		let view_translation = GlobalTransform::from_translation(transform.translation);
+		let view_backward = transform.back();
+
+		for (view_rotation, frustum) in view_rotations
+			.iter()
+			.zip(cubemap_frusta.iter_mut())
+		{
+			let view = view_translation * *view_rotation;
+			let view_projection = projection * view.compute_matrix().inverse();
+
+			*frustum = Frustum::from_view_projection(
+				&view_projection,
+				&transform.translation,
+				&view_backward,
+				point_light.range,
+			);
+		}
+	}
 }
 
 pub fn update_spot_light_frusta(

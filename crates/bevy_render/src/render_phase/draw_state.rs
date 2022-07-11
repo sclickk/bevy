@@ -100,10 +100,7 @@ pub struct TrackedRenderPass<'a> {
 impl<'a> TrackedRenderPass<'a> {
 	/// Tracks the supplied render pass.
 	pub fn new(pass: RenderPass<'a>) -> Self {
-		Self {
-			state: DrawState::default(),
-			pass,
-		}
+		Self::from(pass)
 	}
 
 	/// Sets the active [`RenderPipeline`].
@@ -422,5 +419,15 @@ impl<'a> TrackedRenderPass<'a> {
 		self
 			.pass
 			.set_blend_constant(wgpu::Color::from(color));
+	}
+}
+
+impl<'a> From<RenderPass<'a>> for TrackedRenderPass<'a> {
+	/// Tracks the supplied render pass.
+	fn from(pass: RenderPass<'a>) -> Self {
+		Self {
+			state: DrawState::default(),
+			pass,
+		}
 	}
 }
