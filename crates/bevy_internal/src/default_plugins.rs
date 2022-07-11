@@ -86,8 +86,8 @@ pub struct MinimalPlugins;
 
 impl PluginGroup for MinimalPlugins {
 	fn build(&mut self, group: &mut PluginGroupBuilder) {
-		group.add(bevy_core::CorePlugin::default());
-		group.add(bevy_time::TimePlugin::default());
-		group.add(bevy_app::ScheduleRunnerPlugin::default());
+		group.init::<bevy_core::CorePlugin>();
+		group.init::<bevy_time::TimePlugin>();
+		group.init::<bevy_app::ScheduleRunnerPlugin>();
 	}
 }
