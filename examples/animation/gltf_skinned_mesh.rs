@@ -52,7 +52,7 @@ fn joint_animation(
 	// Iter skinned mesh entity
 	parent_query.for_each(|skinned_mesh_parent| {
 		// Mesh node is the parent of the skinned mesh entity.
-		let mesh_node_entity = skinned_mesh_parent.0;
+		let mesh_node_entity = skinned_mesh_parent.get();
 		// Get `Children` in the mesh node.
 		let mesh_node_children = children_query.get(mesh_node_entity).unwrap();
 
@@ -72,5 +72,5 @@ fn joint_animation(
 			Vec3::Z,
 			0.5 * PI * time.time_since_startup().as_secs_f32().sin(),
 		);
-	})
+	});
 }
