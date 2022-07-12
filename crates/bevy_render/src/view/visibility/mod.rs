@@ -139,13 +139,13 @@ pub fn calculate_bounds(
 	meshes: Res<Assets<Mesh>>,
 	without_aabb: Query<(Entity, &Handle<Mesh>), (Without<Aabb>, Without<NoFrustumCulling>)>,
 ) {
-	for (entity, mesh_handle) in without_aabb.into_iter() {
+	without_aabb.for_each(|(entity, mesh_handle)| {
 		if let Some(mesh) = meshes.get(mesh_handle) {
 			if let Some(aabb) = mesh.compute_aabb() {
 				commands.entity(entity).insert(aabb);
 			}
 		}
-	}
+	});
 }
 
 pub fn update_frusta<T: Component + CameraProjection + Send + Sync + 'static>(

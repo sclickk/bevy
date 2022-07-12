@@ -276,9 +276,9 @@ pub fn flex_node_system(
 	}
 
 	// update children
-	for (entity, children) in children_query.into_iter() {
+	children_query.for_each(|(entity, children)| {
 		flex_surface.update_children(entity, children);
-	}
+	});
 
 	// compute layouts
 	flex_surface.compute_window_layouts();

@@ -23,7 +23,7 @@
 //!     mut query: Query<(&Player, &mut Score)>,
 //!     mut round: ResMut<Round>,
 //! ) {
-//!     for (player, mut score) in query.iter_mut() {
+//!     for (player, mut score) in &mut query {
 //!         if player.alive {
 //!             score.0 += round.0;
 //!         }
@@ -135,7 +135,7 @@ mod tests {
 	#[test]
 	fn simple_system() {
 		fn sys(query: Query<&A>) {
-			for a in query.iter() {
+			for a in &query {
 				println!("{:?}", a);
 			}
 		}
@@ -600,7 +600,7 @@ mod tests {
 			mut modified: ResMut<bool>,
 		) {
 			assert_eq!(query.iter().count(), 1, "entity exists");
-			for entity in query.iter() {
+			query.for_each(|entity| {
 				let location = entities.get(entity).unwrap();
 				let archetype = archetypes.get(location.archetype_id).unwrap();
 				let archetype_components = archetype.components().collect::<Vec<_>>();
@@ -620,7 +620,7 @@ mod tests {
 					bundle_components, archetype_components,
 					"entity's bundle components exactly match entity's archetype components"
 				);
-			}
+			});
 			*modified = true;
 		}
 

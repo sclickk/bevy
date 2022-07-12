@@ -129,7 +129,7 @@ fn setup_scene(
 fn button_handler(
 	mut interaction_query: Query<(&Interaction, &mut UiColor), (Changed<Interaction>, With<Button>)>,
 ) {
-	for (interaction, mut color) in interaction_query.iter_mut() {
+	for (interaction, mut color) in &mut interaction_query {
 		match *interaction {
 			Interaction::Clicked => {
 				*color = Color::BLUE.into();

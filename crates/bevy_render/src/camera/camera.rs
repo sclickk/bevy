@@ -362,26 +362,30 @@ pub fn camera_system<T: CameraProjection + Component>(
 		.collect();
 
 	let mut added_cameras = vec![];
-	for entity in &mut queries.p1().into_iter() {
-		added_cameras.push(entity);
-	}
-	for (entity, mut camera, mut camera_projection) in queries.p0().iter_mut() {
-		if camera
-			.target
-			.is_changed(&changed_window_ids, &changed_image_handles)
-			|| added_cameras.contains(&entity)
-			|| camera_projection.is_changed()
-		{
-			camera.computed.target_info = camera
+
+	queries
+		.p1()
+		.for_each(|entity| added_cameras.push(entity));
+
+	queries
+		.p0()
+		.for_each_mut(|(entity, mut camera, mut camera_projection)| {
+			if camera
 				.target
-				.get_render_target_info(&windows, &images);
-			if let Some(size) = camera.logical_viewport_size() {
-				camera_projection.update(size.x, size.y);
-				camera.computed.projection_matrix = camera_projection.get_projection_matrix();
-				camera.depth_calculation = camera_projection.depth_calculation();
+				.is_changed(&changed_window_ids, &changed_image_handles)
+				|| added_cameras.contains(&entity)
+				|| camera_projection.is_changed()
+			{
+				camera.computed.target_info = camera
+					.target
+					.get_render_target_info(&windows, &images);
+				if let Some(size) = camera.logical_viewport_size() {
+					camera_projection.update(size.x, size.y);
+					camera.computed.projection_matrix = camera_projection.get_projection_matrix();
+					camera.depth_calculation = camera_projection.depth_calculation();
+				}
 			}
-		}
-	}
+		});
 }
 
 #[derive(Component, Debug)]

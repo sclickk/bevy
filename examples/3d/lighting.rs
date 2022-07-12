@@ -216,9 +216,9 @@ fn animate_light_direction(
 	time: Res<Time>,
 	mut query: Query<&mut Transform, With<DirectionalLight>>,
 ) {
-	query.for_each_mut(|mut transform| {
+	for mut transform in &mut query {
 		transform.rotate_y(time.delta_seconds() * 0.5);
-	});
+	}
 }
 
 fn movement(
@@ -226,7 +226,7 @@ fn movement(
 	time: Res<Time>,
 	mut query: Query<&mut Transform, With<Movable>>,
 ) {
-	for mut transform in query.iter_mut() {
+	for mut transform in &mut query {
 		let mut direction = Vec3::ZERO;
 		if input.pressed(KeyCode::Up) {
 			direction.y += 1.0;

@@ -179,12 +179,12 @@ pub fn animation_player(
 	mut transforms: Query<&mut Transform>,
 	children: Query<&Children>,
 ) {
-	for (entity, mut player) in animation_players.iter_mut() {
+	animation_players.for_each_mut(|(entity, mut player)| {
 		if let Some(animation_clip) = animations.get(&player.animation_clip) {
 			// Continue if paused unless the `AnimationPlayer` was changed
 			// This allow the animation to still be updated if the player.elapsed field was manually updated in pause
 			if player.paused && !player.is_changed() {
-				continue;
+				return;
 			}
 			if !player.paused {
 				player.elapsed += time.delta_seconds() * player.speed;
@@ -279,7 +279,7 @@ pub fn animation_player(
 				}
 			}
 		}
-	}
+	});
 }
 
 /// Adds animation support to an app

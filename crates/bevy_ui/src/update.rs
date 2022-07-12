@@ -71,7 +71,7 @@ pub fn update_clipping_system(
 	mut node_query: Query<(&Node, &GlobalTransform, &Style, Option<&mut CalculatedClip>)>,
 	children_query: Query<&Children>,
 ) {
-	for root_node in root_node_query.into_iter() {
+	root_node_query.for_each(|root_node| {
 		update_clipping(
 			&mut commands,
 			&children_query,
@@ -79,7 +79,7 @@ pub fn update_clipping_system(
 			root_node,
 			None,
 		);
-	}
+	});
 }
 
 fn update_clipping(

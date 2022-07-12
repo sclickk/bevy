@@ -80,7 +80,7 @@ fn propagate_recursive(
 	let (children, changed_children) = children_query.get(entity).map_err(drop)?;
 	// If our `Children` has changed, we need to recalculate everything below us
 	changed |= changed_children;
-	for child in children.into_iter() {
+	for child in children {
 		let _ = propagate_recursive(
 			&global_matrix,
 			transform_query,

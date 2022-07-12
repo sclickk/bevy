@@ -236,7 +236,7 @@ pub fn prepare_core_3d_depth_textures(
 	>,
 ) {
 	let mut textures = HashMap::default();
-	for (entity, camera) in views_3d.into_iter() {
+	views_3d.for_each(|(entity, camera)| {
 		if let Some(physical_target_size) = camera.physical_target_size {
 			let cached_texture = textures
 				.entry(camera.target.clone())
@@ -254,7 +254,7 @@ pub fn prepare_core_3d_depth_textures(
 							sample_count: msaa.samples,
 							dimension: TextureDimension::D2,
 							format: TextureFormat::Depth32Float, /* PERF: vulkan docs recommend using 24
-							                                      * bit depth for better performance */
+							                                     	* bit depth for better performance */
 							usage: TextureUsages::RENDER_ATTACHMENT,
 						},
 					)
@@ -264,5 +264,5 @@ pub fn prepare_core_3d_depth_textures(
 				.entity(entity)
 				.insert(ViewDepthTexture::from(cached_texture));
 		}
-	}
+	});
 }

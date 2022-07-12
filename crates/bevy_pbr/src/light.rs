@@ -459,13 +459,13 @@ pub fn add_clusters(
 	mut commands: Commands,
 	cameras: Query<(Entity, Option<&ClusterConfig>), (With<Camera>, Without<Clusters>)>,
 ) {
-	for (entity, config) in cameras.into_iter() {
+	cameras.for_each(|(entity, config)| {
 		let config = config.copied().unwrap_or_default();
 		// actual settings here don't matter - they will be overwritten in assign_lights_to_clusters
 		commands
 			.entity(entity)
 			.insert_bundle((Clusters::default(), config));
-	}
+	});
 }
 
 #[derive(Clone, Component, Debug, Default)]
@@ -1439,14 +1439,14 @@ pub fn update_point_light_frusta(
 		.map(|CubeMapFace { target, up }| GlobalTransform::identity().looking_at(target, up))
 		.collect::<Vec<_>>();
 
-	for (entity, transform, point_light, mut cubemap_frusta) in views.iter_mut() {
+	views.for_each_mut(|(entity, transform, point_light, mut cubemap_frusta)| {
 		// The frusta are used for culling meshes to the light for shadow mapping
 		// so if shadow mapping is disabled for this light, then the frusta are
 		// not needed.
 		// Also, if the light is not relevant for any cluster, it will not be in the
 		// global lights set and so there is no need to update its frusta.
 		if !point_light.shadows_enabled || !global_lights.entities.contains(&entity) {
-			continue;
+			return;
 		}
 
 		// ignore scale because we don't want to effectively scale light radius and range
@@ -1469,7 +1469,7 @@ pub fn update_point_light_frusta(
 				point_light.range,
 			);
 		}
-	}
+	});
 }
 
 pub fn update_spot_light_frusta(

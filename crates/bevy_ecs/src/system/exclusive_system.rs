@@ -128,10 +128,10 @@ mod tests {
 			query: Query<Entity, With<Foo>>,
 			mut counter: ResMut<usize>,
 		) {
-			for entity in query.iter() {
+			query.for_each(|entity| {
 				*counter += 1;
 				commands.entity(entity).remove::<Foo>();
-			}
+			});
 		}
 
 		let mut stage = SystemStage::parallel().with_system(removal);

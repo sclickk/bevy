@@ -189,11 +189,11 @@ fn setup_scene_once_loaded(
 	mut done: Local<bool>,
 ) {
 	if !*done && player.iter().len() == foxes.count {
-		player.for_each_mut(|mut player| {
+		for mut player in &mut player {
 			player
 				.play(animations.0[0].clone_weak())
 				.repeat();
-		});
+		}
 		*done = true;
 	}
 }
@@ -203,12 +203,14 @@ fn update_fox_rings(
 	foxes: Res<Foxes>,
 	mut rings: Query<(&Ring, &RotationDirection, &mut Transform)>,
 ) {
-	if foxes.moving {
-		let dt = time.delta_seconds();
-		rings.for_each_mut(|(ring, rotation_direction, mut transform)| {
-			let angular_velocity = foxes.speed / ring.radius;
-			transform.rotate_y(rotation_direction.sign() * angular_velocity * dt);
-		});
+	if !foxes.moving {
+		return;
+	}
+
+	let dt = time.delta_seconds();
+	for (ring, rotation_direction, mut transform) in &mut rings {
+		let angular_velocity = foxes.speed / ring.radius;
+		transform.rotate_y(rotation_direction.sign() * angular_velocity * dt);
 	}
 }
 
@@ -235,7 +237,7 @@ fn keyboard_animation_control(
 		*current_animation = (*current_animation + 1) % animations.0.len();
 	}
 
-	for mut player in animation_player.iter_mut() {
+	for mut player in &mut animation_player {
 		if keyboard_input.just_pressed(KeyCode::Space) {
 			if player.is_paused() {
 				player.resume();

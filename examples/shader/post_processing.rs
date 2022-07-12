@@ -158,10 +158,10 @@ fn main_camera_cube_rotator_system(
 	time: Res<Time>,
 	mut query: Query<&mut Transform, With<MainCube>>,
 ) {
-	query.for_each_mut(|mut transform| {
+	for mut transform in &mut query {
 		transform.rotate_x(0.55 * time.delta_seconds());
 		transform.rotate_z(0.15 * time.delta_seconds());
-	});
+	}
 }
 
 // Region below declares of the custom material handling post processing effect
