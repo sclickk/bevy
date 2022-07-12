@@ -108,11 +108,6 @@ pub struct AssetServer {
 }
 
 impl AssetServer {
-	/// Creates a new asset server with the provided asset I/O.
-	pub fn new<T: AssetIo>(source_io: T) -> Self {
-		Self::with_boxed_io(Box::new(source_io))
-	}
-
 	/// Creates a new asset server with a boxed asset I/O.
 	pub fn with_boxed_io(asset_io: Box<dyn AssetIo>) -> Self {
 		AssetServer {
@@ -670,6 +665,13 @@ impl AssetServer {
 	}
 }
 
+impl<T: AssetIo> From<T> for AssetServer {
+	/// Creates a new asset server with the provided asset I/O.
+	fn from(source_io: T) -> Self {
+		Self::with_boxed_io(Box::new(source_io))
+	}
+}
+
 fn free_unused_assets_system_impl(asset_server: &AssetServer) {
 	asset_server.free_unused_assets();
 	asset_server.mark_unused_assets();
@@ -742,7 +744,7 @@ mod test {
 	fn setup(asset_path: impl AsRef<Path>) -> AssetServer {
 		use crate::FileAssetIo;
 		IoTaskPool::init(Default::default);
-		AssetServer::new(FileAssetIo::new(asset_path, false))
+		AssetServer::from(FileAssetIo::new(asset_path, false))
 	}
 
 	#[test]
