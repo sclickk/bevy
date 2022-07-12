@@ -538,7 +538,7 @@ impl App {
 	where
 		T: StateData,
 	{
-		self.insert_resource(State::new(initial));
+		self.insert_resource(State::from(initial));
 		self.add_system_set_to_stage(stage, State::<T>::get_driver());
 		self
 	}

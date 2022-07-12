@@ -250,15 +250,6 @@ where
 		SystemSet::default().with_run_criteria(state_cleaner::<T>.label(DriverLabel::of::<T>()))
 	}
 
-	pub fn new(initial: T) -> Self {
-		Self {
-			stack: vec![initial],
-			transition: Some(StateTransition::PreStartup),
-			scheduled: None,
-			end_next_loop: false,
-		}
-	}
-
 	/// Schedule a state change that replaces the active state with the given state.
 	/// This will fail if there is a scheduled operation, pending transition, or if the given
 	/// `state` matches the current state
@@ -396,6 +387,20 @@ where
 	/// Clears the scheduled state operation.
 	pub fn clear_schedule(&mut self) {
 		self.scheduled = None;
+	}
+}
+
+impl<T> From<T> for State<T>
+where
+	T: StateData,
+{
+	fn from(initial: T) -> Self {
+		Self {
+			stack: vec![initial],
+			transition: Some(StateTransition::PreStartup),
+			scheduled: None,
+			end_next_loop: false,
+		}
 	}
 }
 
