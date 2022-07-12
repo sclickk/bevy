@@ -274,7 +274,7 @@ impl AssetLoader for ShaderLoader {
 						.to_string(),
 				));
 			}
-			let mut asset = LoadedAsset::new(shader);
+			let mut asset = LoadedAsset::from(shader);
 			for import in shader_imports.imports {
 				if let ShaderImport::AssetPath(asset_path) = import {
 					let path = PathBuf::from_str(&asset_path)?;

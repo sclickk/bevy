@@ -62,7 +62,7 @@ impl AssetLoader for ImageTextureLoader {
 				path: format!("{}", load_context.path().display()),
 			})?;
 
-			load_context.set_default_asset(LoadedAsset::new(dyn_img));
+			load_context.set_default_asset(LoadedAsset::from(dyn_img));
 			Ok(())
 		})
 	}

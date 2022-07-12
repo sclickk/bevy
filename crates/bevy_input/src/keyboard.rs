@@ -599,7 +599,7 @@ impl fmt::Display for KeyCode {
 				Self::Copy => "Copy",
 				Self::Paste => "Paste",
 				Self::Cut => "Cut",
-				_ => "Unknown Key",
+				// _ => "Unknown Key",
 			}
 		)
 	}

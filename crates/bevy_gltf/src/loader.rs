@@ -221,7 +221,7 @@ async fn load_gltf<'a, 'b>(
 			}
 			let handle = load_context.set_labeled_asset(
 				&format!("Animation{}", animation.index()),
-				LoadedAsset::new(animation_clip),
+				LoadedAsset::from(animation_clip),
 			);
 			if let Some(name) = animation.name() {
 				named_animations.insert(name.to_string(), handle.clone());
@@ -318,7 +318,7 @@ async fn load_gltf<'a, 'b>(
 				}
 			}
 
-			let mesh = load_context.set_labeled_asset(&primitive_label, LoadedAsset::new(mesh));
+			let mesh = load_context.set_labeled_asset(&primitive_label, LoadedAsset::from(mesh));
 			primitives.push(super::GltfPrimitive {
 				mesh,
 				material: primitive
@@ -330,7 +330,7 @@ async fn load_gltf<'a, 'b>(
 
 		let handle = load_context.set_labeled_asset(
 			&mesh_label(&mesh),
-			LoadedAsset::new(super::GltfMesh { primitives }),
+			LoadedAsset::from(super::GltfMesh { primitives }),
 		);
 		if let Some(name) = mesh.name() {
 			named_meshes.insert(name.to_string(), handle.clone());
@@ -376,7 +376,7 @@ async fn load_gltf<'a, 'b>(
 	}
 	let nodes = resolve_node_hierarchy(nodes_intermediate, load_context.path())
 		.into_iter()
-		.map(|(label, node)| load_context.set_labeled_asset(&label, LoadedAsset::new(node)))
+		.map(|(label, node)| load_context.set_labeled_asset(&label, LoadedAsset::from(node)))
 		.collect::<Vec<bevy_asset::Handle<GltfNode>>>();
 	let named_nodes = named_nodes_intermediate
 		.into_iter()
@@ -401,7 +401,7 @@ async fn load_gltf<'a, 'b>(
 				supported_compressed_formats,
 			)
 			.await?;
-			load_context.set_labeled_asset(&label, LoadedAsset::new(texture));
+			load_context.set_labeled_asset(&label, LoadedAsset::from(texture));
 		}
 	} else {
 		#[cfg(not(target_arch = "wasm32"))]
@@ -431,7 +431,7 @@ async fn load_gltf<'a, 'b>(
 				res.ok()
 			})
 			.for_each(|(texture, label)| {
-				load_context.set_labeled_asset(&label, LoadedAsset::new(texture));
+				load_context.set_labeled_asset(&label, LoadedAsset::from(texture));
 			});
 	}
 
@@ -447,7 +447,7 @@ async fn load_gltf<'a, 'b>(
 
 			load_context.set_labeled_asset(
 				&skin_label(&gltf_skin),
-				LoadedAsset::new(SkinnedMeshInverseBindposes::from(inverse_bindposes)),
+				LoadedAsset::from(SkinnedMeshInverseBindposes::from(inverse_bindposes)),
 			)
 		})
 		.collect();
@@ -517,7 +517,7 @@ async fn load_gltf<'a, 'b>(
 		}
 
 		let scene_handle =
-			load_context.set_labeled_asset(&scene_label(&scene), LoadedAsset::new(Scene::from(world)));
+			load_context.set_labeled_asset(&scene_label(&scene), LoadedAsset::from(Scene::from(world)));
 
 		if let Some(name) = scene.name() {
 			named_scenes.insert(name.to_string(), scene_handle.clone());
@@ -525,7 +525,7 @@ async fn load_gltf<'a, 'b>(
 		scenes.push(scene_handle);
 	}
 
-	load_context.set_default_asset(LoadedAsset::new(Gltf {
+	load_context.set_default_asset(LoadedAsset::from(Gltf {
 		default_scene: gltf
 			.default_scene()
 			.and_then(|scene| scenes.get(scene.index()))
@@ -682,7 +682,7 @@ fn load_material(material: &Material, load_context: &mut LoadContext) -> Handle<
 
 	load_context.set_labeled_asset(
 		&material_label,
-		LoadedAsset::new(StandardMaterial {
+		LoadedAsset::from(StandardMaterial {
 			base_color: Color::rgba(color[0], color[1], color[2], color[3]),
 			base_color_texture,
 			perceptual_roughness: pbr.roughness_factor(),

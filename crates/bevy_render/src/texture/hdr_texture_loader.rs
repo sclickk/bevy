@@ -47,7 +47,7 @@ impl AssetLoader for HdrTextureLoader {
 				format,
 			);
 
-			load_context.set_default_asset(LoadedAsset::new(texture));
+			load_context.set_default_asset(LoadedAsset::from(texture));
 			Ok(())
 		})
 	}

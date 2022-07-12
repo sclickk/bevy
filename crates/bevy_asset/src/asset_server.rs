@@ -700,7 +700,7 @@ mod test {
 			_: &'a [u8],
 			ctx: &'a mut LoadContext,
 		) -> BoxedFuture<'a, Result<(), anyhow::Error>> {
-			ctx.set_default_asset(LoadedAsset::new(PngAsset));
+			ctx.set_default_asset(LoadedAsset::from(PngAsset));
 			Box::pin(async move { Ok(()) })
 		}
 

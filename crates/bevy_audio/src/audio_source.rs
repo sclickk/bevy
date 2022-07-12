@@ -31,7 +31,7 @@ pub struct AudioLoader;
 
 impl AssetLoader for AudioLoader {
 	fn load(&self, bytes: &[u8], load_context: &mut LoadContext) -> BoxedFuture<Result<()>> {
-		load_context.set_default_asset(LoadedAsset::new(AudioSource {
+		load_context.set_default_asset(LoadedAsset::from(AudioSource {
 			bytes: bytes.into(),
 		}));
 		Box::pin(async move { Ok(()) })

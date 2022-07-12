@@ -63,17 +63,19 @@ pub struct LoadedAsset<T: Asset> {
 }
 
 impl<T: Asset> LoadedAsset<T> {
+	/// Adds a dependency on another asset at the provided path.
+	pub fn add_dependency(&mut self, asset_path: AssetPath) {
+		self.dependencies.push(asset_path.to_owned());
+	}
+}
+
+impl<T: Asset> From<T> for LoadedAsset<T> {
 	/// Creates a new loaded asset.
-	pub fn new(value: T) -> Self {
+	fn from(value: T) -> Self {
 		Self {
 			value: Some(value),
 			dependencies: Vec::new(),
 		}
-	}
-
-	/// Adds a dependency on another asset at the provided path.
-	pub fn add_dependency(&mut self, asset_path: AssetPath) {
-		self.dependencies.push(asset_path.to_owned());
 	}
 }
 

@@ -32,7 +32,7 @@ impl AssetLoader for SceneLoader {
 				type_registry: &*self.type_registry.read(),
 			};
 			let scene = scene_deserializer.deserialize(&mut deserializer)?;
-			load_context.set_default_asset(LoadedAsset::new(scene));
+			load_context.set_default_asset(LoadedAsset::from(scene));
 			Ok(())
 		})
 	}
