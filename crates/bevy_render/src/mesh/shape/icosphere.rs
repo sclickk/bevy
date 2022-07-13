@@ -1,4 +1,4 @@
-use crate::mesh::{Indices, Mesh};
+use crate::mesh::{Indices, Mesh, MeshVertexAttribute};
 use hexasphere::shapes::IcoSphere;
 use wgpu::PrimitiveTopology;
 
@@ -95,9 +95,9 @@ impl From<Icosphere> for Mesh {
 
 		let mut mesh = Mesh::from(PrimitiveTopology::TriangleList);
 		mesh.set_indices(Some(indices));
-		mesh.insert_attribute(Mesh::ATTRIBUTE_POSITION, points);
-		mesh.insert_attribute(Mesh::ATTRIBUTE_NORMAL, normals);
-		mesh.insert_attribute(Mesh::ATTRIBUTE_UV_0, uvs);
+		mesh.insert_attribute(MeshVertexAttribute::POSITION, points);
+		mesh.insert_attribute(MeshVertexAttribute::NORMAL, normals);
+		mesh.insert_attribute(MeshVertexAttribute::UV_0, uvs);
 		mesh
 	}
 }

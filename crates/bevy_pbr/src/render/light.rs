@@ -14,7 +14,7 @@ use bevy_math::{Mat4, UVec3, UVec4, Vec2, Vec3, Vec3Swizzles, Vec4, Vec4Swizzles
 use bevy_render::{
 	camera::{Camera, CameraProjection},
 	color::Color,
-	mesh::{Mesh, MeshVertexBufferLayout},
+	mesh::{Mesh, MeshVertexAttribute, MeshVertexBufferLayout},
 	render_asset::RenderAssets,
 	render_graph::{Node, NodeRunError, RenderGraphContext, SlotInfo, SlotType},
 	render_phase::{
@@ -317,17 +317,17 @@ impl SpecializedMeshPipeline for ShadowPipeline {
 		key: Self::Key,
 		layout: &MeshVertexBufferLayout,
 	) -> Result<RenderPipelineDescriptor, SpecializedMeshPipelineError> {
-		let mut vertex_attributes = vec![Mesh::ATTRIBUTE_POSITION.at_shader_location(0)];
+		let mut vertex_attributes = vec![MeshVertexAttribute::POSITION.at_shader_location(0)];
 
 		let mut bind_group_layout = vec![self.view_layout.clone()];
 		let mut shader_defs = Vec::new();
 
-		if layout.contains(Mesh::ATTRIBUTE_JOINT_INDEX.id)
-			&& layout.contains(Mesh::ATTRIBUTE_JOINT_WEIGHT.id)
+		if layout.contains(MeshVertexAttribute::JOINT_INDEX.id)
+			&& layout.contains(MeshVertexAttribute::JOINT_WEIGHT.id)
 		{
 			shader_defs.push(String::from("SKINNED"));
-			vertex_attributes.push(Mesh::ATTRIBUTE_JOINT_INDEX.at_shader_location(4));
-			vertex_attributes.push(Mesh::ATTRIBUTE_JOINT_WEIGHT.at_shader_location(5));
+			vertex_attributes.push(MeshVertexAttribute::JOINT_INDEX.at_shader_location(4));
+			vertex_attributes.push(MeshVertexAttribute::JOINT_WEIGHT.at_shader_location(5));
 			bind_group_layout.push(self.skinned_mesh_layout.clone());
 		} else {
 			bind_group_layout.push(self.mesh_layout.clone());

@@ -1,4 +1,4 @@
-use crate::mesh::{Indices, Mesh};
+use crate::mesh::{Indices, Mesh, MeshVertexAttribute};
 use wgpu::PrimitiveTopology;
 
 /// A regular polygon in the `XY` plane
@@ -52,9 +52,9 @@ impl From<RegularPolygon> for Mesh {
 		}
 
 		let mut mesh = Mesh::from(PrimitiveTopology::TriangleList);
-		mesh.insert_attribute(Mesh::ATTRIBUTE_POSITION, positions);
-		mesh.insert_attribute(Mesh::ATTRIBUTE_NORMAL, normals);
-		mesh.insert_attribute(Mesh::ATTRIBUTE_UV_0, uvs);
+		mesh.insert_attribute(MeshVertexAttribute::POSITION, positions);
+		mesh.insert_attribute(MeshVertexAttribute::NORMAL, normals);
+		mesh.insert_attribute(MeshVertexAttribute::UV_0, uvs);
 		mesh.set_indices(Some(Indices::U32(indices)));
 		mesh
 	}

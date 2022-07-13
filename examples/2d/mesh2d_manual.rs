@@ -70,7 +70,7 @@ fn star(
 		v_pos.push([r * a.cos(), r * a.sin(), 0.0]);
 	}
 	// Set the position attribute
-	star.insert_attribute(Mesh::ATTRIBUTE_POSITION, v_pos);
+	star.insert_attribute(MeshVertexAttribute::POSITION, v_pos);
 	// And a RGB color attribute as well
 	let mut v_color: Vec<u32> = vec![Color::BLACK.as_linear_rgba_u32()];
 	v_color.extend_from_slice(&[Color::YELLOW.as_linear_rgba_u32(); 10]);

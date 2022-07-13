@@ -20,7 +20,7 @@ use bevy_render::{
 	color::Color,
 	mesh::{
 		skinning::{SkinnedMesh, SkinnedMeshInverseBindposes},
-		Indices, Mesh, VertexAttributeValues,
+		Indices, Mesh, MeshVertexAttribute, VertexAttributeValues,
 	},
 	primitives::{Aabb, Frustum},
 	render_resource::{AddressMode, Face, FilterMode, PrimitiveTopology, SamplerDescriptor},
@@ -246,40 +246,40 @@ async fn load_gltf<'a, 'b>(
 				.read_positions()
 				.map(|v| VertexAttributeValues::Float32x3(v.collect()))
 			{
-				mesh.insert_attribute(Mesh::ATTRIBUTE_POSITION, vertex_attribute);
+				mesh.insert_attribute(MeshVertexAttribute::POSITION, vertex_attribute);
 			}
 
 			if let Some(vertex_attribute) = reader
 				.read_normals()
 				.map(|v| VertexAttributeValues::Float32x3(v.collect()))
 			{
-				mesh.insert_attribute(Mesh::ATTRIBUTE_NORMAL, vertex_attribute);
+				mesh.insert_attribute(MeshVertexAttribute::NORMAL, vertex_attribute);
 			}
 
 			if let Some(vertex_attribute) = reader
 				.read_tex_coords(0)
 				.map(|v| VertexAttributeValues::Float32x2(v.into_f32().collect()))
 			{
-				mesh.insert_attribute(Mesh::ATTRIBUTE_UV_0, vertex_attribute);
+				mesh.insert_attribute(MeshVertexAttribute::UV_0, vertex_attribute);
 			}
 
 			if let Some(vertex_attribute) = reader
 				.read_colors(0)
 				.map(|v| VertexAttributeValues::Float32x4(v.into_rgba_f32().collect()))
 			{
-				mesh.insert_attribute(Mesh::ATTRIBUTE_COLOR, vertex_attribute);
+				mesh.insert_attribute(MeshVertexAttribute::COLOR, vertex_attribute);
 			}
 
 			if let Some(iter) = reader.read_joints(0) {
 				let vertex_attribute = VertexAttributeValues::Uint16x4(iter.into_u16().collect());
-				mesh.insert_attribute(Mesh::ATTRIBUTE_JOINT_INDEX, vertex_attribute);
+				mesh.insert_attribute(MeshVertexAttribute::JOINT_INDEX, vertex_attribute);
 			}
 
 			if let Some(vertex_attribute) = reader
 				.read_weights(0)
 				.map(|v| VertexAttributeValues::Float32x4(v.into_f32().collect()))
 			{
-				mesh.insert_attribute(Mesh::ATTRIBUTE_JOINT_WEIGHT, vertex_attribute);
+				mesh.insert_attribute(MeshVertexAttribute::JOINT_WEIGHT, vertex_attribute);
 			}
 
 			if let Some(indices) = reader.read_indices() {
@@ -287,7 +287,7 @@ async fn load_gltf<'a, 'b>(
 			};
 
 			if mesh
-				.attribute(Mesh::ATTRIBUTE_NORMAL.id)
+				.attribute(MeshVertexAttribute::NORMAL.id)
 				.is_none()
 				&& matches!(mesh.primitive_topology(), PrimitiveTopology::TriangleList)
 			{
@@ -307,9 +307,9 @@ async fn load_gltf<'a, 'b>(
 				.read_tangents()
 				.map(|v| VertexAttributeValues::Float32x4(v.collect()))
 			{
-				mesh.insert_attribute(Mesh::ATTRIBUTE_TANGENT, vertex_attribute);
+				mesh.insert_attribute(MeshVertexAttribute::TANGENT, vertex_attribute);
 			} else if mesh
-				.attribute(Mesh::ATTRIBUTE_NORMAL.id)
+				.attribute(MeshVertexAttribute::NORMAL.id)
 				.is_some()
 				&& primitive.material().normal_texture().is_some()
 			{

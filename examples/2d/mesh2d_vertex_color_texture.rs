@@ -1,7 +1,7 @@
 //! Shows how to render a polygonal [`Mesh`], generated from a [`Quad`] primitive, in a 2D scene.
 //! Adds a texture and colored vertices, giving per-vertex tinting.
 
-use bevy::{prelude::*, sprite::MaterialMesh2dBundle};
+use bevy::{prelude::*, render::mesh::MeshVertexAttribute, sprite::MaterialMesh2dBundle};
 
 fn main() {
 	let mut app = App::new();
@@ -28,7 +28,7 @@ fn setup(
 		Color::WHITE.as_rgba_f32(),
 	];
 	// Insert the vertex colors as an attribute
-	mesh.insert_attribute(Mesh::ATTRIBUTE_COLOR, vertex_colors);
+	mesh.insert_attribute(MeshVertexAttribute::COLOR, vertex_colors);
 	// Spawn
 	commands.init_bundle::<Camera2dBundle>();
 	commands.spawn_bundle(MaterialMesh2dBundle {

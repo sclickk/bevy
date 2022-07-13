@@ -1,6 +1,9 @@
 //! Illustrates the use of vertex colors.
 
-use bevy::{prelude::*, render::mesh::VertexAttributeValues};
+use bevy::{
+	prelude::*,
+	render::mesh::{MeshVertexAttribute, VertexAttributeValues},
+};
 
 fn main() {
 	let mut app = App::new();
@@ -25,13 +28,13 @@ fn setup(
 	// Assign vertex colors based on vertex positions
 	let mut colorful_cube = Mesh::from(shape::Cube { size: 1.0 });
 	if let Some(VertexAttributeValues::Float32x3(positions)) =
-		colorful_cube.attribute(Mesh::ATTRIBUTE_POSITION.id)
+		colorful_cube.attribute(MeshVertexAttribute::POSITION.id)
 	{
 		let colors: Vec<[f32; 4]> = positions
 			.iter()
 			.map(|[r, g, b]| [(1. - *r) / 2., (1. - *g) / 2., (1. - *b) / 2., 1.])
 			.collect();
-		colorful_cube.insert_attribute(Mesh::ATTRIBUTE_COLOR, colors);
+		colorful_cube.insert_attribute(MeshVertexAttribute::COLOR, colors);
 	}
 	commands.spawn_bundle(PbrBundle {
 		mesh: meshes.add(colorful_cube),

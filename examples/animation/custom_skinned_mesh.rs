@@ -8,7 +8,7 @@ use bevy::{
 	prelude::*,
 	render::mesh::{
 		skinning::{SkinnedMesh, SkinnedMeshInverseBindposes},
-		Indices, PrimitiveTopology,
+		Indices, MeshVertexAttribute, PrimitiveTopology,
 	},
 };
 use rand::Rng;
@@ -55,7 +55,7 @@ fn setup(
 	let mut mesh = Mesh::from(PrimitiveTopology::TriangleList);
 	// Set mesh vertex positions
 	mesh.insert_attribute(
-		Mesh::ATTRIBUTE_POSITION,
+		MeshVertexAttribute::POSITION,
 		vec![
 			[0.0, 0.0, 0.0],
 			[1.0, 0.0, 0.0],
@@ -70,16 +70,16 @@ fn setup(
 		],
 	);
 	// Set mesh vertex normals
-	mesh.insert_attribute(Mesh::ATTRIBUTE_NORMAL, vec![[0.0, 0.0, 1.0]; 10]);
+	mesh.insert_attribute(MeshVertexAttribute::NORMAL, vec![[0.0, 0.0, 1.0]; 10]);
 	// Set mesh vertex UVs. Although the mesh doesn't have any texture applied,
 	//  UVs are still required by the render pipeline. So these UVs are zeroed out.
-	mesh.insert_attribute(Mesh::ATTRIBUTE_UV_0, vec![[0.0, 0.0]; 10]);
+	mesh.insert_attribute(MeshVertexAttribute::UV_0, vec![[0.0, 0.0]; 10]);
 	// Set mesh vertex joint indices for mesh skinning.
 	// Each vertex gets 4 indices used to address the `JointTransforms` array in the vertex shader
 	//  as well as `SkinnedMeshJoint` array in the `SkinnedMesh` component.
 	// This means that a maximum of 4 joints can affect a single vertex.
 	mesh.insert_attribute(
-		Mesh::ATTRIBUTE_JOINT_INDEX,
+		MeshVertexAttribute::JOINT_INDEX,
 		vec![
 			[0u16, 0, 0, 0],
 			[0, 0, 0, 0],
@@ -97,7 +97,7 @@ fn setup(
 	// Each vertex gets 4 joint weights corresponding to the 4 joint indices assigned to it.
 	// The sum of these weights should equal to 1.
 	mesh.insert_attribute(
-		Mesh::ATTRIBUTE_JOINT_WEIGHT,
+		MeshVertexAttribute::JOINT_WEIGHT,
 		vec![
 			[1.00, 0.00, 0.0, 0.0],
 			[1.00, 0.00, 0.0, 0.0],

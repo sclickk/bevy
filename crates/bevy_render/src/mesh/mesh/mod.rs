@@ -49,40 +49,12 @@ pub struct Mesh {
 /// # use bevy_render::render_resource::PrimitiveTopology;
 /// fn create_triangle() -> Mesh {
 ///     let mut mesh = Mesh::from(PrimitiveTopology::TriangleList);
-///     mesh.insert_attribute(Mesh::ATTRIBUTE_POSITION, vec![[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [1.0, 1.0, 0.0]]);
+///     mesh.insert_attribute(MeshVertexAttribute::POSITION, vec![[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [1.0, 1.0, 0.0]]);
 ///     mesh.set_indices(Some(Indices::U32(vec![0,1,2])));
 ///     mesh
 /// }
 /// ```
 impl Mesh {
-	/// Where the vertex is located in space. Use in conjunction with [`Mesh::insert_attribute`]
-	pub const ATTRIBUTE_POSITION: MeshVertexAttribute =
-		MeshVertexAttribute::new("Vertex_Position", 0, VertexFormat::Float32x3);
-
-	/// The direction the vertex normal is facing in.
-	/// Use in conjunction with [`Mesh::insert_attribute`]
-	pub const ATTRIBUTE_NORMAL: MeshVertexAttribute =
-		MeshVertexAttribute::new("Vertex_Normal", 1, VertexFormat::Float32x3);
-
-	/// Texture coordinates for the vertex. Use in conjunction with [`Mesh::insert_attribute`]
-	pub const ATTRIBUTE_UV_0: MeshVertexAttribute =
-		MeshVertexAttribute::new("Vertex_Uv", 2, VertexFormat::Float32x2);
-
-	/// The direction of the vertex tangent. Used for normal mapping
-	pub const ATTRIBUTE_TANGENT: MeshVertexAttribute =
-		MeshVertexAttribute::new("Vertex_Tangent", 3, VertexFormat::Float32x4);
-
-	/// Per vertex coloring. Use in conjunction with [`Mesh::insert_attribute`]
-	pub const ATTRIBUTE_COLOR: MeshVertexAttribute =
-		MeshVertexAttribute::new("Vertex_Color", 4, VertexFormat::Float32x4);
-
-	/// Per vertex joint transform matrix weight. Use in conjunction with [`Mesh::insert_attribute`]
-	pub const ATTRIBUTE_JOINT_WEIGHT: MeshVertexAttribute =
-		MeshVertexAttribute::new("Vertex_JointWeight", 5, VertexFormat::Float32x4);
-	/// Per vertex joint transform matrix index. Use in conjunction with [`Mesh::insert_attribute`]
-	pub const ATTRIBUTE_JOINT_INDEX: MeshVertexAttribute =
-		MeshVertexAttribute::new("Vertex_JointIndex", 6, VertexFormat::Uint16x4);
-
 	/// Returns the topology of the mesh.
 	pub fn primitive_topology(&self) -> PrimitiveTopology {
 		self.primitive_topology
@@ -93,7 +65,7 @@ impl Mesh {
 		self.attributes.contains_key(&id)
 	}
 	/// Sets the data for a vertex attribute (position, normal etc.). The name will
-	/// often be one of the associated constants such as [`Mesh::ATTRIBUTE_POSITION`].
+	/// often be one of the associated constants such as [`MeshVertexAttribute::POSITION`].
 	///
 	/// # Panics
 	/// Panics when the format of the values does not match the attribute's format.
@@ -325,10 +297,10 @@ impl Mesh {
 		}
 	}
 
-	/// Calculates the [`Mesh::ATTRIBUTE_NORMAL`] of a mesh.
+	/// Calculates the [`MeshVertexAttribute::NORMAL`] of a mesh.
 	///
 	/// # Panics
-	/// Panics if [`Indices`] are set or [`Mesh::ATTRIBUTE_POSITION`] is not of type `float3` or
+	/// Panics if [`Indices`] are set or [`MeshVertexAttribute::POSITION`] is not of type `float3` or
 	/// if the mesh has any other topology than [`PrimitiveTopology::TriangleList`].
 	/// Consider calling [`Mesh::duplicate_vertices`] or export your mesh with normal attributes.
 	pub fn compute_flat_normals(&mut self) {
@@ -343,10 +315,10 @@ impl Mesh {
 		);
 
 		let positions = self
-			.attribute(Mesh::ATTRIBUTE_POSITION.id)
+			.attribute(MeshVertexAttribute::POSITION.id)
 			.unwrap()
 			.as_float3()
-			.expect("`Mesh::ATTRIBUTE_POSITION` vertex attributes should be of type `float3`");
+			.expect("`MeshVertexAttribute::POSITION` vertex attributes should be of type `float3`");
 
 		let normals: Vec<_> = positions
 			.chunks_exact(3)
@@ -354,23 +326,23 @@ impl Mesh {
 			.flat_map(|normal| [normal; 3])
 			.collect();
 
-		self.insert_attribute(Mesh::ATTRIBUTE_NORMAL, normals);
+		self.insert_attribute(MeshVertexAttribute::NORMAL, normals);
 	}
 
 	/// Generate tangents for the mesh using the `mikktspace` algorithm.
 	///
-	/// Sets the [`Mesh::ATTRIBUTE_TANGENT`] attribute if successful.
-	/// Requires a [`PrimitiveTopology::TriangleList`] topology and the [`Mesh::ATTRIBUTE_POSITION`], [`Mesh::ATTRIBUTE_NORMAL`] and [`Mesh::ATTRIBUTE_UV_0`] attributes set.
+	/// Sets the [`MeshVertexAttribute::TANGENT`] attribute if successful.
+	/// Requires a [`PrimitiveTopology::TriangleList`] topology and the [`MeshVertexAttribute::POSITION`], [`MeshVertexAttribute::NORMAL`] and [`MeshVertexAttribute::UV_0`] attributes set.
 	pub fn generate_tangents(&mut self) -> Result<(), GenerateTangentsError> {
 		let tangents = generate_tangents_for_mesh(self)?;
-		self.insert_attribute(Mesh::ATTRIBUTE_TANGENT, tangents);
+		self.insert_attribute(MeshVertexAttribute::TANGENT, tangents);
 		Ok(())
 	}
 
 	/// Compute the Axis-Aligned Bounding Box of the mesh vertices in model space
 	pub fn compute_aabb(&self) -> Option<Aabb> {
 		if let Some(VertexAttributeValues::Float32x3(values)) =
-			self.attribute(Mesh::ATTRIBUTE_POSITION.id)
+			self.attribute(MeshVertexAttribute::POSITION.id)
 		{
 			let mut minimum = VEC3_MAX;
 			let mut maximum = VEC3_MIN;
@@ -427,6 +399,27 @@ pub struct MeshVertexAttribute {
 }
 
 impl MeshVertexAttribute {
+	/// Where the vertex is located in space. Use in conjunction with [`Mesh::insert_attribute`]
+	pub const POSITION: Self = Self::new("Vertex_Position", 0, VertexFormat::Float32x3);
+
+	/// The direction the vertex normal is facing in.
+	/// Use in conjunction with [`Mesh::insert_attribute`]
+	pub const NORMAL: Self = Self::new("Vertex_Normal", 1, VertexFormat::Float32x3);
+
+	/// Texture coordinates for the vertex. Use in conjunction with [`Mesh::insert_attribute`]
+	pub const UV_0: Self = Self::new("Vertex_Uv", 2, VertexFormat::Float32x2);
+
+	/// The direction of the vertex tangent. Used for normal mapping
+	pub const TANGENT: Self = Self::new("Vertex_Tangent", 3, VertexFormat::Float32x4);
+
+	/// Per vertex coloring. Use in conjunction with [`Mesh::insert_attribute`]
+	pub const COLOR: Self = Self::new("Vertex_Color", 4, VertexFormat::Float32x4);
+
+	/// Per vertex joint transform matrix weight. Use in conjunction with [`Mesh::insert_attribute`]
+	pub const JOINT_WEIGHT: Self = Self::new("Vertex_JointWeight", 5, VertexFormat::Float32x4);
+	/// Per vertex joint transform matrix index. Use in conjunction with [`Mesh::insert_attribute`]
+	pub const JOINT_INDEX: Self = Self::new("Vertex_JointIndex", 6, VertexFormat::Uint16x4);
+
 	pub const fn new(name: &'static str, id: usize, format: VertexFormat) -> Self {
 		Self { name, id, format }
 	}
@@ -943,40 +936,42 @@ fn generate_tangents_for_mesh(mesh: &Mesh) -> Result<Vec<[f32; 4]>, GenerateTang
 	};
 
 	let positions = match mesh
-		.attribute(Mesh::ATTRIBUTE_POSITION.id)
+		.attribute(MeshVertexAttribute::POSITION.id)
 		.ok_or(GenerateTangentsError::MissingVertexAttribute(
-			Mesh::ATTRIBUTE_POSITION.name,
+			MeshVertexAttribute::POSITION.name,
 		))? {
 		VertexAttributeValues::Float32x3(vertices) => vertices,
 		_ => {
 			return Err(GenerateTangentsError::InvalidVertexAttributeFormat(
-				Mesh::ATTRIBUTE_POSITION.name,
+				MeshVertexAttribute::POSITION.name,
 				VertexFormat::Float32x3,
 			))
 		},
 	};
 
 	let normals = match mesh
-		.attribute(Mesh::ATTRIBUTE_NORMAL.id)
+		.attribute(MeshVertexAttribute::NORMAL.id)
 		.ok_or(GenerateTangentsError::MissingVertexAttribute(
-			Mesh::ATTRIBUTE_NORMAL.name,
+			MeshVertexAttribute::NORMAL.name,
 		))? {
 		VertexAttributeValues::Float32x3(vertices) => vertices,
 		_ => {
 			return Err(GenerateTangentsError::InvalidVertexAttributeFormat(
-				Mesh::ATTRIBUTE_NORMAL.name,
+				MeshVertexAttribute::NORMAL.name,
 				VertexFormat::Float32x3,
 			))
 		},
 	};
 
-	let uvs = match mesh.attribute(Mesh::ATTRIBUTE_UV_0.id).ok_or(
-		GenerateTangentsError::MissingVertexAttribute(Mesh::ATTRIBUTE_UV_0.name),
-	)? {
+	let uvs = match mesh
+		.attribute(MeshVertexAttribute::UV_0.id)
+		.ok_or(GenerateTangentsError::MissingVertexAttribute(
+			MeshVertexAttribute::UV_0.name,
+		))? {
 		VertexAttributeValues::Float32x2(vertices) => vertices,
 		_ => {
 			return Err(GenerateTangentsError::InvalidVertexAttributeFormat(
-				Mesh::ATTRIBUTE_UV_0.name,
+				MeshVertexAttribute::UV_0.name,
 				VertexFormat::Float32x2,
 			))
 		},
@@ -1012,6 +1007,6 @@ mod tests {
 	#[should_panic]
 	fn panic_invalid_format() {
 		let mut mesh = Mesh::new(PrimitiveTopology::TriangleList);
-		mesh.insert_attribute(Mesh::ATTRIBUTE_UV_0, vec![[0.0, 0.0, 0.0]]);
+		mesh.insert_attribute(MeshVertexAttribute::UV_0, vec![[0.0, 0.0, 0.0]]);
 	}
 }

@@ -80,7 +80,7 @@ impl Material for CustomMaterial {
 		_key: MaterialPipelineKey<Self>,
 	) -> Result<(), SpecializedMeshPipelineError> {
 		let vertex_layout = layout.get_layout(&[
-			Mesh::ATTRIBUTE_POSITION.at_shader_location(0),
+			MeshVertexAttribute::POSITION.at_shader_location(0),
 			ATTRIBUTE_BLEND_COLOR.at_shader_location(1),
 		])?;
 		descriptor.vertex.buffers = vec![vertex_layout];

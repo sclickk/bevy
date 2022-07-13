@@ -8,7 +8,7 @@ use bevy_math::{Mat4, Vec2};
 use bevy_reflect::{Reflect, TypeUuid};
 use bevy_render::{
 	extract_component::{ComponentUniforms, DynamicUniformIndex, UniformComponentPlugin},
-	mesh::{GpuBufferInfo, Mesh, MeshVertexBufferLayout},
+	mesh::{GpuBufferInfo, Mesh, MeshVertexAttribute, MeshVertexBufferLayout},
 	prelude::Msaa,
 	render_asset::RenderAssets,
 	render_phase::{EntityRenderCommand, RenderCommandResult, TrackedRenderPass},
@@ -337,20 +337,20 @@ impl SpecializedMeshPipeline for Mesh2dPipeline {
 		layout: &MeshVertexBufferLayout,
 	) -> Result<RenderPipelineDescriptor, SpecializedMeshPipelineError> {
 		let mut vertex_attributes = vec![
-			Mesh::ATTRIBUTE_POSITION.at_shader_location(0),
-			Mesh::ATTRIBUTE_NORMAL.at_shader_location(1),
-			Mesh::ATTRIBUTE_UV_0.at_shader_location(2),
+			MeshVertexAttribute::POSITION.at_shader_location(0),
+			MeshVertexAttribute::NORMAL.at_shader_location(1),
+			MeshVertexAttribute::UV_0.at_shader_location(2),
 		];
 
 		let mut shader_defs = Vec::new();
-		if layout.contains(Mesh::ATTRIBUTE_TANGENT.id) {
+		if layout.contains(MeshVertexAttribute::TANGENT.id) {
 			shader_defs.push(String::from("VERTEX_TANGENTS"));
-			vertex_attributes.push(Mesh::ATTRIBUTE_TANGENT.at_shader_location(3));
+			vertex_attributes.push(MeshVertexAttribute::TANGENT.at_shader_location(3));
 		}
 
-		if layout.contains(Mesh::ATTRIBUTE_COLOR.id) {
+		if layout.contains(MeshVertexAttribute::COLOR.id) {
 			shader_defs.push(String::from("VERTEX_COLORS"));
-			vertex_attributes.push(Mesh::ATTRIBUTE_COLOR.at_shader_location(4));
+			vertex_attributes.push(MeshVertexAttribute::COLOR.at_shader_location(4));
 		}
 
 		let vertex_buffer_layout = layout.get_layout(&vertex_attributes)?;

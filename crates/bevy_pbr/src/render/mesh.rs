@@ -15,7 +15,7 @@ use bevy_render::{
 	extract_component::{ComponentUniforms, DynamicUniformIndex, UniformComponentPlugin},
 	mesh::{
 		skinning::{SkinnedMesh, SkinnedMeshInverseBindposes},
-		GpuBufferInfo, Mesh, MeshVertexBufferLayout,
+		GpuBufferInfo, Mesh, MeshVertexAttribute, MeshVertexBufferLayout,
 	},
 	prelude::Msaa,
 	render_asset::RenderAssets,
@@ -546,33 +546,33 @@ impl SpecializedMeshPipeline for MeshPipeline {
 		layout: &MeshVertexBufferLayout,
 	) -> Result<RenderPipelineDescriptor, SpecializedMeshPipelineError> {
 		let mut vertex_attributes = vec![
-			Mesh::ATTRIBUTE_POSITION.at_shader_location(0),
-			Mesh::ATTRIBUTE_NORMAL.at_shader_location(1),
+			MeshVertexAttribute::POSITION.at_shader_location(0),
+			MeshVertexAttribute::NORMAL.at_shader_location(1),
 		];
 
 		let mut shader_defs = Vec::new();
-		if layout.contains(Mesh::ATTRIBUTE_UV_0.id) {
+		if layout.contains(MeshVertexAttribute::UV_0.id) {
 			shader_defs.push(String::from("VERTEX_UVS"));
-			vertex_attributes.push(Mesh::ATTRIBUTE_UV_0.at_shader_location(2));
+			vertex_attributes.push(MeshVertexAttribute::UV_0.at_shader_location(2));
 		}
 
-		if layout.contains(Mesh::ATTRIBUTE_TANGENT.id) {
+		if layout.contains(MeshVertexAttribute::TANGENT.id) {
 			shader_defs.push(String::from("VERTEX_TANGENTS"));
-			vertex_attributes.push(Mesh::ATTRIBUTE_TANGENT.at_shader_location(3));
+			vertex_attributes.push(MeshVertexAttribute::TANGENT.at_shader_location(3));
 		}
 
-		if layout.contains(Mesh::ATTRIBUTE_COLOR.id) {
+		if layout.contains(MeshVertexAttribute::COLOR.id) {
 			shader_defs.push(String::from("VERTEX_COLORS"));
-			vertex_attributes.push(Mesh::ATTRIBUTE_COLOR.at_shader_location(4));
+			vertex_attributes.push(MeshVertexAttribute::COLOR.at_shader_location(4));
 		}
 
 		let mut bind_group_layout = vec![self.view_layout.clone()];
-		if layout.contains(Mesh::ATTRIBUTE_JOINT_INDEX.id)
-			&& layout.contains(Mesh::ATTRIBUTE_JOINT_WEIGHT.id)
+		if layout.contains(MeshVertexAttribute::JOINT_INDEX.id)
+			&& layout.contains(MeshVertexAttribute::JOINT_WEIGHT.id)
 		{
 			shader_defs.push(String::from("SKINNED"));
-			vertex_attributes.push(Mesh::ATTRIBUTE_JOINT_INDEX.at_shader_location(5));
-			vertex_attributes.push(Mesh::ATTRIBUTE_JOINT_WEIGHT.at_shader_location(6));
+			vertex_attributes.push(MeshVertexAttribute::JOINT_INDEX.at_shader_location(5));
+			vertex_attributes.push(MeshVertexAttribute::JOINT_WEIGHT.at_shader_location(6));
 			bind_group_layout.push(self.skinned_mesh_layout.clone());
 		} else {
 			bind_group_layout.push(self.mesh_layout.clone());
