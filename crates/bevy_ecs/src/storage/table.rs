@@ -16,19 +16,16 @@ use std::{
 pub struct TableId(usize);
 
 impl TableId {
+	pub const EMPTY: Self = Self(0);
+
 	#[inline]
-	pub fn new(index: usize) -> Self {
+	pub const fn new(index: usize) -> Self {
 		TableId(index)
 	}
 
 	#[inline]
 	pub fn index(self) -> usize {
 		self.0
-	}
-
-	#[inline]
-	pub const fn empty() -> TableId {
-		TableId(0)
 	}
 }
 

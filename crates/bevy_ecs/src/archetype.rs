@@ -399,13 +399,13 @@ impl Default for Archetypes {
 			archetype_ids: Default::default(),
 			archetype_component_count: 0,
 		};
-		archetypes.get_id_or_insert(TableId::empty(), Vec::new(), Vec::new());
+		archetypes.get_id_or_insert(TableId::EMPTY, Vec::new(), Vec::new());
 
 		// adds the resource archetype. it is "special" in that it is inaccessible via a "hash",
 		// which prevents entities from being added to it
 		archetypes.archetypes.push(Archetype::new(
 			ArchetypeId::RESOURCE,
-			TableId::empty(),
+			TableId::EMPTY,
 			Box::new([]),
 			Box::new([]),
 			Vec::new(),
