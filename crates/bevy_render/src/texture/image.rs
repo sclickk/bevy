@@ -376,14 +376,12 @@ impl Image {
 			#[cfg(feature = "ktx2")]
 			ImageFormat::Ktx2 => ktx2_buffer_to_image(buffer, supported_compressed_formats, is_srgb),
 			_ => {
-				let image_crate_format =
-					format
-						.as_image_crate_format()
-						.ok_or(TextureError::UnsupportedTextureFormat(format!(
-							"{:?}",
-							format
-						)))?;
-				let dyn_img = image::load_from_memory_with_format(buffer, image_crate_format)?;
+				let image_crate_format = format
+					.as_image_crate_format()
+					.ok_or_else(|| TextureError::UnsupportedTextureFormat(format!("{:?}", format)))?;
+				let mut reader = image::io::Reader::with_format(std::io::Cursor::new(buffer), image_crate_format);
+				reader.no_limits();
+				let dyn_img = reader.decode()?;
 				Ok(image_to_texture(dyn_img, is_srgb))
 			},
 		}
