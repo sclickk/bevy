@@ -575,7 +575,7 @@ pub(crate) unsafe fn get_component(
 			let table_row = archetype.entity_table_row(location.index);
 			// SAFETY: archetypes only store valid table_rows and the stored component type is T
 			Some(components.get_data_unchecked(table_row))
-		}
+		},
 		StorageType::SparseSet => world
 			.storages
 			.sparse_sets
@@ -610,7 +610,7 @@ unsafe fn get_component_and_ticks(
 				components.get_data_unchecked(table_row),
 				components.get_ticks_unchecked(table_row),
 			))
-		}
+		},
 		StorageType::SparseSet => world
 			.storages
 			.sparse_sets
@@ -637,7 +637,7 @@ unsafe fn get_ticks(
 			let table_row = archetype.entity_table_row(location.index);
 			// SAFETY: archetypes only store valid table_rows and the stored component type is T
 			Some(components.get_ticks_unchecked(table_row))
-		}
+		},
 		StorageType::SparseSet => world
 			.storages
 			.sparse_sets
@@ -680,7 +680,7 @@ unsafe fn take_component<'a>(
 			components
 				.get_data_unchecked_mut(table_row)
 				.promote()
-		}
+		},
 		StorageType::SparseSet => storages
 			.sparse_sets
 			.get_mut(component_id)

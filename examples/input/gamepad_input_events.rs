@@ -17,22 +17,22 @@ fn gamepad_events(mut gamepad_event: EventReader<GamepadEvent>) {
 		match event.event_type {
 			GamepadEventType::Connected => {
 				info!("{:?} Connected", event.gamepad);
-			}
+			},
 			GamepadEventType::Disconnected => {
 				info!("{:?} Disconnected", event.gamepad);
-			}
+			},
 			GamepadEventType::ButtonChanged(button_type, value) => {
 				info!(
 					"{:?} of {:?} is changed to {}",
 					button_type, event.gamepad, value
 				);
-			}
+			},
 			GamepadEventType::AxisChanged(axis_type, value) => {
 				info!(
 					"{:?} of {:?} is changed to {}",
 					axis_type, event.gamepad, value
 				);
-			}
+			},
 		}
 	}
 }

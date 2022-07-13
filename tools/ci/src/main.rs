@@ -46,7 +46,7 @@ fn main() {
 		Some("doc") => Check::DOC_TEST | Check::DOC_CHECK,
 		Some("compile") => {
 			Check::COMPILE_FAIL | Check::BENCH_CHECK | Check::EXAMPLE_CHECK | Check::COMPILE_CHECK
-		}
+		},
 		_ => Check::all(),
 	};
 

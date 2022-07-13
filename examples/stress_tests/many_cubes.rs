@@ -66,7 +66,7 @@ fn setup(
 
 			// camera
 			commands.init_bundle::<Camera3dBundle>();
-		}
+		},
 		_ => {
 			// NOTE: This pattern is good for demonstrating that frustum culling is working correctly
 			// as the number of visible meshes rises and falls depending on the viewing angle.
@@ -108,7 +108,7 @@ fn setup(
 				transform: Transform::from_xyz(WIDTH as f32, HEIGHT as f32, WIDTH as f32),
 				..Default::default()
 			});
-		}
+		},
 	}
 
 	// add one cube, the only one with strong handles

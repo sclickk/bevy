@@ -173,10 +173,10 @@ pub fn update_text2d_layout(
 						// There was an error processing the text layout, let's add this entity to the
 						// queue for further processing
 						queue.insert(entity);
-					}
+					},
 					Err(e @ TextError::FailedToAddGlyph(_)) => {
 						panic!("Fatal error when processing text: {}.", e);
-					}
+					},
 					Ok(()) => {
 						let text_layout_info = text_pipeline
 							.get_glyphs(&entity)
@@ -185,7 +185,7 @@ pub fn update_text2d_layout(
 							scale_value(text_layout_info.size.x, scale_factor.recip()),
 							scale_value(text_layout_info.size.y, scale_factor.recip()),
 						);
-					}
+					},
 				}
 			}
 		},

@@ -294,16 +294,16 @@ impl BundleInfo {
 					{
 						ComponentStatus::Added => {
 							column.initialize(table_row, component_ptr, ComponentTicks::new(change_tick));
-						}
+						},
 						ComponentStatus::Mutated => {
 							column.replace(table_row, component_ptr, change_tick);
-						}
+						},
 					}
-				}
+				},
 				StorageType::SparseSet => {
 					let sparse_set = sparse_sets.get_mut(component_id).unwrap();
 					sparse_set.insert(entity, component_ptr, change_tick);
-				}
+				},
 			}
 			bundle_component += 1;
 		});
@@ -451,7 +451,7 @@ impl<'a, 'b> BundleInserter<'a, 'b> {
 					bundle,
 				);
 				location
-			}
+			},
 			InsertBundleResult::NewArchetypeSameTable { new_archetype } => {
 				let result = self.archetype.swap_remove(location.index);
 				if let Some(swapped_entity) = result.swapped_entity {
@@ -476,7 +476,7 @@ impl<'a, 'b> BundleInserter<'a, 'b> {
 					bundle,
 				);
 				new_location
-			}
+			},
 			InsertBundleResult::NewArchetypeNewTable {
 				new_archetype,
 				new_table,
@@ -526,7 +526,7 @@ impl<'a, 'b> BundleInserter<'a, 'b> {
 					bundle,
 				);
 				new_location
-			}
+			},
 		}
 	}
 }

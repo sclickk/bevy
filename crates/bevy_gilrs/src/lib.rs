@@ -22,7 +22,7 @@ impl Plugin for GilrsPlugin {
 				app.insert_non_send_resource(gilrs);
 				app.add_startup_system_to_stage(StartupStage::PreStartup, gilrs_event_startup_system);
 				app.add_system_to_stage(CoreStage::PreUpdate, gilrs_event_system.before(InputSystem));
-			}
+			},
 			Err(err) => error!("Failed to start Gilrs. {}", err),
 		}
 	}

@@ -196,7 +196,7 @@ pub fn derive_as_bind_group(input: TokenStream) -> TokenStream {
 
 			match binding_type {
 				BindingType::Uniform => { /* uniform codegen is deferred to account for combined uniform bindings */
-				}
+				},
 				BindingType::Texture => {
 					binding_impls.push(quote! {
                         #render_path::render_resource::OwnedBindingResource::TextureView({
@@ -221,7 +221,7 @@ pub fn derive_as_bind_group(input: TokenStream) -> TokenStream {
 									count: None,
 							}
 					});
-				}
+				},
 				BindingType::Sampler => {
 					binding_impls.push(quote! {
                         #render_path::render_resource::OwnedBindingResource::Sampler({
@@ -242,7 +242,7 @@ pub fn derive_as_bind_group(input: TokenStream) -> TokenStream {
                             count: None,
                         }
                     });
-				}
+				},
 			}
 		}
 	}

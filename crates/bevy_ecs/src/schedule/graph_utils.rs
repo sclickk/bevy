@@ -52,7 +52,7 @@ where
 							.or_insert_with(HashSet::default)
 							.insert(label.clone());
 					}
-				}
+				},
 				None => warn!(
 					// TODO: plumb this as proper output?
 					"{} wants to be after unknown label: {:?}",
@@ -72,7 +72,7 @@ where
 							.or_insert_with(HashSet::default)
 							.insert(label.clone());
 					}
-				}
+				},
 				None => warn!(
 					"{} wants to be before unknown label: {:?}",
 					nodes[index].name(),

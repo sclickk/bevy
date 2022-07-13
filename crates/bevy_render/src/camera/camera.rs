@@ -285,7 +285,7 @@ impl RenderTarget {
 					physical_size: UVec2::new(window.physical_width(), window.physical_height()),
 					scale_factor: window.scale_factor(),
 				}
-			}
+			},
 			RenderTarget::Image(image_handle) => {
 				let image = images.get(image_handle)?;
 				let Extent3d { width, height, .. } = image.texture_descriptor.size;
@@ -293,7 +293,7 @@ impl RenderTarget {
 					physical_size: UVec2::new(width, height),
 					scale_factor: 1.0,
 				}
-			}
+			},
 		})
 	}
 	// Check if this render target is contained in the given changed windows or images.

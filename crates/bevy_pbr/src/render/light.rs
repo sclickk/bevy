@@ -134,11 +134,11 @@ impl GpuPointLights {
 				let src = &lights[..len];
 				let dst = &mut buffer.get_mut().data[..len];
 				dst.copy_from_slice(src);
-			}
+			},
 			GpuPointLights::Storage(buffer) => {
 				buffer.get_mut().data.clear();
 				buffer.get_mut().data.append(&mut lights);
-			}
+			},
 		}
 	}
 
@@ -848,7 +848,7 @@ pub fn prepare_lights(
 						.extend(spot_offset),
 					outer.tan(),
 				)
-			}
+			},
 			None => {
 				(
 					// For point lights: the lower-right 2x2 values of the projection matrix [2][2] [2][3] [3][2] [3][3]
@@ -861,7 +861,7 @@ pub fn prepare_lights(
 					// unused
 					0.0,
 				)
-			}
+			},
 		};
 
 		gpu_point_lights.push(GpuPointLight {
@@ -1326,7 +1326,7 @@ impl ViewClusterBindings {
 			} => {
 				*cluster_light_index_lists.get_mut().data = [UVec4::ZERO; Self::MAX_UNIFORM_ITEMS];
 				*cluster_offsets_and_counts.get_mut().data = [UVec4::ZERO; Self::MAX_UNIFORM_ITEMS];
-			}
+			},
 			ViewClusterBuffers::Storage {
 				cluster_light_index_lists,
 				cluster_offsets_and_counts,
@@ -1337,7 +1337,7 @@ impl ViewClusterBindings {
 					.get_mut()
 					.data
 					.clear();
-			}
+			},
 		}
 	}
 
@@ -1356,7 +1356,7 @@ impl ViewClusterBindings {
 				let packed = pack_offset_and_counts(offset, point_count, spot_count);
 
 				cluster_offsets_and_counts.get_mut().data[array_index][component] = packed;
-			}
+			},
 			ViewClusterBuffers::Storage {
 				cluster_offsets_and_counts,
 				..
@@ -1370,7 +1370,7 @@ impl ViewClusterBindings {
 						spot_count as u32,
 						0,
 					));
-			}
+			},
 		}
 
 		self.n_offsets += 1;
@@ -1393,7 +1393,7 @@ impl ViewClusterBindings {
 
 				cluster_light_index_lists.get_mut().data[array_index][component] |=
 					index << (8 * sub_index);
-			}
+			},
 			ViewClusterBuffers::Storage {
 				cluster_light_index_lists,
 				..
@@ -1402,7 +1402,7 @@ impl ViewClusterBindings {
 					.get_mut()
 					.data
 					.push(index as u32);
-			}
+			},
 		}
 
 		self.n_indices += 1;
@@ -1416,14 +1416,14 @@ impl ViewClusterBindings {
 			} => {
 				cluster_light_index_lists.write_buffer(render_device, render_queue);
 				cluster_offsets_and_counts.write_buffer(render_device, render_queue);
-			}
+			},
 			ViewClusterBuffers::Storage {
 				cluster_light_index_lists,
 				cluster_offsets_and_counts,
 			} => {
 				cluster_light_index_lists.write_buffer(render_device, render_queue);
 				cluster_offsets_and_counts.write_buffer(render_device, render_queue);
-			}
+			},
 		}
 	}
 
@@ -1606,7 +1606,7 @@ pub fn queue_shadows(
 							Err(err) => {
 								error!("{}", err);
 								continue;
-							}
+							},
 						};
 
 						shadow_phase.add(Shadow {

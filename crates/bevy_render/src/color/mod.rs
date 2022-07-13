@@ -183,7 +183,7 @@ impl Color {
 					data[i * 2 + 1] = ch as u8;
 				}
 				decode_rgb(&data)
-			}
+			},
 			// RGBA
 			4 => {
 				let mut data = [0; 8];
@@ -192,7 +192,7 @@ impl Color {
 					data[i * 2 + 1] = ch as u8;
 				}
 				decode_rgba(&data)
-			}
+			},
 			// RRGGBB
 			6 => decode_rgb(hex.as_bytes()),
 			// RRGGBBAA
@@ -277,7 +277,7 @@ impl Color {
 		match self {
 			Color::Rgba { alpha, .. } | Color::RgbaLinear { alpha, .. } | Color::Hsla { alpha, .. } => {
 				*alpha
-			}
+			},
 		}
 	}
 
@@ -286,7 +286,7 @@ impl Color {
 		match self {
 			Color::Rgba { alpha, .. } | Color::RgbaLinear { alpha, .. } | Color::Hsla { alpha, .. } => {
 				*alpha = a;
-			}
+			},
 		}
 		self
 	}
@@ -320,7 +320,7 @@ impl Color {
 					blue,
 					alpha: *alpha,
 				}
-			}
+			},
 		}
 	}
 
@@ -353,7 +353,7 @@ impl Color {
 					blue: blue.nonlinear_to_linear_srgb(),
 					alpha: *alpha,
 				}
-			}
+			},
 		}
 	}
 
@@ -374,7 +374,7 @@ impl Color {
 					lightness,
 					alpha: *alpha,
 				}
-			}
+			},
 			Color::RgbaLinear {
 				red,
 				green,
@@ -392,7 +392,7 @@ impl Color {
 					lightness,
 					alpha: *alpha,
 				}
-			}
+			},
 			Color::Hsla { .. } => *self,
 		}
 	}
@@ -426,7 +426,7 @@ impl Color {
 				let [red, green, blue] =
 					HslRepresentation::hsl_to_nonlinear_srgb(hue, saturation, lightness);
 				[red, green, blue, alpha]
-			}
+			},
 		}
 	}
 
@@ -465,7 +465,7 @@ impl Color {
 					blue.nonlinear_to_linear_srgb(),
 					alpha,
 				]
-			}
+			},
 		}
 	}
 
@@ -481,7 +481,7 @@ impl Color {
 				let (hue, saturation, lightness) =
 					HslRepresentation::nonlinear_srgb_to_hsl([red, green, blue]);
 				[hue, saturation, lightness, alpha]
-			}
+			},
 			Color::RgbaLinear {
 				red,
 				green,
@@ -494,7 +494,7 @@ impl Color {
 					blue.linear_to_nonlinear_srgb(),
 				]);
 				[hue, saturation, lightness, alpha]
-			}
+			},
 			Color::Hsla {
 				hue,
 				saturation,
@@ -546,7 +546,7 @@ impl Color {
 					(blue * 255.0) as u8,
 					(alpha * 255.0) as u8,
 				])
-			}
+			},
 		}
 	}
 
@@ -592,7 +592,7 @@ impl Color {
 					(blue.nonlinear_to_linear_srgb() * 255.0) as u8,
 					(alpha * 255.0) as u8,
 				])
-			}
+			},
 		}
 	}
 }
@@ -617,7 +617,7 @@ impl AddAssign<Color> for Color {
 				*green += rhs[1];
 				*blue += rhs[2];
 				*alpha += rhs[3];
-			}
+			},
 			Color::RgbaLinear {
 				red,
 				green,
@@ -629,7 +629,7 @@ impl AddAssign<Color> for Color {
 				*green += rhs[1];
 				*blue += rhs[2];
 				*alpha += rhs[3];
-			}
+			},
 			Color::Hsla {
 				hue,
 				saturation,
@@ -641,7 +641,7 @@ impl AddAssign<Color> for Color {
 				*saturation += rhs[1];
 				*lightness += rhs[2];
 				*alpha += rhs[3];
-			}
+			},
 		}
 	}
 }
@@ -664,7 +664,7 @@ impl Add<Color> for Color {
 					blue: blue + rhs[2],
 					alpha: alpha + rhs[3],
 				}
-			}
+			},
 			Color::RgbaLinear {
 				red,
 				green,
@@ -678,7 +678,7 @@ impl Add<Color> for Color {
 					blue: blue + rhs[2],
 					alpha: alpha + rhs[3],
 				}
-			}
+			},
 			Color::Hsla {
 				hue,
 				saturation,
@@ -692,7 +692,7 @@ impl Add<Color> for Color {
 					lightness: lightness + rhs[2],
 					alpha: alpha + rhs[3],
 				}
-			}
+			},
 		}
 	}
 }
@@ -819,7 +819,7 @@ impl MulAssign<f32> for Color {
 				*red *= rhs;
 				*green *= rhs;
 				*blue *= rhs;
-			}
+			},
 			Color::Hsla {
 				hue,
 				saturation,
@@ -829,7 +829,7 @@ impl MulAssign<f32> for Color {
 				*hue *= rhs;
 				*saturation *= rhs;
 				*lightness *= rhs;
-			}
+			},
 		}
 	}
 }
@@ -895,7 +895,7 @@ impl MulAssign<Vec4> for Color {
 				*green *= rhs.y;
 				*blue *= rhs.z;
 				*alpha *= rhs.w;
-			}
+			},
 			Color::Hsla {
 				hue,
 				saturation,
@@ -906,7 +906,7 @@ impl MulAssign<Vec4> for Color {
 				*saturation *= rhs.y;
 				*lightness *= rhs.z;
 				*alpha *= rhs.w;
-			}
+			},
 		}
 	}
 }
@@ -965,7 +965,7 @@ impl MulAssign<Vec3> for Color {
 				*red *= rhs.x;
 				*green *= rhs.y;
 				*blue *= rhs.z;
-			}
+			},
 			Color::Hsla {
 				hue,
 				saturation,
@@ -975,7 +975,7 @@ impl MulAssign<Vec3> for Color {
 				*hue *= rhs.x;
 				*saturation *= rhs.y;
 				*lightness *= rhs.z;
-			}
+			},
 		}
 	}
 }
@@ -1041,7 +1041,7 @@ impl MulAssign<[f32; 4]> for Color {
 				*green *= rhs[1];
 				*blue *= rhs[2];
 				*alpha *= rhs[3];
-			}
+			},
 			Color::Hsla {
 				hue,
 				saturation,
@@ -1052,7 +1052,7 @@ impl MulAssign<[f32; 4]> for Color {
 				*saturation *= rhs[1];
 				*lightness *= rhs[2];
 				*alpha *= rhs[3];
-			}
+			},
 		}
 	}
 }
@@ -1111,7 +1111,7 @@ impl MulAssign<[f32; 3]> for Color {
 				*red *= rhs[0];
 				*green *= rhs[1];
 				*blue *= rhs[2];
-			}
+			},
 			Color::Hsla {
 				hue,
 				saturation,
@@ -1121,7 +1121,7 @@ impl MulAssign<[f32; 3]> for Color {
 				*hue *= rhs[0];
 				*saturation *= rhs[1];
 				*lightness *= rhs[2];
-			}
+			},
 		}
 	}
 }
@@ -1207,7 +1207,7 @@ fn decode_rgb(data: &[u8]) -> Result<Color, HexColorError> {
 			let g = buf[1] as f32 / 255.0;
 			let b = buf[2] as f32 / 255.0;
 			Ok(Color::rgb(r, g, b))
-		}
+		},
 		Err(err) => Err(HexColorError::Hex(err)),
 	}
 }
@@ -1221,7 +1221,7 @@ fn decode_rgba(data: &[u8]) -> Result<Color, HexColorError> {
 			let b = buf[2] as f32 / 255.0;
 			let a = buf[3] as f32 / 255.0;
 			Ok(Color::rgba(r, g, b, a))
-		}
+		},
 		Err(err) => Err(HexColorError::Hex(err)),
 	}
 }

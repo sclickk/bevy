@@ -126,7 +126,7 @@ impl RenderGraph {
 									.edges
 									.remove_output_edge(input_edge.clone())?;
 							}
-						}
+						},
 					}
 				}
 				// Remove all edges from this node to other nodes. Note that as we're removing this
@@ -148,7 +148,7 @@ impl RenderGraph {
 									.edges
 									.remove_input_edge(output_edge.clone())?;
 							}
-						}
+						},
 					}
 				}
 			}
@@ -431,8 +431,8 @@ impl RenderGraph {
 						input_slot: input_index,
 					});
 				}
-			}
-			Edge::NodeEdge { .. } => { /* nothing to validate here */ }
+			},
+			Edge::NodeEdge { .. } => { /* nothing to validate here */ },
 		}
 
 		Ok(())

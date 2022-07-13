@@ -346,7 +346,7 @@ impl Image {
 				)),
 				TextureFormat::Rgba8UnormSrgb => {
 					Some((image::DynamicImage::ImageRgba8(img.into_rgba8()), true))
-				}
+				},
 				_ => None,
 			})
 			.map(|(dyn_img, is_srgb)| super::image_texture_conversion::image_to_texture(dyn_img, is_srgb))
@@ -385,7 +385,7 @@ impl Image {
 						)))?;
 				let dyn_img = image::load_from_memory_with_format(buffer, image_crate_format)?;
 				Ok(image_to_texture(dyn_img, is_srgb))
-			}
+			},
 		}
 	}
 

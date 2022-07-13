@@ -268,12 +268,12 @@ impl DynamicStruct {
 		match self.field_indices.entry(name) {
 			Entry::Occupied(entry) => {
 				self.fields[*entry.get()] = value;
-			}
+			},
 			Entry::Vacant(entry) => {
 				self.fields.push(value);
 				self.field_names.push(entry.key().clone());
 				entry.insert(self.fields.len() - 1);
-			}
+			},
 		}
 	}
 

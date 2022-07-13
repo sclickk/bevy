@@ -136,7 +136,7 @@ impl ProcessedShader {
 				parser
 					.parse(&naga::front::glsl::Options::from(*shader_stage), source)
 					.map_err(ShaderReflectError::GlslParse)?
-			}
+			},
 			ProcessedShader::SpirV(source) => naga::front::spv::parse_u8_slice(
 				source,
 				&naga::front::spv::Options {
@@ -184,14 +184,14 @@ impl ProcessedShader {
 					let _ = self.reflect(features)?;
 
 					ShaderSource::Wgsl(source.clone())
-				}
+				},
 				ProcessedShader::Glsl(_source, _stage) => {
 					let reflection = self.reflect(features)?;
 					// TODO: it probably makes more sense to convert this to spirv, but as of writing
 					// this comment, naga's spirv conversion is broken
 					let wgsl = reflection.get_wgsl()?;
 					ShaderSource::Wgsl(wgsl.into())
-				}
+				},
 				ProcessedShader::SpirV(source) => make_spirv(source),
 			},
 		})
@@ -407,7 +407,7 @@ impl ShaderProcessor {
 					return Ok(ProcessedShader::SpirV(source.clone()));
 				}
 				return Err(ProcessShaderError::ShaderFormatDoesNotSupportShaderDefs);
-			}
+			},
 		};
 
 		let shader_defs_unique = HashSet::<String>::from_iter(shader_defs.iter().cloned());
@@ -481,7 +481,7 @@ impl ShaderProcessor {
 					Source::Glsl(_source, stage) => ProcessedShader::Glsl(processed_source, *stage),
 					Source::SpirV(_source) => {
 						unreachable!("SpirV has early return");
-					}
+					},
 				}
 			})
 			.ok_or(ProcessShaderError::NotEnoughEndIfs)
@@ -509,17 +509,17 @@ impl ShaderProcessor {
 				} else {
 					return Err(ProcessShaderError::MismatchedImportFormat(import.clone()));
 				}
-			}
+			},
 			Source::Glsl(_, _) => {
 				if let ProcessedShader::Glsl(import_source, _) = &imported_processed {
 					final_string.push_str(import_source);
 				} else {
 					return Err(ProcessShaderError::MismatchedImportFormat(import.clone()));
 				}
-			}
+			},
 			Source::SpirV(_) => {
 				return Err(ProcessShaderError::ShaderFormatDoesNotSupportImports);
-			}
+			},
 		}
 
 		Ok(())

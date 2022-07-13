@@ -149,55 +149,55 @@ impl SystemStage {
 				match criteria {
 					Some(RunCriteriaDescriptorOrLabel::Label(label)) => {
 						container.run_criteria_meta.label = Some(label);
-					}
+					},
 					Some(RunCriteriaDescriptorOrLabel::Descriptor(criteria_descriptor)) => {
 						container.run_criteria_meta.label = criteria_descriptor.label.clone();
 						container.run_criteria_meta.index =
 							Some(self.add_run_criteria_internal(criteria_descriptor));
-					}
+					},
 					None => {
 						container.run_criteria_meta.index = default_run_criteria;
-					}
+					},
 				}
 				match insertion_point {
 					InsertionPoint::AtStart => {
 						let index = self.exclusive_at_start.len();
 						self.uninitialized_at_start.push(index);
 						self.exclusive_at_start.push(container);
-					}
+					},
 					InsertionPoint::BeforeCommands => {
 						let index = self.exclusive_before_commands.len();
 						self.uninitialized_before_commands.push(index);
 						self.exclusive_before_commands.push(container);
-					}
+					},
 					InsertionPoint::AtEnd => {
 						let index = self.exclusive_at_end.len();
 						self.uninitialized_at_end.push(index);
 						self.exclusive_at_end.push(container);
-					}
+					},
 				}
-			}
+			},
 			SystemDescriptor::Parallel(mut descriptor) => {
 				let criteria = descriptor.run_criteria.take();
 				let mut container = ParallelSystemContainer::from(descriptor);
 				match criteria {
 					Some(RunCriteriaDescriptorOrLabel::Label(label)) => {
 						container.run_criteria_meta.label = Some(label);
-					}
+					},
 					Some(RunCriteriaDescriptorOrLabel::Descriptor(criteria_descriptor)) => {
 						container.run_criteria_meta.label = criteria_descriptor.label.clone();
 						container.run_criteria_meta.index =
 							Some(self.add_run_criteria_internal(criteria_descriptor));
-					}
+					},
 					None => {
 						container.run_criteria_meta.index = default_run_criteria;
-					}
+					},
 				}
 				self
 					.uninitialized_parallel
 					.push(self.parallel.len());
 				self.parallel.push(container);
-			}
+			},
 		}
 	}
 
@@ -276,21 +276,21 @@ impl SystemStage {
 			match criteria {
 				RunCriteriaDescriptorOrLabel::Descriptor(descriptor) => {
 					Some(self.add_run_criteria_internal(descriptor))
-				}
+				},
 				RunCriteriaDescriptorOrLabel::Label(label) => {
 					for system in &mut systems {
 						match system {
 							SystemDescriptor::Exclusive(descriptor) => {
 								descriptor.run_criteria = Some(RunCriteriaDescriptorOrLabel::Label(label.clone()));
-							}
+							},
 							SystemDescriptor::Parallel(descriptor) => {
 								descriptor.run_criteria = Some(RunCriteriaDescriptorOrLabel::Label(label.clone()));
-							}
+							},
 						}
 					}
 
 					None
-				}
+				},
 			}
 		});
 		for system in systems.drain(..) {
@@ -372,7 +372,7 @@ impl SystemStage {
 									new_indices.push(*duplicate_index);
 									filtered_criteria += 1;
 									return None;
-								}
+								},
 							}
 						}
 					}
@@ -457,7 +457,7 @@ impl SystemStage {
 					}
 					writeln!(message, " - {}", cycle[0].0).unwrap();
 					panic!("{}", message);
-				}
+				},
 			}
 		}
 		let run_criteria_labels = unwrap_dependency_cycle_error(
@@ -848,7 +848,7 @@ impl Stage for SystemStage {
 				ShouldRun::YesAndCheckAgain => (),
 				ShouldRun::Yes => {
 					run_stage_loop = false;
-				}
+				},
 			};
 
 			// Evaluate system run criteria.
@@ -954,22 +954,22 @@ impl Stage for SystemStage {
 							match &mut criteria.inner {
 								RunCriteriaInner::Single(system) => {
 									criteria.should_run = system.run((), world);
-								}
+								},
 								RunCriteriaInner::Piped {
 									input: parent,
 									system,
 									..
 								} => {
 									criteria.should_run = system.run(run_criteria[*parent].should_run, world);
-								}
+								},
 							}
 							match criteria.should_run {
 								ShouldRun::Yes | ShouldRun::YesAndCheckAgain | ShouldRun::NoAndCheckAgain => {
 									run_system_loop = true;
-								}
+								},
 								ShouldRun::No => (),
 							}
-						}
+						},
 					}
 				}
 

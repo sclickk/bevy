@@ -140,7 +140,7 @@ impl<S: SpecializedMeshPipeline> SpecializedMeshPipelines<S> {
 						entry
 							.insert(descriptor.vertex.buffers[0].clone(), Default::default())
 							.1
-					}
+					},
 				};
 				Ok(*entry.insert(match layout_map.entry(key) {
 					Entry::Occupied(entry) => {
@@ -156,7 +156,7 @@ impl<S: SpecializedMeshPipeline> SpecializedMeshPipelines<S> {
 						*entry.insert(cache.queue_render_pipeline(descriptor))
 					}
 				}))
-			}
+			},
 		}
 	}
 }

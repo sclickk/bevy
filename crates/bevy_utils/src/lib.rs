@@ -212,7 +212,7 @@ impl<K: Hash + Eq + PartialEq + Clone, V> PreHashMapExt<K, V> for PreHashMap<K, 
 			RawEntryMut::Vacant(entry) => {
 				let (_, value) = entry.insert_hashed_nocheck(key.hash(), key.clone(), func());
 				value
-			}
+			},
 		}
 	}
 }

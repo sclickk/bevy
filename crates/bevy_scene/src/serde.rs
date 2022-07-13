@@ -182,7 +182,7 @@ impl<'a, 'de> Visitor<'de> for SceneEntityVisitor<'a> {
 						return Err(Error::duplicate_field(ENTITY_FIELD_ENTITY));
 					}
 					id = Some(map.next_value::<u32>()?);
-				}
+				},
 				EntityField::Components => {
 					if components.is_some() {
 						return Err(Error::duplicate_field(ENTITY_FIELD_COMPONENTS));
@@ -191,7 +191,7 @@ impl<'a, 'de> Visitor<'de> for SceneEntityVisitor<'a> {
 					components = Some(map.next_value_seed(ComponentVecDeserializer {
 						registry: self.registry,
 					})?);
-				}
+				},
 			}
 		}
 

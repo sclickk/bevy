@@ -324,11 +324,11 @@ impl World {
 			AllocAtWithoutReplacement::Exists(location) => {
 				// SAFETY: `entity` exists and `location` is that entity's location
 				Some(unsafe { EntityMut::new(self, entity, location) })
-			}
+			},
 			AllocAtWithoutReplacement::DidNotExist => {
 				// SAFETY: entity was just allocated
 				Some(unsafe { self.spawn_at_internal(entity) })
-			}
+			},
 			AllocAtWithoutReplacement::ExistsWithWrongGeneration => None,
 		}
 	}
@@ -1060,7 +1060,7 @@ impl World {
 						{
 							// SAFETY: `entity` is valid, `location` matches entity, bundle matches inserter
 							unsafe { inserter.insert(entity, location.index, bundle) };
-						}
+						},
 						_ => {
 							let mut inserter = bundle_info.get_bundle_inserter(
 								&mut self.entities,
@@ -1073,9 +1073,9 @@ impl World {
 							// SAFETY: `entity` is valid, `location` matches entity, bundle matches inserter
 							unsafe { inserter.insert(entity, location.index, bundle) };
 							spawn_or_insert = SpawnOrInsert::Insert(inserter, location.archetype_id);
-						}
+						},
 					};
-				}
+				},
 				AllocAtWithoutReplacement::DidNotExist => {
 					if let SpawnOrInsert::Spawn(ref mut spawner) = spawn_or_insert {
 						// SAFETY: `entity` is allocated (but non existent), bundle matches inserter
@@ -1092,10 +1092,10 @@ impl World {
 						unsafe { spawner.spawn_non_existent(entity, bundle) };
 						spawn_or_insert = SpawnOrInsert::Spawn(spawner);
 					}
-				}
+				},
 				AllocAtWithoutReplacement::ExistsWithWrongGeneration => {
 					invalid_entities.push(entity);
-				}
+				},
 			}
 		}
 

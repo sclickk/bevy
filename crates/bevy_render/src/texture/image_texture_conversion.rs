@@ -24,7 +24,7 @@ pub(crate) fn image_to_texture(dyn_img: DynamicImage, is_srgb: bool) -> Image {
 			};
 
 			data = i.into_raw();
-		}
+		},
 		DynamicImage::ImageLumaA8(i) => {
 			let i = DynamicImage::ImageLumaA8(i).into_rgba8();
 			width = i.width();
@@ -36,7 +36,7 @@ pub(crate) fn image_to_texture(dyn_img: DynamicImage, is_srgb: bool) -> Image {
 			};
 
 			data = i.into_raw();
-		}
+		},
 		DynamicImage::ImageRgb8(i) => {
 			let i = DynamicImage::ImageRgb8(i).into_rgba8();
 			width = i.width();
@@ -48,7 +48,7 @@ pub(crate) fn image_to_texture(dyn_img: DynamicImage, is_srgb: bool) -> Image {
 			};
 
 			data = i.into_raw();
-		}
+		},
 		DynamicImage::ImageRgba8(i) => {
 			width = i.width();
 			height = i.height();
@@ -59,7 +59,7 @@ pub(crate) fn image_to_texture(dyn_img: DynamicImage, is_srgb: bool) -> Image {
 			};
 
 			data = i.into_raw();
-		}
+		},
 		DynamicImage::ImageLuma16(i) => {
 			width = i.width();
 			height = i.height();
@@ -68,7 +68,7 @@ pub(crate) fn image_to_texture(dyn_img: DynamicImage, is_srgb: bool) -> Image {
 			let raw_data = i.into_raw();
 
 			data = cast_slice(&raw_data).to_owned();
-		}
+		},
 		DynamicImage::ImageLumaA16(i) => {
 			width = i.width();
 			height = i.height();
@@ -77,7 +77,7 @@ pub(crate) fn image_to_texture(dyn_img: DynamicImage, is_srgb: bool) -> Image {
 			let raw_data = i.into_raw();
 
 			data = cast_slice(&raw_data).to_owned();
-		}
+		},
 		DynamicImage::ImageRgb16(image) => {
 			width = image.width();
 			height = image.height();
@@ -101,7 +101,7 @@ pub(crate) fn image_to_texture(dyn_img: DynamicImage, is_srgb: bool) -> Image {
 			}
 
 			data = local_data;
-		}
+		},
 		DynamicImage::ImageRgba16(i) => {
 			width = i.width();
 			height = i.height();
@@ -110,7 +110,7 @@ pub(crate) fn image_to_texture(dyn_img: DynamicImage, is_srgb: bool) -> Image {
 			let raw_data = i.into_raw();
 
 			data = cast_slice(&raw_data).to_owned();
-		}
+		},
 		DynamicImage::ImageRgb32F(image) => {
 			width = image.width();
 			height = image.height();
@@ -134,7 +134,7 @@ pub(crate) fn image_to_texture(dyn_img: DynamicImage, is_srgb: bool) -> Image {
 			}
 
 			data = local_data;
-		}
+		},
 		DynamicImage::ImageRgba32F(image) => {
 			width = image.width();
 			height = image.height();
@@ -143,7 +143,7 @@ pub(crate) fn image_to_texture(dyn_img: DynamicImage, is_srgb: bool) -> Image {
 			let raw_data = image.into_raw();
 
 			data = cast_slice(&raw_data).to_owned();
-		}
+		},
 		// DynamicImage is now non exhaustive, catch future variants and convert them
 		_ => {
 			let image = dyn_img.into_rgba8();
@@ -152,7 +152,7 @@ pub(crate) fn image_to_texture(dyn_img: DynamicImage, is_srgb: bool) -> Image {
 			format = TextureFormat::Rgba8UnormSrgb;
 
 			data = image.into_raw();
-		}
+		},
 	}
 
 	Image::new(

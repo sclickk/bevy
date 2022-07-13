@@ -114,7 +114,7 @@ impl GetPath for dyn Reflect {
 							index: current_index,
 						});
 					}
-				}
+				},
 				Token::OpenBracket => {
 					if let Some(Token::Ident(value)) = next_token(path, &mut index) {
 						match current.reflect_ref() {
@@ -128,12 +128,12 @@ impl GetPath for dyn Reflect {
 											list_index,
 										})?;
 								current = list_item;
-							}
+							},
 							_ => {
 								return Err(ReflectPathError::ExpectedList {
 									index: current_index,
 								})
-							}
+							},
 						}
 					} else {
 						return Err(ReflectPathError::ExpectedIdent {
@@ -148,16 +148,16 @@ impl GetPath for dyn Reflect {
 							token: "]",
 						});
 					}
-				}
+				},
 				Token::CloseBracket => {
 					return Err(ReflectPathError::UnexpectedToken {
 						index: current_index,
 						token: "]",
 					})
-				}
+				},
 				Token::Ident(value) => {
 					current = read_field(current, value, current_index)?;
-				}
+				},
 			}
 		}
 
@@ -181,7 +181,7 @@ impl GetPath for dyn Reflect {
 							index: current_index,
 						});
 					}
-				}
+				},
 				Token::OpenBracket => {
 					if let Some(Token::Ident(value)) = next_token(path, &mut index) {
 						match current.reflect_mut() {
@@ -195,12 +195,12 @@ impl GetPath for dyn Reflect {
 											list_index,
 										})?;
 								current = list_item;
-							}
+							},
 							_ => {
 								return Err(ReflectPathError::ExpectedStruct {
 									index: current_index,
 								})
-							}
+							},
 						}
 					} else {
 						return Err(ReflectPathError::ExpectedIdent {
@@ -215,16 +215,16 @@ impl GetPath for dyn Reflect {
 							token: "]",
 						});
 					}
-				}
+				},
 				Token::CloseBracket => {
 					return Err(ReflectPathError::UnexpectedToken {
 						index: current_index,
 						token: "]",
 					})
-				}
+				},
 				Token::Ident(value) => {
 					current = read_field_mut(current, value, current_index)?;
-				}
+				},
 			}
 		}
 
@@ -254,7 +254,7 @@ fn read_field<'r, 'p>(
 						tuple_struct_index: tuple_index,
 					})?,
 			)
-		}
+		},
 		_ => Err(ReflectPathError::ExpectedStruct {
 			index: current_index,
 		}),
@@ -281,7 +281,7 @@ fn read_field_mut<'r, 'p>(
 					tuple_struct_index: tuple_index,
 				},
 			)?)
-		}
+		},
 		_ => Err(ReflectPathError::ExpectedStruct {
 			index: current_index,
 		}),
@@ -304,16 +304,16 @@ fn next_token<'a>(path: &'a str, index: &mut usize) -> Option<Token<'a>> {
 		'.' => {
 			*index += 1;
 			return Some(Token::Dot);
-		}
+		},
 		'[' => {
 			*index += 1;
 			return Some(Token::OpenBracket);
-		}
+		},
 		']' => {
 			*index += 1;
 			return Some(Token::CloseBracket);
-		}
-		_ => {}
+		},
+		_ => {},
 	}
 
 	// we can assume we are parsing an ident now
@@ -323,8 +323,8 @@ fn next_token<'a>(path: &'a str, index: &mut usize) -> Option<Token<'a>> {
 				let ident = Token::Ident(&path[*index..*index + char_index]);
 				*index += char_index;
 				return Some(ident);
-			}
-			_ => {}
+			},
+			_ => {},
 		}
 	}
 	let ident = Token::Ident(&path[*index..]);

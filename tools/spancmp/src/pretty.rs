@@ -36,7 +36,7 @@ pub fn print_spanstats(
 			print!(" | ");
 			print_relative(stdout, relative.max);
 			println!("]");
-		}
+		},
 		(Some(reference), None) if !reference_only => {
 			print!(
 				"[count: {:8} |          |        ]  [min:  ",
@@ -48,7 +48,7 @@ pub fn print_spanstats(
 			print!(" |         |         ]  [max: ");
 			print_delta_time_us(reference.max);
 			println!(" |         |         ]");
-		}
+		},
 		(None, Some(comparison)) => {
 			print!("[count:          | {:8} |         ", comparison.count);
 			print!("]  [min:         | ");
@@ -58,7 +58,7 @@ pub fn print_spanstats(
 			print!(" |         ]  [max:         | ");
 			print_delta_time_us(comparison.max);
 			println!(" |         ]");
-		}
+		},
 		(Some(reference), _) if reference_only => {
 			print!("[count: {:8}]  [min: ", reference.count);
 			print_delta_time_us(reference.min);
@@ -67,8 +67,8 @@ pub fn print_spanstats(
 			print!("]  [max: ");
 			print_delta_time_us(reference.max);
 			println!("]");
-		}
-		_ => {}
+		},
+		_ => {},
 	}
 }
 

@@ -348,7 +348,7 @@ pub fn array_partial_eq<A: Array>(array: &A, reflect: &dyn Reflect) -> Option<bo
 					return failed;
 				}
 			}
-		}
+		},
 		_ => return Some(false),
 	}
 

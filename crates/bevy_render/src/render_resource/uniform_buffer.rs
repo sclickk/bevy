@@ -70,7 +70,7 @@ impl<T: ShaderType + WriteInto> UniformBuffer<T> {
 					usage: BufferUsages::COPY_DST | BufferUsages::UNIFORM,
 					contents: self.scratch.as_ref(),
 				}));
-			}
+			},
 		}
 	}
 }

@@ -76,7 +76,7 @@ impl Plugin for ScheduleRunnerPlugin {
 			match settings.run_mode {
 				RunMode::Once => {
 					app.update();
-				}
+				},
 				RunMode::Loop { wait } => {
 					// TODO: Move into seperate fn in ScheduleRunnerPlugin
 					let mut tick =
@@ -146,13 +146,13 @@ impl Plugin for ScheduleRunnerPlugin {
 							let delay = tick(&mut app, wait);
 							match delay {
 								Ok(delay) => set_timeout(f.borrow().as_ref().unwrap(), delay.unwrap_or(asap)),
-								Err(_) => {}
+								Err(_) => {},
 							}
 						};
 						*g.borrow_mut() = Some(Closure::wrap(Box::new(c) as Box<dyn FnMut()>));
 						set_timeout(g.borrow().as_ref().unwrap(), asap);
 					};
-				}
+				},
 			}
 		});
 	}

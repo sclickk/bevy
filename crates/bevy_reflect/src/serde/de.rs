@@ -146,7 +146,7 @@ impl<'a, 'de> Visitor<'de> for ReflectVisitor<'a> {
 			match key.as_str() {
 				type_fields::TYPE => {
 					type_name = Some(map.next_value()?);
-				}
+				},
 				type_fields::MAP => {
 					let _type_name = type_name
 						.take()
@@ -155,7 +155,7 @@ impl<'a, 'de> Visitor<'de> for ReflectVisitor<'a> {
 						registry: self.registry,
 					})?;
 					return Ok(Box::new(map));
-				}
+				},
 				type_fields::STRUCT => {
 					let type_name = type_name
 						.take()
@@ -165,7 +165,7 @@ impl<'a, 'de> Visitor<'de> for ReflectVisitor<'a> {
 					})?;
 					dynamic_struct.set_name(type_name);
 					return Ok(Box::new(dynamic_struct));
-				}
+				},
 				type_fields::TUPLE_STRUCT => {
 					let type_name = type_name
 						.take()
@@ -175,7 +175,7 @@ impl<'a, 'de> Visitor<'de> for ReflectVisitor<'a> {
 					})?;
 					tuple_struct.set_name(type_name);
 					return Ok(Box::new(tuple_struct));
-				}
+				},
 				type_fields::TUPLE => {
 					let _type_name = type_name
 						.take()
@@ -184,7 +184,7 @@ impl<'a, 'de> Visitor<'de> for ReflectVisitor<'a> {
 						registry: self.registry,
 					})?;
 					return Ok(Box::new(tuple));
-				}
+				},
 				type_fields::LIST => {
 					let _type_name = type_name
 						.take()
@@ -193,7 +193,7 @@ impl<'a, 'de> Visitor<'de> for ReflectVisitor<'a> {
 						registry: self.registry,
 					})?;
 					return Ok(Box::new(list));
-				}
+				},
 				type_fields::ARRAY => {
 					let _type_name = type_name
 						.take()
@@ -202,7 +202,7 @@ impl<'a, 'de> Visitor<'de> for ReflectVisitor<'a> {
 						registry: self.registry,
 					})?;
 					return Ok(Box::new(array));
-				}
+				},
 				type_fields::VALUE => {
 					let type_name = type_name
 						.take()
@@ -224,7 +224,7 @@ impl<'a, 'de> Visitor<'de> for ReflectVisitor<'a> {
 						reflect_deserialize: deserialize_reflect,
 					})?;
 					return Ok(value);
-				}
+				},
 				_ => return Err(de::Error::unknown_field(key.as_str(), &[])),
 			}
 		}

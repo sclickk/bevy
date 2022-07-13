@@ -5,6 +5,8 @@ reorder_imports = true
 reorder_modules = true
 tab_spaces = 2
 chain_width = 48
+match_arm_leading_pipes = "Never"
+match_block_trailing_comma = true
 
 # The following lines may be uncommented on nightly Rust.
 # Once these features have stabilized, they should be added to the always-enabled options above.

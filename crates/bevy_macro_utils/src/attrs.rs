@@ -12,7 +12,7 @@ pub fn parse_attrs(ast: &DeriveInput, attr_name: Symbol) -> syn::Result<Vec<syn:
 					other,
 					format!("expected #[{}(...)]", attr_name),
 				))
-			}
+			},
 		}
 	}
 	Ok(list)

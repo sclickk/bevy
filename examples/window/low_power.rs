@@ -60,7 +60,7 @@ fn update_winit(
 			//   * When focused: the event loop runs as fast as possible
 			//   * When not focused: the event loop runs as fast as possible
 			WinitSettings::game()
-		}
+		},
 		Application => {
 			// While in `WinitConfig::desktop_app()` mode:
 			//   * When focused: the app will update any time a winit event (e.g. the window is
@@ -71,7 +71,7 @@ fn update_winit(
 			//     [`RequestRedraw`] event is received, or one minute has passed without the app
 			//     updating.
 			WinitSettings::desktop_app()
-		}
+		},
 		ApplicationWithRedraw => {
 			// Sending a `RequestRedraw` event is useful when you want the app to update the next
 			// frame regardless of any user input. For example, your application might use
@@ -79,7 +79,7 @@ fn update_winit(
 			// when there are no inputs, so you send redraw requests while the animation is playing.
 			event.send(RequestRedraw);
 			WinitSettings::desktop_app()
-		}
+		},
 	};
 }
 

@@ -62,7 +62,7 @@ impl Node for MainPass3dNode {
 				Ok(query) => query,
 				Err(_) => {
 					return Ok(());
-				} // No window
+				}, // No window
 			};
 
 		// Always run opaque pass to ensure screen is cleared

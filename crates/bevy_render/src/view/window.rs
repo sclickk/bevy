@@ -183,7 +183,7 @@ pub fn prepare_windows(
 				surface
 					.get_current_texture()
 					.expect("Error reconfiguring surface")
-			}
+			},
 			err => err.expect("Failed to acquire next swap chain texture!"),
 		};
 

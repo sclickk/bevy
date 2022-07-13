@@ -520,7 +520,7 @@ pub fn queue_uinodes(
 			AssetEvent::Created { .. } => None,
 			AssetEvent::Modified { handle } | AssetEvent::Removed { handle } => {
 				image_bind_groups.values.remove(handle)
-			}
+			},
 		};
 	}
 

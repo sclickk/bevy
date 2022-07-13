@@ -73,31 +73,31 @@ fn setup() {
 				"This is a 'struct' type with an 'x' value of {}",
 				value.get_field::<usize>("x").unwrap()
 			);
-		}
+		},
 		// `TupleStruct` is a trait automatically implemented for tuple structs that derive Reflect.
 		// This trait allows you to interact with fields via their indices
-		ReflectRef::TupleStruct(_) => {}
+		ReflectRef::TupleStruct(_) => {},
 		// `Tuple` is a special trait that can be manually implemented (instead of deriving
 		// Reflect). This exposes "tuple" operations on your type, allowing you to interact
 		// with fields via their indices. Tuple is automatically implemented for tuples of
 		// arity 12 or less.
-		ReflectRef::Tuple(_) => {}
+		ReflectRef::Tuple(_) => {},
 		// `List` is a special trait that can be manually implemented (instead of deriving Reflect).
 		// This exposes "list" operations on your type, such as insertion. `List` is automatically
 		// implemented for relevant core types like Vec<T>.
-		ReflectRef::List(_) => {}
+		ReflectRef::List(_) => {},
 		// `Array` is a special trait that can be manually implemented (instead of deriving Reflect).
 		// This exposes "array" operations on your type, such as indexing. `Array`
 		// is automatically implemented for relevant core types like [T; N].
-		ReflectRef::Array(_) => {}
+		ReflectRef::Array(_) => {},
 		// `Map` is a special trait that can be manually implemented (instead of deriving Reflect).
 		// This exposes "map" operations on your type, such as getting / inserting by key.
 		// Map is automatically implemented for relevant core types like HashMap<K, V>
-		ReflectRef::Map(_) => {}
+		ReflectRef::Map(_) => {},
 		// `Value` types do not implement any of the other traits above. They are simply a Reflect
 		// implementation. Value is implemented for core types like i32, usize, f32, and
 		// String.
-		ReflectRef::Value(_) => {}
+		ReflectRef::Value(_) => {},
 	}
 
 	let mut dynamic_list = DynamicList::default();

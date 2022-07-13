@@ -286,7 +286,7 @@ impl Touches {
 			TouchPhase::Started => {
 				self.pressed.insert(event.id, event.into());
 				self.just_pressed.insert(event.id, event.into());
-			}
+			},
 			TouchPhase::Moved => {
 				if let Some(mut new_touch) = self.pressed.get(&event.id).cloned() {
 					new_touch.previous_position = new_touch.position;
@@ -295,19 +295,19 @@ impl Touches {
 					new_touch.force = event.force;
 					self.pressed.insert(event.id, new_touch);
 				}
-			}
+			},
 			TouchPhase::Ended => {
 				self
 					.just_released
 					.insert(event.id, event.into());
 				self.pressed.remove_entry(&event.id);
-			}
+			},
 			TouchPhase::Cancelled => {
 				self
 					.just_cancelled
 					.insert(event.id, event.into());
 				self.pressed.remove_entry(&event.id);
-			}
+			},
 		};
 	}
 

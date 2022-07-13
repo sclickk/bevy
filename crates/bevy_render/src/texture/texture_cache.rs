@@ -79,7 +79,7 @@ impl TextureCache {
 					texture,
 					default_view,
 				}
-			}
+			},
 		}
 	}
 

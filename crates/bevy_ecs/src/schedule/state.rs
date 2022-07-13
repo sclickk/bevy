@@ -118,7 +118,7 @@ where
 					*is_inactive = !*is_inactive;
 				}
 				false
-			}
+			},
 			Some(_) => false,
 			None => *is_inactive,
 		})
@@ -137,13 +137,13 @@ where
 					*is_in_stack = !*is_in_stack;
 				}
 				false
-			}
+			},
 			Some(StateTransition::Startup) => {
 				if state.stack.last().unwrap() == &pred {
 					*is_in_stack = !*is_in_stack;
 				}
 				false
-			}
+			},
 			Some(_) => false,
 			None => *is_in_stack,
 		})
@@ -418,14 +418,14 @@ impl fmt::Display for StateError {
 		match self {
 			StateError::AlreadyInState => {
 				write!(f, "Attempted to change the state to the current state.")
-			}
+			},
 			StateError::StateAlreadyQueued => write!(
 				f,
 				"Attempted to queue a state change, but there was already a state queued."
 			),
 			StateError::StackEmpty => {
 				write!(f, "Attempted to queue a pop, but there is nothing to pop.")
-			}
+			},
 		}
 	}
 }
@@ -461,7 +461,7 @@ fn state_cleaner<T: StateData>(
 				state.stack.last().unwrap().clone(),
 				next,
 			));
-		}
+		},
 		Some(ScheduledOperation::Replace(next)) => {
 			if state.stack.len() <= 1 {
 				state.transition = Some(StateTransition::ExitingFull(
@@ -474,43 +474,43 @@ fn state_cleaner<T: StateData>(
 					Some(StateTransition::ExitingToResume(p, n)) => {
 						state.stack.pop();
 						state.transition = Some(StateTransition::Resuming(p, n));
-					}
+					},
 					_ => {
 						state.transition = Some(StateTransition::ExitingToResume(
 							state.stack[state.stack.len() - 1].clone(),
 							state.stack[state.stack.len() - 2].clone(),
 						));
-					}
+					},
 				}
 			}
-		}
+		},
 		Some(ScheduledOperation::Push(next)) => {
 			let last_type_id = state.stack.last().unwrap().clone();
 			state.transition = Some(StateTransition::Pausing(last_type_id, next));
-		}
+		},
 		Some(ScheduledOperation::Pop) => {
 			state.transition = Some(StateTransition::ExitingToResume(
 				state.stack[state.stack.len() - 1].clone(),
 				state.stack[state.stack.len() - 2].clone(),
 			));
-		}
+		},
 		None => match state.transition.take() {
 			Some(StateTransition::ExitingFull(p, n)) => {
 				state.transition = Some(StateTransition::Entering(p, n.clone()));
 				*state.stack.last_mut().unwrap() = n;
-			}
+			},
 			Some(StateTransition::Pausing(p, n)) => {
 				state.transition = Some(StateTransition::Entering(p, n.clone()));
 				state.stack.push(n);
-			}
+			},
 			Some(StateTransition::ExitingToResume(p, n)) => {
 				state.stack.pop();
 				state.transition = Some(StateTransition::Resuming(p, n));
-			}
+			},
 			Some(StateTransition::PreStartup) => {
 				state.transition = Some(StateTransition::Startup);
-			}
-			_ => {}
+			},
+			_ => {},
 		},
 	};
 	if state.transition.is_none() {

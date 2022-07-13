@@ -366,13 +366,13 @@ impl Stage for Schedule {
 				ShouldRun::Yes => {
 					self.run_once(world);
 					return;
-				}
+				},
 				ShouldRun::YesAndCheckAgain => {
 					self.run_once(world);
-				}
+				},
 				ShouldRun::NoAndCheckAgain => {
 					panic!("`NoAndCheckAgain` would loop infinitely in this situation.")
-				}
+				},
 			}
 		}
 	}

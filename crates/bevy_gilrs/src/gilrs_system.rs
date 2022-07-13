@@ -26,13 +26,13 @@ pub fn gilrs_event_system(mut gilrs: NonSendMut<Gilrs>, mut events: EventWriter<
 					convert_gamepad_id(gilrs_event.id),
 					GamepadEventType::Connected,
 				));
-			}
+			},
 			EventType::Disconnected => {
 				events.send(GamepadEventRaw::new(
 					convert_gamepad_id(gilrs_event.id),
 					GamepadEventType::Disconnected,
 				));
-			}
+			},
 			EventType::ButtonChanged(gilrs_button, value, _) => {
 				if let Some(button_type) = convert_button(gilrs_button) {
 					events.send(GamepadEventRaw::new(
@@ -40,7 +40,7 @@ pub fn gilrs_event_system(mut gilrs: NonSendMut<Gilrs>, mut events: EventWriter<
 						GamepadEventType::ButtonChanged(button_type, value),
 					));
 				}
-			}
+			},
 			EventType::AxisChanged(gilrs_axis, value, _) => {
 				if let Some(axis_type) = convert_axis(gilrs_axis) {
 					events.send(GamepadEventRaw::new(
@@ -48,7 +48,7 @@ pub fn gilrs_event_system(mut gilrs: NonSendMut<Gilrs>, mut events: EventWriter<
 						GamepadEventType::AxisChanged(axis_type, value),
 					));
 				}
-			}
+			},
 			_ => (),
 		};
 	}

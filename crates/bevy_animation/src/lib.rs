@@ -227,7 +227,7 @@ pub fn animation_player(
 								Keyframes::Rotation(keyframes) => transform.rotation = keyframes[0],
 								Keyframes::Translation(keyframes) => {
 									transform.translation = keyframes[0];
-								}
+								},
 								Keyframes::Scale(keyframes) => transform.scale = keyframes[0],
 							}
 							continue;
@@ -261,19 +261,19 @@ pub fn animation_player(
 								transform.rotation = rot_start
 									.normalize()
 									.slerp(rot_end.normalize(), lerp);
-							}
+							},
 							Keyframes::Translation(keyframes) => {
 								let translation_start = keyframes[step_start];
 								let translation_end = keyframes[step_start + 1];
 								let result = translation_start.lerp(translation_end, lerp);
 								transform.translation = result;
-							}
+							},
 							Keyframes::Scale(keyframes) => {
 								let scale_start = keyframes[step_start];
 								let scale_end = keyframes[step_start + 1];
 								let result = scale_start.lerp(scale_end, lerp);
 								transform.scale = result;
-							}
+							},
 						}
 					}
 				}

@@ -141,7 +141,7 @@ fn queue_wireframes(
 						Err(err) => {
 							error!("{}", err);
 							return;
-						}
+						},
 					};
 					opaque_phase.add(Opaque3d {
 						entity,

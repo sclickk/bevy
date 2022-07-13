@@ -387,7 +387,7 @@ pub fn queue_material_meshes<M: Material>(
 								Err(err) => {
 									error!("{}", err);
 									continue;
-								}
+								},
 							};
 
 							let distance =
@@ -400,7 +400,7 @@ pub fn queue_material_meshes<M: Material>(
 										pipeline: pipeline_id,
 										distance,
 									});
-								}
+								},
 								AlphaMode::Mask(_) => {
 									alpha_mask_phase.add(AlphaMask3d {
 										entity: *visible_entity,
@@ -408,7 +408,7 @@ pub fn queue_material_meshes<M: Material>(
 										pipeline: pipeline_id,
 										distance,
 									});
-								}
+								},
 								AlphaMode::Blend => {
 									transparent_phase.add(Transparent3d {
 										entity: *visible_entity,
@@ -416,7 +416,7 @@ pub fn queue_material_meshes<M: Material>(
 										pipeline: pipeline_id,
 										distance,
 									});
-								}
+								},
 							}
 						}
 					}
@@ -473,11 +473,11 @@ fn extract_materials<M: Material>(
 		match event {
 			AssetEvent::Created { handle } | AssetEvent::Modified { handle } => {
 				changed_assets.insert(handle.clone_weak());
-			}
+			},
 			AssetEvent::Removed { handle } => {
 				changed_assets.remove(handle);
 				removed.push(handle.clone_weak());
-			}
+			},
 		}
 	}
 
@@ -529,12 +529,12 @@ fn prepare_materials<M: Material>(
 		) {
 			Ok(prepared_asset) => {
 				render_materials.insert(handle, prepared_asset);
-			}
+			},
 			Err(AsBindGroupError::RetryNextUpdate) => {
 				prepare_next_frame
 					.assets
 					.push((handle, material));
-			}
+			},
 		}
 	}
 
@@ -552,12 +552,12 @@ fn prepare_materials<M: Material>(
 		) {
 			Ok(prepared_asset) => {
 				render_materials.insert(handle, prepared_asset);
-			}
+			},
 			Err(AsBindGroupError::RetryNextUpdate) => {
 				prepare_next_frame
 					.assets
 					.push((handle, material));
-			}
+			},
 		}
 	}
 }

@@ -208,7 +208,7 @@ impl From<&Punctuated<NestedMeta, Comma>> for ReflectTraits {
 							.idents
 							.push(utility::get_reflect_ident(&ident)),
 					}
-				}
+				},
 				// Handles `#[reflect( Hash(custom_hash_fn) )]`
 				NestedMeta::Meta(Meta::List(list)) => {
 					// Get the first ident in the path (hopefully the path only contains one and not `std::hash::Hash`)
@@ -227,12 +227,12 @@ impl From<&Punctuated<NestedMeta, Comma>> for ReflectTraits {
 								DEBUG_ATTR => traits.debug = trait_func_ident,
 								PARTIAL_EQ_ATTR => traits.partial_eq = trait_func_ident,
 								HASH_ATTR => traits.hash = trait_func_ident,
-								_ => {}
+								_ => {},
 							}
 						}
 					}
-				}
-				_ => {}
+				},
+				_ => {},
 			}
 		}
 

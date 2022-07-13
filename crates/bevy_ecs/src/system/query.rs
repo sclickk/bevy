@@ -1326,19 +1326,19 @@ impl std::fmt::Display for QueryComponentError {
 					f,
 					"This query does not have read access to the requested component."
 				)
-			}
+			},
 			QueryComponentError::MissingWriteAccess => {
 				write!(
 					f,
 					"This query does not have write access to the requested component."
 				)
-			}
+			},
 			QueryComponentError::MissingComponent => {
 				write!(f, "The given entity does not have the requested component.")
-			}
+			},
 			QueryComponentError::NoSuchEntity => {
 				write!(f, "The requested entity does not exist.")
-			}
+			},
 		}
 	}
 }

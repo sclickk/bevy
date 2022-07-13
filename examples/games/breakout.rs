@@ -131,10 +131,10 @@ impl WallLocation {
 		match self {
 			WallLocation::Left | WallLocation::Right => {
 				Vec2::new(WALL_THICKNESS, arena_height + WALL_THICKNESS)
-			}
+			},
 			WallLocation::Bottom | WallLocation::Top => {
 				Vec2::new(arena_width + WALL_THICKNESS, WALL_THICKNESS)
-			}
+			},
 		}
 	}
 }
@@ -396,7 +396,7 @@ fn check_for_collisions(
 				Collision::Right => reflect_x = ball_velocity.x < 0.0,
 				Collision::Top => reflect_y = ball_velocity.y < 0.0,
 				Collision::Bottom => reflect_y = ball_velocity.y > 0.0,
-				Collision::Inside => { /* do nothing */ }
+				Collision::Inside => { /* do nothing */ },
 			}
 
 			// reflect velocity on the x-axis if we hit something on the x-axis

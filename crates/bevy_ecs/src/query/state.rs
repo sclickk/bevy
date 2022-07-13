@@ -1220,11 +1220,11 @@ impl fmt::Display for QueryEntityError {
 		match self {
 			QueryEntityError::QueryDoesNotMatch(_) => {
 				write!(f, "The given entity does not have the requested component.")
-			}
+			},
 			QueryEntityError::NoSuchEntity(_) => write!(f, "The requested entity does not exist."),
 			QueryEntityError::AliasedMutability(_) => {
 				write!(f, "The entity was requested mutably more than once.")
-			}
+			},
 		}
 	}
 }
@@ -1354,7 +1354,7 @@ impl std::fmt::Display for QuerySingleError {
 			QuerySingleError::NoEntities(query) => write!(f, "No entities fit the query {}", query),
 			QuerySingleError::MultipleEntities(query) => {
 				write!(f, "Multiple entities fit the query {}!", query)
-			}
+			},
 		}
 	}
 }

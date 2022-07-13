@@ -165,18 +165,18 @@ fn main() {
 			Some((name, cfg)) => {
 				println!("test configuration: {name}");
 				cfg.clone()
-			}
+			},
 			None => {
 				println!("test configuration \"{arg}\" not found.\n");
 				print_available_configs();
 				return;
-			}
+			},
 		},
 		None => {
 			println!("missing argument: <test configuration>\n");
 			print_available_configs();
 			return;
-		}
+		},
 	};
 
 	println!("\n{:#?}", cfg);
@@ -268,14 +268,14 @@ fn setup(mut commands: Commands, cfg: Res<Cfg>) {
 		} => {
 			let tree = gen_tree(depth, branch_width);
 			spawn_tree(&tree, &mut commands, &cfg.update_filter, Default::default())
-		}
+		},
 		TestCase::NonUniformTree {
 			depth,
 			branch_width,
 		} => {
 			let tree = gen_non_uniform_tree(depth, branch_width);
 			spawn_tree(&tree, &mut commands, &cfg.update_filter, Default::default())
-		}
+		},
 		TestCase::Humanoids { active, inactive } => {
 			let mut result = InsertResult::default();
 			let mut rng = rand::thread_rng();
@@ -311,7 +311,7 @@ fn setup(mut commands: Commands, cfg: Res<Cfg>) {
 			}
 
 			result
-		}
+		},
 	};
 
 	println!("\n{:#?}", result);

@@ -133,7 +133,7 @@ impl SystemSet {
 						.meta
 						.ambiguity_sets
 						.extend(meta.ambiguity_sets.iter().cloned());
-				}
+				},
 				SystemDescriptor::Exclusive(descriptor) => {
 					descriptor
 						.meta
@@ -151,7 +151,7 @@ impl SystemSet {
 						.meta
 						.ambiguity_sets
 						.extend(meta.ambiguity_sets.iter().cloned());
-				}
+				},
 			}
 		}
 		(run_criteria, systems)

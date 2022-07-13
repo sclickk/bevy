@@ -372,7 +372,7 @@ impl ClusterConfig {
 				}
 
 				UVec3::new(x, y, z_slices)
-			}
+			},
 		}
 	}
 
@@ -381,7 +381,7 @@ impl ClusterConfig {
 			ClusterConfig::None | ClusterConfig::Single => 0.0,
 			ClusterConfig::XYZ { z_config, .. } | ClusterConfig::FixedZ { z_config, .. } => {
 				z_config.first_slice_depth
-			}
+			},
 		}
 	}
 
@@ -391,7 +391,7 @@ impl ClusterConfig {
 			ClusterConfig::Single => ClusterFarZMode::MaxLightRange,
 			ClusterConfig::XYZ { z_config, .. } | ClusterConfig::FixedZ { z_config, .. } => {
 				z_config.far_z_mode
-			}
+			},
 		}
 	}
 
@@ -944,7 +944,7 @@ pub(crate) fn assign_lights_to_clusters(
 					.map(|light| -inverse_view_row_2.dot(light.translation.extend(1.0)) + light.range)
 					.reduce(f32::max)
 					.unwrap_or(0.0)
-			}
+			},
 			ClusterFarZMode::Constant(far) => far,
 		};
 		let first_slice_depth = match (is_orthographic, requested_cluster_dimensions.z) {
@@ -958,7 +958,7 @@ pub(crate) fn assign_lights_to_clusters(
 				// rearranging r = 1.0 / (far - near), r * (far - near) = 1.0, r * far - 1.0 = r * near, near = (r * far - 1.0) / r
 				// = (3,2 - 1.0) / 2,2
 				(camera.projection_matrix().w_axis.z - 1.0) / camera.projection_matrix().z_axis.z
-			}
+			},
 			(false, 1) => config.first_slice_depth().max(far_z),
 			_ => config.first_slice_depth(),
 		};

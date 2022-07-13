@@ -309,11 +309,11 @@ pub fn gamepad_connection_system(
 			GamepadEventType::Connected => {
 				gamepads.register(event.gamepad);
 				info!("{:?} Connected", event.gamepad);
-			}
+			},
 			GamepadEventType::Disconnected => {
 				gamepads.deregister(&event.gamepad);
 				info!("{:?} Disconnected", event.gamepad);
-			}
+			},
 			_ => (),
 		}
 	}
@@ -340,7 +340,7 @@ pub fn gamepad_event_system(
 				for axis_type in &ALL_AXIS_TYPES {
 					axis.set(GamepadAxis::new(event.gamepad, *axis_type), 0.0);
 				}
-			}
+			},
 			GamepadEventType::Disconnected => {
 				events.send(GamepadEvent::new(event.gamepad, event.event_type.clone()));
 				for button_type in &ALL_BUTTON_TYPES {
@@ -351,7 +351,7 @@ pub fn gamepad_event_system(
 				for axis_type in &ALL_AXIS_TYPES {
 					axis.remove(GamepadAxis::new(event.gamepad, *axis_type));
 				}
-			}
+			},
 			GamepadEventType::AxisChanged(axis_type, value) => {
 				let gamepad_axis = GamepadAxis::new(event.gamepad, axis_type);
 				if let Some(filtered_value) = settings
@@ -364,7 +364,7 @@ pub fn gamepad_event_system(
 						GamepadEventType::AxisChanged(axis_type, filtered_value),
 					));
 				}
-			}
+			},
 			GamepadEventType::ButtonChanged(button_type, value) => {
 				let gamepad_button = GamepadButton::new(event.gamepad, button_type);
 				if let Some(filtered_value) = settings
@@ -386,7 +386,7 @@ pub fn gamepad_event_system(
 				} else if button_property.is_pressed(value) {
 					button_input.press(gamepad_button);
 				}
-			}
+			},
 		}
 	}
 }

@@ -125,7 +125,7 @@ pub fn basis_buffer_to_image(
 				"{:?}",
 				basis_texture_type
 			)))
-		}
+		},
 	};
 	image.data = transcoded;
 	Ok(image)

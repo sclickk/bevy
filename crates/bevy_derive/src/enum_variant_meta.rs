@@ -10,7 +10,7 @@ pub fn derive_enum_variant_meta(input: TokenStream) -> TokenStream {
 			return syn::Error::new(Span::call_site().into(), "Only enums are supported")
 				.into_compile_error()
 				.into()
-		}
+		},
 	};
 
 	let generics = ast.generics;

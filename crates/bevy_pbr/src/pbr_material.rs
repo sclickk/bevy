@@ -201,8 +201,8 @@ impl AsBindGroupShaderType<StandardMaterialUniform> for StandardMaterial {
 				| TextureFormat::Bc5RgUnorm
 				| TextureFormat::EacRg11Unorm => {
 					flags |= StandardMaterialFlags::TWO_COMPONENT_NORMAL_MAP;
-				}
-				_ => {}
+				},
+				_ => {},
 			}
 			if self.flip_normal_map_y {
 				flags |= StandardMaterialFlags::FLIP_NORMAL_MAP_Y;
@@ -215,7 +215,7 @@ impl AsBindGroupShaderType<StandardMaterialUniform> for StandardMaterial {
 			AlphaMode::Mask(c) => {
 				alpha_cutoff = c;
 				flags |= StandardMaterialFlags::ALPHA_MODE_MASK;
-			}
+			},
 			AlphaMode::Blend => flags |= StandardMaterialFlags::ALPHA_MODE_BLEND,
 		};
 

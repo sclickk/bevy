@@ -152,7 +152,7 @@ impl Plugin for LogPlugin {
 							} else {
 								span.metadata().name().into()
 							}
-						}
+						},
 					}))
 					.build();
 				app.world.insert_non_send_resource(guard);

@@ -968,7 +968,7 @@ pub enum GenerateTangentsError {
 
 fn generate_tangents_for_mesh(mesh: &Mesh) -> Result<Vec<[f32; 4]>, GenerateTangentsError> {
 	match mesh.primitive_topology() {
-		PrimitiveTopology::TriangleList => {}
+		PrimitiveTopology::TriangleList => {},
 		other => return Err(GenerateTangentsError::UnsupportedTopology(other)),
 	};
 
@@ -981,7 +981,7 @@ fn generate_tangents_for_mesh(mesh: &Mesh) -> Result<Vec<[f32; 4]>, GenerateTang
 				Mesh::ATTRIBUTE_POSITION.name,
 				VertexFormat::Float32x3,
 			))
-		}
+		},
 	};
 
 	let normals = match mesh.attribute(Mesh::ATTRIBUTE_NORMAL).ok_or(
@@ -993,7 +993,7 @@ fn generate_tangents_for_mesh(mesh: &Mesh) -> Result<Vec<[f32; 4]>, GenerateTang
 				Mesh::ATTRIBUTE_NORMAL.name,
 				VertexFormat::Float32x3,
 			))
-		}
+		},
 	};
 
 	let uvs = match mesh.attribute(Mesh::ATTRIBUTE_UV_0).ok_or(
@@ -1005,7 +1005,7 @@ fn generate_tangents_for_mesh(mesh: &Mesh) -> Result<Vec<[f32; 4]>, GenerateTang
 				Mesh::ATTRIBUTE_UV_0.name,
 				VertexFormat::Float32x2,
 			))
-		}
+		},
 	};
 
 	let mut mikktspace_mesh = MikktspaceGeometryHelper {

@@ -32,7 +32,7 @@ impl WinitWindows {
 				winit_window_builder.with_fullscreen(Some(winit::window::Fullscreen::Exclusive(
 					get_best_videomode(&event_loop.primary_monitor().unwrap()),
 				)))
-			}
+			},
 			WindowMode::SizedFullscreen => winit_window_builder.with_fullscreen(Some(
 				winit::window::Fullscreen::Exclusive(get_fitting_videomode(
 					&event_loop.primary_monitor().unwrap(),
@@ -51,14 +51,14 @@ impl WinitWindows {
 
 				use bevy_window::WindowPosition::*;
 				match position {
-					Automatic => { /* Window manager will handle position */ }
+					Automatic => { /* Window manager will handle position */ },
 					Centered(monitor_selection) => {
 						use bevy_window::MonitorSelection::*;
 						let maybe_monitor = match monitor_selection {
 							Current => {
 								warn!("Can't select current monitor on window creation!");
 								None
-							}
+							},
 							Primary => event_loop.primary_monitor(),
 							Number(n) => event_loop.available_monitors().nth(*n),
 						};
@@ -84,7 +84,7 @@ impl WinitWindows {
 						} else {
 							warn!("Couldn't get monitor selected with: {monitor_selection:?}");
 						}
-					}
+					},
 					At(position) => {
 						if let Some(sf) = scale_factor_override {
 							winit_window_builder = winit_window_builder.with_position(
@@ -95,7 +95,7 @@ impl WinitWindows {
 							winit_window_builder = winit_window_builder
 								.with_position(LogicalPosition::new(position[0] as f64, position[1] as f64));
 						}
-					}
+					},
 				}
 
 				if let Some(sf) = scale_factor_override {
@@ -160,7 +160,7 @@ impl WinitWindows {
 
 		if window_descriptor.cursor.locked {
 			match winit_window.set_cursor_grab(true) {
-				Ok(_) | Err(winit::error::ExternalError::NotSupported(_)) => {}
+				Ok(_) | Err(winit::error::ExternalError::NotSupported(_)) => {},
 				Err(err) => Err(err).unwrap(),
 			}
 		}

@@ -69,28 +69,28 @@ fn change_window_size(
 			} else {
 				windows.height -= RESIZE_STEP;
 			}
-		}
+		},
 		Phase::ContractingX => {
 			if width <= MIN_WIDTH {
 				*phase = ExpandingY;
 			} else {
 				windows.width -= RESIZE_STEP;
 			}
-		}
+		},
 		Phase::ExpandingY => {
 			if height >= MAX_HEIGHT {
 				*phase = ExpandingX;
 			} else {
 				windows.height += RESIZE_STEP;
 			}
-		}
+		},
 		Phase::ExpandingX => {
 			if width >= MAX_WIDTH {
 				*phase = ContractingY;
 			} else {
 				windows.width += RESIZE_STEP;
 			}
-		}
+		},
 	}
 }
 

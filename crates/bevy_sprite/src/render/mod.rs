@@ -374,7 +374,7 @@ pub fn queue_sprites(
 			AssetEvent::Created { .. } => None,
 			AssetEvent::Modified { handle } | AssetEvent::Removed { handle } => {
 				image_bind_groups.values.remove(handle)
-			}
+			},
 		};
 	}
 

@@ -81,13 +81,13 @@ fn menu(
 			Interaction::Clicked => {
 				*color = PRESSED_BUTTON.into();
 				state.set(AppState::InGame).unwrap();
-			}
+			},
 			Interaction::Hovered => {
 				*color = HOVERED_BUTTON.into();
-			}
+			},
 			Interaction::None => {
 				*color = NORMAL_BUTTON.into();
-			}
+			},
 		}
 	}
 }

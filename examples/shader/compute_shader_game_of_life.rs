@@ -197,15 +197,15 @@ impl render_graph::Node for GameOfLifeNode {
 				{
 					self.state = GameOfLifeState::Init;
 				}
-			}
+			},
 			GameOfLifeState::Init => {
 				if let CachedPipelineState::Ok(_) =
 					pipeline_cache.get_compute_pipeline_state(pipeline.update_pipeline)
 				{
 					self.state = GameOfLifeState::Update;
 				}
-			}
-			GameOfLifeState::Update => {}
+			},
+			GameOfLifeState::Update => {},
 		}
 	}
 
@@ -227,21 +227,21 @@ impl render_graph::Node for GameOfLifeNode {
 
 		// select the pipeline based on the current state
 		match self.state {
-			GameOfLifeState::Loading => {}
+			GameOfLifeState::Loading => {},
 			GameOfLifeState::Init => {
 				let init_pipeline = pipeline_cache
 					.get_compute_pipeline(pipeline.init_pipeline)
 					.unwrap();
 				pass.set_pipeline(init_pipeline);
 				pass.dispatch(SIZE.0 / WORKGROUP_SIZE, SIZE.1 / WORKGROUP_SIZE, 1);
-			}
+			},
 			GameOfLifeState::Update => {
 				let update_pipeline = pipeline_cache
 					.get_compute_pipeline(pipeline.update_pipeline)
 					.unwrap();
 				pass.set_pipeline(update_pipeline);
 				pass.dispatch(SIZE.0 / WORKGROUP_SIZE, SIZE.1 / WORKGROUP_SIZE, 1);
-			}
+			},
 		}
 
 		Ok(())

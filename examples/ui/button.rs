@@ -30,15 +30,15 @@ fn button_system(
 			Interaction::Clicked => {
 				text.sections[0].value = "Press".to_string();
 				*color = PRESSED_BUTTON.into();
-			}
+			},
 			Interaction::Hovered => {
 				text.sections[0].value = "Hover".to_string();
 				*color = HOVERED_BUTTON.into();
-			}
+			},
 			Interaction::None => {
 				text.sections[0].value = "Button".to_string();
 				*color = NORMAL_BUTTON.into();
-			}
+			},
 		}
 	}
 }

@@ -170,8 +170,8 @@ pub fn ui_focus_system(
 		{
 			FocusPolicy::Block => {
 				break;
-			}
-			FocusPolicy::Pass => { /* allow the next node to be hovered/clicked */ }
+			},
+			FocusPolicy::Pass => { /* allow the next node to be hovered/clicked */ },
 		}
 	}
 	// reset lower nodes to None

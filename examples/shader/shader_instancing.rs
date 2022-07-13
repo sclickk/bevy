@@ -264,10 +264,10 @@ impl EntityRenderCommand for DrawMeshInstanced {
 			} => {
 				pass.set_index_buffer(buffer.slice(..), 0, *index_format);
 				pass.draw_indexed(0..*count, 0, 0..instance_buffer.length as u32);
-			}
+			},
 			GpuBufferInfo::NonIndexed { vertex_count } => {
 				pass.draw(0..*vertex_count, 0..instance_buffer.length as u32);
-			}
+			},
 		}
 		RenderCommandResult::Success
 	}

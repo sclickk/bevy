@@ -73,9 +73,9 @@ fn parse_component_attr(ast: &DeriveInput) -> Result<Attrs> {
 								s, TABLE, SPARSE_SET
 							),
 						))
-					}
+					},
 				};
-			}
+			},
 			Meta(meta_item) => {
 				return Err(Error::new_spanned(
 					meta_item.path(),
@@ -84,13 +84,13 @@ fn parse_component_attr(ast: &DeriveInput) -> Result<Attrs> {
 						meta_item.path().into_token_stream()
 					),
 				));
-			}
+			},
 			Lit(lit) => {
 				return Err(Error::new_spanned(
 					lit,
 					"unexpected literal in component attribute",
 				))
-			}
+			},
 		}
 	}
 

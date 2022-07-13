@@ -50,7 +50,7 @@ pub fn ktx2_buffer_to_image(
 							))
 						})?;
 					levels.push(decompressed);
-				}
+				},
 				#[cfg(feature = "ruzstd")]
 				SupercompressionScheme::Zstandard => {
 					let mut cursor = std::io::Cursor::new(_level_data);
@@ -66,13 +66,13 @@ pub fn ktx2_buffer_to_image(
 							))
 						})?;
 					levels.push(decompressed);
-				}
+				},
 				_ => {
 					return Err(TextureError::SuperDecompressionError(format!(
 						"Unsupported supercompression scheme: {:?}",
 						supercompression_scheme
 					)));
-				}
+				},
 			}
 		}
 	} else {
@@ -112,7 +112,7 @@ pub fn ktx2_buffer_to_image(
 					} else {
 						TextureFormat::Rgba8Unorm
 					}
-				}
+				},
 				#[cfg(feature = "basis-universal")]
 				TranscodeFormat::Uastc(data_format) => {
 					let (transcode_block_format, texture_format) =
@@ -151,7 +151,7 @@ pub fn ktx2_buffer_to_image(
 						original_height = (original_height / 2).max(1);
 					}
 					texture_format
-				}
+				},
 				// ETC1S is a subset of ETC1 which is a subset of ETC2
 				// TODO: Implement transcoding
 				TranscodeFormat::Etc1s => {
@@ -165,13 +165,13 @@ pub fn ktx2_buffer_to_image(
 					}
 					transcoded = levels.to_vec();
 					texture_format
-				}
+				},
 				#[cfg(not(feature = "basis-universal"))]
 				_ => return Err(error),
 			};
 			levels = transcoded;
 			Ok(texture_format)
-		}
+		},
 		_ => Err(error),
 	})?;
 	if !supported_compressed_formats.supports(texture_format) {
@@ -224,7 +224,7 @@ pub fn get_transcoded_formats(
 			} else {
 				(TranscoderBlockFormat::RGBA32, TextureFormat::R8Unorm)
 			}
-		}
+		},
 		DataFormat::Rrrg | DataFormat::Rg => {
 			if supported_compressed_formats.contains(CompressedImageFormats::BC) {
 				(TranscoderBlockFormat::BC5, TextureFormat::Bc5RgUnorm)
@@ -236,7 +236,7 @@ pub fn get_transcoded_formats(
 			} else {
 				(TranscoderBlockFormat::RGBA32, TextureFormat::Rg8Unorm)
 			}
-		}
+		},
 		// NOTE: Rgba16Float should be transcoded to BC6H/ASTC_HDR. Neither are supported by
 		// basis-universal, nor is ASTC_HDR supported by wgpu
 		DataFormat::Rgb | DataFormat::Rgba => {
@@ -280,7 +280,7 @@ pub fn get_transcoded_formats(
 					},
 				)
 			}
-		}
+		},
 	}
 }
 
@@ -395,13 +395,13 @@ pub fn ktx2_dfd_to_texture_format(
 								return Err(TextureError::UnsupportedTextureFormat(
 									"UnormSrgb not supported for R8".to_string(),
 								));
-							}
+							},
 							DataType::Snorm => TextureFormat::R8Snorm,
 							DataType::Float => {
 								return Err(TextureError::UnsupportedTextureFormat(
 									"Float not supported for R8".to_string(),
 								));
-							}
+							},
 							DataType::Uint => TextureFormat::R8Uint,
 							DataType::Sint => TextureFormat::R8Sint,
 						},
@@ -411,7 +411,7 @@ pub fn ktx2_dfd_to_texture_format(
 								return Err(TextureError::UnsupportedTextureFormat(
 									"UnormSrgb not supported for R16".to_string(),
 								));
-							}
+							},
 							DataType::Snorm => TextureFormat::R16Snorm,
 							DataType::Float => TextureFormat::R16Float,
 							DataType::Uint => TextureFormat::R16Uint,
@@ -422,17 +422,17 @@ pub fn ktx2_dfd_to_texture_format(
 								return Err(TextureError::UnsupportedTextureFormat(
 									"Unorm not supported for R32".to_string(),
 								));
-							}
+							},
 							DataType::UnormSrgb => {
 								return Err(TextureError::UnsupportedTextureFormat(
 									"UnormSrgb not supported for R32".to_string(),
 								));
-							}
+							},
 							DataType::Snorm => {
 								return Err(TextureError::UnsupportedTextureFormat(
 									"Snorm not supported for R32".to_string(),
 								));
-							}
+							},
 							DataType::Float => TextureFormat::R32Float,
 							DataType::Uint => TextureFormat::R32Uint,
 							DataType::Sint => TextureFormat::R32Sint,
@@ -442,9 +442,9 @@ pub fn ktx2_dfd_to_texture_format(
 								"Unsupported sample bit length for RGBSDA 1-channel format: {}",
 								v
 							)));
-						}
+						},
 					}
-				}
+				},
 				2 => {
 					// Only red and green channels allowed
 					if sample_information[0].channel_type != 0 || sample_information[1].channel_type != 1 {
@@ -475,13 +475,13 @@ pub fn ktx2_dfd_to_texture_format(
 								return Err(TextureError::UnsupportedTextureFormat(
 									"UnormSrgb not supported for Rg8".to_string(),
 								));
-							}
+							},
 							DataType::Snorm => TextureFormat::Rg8Snorm,
 							DataType::Float => {
 								return Err(TextureError::UnsupportedTextureFormat(
 									"Float not supported for Rg8".to_string(),
 								));
-							}
+							},
 							DataType::Uint => TextureFormat::Rg8Uint,
 							DataType::Sint => TextureFormat::Rg8Sint,
 						},
@@ -491,7 +491,7 @@ pub fn ktx2_dfd_to_texture_format(
 								return Err(TextureError::UnsupportedTextureFormat(
 									"UnormSrgb not supported for Rg16".to_string(),
 								));
-							}
+							},
 							DataType::Snorm => TextureFormat::Rg16Snorm,
 							DataType::Float => TextureFormat::Rg16Float,
 							DataType::Uint => TextureFormat::Rg16Uint,
@@ -502,17 +502,17 @@ pub fn ktx2_dfd_to_texture_format(
 								return Err(TextureError::UnsupportedTextureFormat(
 									"Unorm not supported for Rg32".to_string(),
 								));
-							}
+							},
 							DataType::UnormSrgb => {
 								return Err(TextureError::UnsupportedTextureFormat(
 									"UnormSrgb not supported for Rg32".to_string(),
 								));
-							}
+							},
 							DataType::Snorm => {
 								return Err(TextureError::UnsupportedTextureFormat(
 									"Snorm not supported for Rg32".to_string(),
 								));
-							}
+							},
 							DataType::Float => TextureFormat::Rg32Float,
 							DataType::Uint => TextureFormat::Rg32Uint,
 							DataType::Sint => TextureFormat::Rg32Sint,
@@ -522,9 +522,9 @@ pub fn ktx2_dfd_to_texture_format(
 								"Unsupported sample bit length for RGBSDA 2-channel format: {}",
 								v
 							)));
-						}
+						},
 					}
-				}
+				},
 				3 => {
 					if sample_information[0].channel_type == 0
 						&& sample_information[0].bit_length == 11
@@ -557,7 +557,7 @@ pub fn ktx2_dfd_to_texture_format(
 							"3-component formats not supported".to_string(),
 						));
 					}
-				}
+				},
 				4 => {
 					// Only RGBA or BGRA channels allowed
 					let is_rgba = sample_information[0].channel_type == 0;
@@ -607,14 +607,14 @@ pub fn ktx2_dfd_to_texture_format(
 								} else {
 									TextureFormat::Bgra8Unorm
 								}
-							}
+							},
 							DataType::UnormSrgb => {
 								if is_rgba {
 									TextureFormat::Rgba8UnormSrgb
 								} else {
 									TextureFormat::Bgra8UnormSrgb
 								}
-							}
+							},
 							DataType::Snorm => {
 								if is_rgba {
 									TextureFormat::Rgba8Snorm
@@ -623,12 +623,12 @@ pub fn ktx2_dfd_to_texture_format(
 										"Bgra8 not supported for Snorm".to_string(),
 									));
 								}
-							}
+							},
 							DataType::Float => {
 								return Err(TextureError::UnsupportedTextureFormat(
 									"Float not supported for Rgba8/Bgra8".to_string(),
 								));
-							}
+							},
 							DataType::Uint => {
 								if is_rgba {
 									// NOTE: This is more about how you want to use the data so
@@ -643,7 +643,7 @@ pub fn ktx2_dfd_to_texture_format(
 										"Bgra8 not supported for Uint".to_string(),
 									));
 								}
-							}
+							},
 							DataType::Sint => {
 								if is_rgba {
 									// NOTE: This is more about how you want to use the data so
@@ -654,7 +654,7 @@ pub fn ktx2_dfd_to_texture_format(
 										"Bgra8 not supported for Sint".to_string(),
 									));
 								}
-							}
+							},
 						},
 						16 => match data_type {
 							DataType::Unorm => {
@@ -665,12 +665,12 @@ pub fn ktx2_dfd_to_texture_format(
 										"Bgra16 not supported for Unorm".to_string(),
 									));
 								}
-							}
+							},
 							DataType::UnormSrgb => {
 								return Err(TextureError::UnsupportedTextureFormat(
 									"UnormSrgb not supported for Rgba16/Bgra16".to_string(),
 								));
-							}
+							},
 							DataType::Snorm => {
 								if is_rgba {
 									TextureFormat::Rgba16Snorm
@@ -679,7 +679,7 @@ pub fn ktx2_dfd_to_texture_format(
 										"Bgra16 not supported for Snorm".to_string(),
 									));
 								}
-							}
+							},
 							DataType::Float => {
 								if is_rgba {
 									TextureFormat::Rgba16Float
@@ -688,7 +688,7 @@ pub fn ktx2_dfd_to_texture_format(
 										"Bgra16 not supported for Float".to_string(),
 									));
 								}
-							}
+							},
 							DataType::Uint => {
 								if is_rgba {
 									TextureFormat::Rgba16Uint
@@ -697,7 +697,7 @@ pub fn ktx2_dfd_to_texture_format(
 										"Bgra16 not supported for Uint".to_string(),
 									));
 								}
-							}
+							},
 							DataType::Sint => {
 								if is_rgba {
 									TextureFormat::Rgba16Sint
@@ -706,24 +706,24 @@ pub fn ktx2_dfd_to_texture_format(
 										"Bgra16 not supported for Sint".to_string(),
 									));
 								}
-							}
+							},
 						},
 						32 => match data_type {
 							DataType::Unorm => {
 								return Err(TextureError::UnsupportedTextureFormat(
 									"Unorm not supported for Rgba32/Bgra32".to_string(),
 								));
-							}
+							},
 							DataType::UnormSrgb => {
 								return Err(TextureError::UnsupportedTextureFormat(
 									"UnormSrgb not supported for Rgba32/Bgra32".to_string(),
 								));
-							}
+							},
 							DataType::Snorm => {
 								return Err(TextureError::UnsupportedTextureFormat(
 									"Snorm not supported for Rgba32/Bgra32".to_string(),
 								));
-							}
+							},
 							DataType::Float => {
 								if is_rgba {
 									TextureFormat::Rgba32Float
@@ -732,7 +732,7 @@ pub fn ktx2_dfd_to_texture_format(
 										"Bgra32 not supported for Float".to_string(),
 									));
 								}
-							}
+							},
 							DataType::Uint => {
 								if is_rgba {
 									TextureFormat::Rgba32Uint
@@ -741,7 +741,7 @@ pub fn ktx2_dfd_to_texture_format(
 										"Bgra32 not supported for Uint".to_string(),
 									));
 								}
-							}
+							},
 							DataType::Sint => {
 								if is_rgba {
 									TextureFormat::Rgba32Sint
@@ -750,24 +750,24 @@ pub fn ktx2_dfd_to_texture_format(
 										"Bgra32 not supported for Sint".to_string(),
 									));
 								}
-							}
+							},
 						},
 						v => {
 							return Err(TextureError::UnsupportedTextureFormat(format!(
 								"Unsupported sample bit length for RGBSDA 4-channel format: {}",
 								v
 							)));
-						}
+						},
 					}
-				}
+				},
 				v => {
 					return Err(TextureError::UnsupportedTextureFormat(format!(
 						"Unsupported channel count for RGBSDA format: {}",
 						v
 					)));
-				}
+				},
 			}
-		}
+		},
 		Some(ColorModel::YUVSDA)
 		| Some(ColorModel::YIQSDA)
 		| Some(ColorModel::LabSDA)
@@ -785,7 +785,7 @@ pub fn ktx2_dfd_to_texture_format(
 				"{:?}",
 				data_format_descriptor.color_model
 			)));
-		}
+		},
 		Some(ColorModel::XYZW) => {
 			// Same number of channels in both texel block dimensions and sample info descriptions
 			assert_eq!(
@@ -835,13 +835,13 @@ pub fn ktx2_dfd_to_texture_format(
 								return Err(TextureError::UnsupportedTextureFormat(
 									"UnormSrgb not supported for XYZW".to_string(),
 								));
-							}
+							},
 							DataType::Snorm => TextureFormat::Rgba8Snorm,
 							DataType::Float => {
 								return Err(TextureError::UnsupportedTextureFormat(
 									"Float not supported for Rgba8/Bgra8".to_string(),
 								));
-							}
+							},
 							DataType::Uint => TextureFormat::Rgba8Uint,
 							DataType::Sint => TextureFormat::Rgba8Sint,
 						},
@@ -851,7 +851,7 @@ pub fn ktx2_dfd_to_texture_format(
 								return Err(TextureError::UnsupportedTextureFormat(
 									"UnormSrgb not supported for Rgba16/Bgra16".to_string(),
 								));
-							}
+							},
 							DataType::Snorm => TextureFormat::Rgba16Snorm,
 							DataType::Float => TextureFormat::Rgba16Float,
 							DataType::Uint => TextureFormat::Rgba16Uint,
@@ -862,17 +862,17 @@ pub fn ktx2_dfd_to_texture_format(
 								return Err(TextureError::UnsupportedTextureFormat(
 									"Unorm not supported for Rgba32/Bgra32".to_string(),
 								));
-							}
+							},
 							DataType::UnormSrgb => {
 								return Err(TextureError::UnsupportedTextureFormat(
 									"UnormSrgb not supported for Rgba32/Bgra32".to_string(),
 								));
-							}
+							},
 							DataType::Snorm => {
 								return Err(TextureError::UnsupportedTextureFormat(
 									"Snorm not supported for Rgba32/Bgra32".to_string(),
 								));
-							}
+							},
 							DataType::Float => TextureFormat::Rgba32Float,
 							DataType::Uint => TextureFormat::Rgba32Uint,
 							DataType::Sint => TextureFormat::Rgba32Sint,
@@ -882,45 +882,45 @@ pub fn ktx2_dfd_to_texture_format(
 								"Unsupported sample bit length for XYZW 4-channel format: {}",
 								v
 							)));
-						}
+						},
 					}
-				}
+				},
 				v => {
 					return Err(TextureError::UnsupportedTextureFormat(format!(
 						"Unsupported channel count for XYZW format: {}",
 						v
 					)));
-				}
+				},
 			}
-		}
+		},
 		Some(ColorModel::BC1A) => {
 			if is_srgb {
 				TextureFormat::Bc1RgbaUnormSrgb
 			} else {
 				TextureFormat::Bc1RgbaUnorm
 			}
-		}
+		},
 		Some(ColorModel::BC2) => {
 			if is_srgb {
 				TextureFormat::Bc2RgbaUnormSrgb
 			} else {
 				TextureFormat::Bc2RgbaUnorm
 			}
-		}
+		},
 		Some(ColorModel::BC3) => {
 			if is_srgb {
 				TextureFormat::Bc3RgbaUnormSrgb
 			} else {
 				TextureFormat::Bc3RgbaUnorm
 			}
-		}
+		},
 		Some(ColorModel::BC4) => {
 			if sample_information[0].lower == 0 {
 				TextureFormat::Bc4RUnorm
 			} else {
 				TextureFormat::Bc4RSnorm
 			}
-		}
+		},
 		// FIXME: Red and green channels can be swapped for ATI2n/3Dc
 		Some(ColorModel::BC5) => {
 			if sample_information[0].lower == 0 {
@@ -928,21 +928,21 @@ pub fn ktx2_dfd_to_texture_format(
 			} else {
 				TextureFormat::Bc5RgSnorm
 			}
-		}
+		},
 		Some(ColorModel::BC6H) => {
 			if sample_information[0].lower == 0 {
 				TextureFormat::Bc6hRgbUfloat
 			} else {
 				TextureFormat::Bc6hRgbSfloat
 			}
-		}
+		},
 		Some(ColorModel::BC7) => {
 			if is_srgb {
 				TextureFormat::Bc7RgbaUnormSrgb
 			} else {
 				TextureFormat::Bc7RgbaUnorm
 			}
-		}
+		},
 		// ETC1 a subset of ETC2 only supporting Rgb8
 		Some(ColorModel::ETC1) => {
 			if is_srgb {
@@ -950,7 +950,7 @@ pub fn ktx2_dfd_to_texture_format(
 			} else {
 				TextureFormat::Etc2Rgb8Unorm
 			}
-		}
+		},
 		Some(ColorModel::ETC2) => match sample_information.len() {
 			1 => {
 				let sample = &sample_information[0];
@@ -964,22 +964,22 @@ pub fn ktx2_dfd_to_texture_format(
 						} else {
 							TextureFormat::EacR11Unorm
 						}
-					}
+					},
 					2 => {
 						if is_srgb {
 							TextureFormat::Etc2Rgb8UnormSrgb
 						} else {
 							TextureFormat::Etc2Rgb8Unorm
 						}
-					}
+					},
 					_ => {
 						return Err(TextureError::UnsupportedTextureFormat(format!(
 							"Invalid ETC2 sample channel type: {}",
 							sample.channel_type
 						)))
-					}
+					},
 				}
-			}
+			},
 			2 => {
 				let sample0 = &sample_information[0];
 				let sample1 = &sample_information[1];
@@ -1010,13 +1010,13 @@ pub fn ktx2_dfd_to_texture_format(
 						sample0.channel_type, sample1.channel_type
 					)));
 				}
-			}
+			},
 			v => {
 				return Err(TextureError::UnsupportedTextureFormat(format!(
 					"Unsupported channel count for ETC2 format: {}",
 					v
 				)));
-			}
+			},
 		},
 		Some(ColorModel::ASTC) => match data_format_descriptor.texel_block_dimensions[0] {
 			4 => match data_format_descriptor.texel_block_dimensions[1] {
@@ -1026,13 +1026,13 @@ pub fn ktx2_dfd_to_texture_format(
 					} else {
 						TextureFormat::Astc4x4RgbaUnorm
 					}
-				}
+				},
 				d => {
 					return Err(TextureError::UnsupportedTextureFormat(format!(
 						"Invalid ASTC y-dimension: {}",
 						d
 					)))
-				}
+				},
 			},
 			5 => match data_format_descriptor.texel_block_dimensions[1] {
 				4 => {
@@ -1041,20 +1041,20 @@ pub fn ktx2_dfd_to_texture_format(
 					} else {
 						TextureFormat::Astc5x4RgbaUnorm
 					}
-				}
+				},
 				5 => {
 					if is_srgb {
 						TextureFormat::Astc5x5RgbaUnormSrgb
 					} else {
 						TextureFormat::Astc5x5RgbaUnorm
 					}
-				}
+				},
 				d => {
 					return Err(TextureError::UnsupportedTextureFormat(format!(
 						"Invalid ASTC y-dimension: {}",
 						d
 					)))
-				}
+				},
 			},
 			6 => match data_format_descriptor.texel_block_dimensions[1] {
 				5 => {
@@ -1063,20 +1063,20 @@ pub fn ktx2_dfd_to_texture_format(
 					} else {
 						TextureFormat::Astc6x5RgbaUnorm
 					}
-				}
+				},
 				6 => {
 					if is_srgb {
 						TextureFormat::Astc6x6RgbaUnormSrgb
 					} else {
 						TextureFormat::Astc6x6RgbaUnorm
 					}
-				}
+				},
 				d => {
 					return Err(TextureError::UnsupportedTextureFormat(format!(
 						"Invalid ASTC y-dimension: {}",
 						d
 					)))
-				}
+				},
 			},
 			8 => match data_format_descriptor.texel_block_dimensions[1] {
 				5 => {
@@ -1085,27 +1085,27 @@ pub fn ktx2_dfd_to_texture_format(
 					} else {
 						TextureFormat::Astc8x5RgbaUnorm
 					}
-				}
+				},
 				6 => {
 					if is_srgb {
 						TextureFormat::Astc8x6RgbaUnormSrgb
 					} else {
 						TextureFormat::Astc8x6RgbaUnorm
 					}
-				}
+				},
 				8 => {
 					if is_srgb {
 						TextureFormat::Astc8x8RgbaUnormSrgb
 					} else {
 						TextureFormat::Astc8x8RgbaUnorm
 					}
-				}
+				},
 				d => {
 					return Err(TextureError::UnsupportedTextureFormat(format!(
 						"Invalid ASTC y-dimension: {}",
 						d
 					)))
-				}
+				},
 			},
 			10 => match data_format_descriptor.texel_block_dimensions[1] {
 				5 => {
@@ -1114,34 +1114,34 @@ pub fn ktx2_dfd_to_texture_format(
 					} else {
 						TextureFormat::Astc10x5RgbaUnorm
 					}
-				}
+				},
 				6 => {
 					if is_srgb {
 						TextureFormat::Astc10x6RgbaUnormSrgb
 					} else {
 						TextureFormat::Astc10x6RgbaUnorm
 					}
-				}
+				},
 				8 => {
 					if is_srgb {
 						TextureFormat::Astc10x8RgbaUnormSrgb
 					} else {
 						TextureFormat::Astc10x8RgbaUnorm
 					}
-				}
+				},
 				10 => {
 					if is_srgb {
 						TextureFormat::Astc10x10RgbaUnormSrgb
 					} else {
 						TextureFormat::Astc10x10RgbaUnorm
 					}
-				}
+				},
 				d => {
 					return Err(TextureError::UnsupportedTextureFormat(format!(
 						"Invalid ASTC y-dimension: {}",
 						d
 					)))
-				}
+				},
 			},
 			12 => match data_format_descriptor.texel_block_dimensions[1] {
 				10 => {
@@ -1150,43 +1150,43 @@ pub fn ktx2_dfd_to_texture_format(
 					} else {
 						TextureFormat::Astc12x10RgbaUnorm
 					}
-				}
+				},
 				12 => {
 					if is_srgb {
 						TextureFormat::Astc12x12RgbaUnormSrgb
 					} else {
 						TextureFormat::Astc12x12RgbaUnorm
 					}
-				}
+				},
 				d => {
 					return Err(TextureError::UnsupportedTextureFormat(format!(
 						"Invalid ASTC y-dimension: {}",
 						d
 					)))
-				}
+				},
 			},
 			d => {
 				return Err(TextureError::UnsupportedTextureFormat(format!(
 					"Invalid ASTC x-dimension: {}",
 					d
 				)))
-			}
+			},
 		},
 		Some(ColorModel::ETC1S) => {
 			return Err(TextureError::FormatRequiresTranscodingError(
 				TranscodeFormat::Etc1s,
 			));
-		}
+		},
 		Some(ColorModel::PVRTC) => {
 			return Err(TextureError::UnsupportedTextureFormat(
 				"PVRTC is not supported".to_string(),
 			));
-		}
+		},
 		Some(ColorModel::PVRTC2) => {
 			return Err(TextureError::UnsupportedTextureFormat(
 				"PVRTC2 is not supported".to_string(),
 			));
-		}
+		},
 		Some(ColorModel::UASTC) => {
 			return Err(TextureError::FormatRequiresTranscodingError(
 				TranscodeFormat::Uastc(match sample_information[0].channel_type {
@@ -1200,21 +1200,21 @@ pub fn ktx2_dfd_to_texture_format(
 							"Invalid KTX2 UASTC channel type: {}",
 							channel_type
 						)))
-					}
+					},
 				}),
 			));
-		}
+		},
 		None => {
 			return Err(TextureError::UnsupportedTextureFormat(
 				"Unspecified KTX2 color model".to_string(),
 			));
-		}
+		},
 		_ => {
 			return Err(TextureError::UnsupportedTextureFormat(format!(
 				"Unknown KTX2 color model: {:?}",
 				data_format_descriptor.color_model
 			)));
-		}
+		},
 	})
 }
 
@@ -1231,7 +1231,7 @@ pub fn ktx2_format_to_texture_format(
 				)));
 			}
 			TextureFormat::R8Unorm
-		}
+		},
 		ktx2::Format::R8_SNORM => TextureFormat::R8Snorm,
 		ktx2::Format::R8_UINT => TextureFormat::R8Uint,
 		ktx2::Format::R8_SINT => TextureFormat::R8Sint,
@@ -1243,7 +1243,7 @@ pub fn ktx2_format_to_texture_format(
 				)));
 			}
 			TextureFormat::Rg8Unorm
-		}
+		},
 		ktx2::Format::R8G8_SNORM => TextureFormat::Rg8Snorm,
 		ktx2::Format::R8G8_UINT => TextureFormat::Rg8Uint,
 		ktx2::Format::R8G8_SINT => TextureFormat::Rg8Sint,
@@ -1253,7 +1253,7 @@ pub fn ktx2_format_to_texture_format(
 			} else {
 				TextureFormat::Rgba8Unorm
 			}
-		}
+		},
 		ktx2::Format::R8G8B8A8_SNORM => TextureFormat::Rgba8Snorm,
 		ktx2::Format::R8G8B8A8_UINT => TextureFormat::Rgba8Uint,
 		ktx2::Format::R8G8B8A8_SINT => TextureFormat::Rgba8Sint,
@@ -1263,7 +1263,7 @@ pub fn ktx2_format_to_texture_format(
 			} else {
 				TextureFormat::Bgra8Unorm
 			}
-		}
+		},
 		ktx2::Format::A2R10G10B10_UNORM_PACK32 => TextureFormat::Rgb10a2Unorm,
 
 		ktx2::Format::R16_UNORM => TextureFormat::R16Unorm,
@@ -1310,21 +1310,21 @@ pub fn ktx2_format_to_texture_format(
 			} else {
 				TextureFormat::Bc1RgbaUnorm
 			}
-		}
+		},
 		ktx2::Format::BC2_UNORM_BLOCK | ktx2::Format::BC2_SRGB_BLOCK => {
 			if is_srgb {
 				TextureFormat::Bc2RgbaUnormSrgb
 			} else {
 				TextureFormat::Bc2RgbaUnorm
 			}
-		}
+		},
 		ktx2::Format::BC3_UNORM_BLOCK | ktx2::Format::BC3_SRGB_BLOCK => {
 			if is_srgb {
 				TextureFormat::Bc3RgbaUnormSrgb
 			} else {
 				TextureFormat::Bc3RgbaUnorm
 			}
-		}
+		},
 		ktx2::Format::BC4_UNORM_BLOCK => TextureFormat::Bc4RUnorm,
 		ktx2::Format::BC4_SNORM_BLOCK => TextureFormat::Bc4RSnorm,
 		ktx2::Format::BC5_UNORM_BLOCK => TextureFormat::Bc5RgUnorm,
@@ -1337,28 +1337,28 @@ pub fn ktx2_format_to_texture_format(
 			} else {
 				TextureFormat::Bc7RgbaUnorm
 			}
-		}
+		},
 		ktx2::Format::ETC2_R8G8B8_UNORM_BLOCK | ktx2::Format::ETC2_R8G8B8_SRGB_BLOCK => {
 			if is_srgb {
 				TextureFormat::Etc2Rgb8UnormSrgb
 			} else {
 				TextureFormat::Etc2Rgb8Unorm
 			}
-		}
+		},
 		ktx2::Format::ETC2_R8G8B8A1_UNORM_BLOCK | ktx2::Format::ETC2_R8G8B8A1_SRGB_BLOCK => {
 			if is_srgb {
 				TextureFormat::Etc2Rgb8A1UnormSrgb
 			} else {
 				TextureFormat::Etc2Rgb8A1Unorm
 			}
-		}
+		},
 		ktx2::Format::ETC2_R8G8B8A8_UNORM_BLOCK | ktx2::Format::ETC2_R8G8B8A8_SRGB_BLOCK => {
 			if is_srgb {
 				TextureFormat::Etc2Rgba8UnormSrgb
 			} else {
 				TextureFormat::Etc2Rgba8Unorm
 			}
-		}
+		},
 		ktx2::Format::EAC_R11_UNORM_BLOCK => TextureFormat::EacR11Unorm,
 		ktx2::Format::EAC_R11_SNORM_BLOCK => TextureFormat::EacR11Snorm,
 		ktx2::Format::EAC_R11G11_UNORM_BLOCK => TextureFormat::EacRg11Unorm,
@@ -1369,103 +1369,103 @@ pub fn ktx2_format_to_texture_format(
 			} else {
 				TextureFormat::Astc4x4RgbaUnorm
 			}
-		}
+		},
 		ktx2::Format::ASTC_5x4_UNORM_BLOCK | ktx2::Format::ASTC_5x4_SRGB_BLOCK => {
 			if is_srgb {
 				TextureFormat::Astc5x4RgbaUnormSrgb
 			} else {
 				TextureFormat::Astc5x4RgbaUnorm
 			}
-		}
+		},
 		ktx2::Format::ASTC_5x5_UNORM_BLOCK | ktx2::Format::ASTC_5x5_SRGB_BLOCK => {
 			if is_srgb {
 				TextureFormat::Astc5x5RgbaUnormSrgb
 			} else {
 				TextureFormat::Astc5x5RgbaUnorm
 			}
-		}
+		},
 		ktx2::Format::ASTC_6x5_UNORM_BLOCK | ktx2::Format::ASTC_6x5_SRGB_BLOCK => {
 			if is_srgb {
 				TextureFormat::Astc6x5RgbaUnormSrgb
 			} else {
 				TextureFormat::Astc6x5RgbaUnorm
 			}
-		}
+		},
 		ktx2::Format::ASTC_6x6_UNORM_BLOCK | ktx2::Format::ASTC_6x6_SRGB_BLOCK => {
 			if is_srgb {
 				TextureFormat::Astc6x6RgbaUnormSrgb
 			} else {
 				TextureFormat::Astc6x6RgbaUnorm
 			}
-		}
+		},
 		ktx2::Format::ASTC_8x5_UNORM_BLOCK | ktx2::Format::ASTC_8x5_SRGB_BLOCK => {
 			if is_srgb {
 				TextureFormat::Astc8x5RgbaUnormSrgb
 			} else {
 				TextureFormat::Astc8x5RgbaUnorm
 			}
-		}
+		},
 		ktx2::Format::ASTC_8x6_UNORM_BLOCK | ktx2::Format::ASTC_8x6_SRGB_BLOCK => {
 			if is_srgb {
 				TextureFormat::Astc8x6RgbaUnormSrgb
 			} else {
 				TextureFormat::Astc8x6RgbaUnorm
 			}
-		}
+		},
 		ktx2::Format::ASTC_8x8_UNORM_BLOCK | ktx2::Format::ASTC_8x8_SRGB_BLOCK => {
 			if is_srgb {
 				TextureFormat::Astc8x8RgbaUnormSrgb
 			} else {
 				TextureFormat::Astc8x8RgbaUnorm
 			}
-		}
+		},
 		ktx2::Format::ASTC_10x5_UNORM_BLOCK | ktx2::Format::ASTC_10x5_SRGB_BLOCK => {
 			if is_srgb {
 				TextureFormat::Astc10x5RgbaUnormSrgb
 			} else {
 				TextureFormat::Astc10x5RgbaUnorm
 			}
-		}
+		},
 		ktx2::Format::ASTC_10x6_UNORM_BLOCK | ktx2::Format::ASTC_10x6_SRGB_BLOCK => {
 			if is_srgb {
 				TextureFormat::Astc10x6RgbaUnormSrgb
 			} else {
 				TextureFormat::Astc10x6RgbaUnorm
 			}
-		}
+		},
 		ktx2::Format::ASTC_10x8_UNORM_BLOCK | ktx2::Format::ASTC_10x8_SRGB_BLOCK => {
 			if is_srgb {
 				TextureFormat::Astc10x8RgbaUnormSrgb
 			} else {
 				TextureFormat::Astc10x8RgbaUnorm
 			}
-		}
+		},
 		ktx2::Format::ASTC_10x10_UNORM_BLOCK | ktx2::Format::ASTC_10x10_SRGB_BLOCK => {
 			if is_srgb {
 				TextureFormat::Astc10x10RgbaUnormSrgb
 			} else {
 				TextureFormat::Astc10x10RgbaUnorm
 			}
-		}
+		},
 		ktx2::Format::ASTC_12x10_UNORM_BLOCK | ktx2::Format::ASTC_12x10_SRGB_BLOCK => {
 			if is_srgb {
 				TextureFormat::Astc12x10RgbaUnormSrgb
 			} else {
 				TextureFormat::Astc12x10RgbaUnorm
 			}
-		}
+		},
 		ktx2::Format::ASTC_12x12_UNORM_BLOCK | ktx2::Format::ASTC_12x12_SRGB_BLOCK => {
 			if is_srgb {
 				TextureFormat::Astc12x12RgbaUnormSrgb
 			} else {
 				TextureFormat::Astc12x12RgbaUnorm
 			}
-		}
+		},
 		_ => {
 			return Err(TextureError::UnsupportedTextureFormat(format!(
 				"{:?}",
 				ktx2_format
 			)))
-		}
+		},
 	})
 }

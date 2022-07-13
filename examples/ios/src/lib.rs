@@ -133,13 +133,13 @@ fn button_handler(
 		match *interaction {
 			Interaction::Clicked => {
 				*color = Color::BLUE.into();
-			}
+			},
 			Interaction::Hovered => {
 				*color = Color::GRAY.into();
-			}
+			},
 			Interaction::None => {
 				*color = Color::WHITE.into();
-			}
+			},
 		}
 	}
 }

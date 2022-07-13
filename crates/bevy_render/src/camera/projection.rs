@@ -204,13 +204,13 @@ impl CameraProjection for OrthographicProjection {
 				} else {
 					(min_width, height * min_width / width)
 				}
-			}
+			},
 			ScalingMode::FixedVertical(viewport_height) => {
 				(width * viewport_height / height, viewport_height)
-			}
+			},
 			ScalingMode::FixedHorizontal(viewport_width) => {
 				(viewport_width, height * viewport_width / width)
-			}
+			},
 			ScalingMode::None => return,
 		};
 
@@ -231,13 +231,13 @@ impl CameraProjection for OrthographicProjection {
 						self.top = self.top.floor();
 					}
 				}
-			}
+			},
 			WindowOrigin::BottomLeft => {
 				self.left = 0.0;
 				self.bottom = 0.0;
 				self.right = viewport_width;
 				self.top = viewport_height;
-			}
+			},
 		}
 	}
 

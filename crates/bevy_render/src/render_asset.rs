@@ -84,10 +84,10 @@ impl<A: RenderAsset> Plugin for RenderAssetPlugin<A> {
 				PrepareAssetLabel::PreAssetPrepare => prepare_asset_system,
 				PrepareAssetLabel::AssetPrepare => {
 					prepare_asset_system.after(PrepareAssetLabel::PreAssetPrepare)
-				}
+				},
 				PrepareAssetLabel::PostAssetPrepare => {
 					prepare_asset_system.after(PrepareAssetLabel::AssetPrepare)
-				}
+				},
 			};
 
 			render_app.init_resource::<ExtractedAssets<A>>();
@@ -131,11 +131,11 @@ fn extract_render_asset<A: RenderAsset>(
 		match event {
 			AssetEvent::Created { handle } | AssetEvent::Modified { handle } => {
 				changed.insert(handle.clone_weak());
-			}
+			},
 			AssetEvent::Removed { handle } => {
 				changed.remove(handle);
 				removed.push(handle.clone_weak());
-			}
+			},
 		}
 	}
 
@@ -177,12 +177,12 @@ fn prepare_assets<R: RenderAsset>(
 		match R::prepare_asset(extracted_asset, &mut param) {
 			Ok(prepared) => {
 				render_assets.insert(handle, prepared);
-			}
+			},
 			Err(PrepareAssetError::RetryNextUpdate(extracted_asset)) => {
 				prepare_next_frame
 					.assets
 					.push((handle, extracted_asset));
-			}
+			},
 		}
 	}
 
@@ -194,12 +194,12 @@ fn prepare_assets<R: RenderAsset>(
 		match R::prepare_asset(extracted_asset, &mut param) {
 			Ok(prepared) => {
 				render_assets.insert(handle, prepared);
-			}
+			},
 			Err(PrepareAssetError::RetryNextUpdate(extracted_asset)) => {
 				prepare_next_frame
 					.assets
 					.push((handle, extracted_asset));
-			}
+			},
 		}
 	}
 }

@@ -154,13 +154,13 @@ impl RenderGraphRunner {
 							node_queue.push_front(node_state);
 							continue 'handle_node;
 						}
-					}
+					},
 					Edge::NodeEdge { .. } => {
 						if !node_outputs.contains_key(&input_node.id) {
 							node_queue.push_front(node_state);
 							continue 'handle_node;
 						}
-					}
+					},
 				}
 			}
 

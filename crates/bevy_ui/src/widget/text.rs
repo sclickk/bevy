@@ -29,7 +29,7 @@ pub fn text_constraint(min_size: Val, size: Val, max_size: Val, scale_factor: f6
 		(Val::Px(min), _, _) => scale_value(min, scale_factor),
 		(Val::Undefined, Val::Px(size), Val::Undefined) | (Val::Auto, Val::Px(size), Val::Auto) => {
 			scale_value(size, scale_factor)
-		}
+		},
 		_ => f32::MAX,
 	}
 }
@@ -109,10 +109,10 @@ pub fn text_system(
 					// There was an error processing the text layout, let's add this entity to the
 					// queue for further processing
 					new_queue.push(entity);
-				}
+				},
 				Err(e @ TextError::FailedToAddGlyph(_)) => {
 					panic!("Fatal error when processing text: {}.", e);
-				}
+				},
 				Ok(()) => {
 					let text_layout_info = text_pipeline
 						.get_glyphs(&entity)
@@ -121,7 +121,7 @@ pub fn text_system(
 						width: scale_value(text_layout_info.size.x, inv_scale_factor),
 						height: scale_value(text_layout_info.size.y, inv_scale_factor),
 					};
-				}
+				},
 			}
 		}
 	}

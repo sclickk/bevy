@@ -214,8 +214,8 @@ impl<T: Asset> Drop for Handle<T> {
 				// ignore send errors because this means the channel is shut down / the game has
 				// stopped
 				let _ = sender.send(RefChange::Decrement(self.id));
-			}
-			HandleType::Weak => {}
+			},
+			HandleType::Weak => {},
 		}
 	}
 }
@@ -406,8 +406,8 @@ impl Drop for HandleUntyped {
 				// ignore send errors because this means the channel is shut down / the game has
 				// stopped
 				let _ = sender.send(RefChange::Decrement(self.id));
-			}
-			HandleType::Weak => {}
+			},
+			HandleType::Weak => {},
 		}
 	}
 }

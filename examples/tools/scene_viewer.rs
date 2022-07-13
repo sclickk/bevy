@@ -145,14 +145,14 @@ fn scene_load_check(
 
 				info!("Spawning scene...");
 			}
-		}
+		},
 		Some(instance_id) if !scene_handle.is_loaded => {
 			if scene_spawner.instance_is_ready(instance_id) {
 				info!("...done!");
 				scene_handle.is_loaded = true;
 			}
-		}
-		Some(_) => {}
+		},
+		Some(_) => {},
 	}
 }
 

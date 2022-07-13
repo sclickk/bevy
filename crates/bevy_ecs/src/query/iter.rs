@@ -277,13 +277,13 @@ impl<'w, 's, Q: WorldQuery, F: WorldQuery, const K: usize> QueryCombinationIter<
 					for j in (i + 1)..K {
 						self.cursors[j] = self.cursors[j - 1].clone();
 						match self.cursors[j].next(self.tables, self.archetypes, self.query_state) {
-							Some(_) => {}
+							Some(_) => {},
 							None if i > 0 => continue 'outer,
 							None => return None,
 						}
 					}
 					break;
-				}
+				},
 				None if i > 0 => continue,
 				None => return None,
 			}

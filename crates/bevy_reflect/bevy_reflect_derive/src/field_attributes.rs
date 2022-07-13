@@ -68,11 +68,11 @@ fn parse_meta(args: &mut ReflectFieldAttr, meta: &Meta) -> Result<(), syn::Error
 		Meta::Path(path) if path.is_ident(IGNORE_ATTR) => {
 			args.ignore = true;
 			Ok(())
-		}
+		},
 		Meta::Path(path) if path.is_ident(DEFAULT_ATTR) => {
 			args.default = DefaultBehavior::Default;
 			Ok(())
-		}
+		},
 		Meta::Path(path) => Err(syn::Error::new(
 			path.span(),
 			format!("unknown attribute parameter: {}", path.to_token_stream()),
@@ -83,7 +83,7 @@ fn parse_meta(args: &mut ReflectFieldAttr, meta: &Meta) -> Result<(), syn::Error
 				Lit::Str(lit_str) => {
 					args.default = DefaultBehavior::Func(lit_str.parse()?);
 					Ok(())
-				}
+				},
 				err => Err(syn::Error::new(
 					err.span(),
 					format!(
@@ -92,17 +92,17 @@ fn parse_meta(args: &mut ReflectFieldAttr, meta: &Meta) -> Result<(), syn::Error
 					),
 				)),
 			}
-		}
+		},
 		Meta::NameValue(pair) => {
 			let path = &pair.path;
 			Err(syn::Error::new(
 				path.span(),
 				format!("unknown attribute parameter: {}", path.to_token_stream()),
 			))
-		}
+		},
 		Meta::List(list) if !list.path.is_ident(REFLECT_ATTRIBUTE_NAME) => {
 			Err(syn::Error::new(list.path.span(), "unexpected property"))
-		}
+		},
 		Meta::List(list) => {
 			for nested in &list.nested {
 				if let NestedMeta::Meta(meta) = nested {
@@ -110,6 +110,6 @@ fn parse_meta(args: &mut ReflectFieldAttr, meta: &Meta) -> Result<(), syn::Error
 				}
 			}
 			Ok(())
-		}
+		},
 	}
 }

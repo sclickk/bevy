@@ -89,7 +89,7 @@ impl<'a> ReflectDeriveData<'a> {
 					output.derive_type = DeriveType::Struct;
 				}
 				&fields.named
-			}
+			},
 			Data::Struct(DataStruct {
 				fields: Fields::Unnamed(fields),
 				..
@@ -98,7 +98,7 @@ impl<'a> ReflectDeriveData<'a> {
 					output.derive_type = DeriveType::TupleStruct;
 				}
 				&fields.unnamed
-			}
+			},
 			Data::Struct(DataStruct {
 				fields: Fields::Unit,
 				..
@@ -107,10 +107,10 @@ impl<'a> ReflectDeriveData<'a> {
 					output.derive_type = DeriveType::UnitStruct;
 				}
 				return Ok(output);
-			}
+			},
 			_ => {
 				return Ok(output);
-			}
+			},
 		};
 
 		let mut errors: Option<syn::Error> = None;

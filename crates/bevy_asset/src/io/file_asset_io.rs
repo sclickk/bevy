@@ -93,14 +93,14 @@ impl AssetIo for FileAssetIo {
 			match File::open(&full_path) {
 				Ok(mut file) => {
 					file.read_to_end(&mut bytes)?;
-				}
+				},
 				Err(e) => {
 					return if e.kind() == std::io::ErrorKind::NotFound {
 						Err(AssetIoError::NotFound(full_path))
 					} else {
 						Err(e.into())
 					}
-				}
+				},
 			}
 			Ok(bytes)
 		})

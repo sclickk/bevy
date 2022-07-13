@@ -168,7 +168,7 @@ async fn load_gltf<'a, 'b>(
 						gltf::accessor::Iter::Sparse(_) => {
 							warn!("Sparse accessor not supported for animation sampler input");
 							continue;
-						}
+						},
 					}
 				} else {
 					warn!("Animations without a sampler input are not supported");
@@ -179,7 +179,7 @@ async fn load_gltf<'a, 'b>(
 					match outputs {
 						gltf::animation::util::ReadOutputs::Translations(tr) => {
 							bevy_animation::Keyframes::Translation(tr.map(Vec3::from).collect())
-						}
+						},
 						gltf::animation::util::ReadOutputs::Rotations(rots) => {
 							bevy_animation::Keyframes::Rotation(
 								rots
@@ -187,14 +187,14 @@ async fn load_gltf<'a, 'b>(
 									.map(bevy_math::Quat::from_array)
 									.collect(),
 							)
-						}
+						},
 						gltf::animation::util::ReadOutputs::Scales(scale) => {
 							bevy_animation::Keyframes::Scale(scale.map(Vec3::from).collect())
-						}
+						},
 						gltf::animation::util::ReadOutputs::MorphTargetWeights(_) => {
 							warn!("Morph animation property not yet supported");
 							continue;
-						}
+						},
 					}
 				} else {
 					warn!("Animations without a sampler output are not supported");
@@ -353,7 +353,7 @@ async fn load_gltf<'a, 'b>(
 				transform: match node.transform() {
 					gltf::scene::Transform::Matrix { matrix } => {
 						Transform::from_matrix(bevy_math::Mat4::from_cols_array_2d(&matrix))
-					}
+					},
 					gltf::scene::Transform::Decomposed {
 						translation,
 						rotation,
@@ -590,7 +590,7 @@ async fn load_texture<'a>(
 				supported_compressed_formats,
 				is_srgb,
 			)?
-		}
+		},
 		gltf::image::Source::Uri { uri, mime_type } => {
 			let uri = percent_encoding::percent_decode_str(uri)
 				.decode_utf8()
@@ -623,7 +623,7 @@ async fn load_texture<'a>(
 				supported_compressed_formats,
 				is_srgb,
 			)?
-		}
+		},
 	};
 	texture.sampler_descriptor = ImageSampler::Descriptor(texture_sampler(&gltf_texture));
 
@@ -739,7 +739,7 @@ fn load_node(
 				};
 
 				Projection::Orthographic(orthographic_projection)
-			}
+			},
 			gltf::camera::Projection::Perspective(perspective) => {
 				let mut perspective_projection: PerspectiveProjection = PerspectiveProjection {
 					fov: perspective.yfov(),
@@ -753,7 +753,7 @@ fn load_node(
 					perspective_projection.aspect_ratio = aspect_ratio;
 				}
 				Projection::Perspective(perspective_projection)
-			}
+			},
 		};
 
 		node.insert_bundle((
@@ -839,7 +839,7 @@ fn load_node(
 							value: extras.get().to_string(),
 						});
 					}
-				}
+				},
 				gltf::khr_lights_punctual::Kind::Point => {
 					let mut entity = parent.spawn_bundle(PointLightBundle {
 						point_light: PointLight {
@@ -862,7 +862,7 @@ fn load_node(
 							value: extras.get().to_string(),
 						});
 					}
-				}
+				},
 				gltf::khr_lights_punctual::Kind::Spot {
 					inner_cone_angle,
 					outer_cone_angle,
@@ -890,7 +890,7 @@ fn load_node(
 							value: extras.get().to_string(),
 						});
 					}
-				}
+				},
 			}
 		}
 
@@ -975,10 +975,10 @@ fn texture_sampler<'a>(texture: &gltf::Texture) -> SamplerDescriptor<'a> {
 			.map(|mf| match mf {
 				MinFilter::Nearest | MinFilter::NearestMipmapNearest | MinFilter::NearestMipmapLinear => {
 					FilterMode::Nearest
-				}
+				},
 				MinFilter::Linear | MinFilter::LinearMipmapNearest | MinFilter::LinearMipmapLinear => {
 					FilterMode::Linear
-				}
+				},
 			})
 			.unwrap_or_else(|| SamplerDescriptor::default().min_filter),
 
@@ -1051,17 +1051,17 @@ async fn load_buffers(
 						load_context
 							.read_asset_bytes(buffer_path)
 							.await?
-					}
+					},
 				};
 				buffer_data.push(buffer_bytes);
-			}
+			},
 			gltf::buffer::Source::Bin => {
 				if let Some(blob) = gltf.blob.as_deref() {
 					buffer_data.push(blob.into());
 				} else {
 					return Err(GltfError::MissingBlob);
 				}
-			}
+			},
 		}
 	}
 

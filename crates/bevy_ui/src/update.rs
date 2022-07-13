@@ -92,20 +92,20 @@ fn update_clipping(
 	let (node, global_transform, style, calculated_clip) = node_query.get_mut(entity).unwrap();
 	// Update this node's CalculatedClip component
 	match (clip, calculated_clip) {
-		(None, None) => {}
+		(None, None) => {},
 		(None, Some(_)) => {
 			commands
 				.entity(entity)
 				.remove::<CalculatedClip>();
-		}
+		},
 		(Some(clip), None) => {
 			commands
 				.entity(entity)
 				.insert(CalculatedClip { clip });
-		}
+		},
 		(Some(clip), Some(mut old_clip)) => {
 			*old_clip = CalculatedClip { clip };
-		}
+		},
 	}
 
 	// Calculate new clip for its children
@@ -125,7 +125,7 @@ fn update_clipping(
 			} else {
 				Some(node_rect)
 			}
-		}
+		},
 	};
 
 	if let Ok(children) = children_query.get(entity) {

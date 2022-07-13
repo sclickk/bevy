@@ -91,19 +91,19 @@ impl FlexSurface {
 			move |constraints: taffy::geometry::Size<Number>| {
 				let mut size = convert::from_f32_size(scale_factor, calculated_size.size);
 				match (constraints.width, constraints.height) {
-					(Number::Undefined, Number::Undefined) => {}
+					(Number::Undefined, Number::Undefined) => {},
 					(Number::Defined(width), Number::Undefined) => {
 						size.height = width * size.height / size.width;
 						size.width = width;
-					}
+					},
 					(Number::Undefined, Number::Defined(height)) => {
 						size.width = height * size.width / size.height;
 						size.height = height;
-					}
+					},
 					(Number::Defined(width), Number::Defined(height)) => {
 						size.width = width;
 						size.height = height;
-					}
+					},
 				}
 				size
 			},

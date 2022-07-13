@@ -14,7 +14,7 @@ impl fmt::Display for MapEntitiesError {
 		match self {
 			MapEntitiesError::EntityNotFound(_) => {
 				write!(f, "the given entity does not exist in the map")
-			}
+			},
 		}
 	}
 }

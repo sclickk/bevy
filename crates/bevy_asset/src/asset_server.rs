@@ -262,7 +262,7 @@ impl AssetServer {
 				asset_sources
 					.get(&id.source_path_id())
 					.map_or(LoadState::NotLoaded, |info| info.load_state)
-			}
+			},
 			HandleId::Id(_, _) => LoadState::NotLoaded,
 		}
 	}
@@ -279,7 +279,7 @@ impl AssetServer {
 					LoadState::Loaded => continue,
 					LoadState::Loading => {
 						load_state = LoadState::Loading;
-					}
+					},
 					LoadState::Failed => return LoadState::Failed,
 					LoadState::NotLoaded => return LoadState::NotLoaded,
 					LoadState::Unloaded => return LoadState::Unloaded,
@@ -373,7 +373,7 @@ impl AssetServer {
 			Err(err) => {
 				set_asset_failed();
 				return Err(err);
-			}
+			},
 		};
 
 		// load the asset bytes
@@ -386,7 +386,7 @@ impl AssetServer {
 			Err(err) => {
 				set_asset_failed();
 				return Err(AssetServerError::AssetIoError(err));
-			}
+			},
 		};
 
 		// load the asset source using the corresponding AssetLoader
@@ -585,7 +585,7 @@ impl AssetServer {
 							})
 							.push(handle_id);
 					}
-				}
+				},
 			}
 		}
 	}
@@ -642,7 +642,7 @@ impl AssetServer {
 					}
 
 					assets.set_untracked(result.id, *result.asset);
-				}
+				},
 				Ok(AssetLifecycleEvent::Free(handle_id)) => {
 					if let HandleId::AssetPathId(id) = handle_id {
 						let asset_sources =
@@ -655,10 +655,10 @@ impl AssetServer {
 						}
 					}
 					assets.remove(handle_id);
-				}
+				},
 				Err(TryRecvError::Empty) => {
 					break;
-				}
+				},
 				Err(TryRecvError::Disconnected) => panic!("AssetChannel disconnected."),
 			}
 		}
@@ -844,7 +844,7 @@ mod test {
 		assert!(match err {
 			AssetServerError::MissingAssetLoader { extensions } => {
 				extensions == ["not-a-real-extension"]
-			}
+			},
 			_ => false,
 		});
 

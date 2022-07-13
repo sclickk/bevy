@@ -10,7 +10,7 @@ pub fn derive_deref(input: TokenStream) -> TokenStream {
 		Ok(items) => items,
 		Err(err) => {
 			return err.into_compile_error().into();
-		}
+		},
 	};
 	let (impl_generics, ty_generics, where_clause) = ast.generics.split_for_impl();
 
@@ -33,7 +33,7 @@ pub fn derive_deref_mut(input: TokenStream) -> TokenStream {
 		Ok(items) => items,
 		Err(err) => {
 			return err.into_compile_error().into();
-		}
+		},
 	};
 	let (impl_generics, ty_generics, where_clause) = ast.generics.split_for_impl();
 
@@ -56,7 +56,7 @@ fn get_inner_field(ast: &DeriveInput, is_mut: bool) -> syn::Result<(Member, &Typ
 				.map(|name| Member::Named(name.clone()))
 				.unwrap_or_else(|| Member::Unnamed(Index::from(0)));
 			Ok((member, &field.ty))
-		}
+		},
 		_ => {
 			let msg = if is_mut {
 				"DerefMut can only be derived for structs with a single field"
@@ -64,6 +64,6 @@ fn get_inner_field(ast: &DeriveInput, is_mut: bool) -> syn::Result<(Member, &Typ
 				"Deref can only be derived for structs with a single field"
 			};
 			Err(syn::Error::new(Span::call_site().into(), msg))
-		}
+		},
 	}
 }

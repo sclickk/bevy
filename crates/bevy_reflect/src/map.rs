@@ -224,12 +224,12 @@ impl Map for DynamicMap {
 				let (_old_key, old_value) = self.values.get_mut(*entry.get()).unwrap();
 				std::mem::swap(old_value, &mut value);
 				Some(value)
-			}
+			},
 			Entry::Vacant(entry) => {
 				entry.insert(self.values.len());
 				self.values.push((key, value));
 				None
-			}
+			},
 		}
 	}
 }

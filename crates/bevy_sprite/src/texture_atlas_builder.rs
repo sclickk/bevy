@@ -190,12 +190,12 @@ impl TextureAtlasBuilder {
 						self.format,
 					);
 					Some(rect_placements)
-				}
+				},
 				Err(rectangle_pack::RectanglePackError::NotEnoughBinSpace) => {
 					current_height = (current_height * 2).clamp(0, max_height);
 					current_width = (current_width * 2).clamp(0, max_width);
 					None
-				}
+				},
 			};
 
 			if last_attempt {

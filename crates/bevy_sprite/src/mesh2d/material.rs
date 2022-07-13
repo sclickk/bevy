@@ -351,7 +351,7 @@ pub fn queue_material2d_meshes<M: SpecializedMaterial2d>(
 							Err(err) => {
 								error!("{}", err);
 								continue;
-							}
+							},
 						};
 
 						let mesh_z = mesh2d_uniform.transform.w_axis.z;

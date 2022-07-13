@@ -64,7 +64,7 @@ impl CachedPipelineState {
 			CachedPipelineState::Ok(pipeline) => pipeline,
 			CachedPipelineState::Queued => {
 				panic!("Pipeline has not been compiled yet. It is still in the 'Queued' state.")
-			}
+			},
 			CachedPipelineState::Err(err) => panic!("{}", err),
 		}
 	}
@@ -152,7 +152,7 @@ impl ShaderCache {
 					Ok(module_descriptor) => module_descriptor,
 					Err(err) => {
 						return Err(PipelineCacheError::AsModuleDescriptorError(err, processed));
-					}
+					},
 				};
 
 				render_device
@@ -172,7 +172,7 @@ impl ShaderCache {
 				}
 
 				entry.insert(Arc::new(shader_module))
-			}
+			},
 		};
 
 		Ok(module.clone())
@@ -409,7 +409,7 @@ impl PipelineCache {
 			Ok(module) => module,
 			Err(err) => {
 				return CachedPipelineState::Err(err);
-			}
+			},
 		};
 
 		let fragment_data = if let Some(fragment) = &descriptor.fragment {
@@ -422,7 +422,7 @@ impl PipelineCache {
 				Ok(module) => module,
 				Err(err) => {
 					return CachedPipelineState::Err(err);
-				}
+				},
 			};
 			Some((
 				fragment_module,
@@ -491,7 +491,7 @@ impl PipelineCache {
 			Ok(module) => module,
 			Err(err) => {
 				return CachedPipelineState::Err(err);
-			}
+			},
 		};
 
 		// TODO: Use an Option function!
@@ -521,35 +521,35 @@ impl PipelineCache {
 			let pipeline = &mut pipelines[id];
 			match &pipeline.state {
 				CachedPipelineState::Ok(_) => continue,
-				CachedPipelineState::Queued => {}
+				CachedPipelineState::Queued => {},
 				CachedPipelineState::Err(err) => {
 					match err {
 						PipelineCacheError::ShaderNotLoaded(_)
-						| PipelineCacheError::ShaderImportNotYetAvailable => { /* retry */ }
+						| PipelineCacheError::ShaderImportNotYetAvailable => { /* retry */ },
 						// shader could not be processed ... retrying won't help
 						PipelineCacheError::ProcessShaderError(err) => {
 							error!("failed to process shader: {}", err);
 							continue;
-						}
+						},
 						PipelineCacheError::AsModuleDescriptorError(err, source) => {
 							log_shader_error(source, err);
 							continue;
-						}
+						},
 						PipelineCacheError::CreateShaderModule(description) => {
 							error!("failed to create shader module: {}", description);
 							continue;
-						}
+						},
 					}
-				}
+				},
 			}
 
 			pipeline.state = match &pipeline.descriptor {
 				PipelineDescriptor::RenderPipelineDescriptor(descriptor) => {
 					self.process_render_pipeline(id, descriptor)
-				}
+				},
 				PipelineDescriptor::ComputePipelineDescriptor(descriptor) => {
 					self.process_compute_pipeline(id, descriptor)
-				}
+				},
 			};
 
 			if let CachedPipelineState::Err(_) = pipeline.state {
@@ -575,7 +575,7 @@ impl PipelineCache {
 					if let Some(shader) = shaders.get(handle) {
 						cache.set_shader(handle, shader);
 					}
-				}
+				},
 				AssetEvent::Removed { handle } => cache.remove_shader(handle),
 			}
 		}
@@ -609,7 +609,7 @@ fn log_shader_error(source: &ProcessedShader, error: &AsModuleDescriptorError) {
 					.expect("non-wgsl source for wgsl error");
 				let msg = error.emit_to_string(source);
 				error!("failed to process shader:\n{}", msg);
-			}
+			},
 			ShaderReflectError::GlslParse(errors) => {
 				let source = source
 					.get_glsl_source()
@@ -632,10 +632,10 @@ fn log_shader_error(source: &ProcessedShader, error: &AsModuleDescriptorError) {
 				let msg = String::from_utf8_lossy(&msg);
 
 				error!("failed to process shader: \n{}", msg);
-			}
+			},
 			ShaderReflectError::SpirVParse(error) => {
 				error!("failed to process shader:\n{}", error);
-			}
+			},
 			ShaderReflectError::Validation(error) => {
 				let (filename, source) = match source {
 					ProcessedShader::Wgsl(source) => ("wgsl", source.as_ref()),
@@ -643,7 +643,7 @@ fn log_shader_error(source: &ProcessedShader, error: &AsModuleDescriptorError) {
 					ProcessedShader::SpirV(_) => {
 						error!("failed to process shader:\n{}", error);
 						return;
-					}
+					},
 				};
 
 				let files = SimpleFile::new(filename, source);
@@ -672,14 +672,14 @@ fn log_shader_error(source: &ProcessedShader, error: &AsModuleDescriptorError) {
 				let msg = String::from_utf8_lossy(&msg);
 
 				error!("failed to process shader: \n{}", msg);
-			}
+			},
 		},
 		AsModuleDescriptorError::WgslConversion(error) => {
 			error!("failed to convert shader to wgsl: \n{}", error);
-		}
+		},
 		AsModuleDescriptorError::SpirVConversion(error) => {
 			error!("failed to convert shader to spirv: \n{}", error);
-		}
+		},
 	}
 }
 

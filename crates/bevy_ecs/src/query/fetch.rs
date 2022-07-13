@@ -682,7 +682,7 @@ unsafe impl<'w, T: Component> Fetch<'w> for ReadFetch<'w, T> {
 					.get_column(state.component_id)
 					.unwrap();
 				self.table_components = Some(column.get_data_slice().into());
-			}
+			},
 			StorageType::SparseSet => self.entities = Some(archetype.entities().into()),
 		}
 	}
@@ -708,7 +708,7 @@ unsafe impl<'w, T: Component> Fetch<'w> for ReadFetch<'w, T> {
 					.unwrap_or_else(|| debug_checked_unreachable());
 				let table_row = *entity_table_rows.get(archetype_index);
 				table_components.get(table_row).deref()
-			}
+			},
 			StorageType::SparseSet => {
 				let (entities, sparse_set) = self
 					.entities
@@ -719,7 +719,7 @@ unsafe impl<'w, T: Component> Fetch<'w> for ReadFetch<'w, T> {
 					.get(entity)
 					.unwrap_or_else(|| debug_checked_unreachable())
 					.deref::<T>()
-			}
+			},
 		}
 	}
 
@@ -849,7 +849,7 @@ unsafe impl<'w, T: Component> Fetch<'w> for WriteFetch<'w, T> {
 					.unwrap();
 				self.table_components = Some(column.get_data_slice().into());
 				self.table_ticks = Some(column.get_ticks_slice().into());
-			}
+			},
 			StorageType::SparseSet => self.entities = Some(archetype.entities().into()),
 		}
 	}
@@ -878,7 +878,7 @@ unsafe impl<'w, T: Component> Fetch<'w> for WriteFetch<'w, T> {
 						last_change_tick: self.last_change_tick,
 					},
 				}
-			}
+			},
 			StorageType::SparseSet => {
 				let (entities, sparse_set) = self
 					.entities
@@ -896,7 +896,7 @@ unsafe impl<'w, T: Component> Fetch<'w> for WriteFetch<'w, T> {
 						last_change_tick: self.last_change_tick,
 					},
 				}
-			}
+			},
 		}
 	}
 
@@ -1251,7 +1251,7 @@ unsafe impl<'w, T: Component> Fetch<'w> for ChangeTrackersFetch<'w, T> {
 					.get_column(state.component_id)
 					.unwrap();
 				self.table_ticks = Some(column.get_ticks_slice().into());
-			}
+			},
 			StorageType::SparseSet => self.entities = Some(archetype.entities().into()),
 		}
 	}
@@ -1286,7 +1286,7 @@ unsafe impl<'w, T: Component> Fetch<'w> for ChangeTrackersFetch<'w, T> {
 					last_change_tick: self.last_change_tick,
 					change_tick: self.change_tick,
 				}
-			}
+			},
 			StorageType::SparseSet => {
 				let entities = self
 					.entities
@@ -1304,7 +1304,7 @@ unsafe impl<'w, T: Component> Fetch<'w> for ChangeTrackersFetch<'w, T> {
 					last_change_tick: self.last_change_tick,
 					change_tick: self.change_tick,
 				}
-			}
+			},
 		}
 	}
 

@@ -284,12 +284,12 @@ impl SceneSpawner {
 						.entry(scene_handle.clone())
 						.or_insert_with(Vec::new);
 					spawned.push(instance_id);
-				}
+				},
 				Err(SceneSpawnError::NonExistentScene { .. }) => {
 					self
 						.dynamic_scenes_to_spawn
 						.push((scene_handle, instance_id));
-				}
+				},
 				Err(err) => return Err(err),
 			}
 		}
@@ -298,10 +298,10 @@ impl SceneSpawner {
 
 		for (scene_handle, instance_id) in scenes_to_spawn {
 			match self.spawn_sync_internal(world, scene_handle, instance_id) {
-				Ok(_) => {}
+				Ok(_) => {},
 				Err(SceneSpawnError::NonExistentRealScene { handle }) => {
 					self.scenes_to_spawn.push((handle, instance_id));
-				}
+				},
 				Err(err) => return Err(err),
 			}
 		}
