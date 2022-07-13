@@ -445,7 +445,11 @@ impl MeshVertexAttribute {
 	}
 
 	pub const fn at_shader_location(&self, shader_location: u32) -> VertexAttributeDescriptor {
-		VertexAttributeDescriptor::new(shader_location, self.id, self.name)
+		VertexAttributeDescriptor {
+			shader_location,
+			id: self.id,
+			name: self.name,
+		}
 	}
 }
 
@@ -530,16 +534,6 @@ pub struct VertexAttributeDescriptor {
 	pub shader_location: u32,
 	pub id: MeshVertexAttributeId,
 	name: &'static str,
-}
-
-impl VertexAttributeDescriptor {
-	pub const fn new(shader_location: u32, id: MeshVertexAttributeId, name: &'static str) -> Self {
-		Self {
-			shader_location,
-			id,
-			name,
-		}
-	}
 }
 
 #[derive(Debug, Clone)]
