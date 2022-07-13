@@ -317,33 +317,31 @@ impl Entities {
 
 		let freelist_range = range_start.max(0) as usize..range_end.max(0) as usize;
 
-		let (new_id_start, new_id_end) = if range_start >= 0 {
-			// We satisfied all requests from the freelist.
-			(0, 0)
-		} else {
-			// We need to allocate some new Entity IDs outside of the range of self.meta.
-			//
-			// `range_start` covers some negative territory, e.g. `-3..6`.
-			// Since the nonnegative values `0..6` are handled by the freelist, that
-			// means we need to handle the negative range here.
-			//
-			// In this example, we truncate the end to 0, leaving us with `-3..0`.
-			// Then we negate these values to indicate how far beyond the end of `meta.end()`
-			// to go, yielding `meta.len()+0 .. meta.len()+3`.
-			let base = self.meta.len() as i64;
-
-			let new_id_end = u32::try_from(base - range_start).expect("too many entities");
-
-			// `new_id_end` is in range, so no need to check `start`.
-			let new_id_start = (base - range_end.min(0)) as u32;
-
-			(new_id_start, new_id_end)
-		};
-
 		ReserveEntitiesIterator {
 			meta: &self.meta[..],
 			id_iter: self.pending[freelist_range].into_iter(),
-			id_range: new_id_start..new_id_end,
+			id_range: if range_start >= 0 {
+				// We satisfied all requests from the freelist.
+				0..0
+			} else {
+				// We need to allocate some new Entity IDs outside of the range of self.meta.
+				//
+				// `range_start` covers some negative territory, e.g. `-3..6`.
+				// Since the nonnegative values `0..6` are handled by the freelist, that
+				// means we need to handle the negative range here.
+				//
+				// In this example, we truncate the end to 0, leaving us with `-3..0`.
+				// Then we negate these values to indicate how far beyond the end of `meta.end()`
+				// to go, yielding `meta.len()+0 .. meta.len()+3`.
+				let base = self.meta.len() as i64;
+	
+				let new_id_end = u32::try_from(base - range_start).expect("too many entities");
+	
+				// `new_id_end` is in range, so no need to check `start`.
+				let new_id_start = (base - range_end.min(0)) as u32;
+	
+				new_id_start..new_id_end
+			},
 		}
 	}
 
