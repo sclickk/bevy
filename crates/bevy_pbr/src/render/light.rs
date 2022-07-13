@@ -322,7 +322,8 @@ impl SpecializedMeshPipeline for ShadowPipeline {
 		let mut bind_group_layout = vec![self.view_layout.clone()];
 		let mut shader_defs = Vec::new();
 
-		if layout.contains(Mesh::ATTRIBUTE_JOINT_INDEX) && layout.contains(Mesh::ATTRIBUTE_JOINT_WEIGHT)
+		if layout.contains(Mesh::ATTRIBUTE_JOINT_INDEX.id)
+			&& layout.contains(Mesh::ATTRIBUTE_JOINT_WEIGHT.id)
 		{
 			shader_defs.push(String::from("SKINNED"));
 			vertex_attributes.push(Mesh::ATTRIBUTE_JOINT_INDEX.at_shader_location(4));

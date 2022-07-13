@@ -25,7 +25,7 @@ fn setup(
 	// Assign vertex colors based on vertex positions
 	let mut colorful_cube = Mesh::from(shape::Cube { size: 1.0 });
 	if let Some(VertexAttributeValues::Float32x3(positions)) =
-		colorful_cube.attribute(Mesh::ATTRIBUTE_POSITION)
+		colorful_cube.attribute(Mesh::ATTRIBUTE_POSITION.id)
 	{
 		let colors: Vec<[f32; 4]> = positions
 			.iter()

@@ -33,7 +33,7 @@ pub struct Mesh {
 	/// for this mesh. Attribute ids to attribute values.
 	/// Uses a BTreeMap because, unlike HashMap, it has a defined iteration order,
 	/// which allows easy stable VertexBuffers (i.e. same buffer order)
-	attributes: BTreeMap<MeshVertexAttributeId, MeshAttributeData>,
+	attributes: BTreeMap<usize, MeshAttributeData>,
 	indices: Option<Indices>,
 }
 
@@ -89,8 +89,8 @@ impl Mesh {
 	}
 
 	#[inline]
-	pub fn contains_attribute(&self, id: impl Into<MeshVertexAttributeId>) -> bool {
-		self.attributes.contains_key(&id.into())
+	pub fn contains_attribute(&self, id: usize) -> bool {
+		self.attributes.contains_key(&id)
 	}
 	/// Sets the data for a vertex attribute (position, normal etc.). The name will
 	/// often be one of the associated constants such as [`Mesh::ATTRIBUTE_POSITION`].
@@ -121,17 +121,14 @@ impl Mesh {
 
 	/// Retrieves the data currently set to the vertex attribute with the specified `name`.
 	#[inline]
-	pub fn attribute(&self, id: impl Into<MeshVertexAttributeId>) -> Option<&VertexAttributeValues> {
+	pub fn attribute(&self, id: usize) -> Option<&VertexAttributeValues> {
 		self
 			.attributes
-			.get(&id.into())
+			.get(&id)
 			.map(|data| &data.values)
 	}
 	/// Removes the data for a vertex attribute
-	pub fn remove_attribute(
-		&mut self,
-		attribute: impl Into<MeshVertexAttributeId>,
-	) -> Option<VertexAttributeValues> {
+	pub fn remove_attribute(&mut self, attribute: impl Into<usize>) -> Option<VertexAttributeValues> {
 		self
 			.attributes
 			.remove(&attribute.into())
@@ -140,10 +137,7 @@ impl Mesh {
 
 	/// Retrieves the data currently set to the vertex attribute with the specified `name` mutably.
 	#[inline]
-	pub fn attribute_mut(
-		&mut self,
-		id: impl Into<MeshVertexAttributeId>,
-	) -> Option<&mut VertexAttributeValues> {
+	pub fn attribute_mut(&mut self, id: impl Into<usize>) -> Option<&mut VertexAttributeValues> {
 		self
 			.attributes
 			.get_mut(&id.into())
@@ -151,9 +145,7 @@ impl Mesh {
 	}
 
 	/// Returns an iterator that yields references to the data of each vertex attribute.
-	pub fn attributes(
-		&self,
-	) -> impl Iterator<Item = (MeshVertexAttributeId, &VertexAttributeValues)> {
+	pub fn attributes(&self) -> impl Iterator<Item = (usize, &VertexAttributeValues)> {
 		self
 			.attributes
 			.iter()
@@ -161,9 +153,7 @@ impl Mesh {
 	}
 
 	/// Returns an iterator that yields mutable references to the data of each vertex attribute.
-	pub fn attributes_mut(
-		&mut self,
-	) -> impl Iterator<Item = (MeshVertexAttributeId, &mut VertexAttributeValues)> {
+	pub fn attributes_mut(&mut self) -> impl Iterator<Item = (usize, &mut VertexAttributeValues)> {
 		self
 			.attributes
 			.iter_mut()
@@ -353,7 +343,7 @@ impl Mesh {
 		);
 
 		let positions = self
-			.attribute(Mesh::ATTRIBUTE_POSITION)
+			.attribute(Mesh::ATTRIBUTE_POSITION.id)
 			.unwrap()
 			.as_float3()
 			.expect("`Mesh::ATTRIBUTE_POSITION` vertex attributes should be of type `float3`");
@@ -379,7 +369,8 @@ impl Mesh {
 
 	/// Compute the Axis-Aligned Bounding Box of the mesh vertices in model space
 	pub fn compute_aabb(&self) -> Option<Aabb> {
-		if let Some(VertexAttributeValues::Float32x3(values)) = self.attribute(Mesh::ATTRIBUTE_POSITION)
+		if let Some(VertexAttributeValues::Float32x3(values)) =
+			self.attribute(Mesh::ATTRIBUTE_POSITION.id)
 		{
 			let mut minimum = VEC3_MAX;
 			let mut maximum = VEC3_MIN;
@@ -429,7 +420,7 @@ pub struct MeshVertexAttribute {
 	/// The _unique_ id of the vertex attribute. This will also determine sort ordering
 	/// when generating vertex buffers. Built-in / standard attributes will use "close to zero"
 	/// indices. When in doubt, use a random / very large usize to avoid conflicts.
-	pub id: MeshVertexAttributeId,
+	pub id: usize,
 
 	/// The format of the vertex attribute.
 	pub format: VertexFormat,
@@ -437,11 +428,7 @@ pub struct MeshVertexAttribute {
 
 impl MeshVertexAttribute {
 	pub const fn new(name: &'static str, id: usize, format: VertexFormat) -> Self {
-		Self {
-			name,
-			id: MeshVertexAttributeId(id),
-			format,
-		}
+		Self { name, id, format }
 	}
 
 	pub const fn at_shader_location(&self, shader_location: u32) -> VertexAttributeDescriptor {
@@ -453,33 +440,22 @@ impl MeshVertexAttribute {
 	}
 }
 
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Ord, PartialOrd, Hash)]
-pub struct MeshVertexAttributeId(usize);
-
-impl From<MeshVertexAttribute> for MeshVertexAttributeId {
-	fn from(attribute: MeshVertexAttribute) -> Self {
-		attribute.id
-	}
-}
-
 pub type MeshVertexBufferLayout = Hashed<InnerMeshVertexBufferLayout>;
 
 #[derive(Debug, Clone, Hash, Eq, PartialEq)]
 pub struct InnerMeshVertexBufferLayout {
-	attribute_ids: Vec<MeshVertexAttributeId>,
+	attribute_ids: Vec<usize>,
 	layout: VertexBufferLayout,
 }
 
 impl InnerMeshVertexBufferLayout {
 	#[inline]
-	pub fn contains(&self, attribute_id: impl Into<MeshVertexAttributeId>) -> bool {
-		self
-			.attribute_ids
-			.contains(&attribute_id.into())
+	pub fn contains(&self, attribute_id: usize) -> bool {
+		self.attribute_ids.contains(&attribute_id)
 	}
 
 	#[inline]
-	pub fn attribute_ids(&self) -> &[MeshVertexAttributeId] {
+	pub fn attribute_ids(&self) -> &[usize] {
 		&self.attribute_ids
 	}
 
@@ -526,13 +502,13 @@ impl InnerMeshVertexBufferLayout {
 #[error("Mesh is missing requested attribute: {name} ({id:?}, pipeline type: {pipeline_type:?})")]
 pub struct MissingVertexAttributeError {
 	pub(crate) pipeline_type: Option<&'static str>,
-	id: MeshVertexAttributeId,
+	id: usize,
 	name: &'static str,
 }
 
 pub struct VertexAttributeDescriptor {
 	pub shader_location: u32,
-	pub id: MeshVertexAttributeId,
+	pub id: usize,
 	name: &'static str,
 }
 
@@ -966,9 +942,11 @@ fn generate_tangents_for_mesh(mesh: &Mesh) -> Result<Vec<[f32; 4]>, GenerateTang
 		other => return Err(GenerateTangentsError::UnsupportedTopology(other)),
 	};
 
-	let positions = match mesh.attribute(Mesh::ATTRIBUTE_POSITION).ok_or(
-		GenerateTangentsError::MissingVertexAttribute(Mesh::ATTRIBUTE_POSITION.name),
-	)? {
+	let positions = match mesh
+		.attribute(Mesh::ATTRIBUTE_POSITION.id)
+		.ok_or(GenerateTangentsError::MissingVertexAttribute(
+			Mesh::ATTRIBUTE_POSITION.name,
+		))? {
 		VertexAttributeValues::Float32x3(vertices) => vertices,
 		_ => {
 			return Err(GenerateTangentsError::InvalidVertexAttributeFormat(
@@ -978,9 +956,11 @@ fn generate_tangents_for_mesh(mesh: &Mesh) -> Result<Vec<[f32; 4]>, GenerateTang
 		},
 	};
 
-	let normals = match mesh.attribute(Mesh::ATTRIBUTE_NORMAL).ok_or(
-		GenerateTangentsError::MissingVertexAttribute(Mesh::ATTRIBUTE_NORMAL.name),
-	)? {
+	let normals = match mesh
+		.attribute(Mesh::ATTRIBUTE_NORMAL.id)
+		.ok_or(GenerateTangentsError::MissingVertexAttribute(
+			Mesh::ATTRIBUTE_NORMAL.name,
+		))? {
 		VertexAttributeValues::Float32x3(vertices) => vertices,
 		_ => {
 			return Err(GenerateTangentsError::InvalidVertexAttributeFormat(
@@ -990,7 +970,7 @@ fn generate_tangents_for_mesh(mesh: &Mesh) -> Result<Vec<[f32; 4]>, GenerateTang
 		},
 	};
 
-	let uvs = match mesh.attribute(Mesh::ATTRIBUTE_UV_0).ok_or(
+	let uvs = match mesh.attribute(Mesh::ATTRIBUTE_UV_0.id).ok_or(
 		GenerateTangentsError::MissingVertexAttribute(Mesh::ATTRIBUTE_UV_0.name),
 	)? {
 		VertexAttributeValues::Float32x2(vertices) => vertices,

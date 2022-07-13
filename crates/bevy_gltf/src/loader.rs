@@ -286,7 +286,9 @@ async fn load_gltf<'a, 'b>(
 				mesh.set_indices(Some(Indices::U32(indices.into_u32().collect())));
 			};
 
-			if mesh.attribute(Mesh::ATTRIBUTE_NORMAL).is_none()
+			if mesh
+				.attribute(Mesh::ATTRIBUTE_NORMAL.id)
+				.is_none()
 				&& matches!(mesh.primitive_topology(), PrimitiveTopology::TriangleList)
 			{
 				let vertex_count_before = mesh.count_vertices();
@@ -306,7 +308,9 @@ async fn load_gltf<'a, 'b>(
 				.map(|v| VertexAttributeValues::Float32x4(v.collect()))
 			{
 				mesh.insert_attribute(Mesh::ATTRIBUTE_TANGENT, vertex_attribute);
-			} else if mesh.attribute(Mesh::ATTRIBUTE_NORMAL).is_some()
+			} else if mesh
+				.attribute(Mesh::ATTRIBUTE_NORMAL.id)
+				.is_some()
 				&& primitive.material().normal_texture().is_some()
 			{
 				bevy_log::debug!("Missing vertex tangents, computing them using the mikktspace algorithm");

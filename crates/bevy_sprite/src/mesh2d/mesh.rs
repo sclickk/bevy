@@ -343,12 +343,12 @@ impl SpecializedMeshPipeline for Mesh2dPipeline {
 		];
 
 		let mut shader_defs = Vec::new();
-		if layout.contains(Mesh::ATTRIBUTE_TANGENT) {
+		if layout.contains(Mesh::ATTRIBUTE_TANGENT.id) {
 			shader_defs.push(String::from("VERTEX_TANGENTS"));
 			vertex_attributes.push(Mesh::ATTRIBUTE_TANGENT.at_shader_location(3));
 		}
 
-		if layout.contains(Mesh::ATTRIBUTE_COLOR) {
+		if layout.contains(Mesh::ATTRIBUTE_COLOR.id) {
 			shader_defs.push(String::from("VERTEX_COLORS"));
 			vertex_attributes.push(Mesh::ATTRIBUTE_COLOR.at_shader_location(4));
 		}

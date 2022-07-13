@@ -551,23 +551,24 @@ impl SpecializedMeshPipeline for MeshPipeline {
 		];
 
 		let mut shader_defs = Vec::new();
-		if layout.contains(Mesh::ATTRIBUTE_UV_0) {
+		if layout.contains(Mesh::ATTRIBUTE_UV_0.id) {
 			shader_defs.push(String::from("VERTEX_UVS"));
 			vertex_attributes.push(Mesh::ATTRIBUTE_UV_0.at_shader_location(2));
 		}
 
-		if layout.contains(Mesh::ATTRIBUTE_TANGENT) {
+		if layout.contains(Mesh::ATTRIBUTE_TANGENT.id) {
 			shader_defs.push(String::from("VERTEX_TANGENTS"));
 			vertex_attributes.push(Mesh::ATTRIBUTE_TANGENT.at_shader_location(3));
 		}
 
-		if layout.contains(Mesh::ATTRIBUTE_COLOR) {
+		if layout.contains(Mesh::ATTRIBUTE_COLOR.id) {
 			shader_defs.push(String::from("VERTEX_COLORS"));
 			vertex_attributes.push(Mesh::ATTRIBUTE_COLOR.at_shader_location(4));
 		}
 
 		let mut bind_group_layout = vec![self.view_layout.clone()];
-		if layout.contains(Mesh::ATTRIBUTE_JOINT_INDEX) && layout.contains(Mesh::ATTRIBUTE_JOINT_WEIGHT)
+		if layout.contains(Mesh::ATTRIBUTE_JOINT_INDEX.id)
+			&& layout.contains(Mesh::ATTRIBUTE_JOINT_WEIGHT.id)
 		{
 			shader_defs.push(String::from("SKINNED"));
 			vertex_attributes.push(Mesh::ATTRIBUTE_JOINT_INDEX.at_shader_location(5));
