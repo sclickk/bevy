@@ -240,12 +240,7 @@ impl<'a> Iterator for ReserveEntitiesIterator<'a> {
 				generation: self.meta[id as usize].generation,
 				id,
 			})
-			.or_else(|| {
-				self
-					.id_range
-					.next()
-					.map(Entity::from_raw)
-			})
+			.or_else(|| self.id_range.next().map(Entity::from_raw))
 	}
 
 	fn size_hint(&self) -> (usize, Option<usize>) {
@@ -334,12 +329,12 @@ impl Entities {
 				// Then we negate these values to indicate how far beyond the end of `meta.end()`
 				// to go, yielding `meta.len()+0 .. meta.len()+3`.
 				let base = self.meta.len() as i64;
-	
+
 				let new_id_end = u32::try_from(base - range_start).expect("too many entities");
-	
+
 				// `new_id_end` is in range, so no need to check `start`.
 				let new_id_start = (base - range_end.min(0)) as u32;
-	
+
 				new_id_start..new_id_end
 			},
 		}
