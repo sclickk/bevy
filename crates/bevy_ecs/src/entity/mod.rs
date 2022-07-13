@@ -244,7 +244,7 @@ impl<'a> Iterator for ReserveEntitiesIterator<'a> {
 				self
 					.id_range
 					.next()
-					.map(|id| Entity { generation: 0, id })
+					.map(Entity::from_raw)
 			})
 	}
 
