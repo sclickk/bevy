@@ -379,7 +379,8 @@ impl Image {
 				let image_crate_format = format
 					.as_image_crate_format()
 					.ok_or_else(|| TextureError::UnsupportedTextureFormat(format!("{:?}", format)))?;
-				let mut reader = image::io::Reader::with_format(std::io::Cursor::new(buffer), image_crate_format);
+				let mut reader =
+					image::io::Reader::with_format(std::io::Cursor::new(buffer), image_crate_format);
 				reader.no_limits();
 				let dyn_img = reader.decode()?;
 				Ok(image_to_texture(dyn_img, is_srgb))

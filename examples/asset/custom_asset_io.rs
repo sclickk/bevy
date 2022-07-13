@@ -61,7 +61,7 @@ impl Plugin for CustomAssetIoPlugin {
 
 		// the asset server is constructed and added the resource manager
 
-		app.insert_resource(AssetServer::new(asset_io));
+		app.insert_resource(AssetServer::from(asset_io));
 	}
 }
 
