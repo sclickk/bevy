@@ -5,4 +5,4 @@ check:
 	cargo check --release --examples --features="bevy/dynamic"
 
 doc:
-	cargo doc --open --workspace --release
+	cargo doc --open --workspace --release --features="bevy/dynamic"
