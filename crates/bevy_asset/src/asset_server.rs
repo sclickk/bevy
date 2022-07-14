@@ -225,7 +225,7 @@ impl AssetServer {
 				extensions: Vec::new(),
 			})?
 			.to_str()
-			.map(|s| s.to_lowercase())
+			.map(str::to_lowercase)
 			.ok_or(AssetServerError::MissingAssetLoader {
 				extensions: Vec::new(),
 			})?;
