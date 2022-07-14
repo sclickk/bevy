@@ -1,8 +1,11 @@
 use crate::{
 	component::ComponentId,
-	prelude::{AmbiguitySetLabel, RunCriteriaLabel, SystemLabel},
+	prelude::RunCriteriaLabel,
 	query::Access,
-	schedule::{ExclusiveSystemDescriptor, GraphNode, ParallelSystemDescriptor},
+	schedule::{
+		AmbiguitySetLabelId, ExclusiveSystemDescriptor, GraphNode, ParallelSystemDescriptor,
+		RunCriteriaLabelId, SystemLabelId,
+	},
 	system::{ExclusiveSystem, System},
 };
 use std::borrow::Cow;
@@ -10,15 +13,15 @@ use std::borrow::Cow;
 // TODO: FIX CODE DUPLICATION IN HERE!
 #[derive(Default)]
 pub(crate) struct SystemContainerMeta {
-	pub(crate) labels: Vec<Box<dyn SystemLabel>>,
-	pub(crate) before: Vec<Box<dyn SystemLabel>>,
-	pub(crate) after: Vec<Box<dyn SystemLabel>>,
-	pub(crate) ambiguity_sets: Vec<Box<dyn AmbiguitySetLabel>>,
+	pub(crate) labels: Vec<SystemLabelId>,
+	pub(crate) before: Vec<SystemLabelId>,
+	pub(crate) after: Vec<SystemLabelId>,
+	pub(crate) ambiguity_sets: Vec<AmbiguitySetLabelId>,
 }
 
 pub(crate) struct RunCriteriaMeta {
-	pub(crate) index: Option<usize>,
-	pub(crate) label: Option<Box<dyn RunCriteriaLabel>>,
+	pub(super) index: Option<usize>,
+	pub(super) label: Option<RunCriteriaLabelId>,
 }
 
 impl RunCriteriaMeta {
@@ -30,13 +33,13 @@ impl RunCriteriaMeta {
 		self.index = Some(index);
 	}
 
-	fn label(&self) -> Option<&Box<dyn RunCriteriaLabel>> {
+	fn label(&self) -> Option<&RunCriteriaLabelId> {
 		self.label.as_ref()
 	}
 }
 
 /// System metadata like its name, labels, order requirements and component access.
-pub trait SystemContainer: GraphNode<Label = Box<dyn SystemLabel>> {
+pub trait SystemContainer: GraphNode<Label = SystemLabelId> {
 	#[doc(hidden)]
 	fn dependencies(&self) -> &[usize];
 	#[doc(hidden)]
@@ -45,8 +48,8 @@ pub trait SystemContainer: GraphNode<Label = Box<dyn SystemLabel>> {
 	fn run_criteria(&self) -> Option<usize>;
 	#[doc(hidden)]
 	fn set_run_criteria(&mut self, index: usize);
-	fn run_criteria_label(&self) -> Option<&Box<dyn RunCriteriaLabel>>;
-	fn ambiguity_sets(&self) -> &[Box<dyn AmbiguitySetLabel>];
+	fn run_criteria_label(&self) -> Option<&RunCriteriaLabelId>;
+	fn ambiguity_sets(&self) -> &[AmbiguitySetLabelId];
 	fn component_access(&self) -> Option<&Access<ComponentId>>;
 }
 
@@ -78,21 +81,21 @@ impl From<ExclusiveSystemDescriptor> for ExclusiveSystemContainer {
 }
 
 impl GraphNode for ExclusiveSystemContainer {
-	type Label = Box<dyn SystemLabel>;
+	type Label = SystemLabelId;
 
 	fn name(&self) -> Cow<'static, str> {
 		self.system.name()
 	}
 
-	fn labels(&self) -> &[Box<dyn SystemLabel>] {
+	fn labels(&self) -> &[SystemLabelId] {
 		&self.meta.labels
 	}
 
-	fn before(&self) -> &[Box<dyn SystemLabel>] {
+	fn before(&self) -> &[SystemLabelId] {
 		&self.meta.before
 	}
 
-	fn after(&self) -> &[Box<dyn SystemLabel>] {
+	fn after(&self) -> &[SystemLabelId] {
 		&self.meta.after
 	}
 }
@@ -115,11 +118,11 @@ impl SystemContainer for ExclusiveSystemContainer {
 		self.run_criteria_meta.set_index(index);
 	}
 
-	fn run_criteria_label(&self) -> Option<&Box<dyn RunCriteriaLabel>> {
-		self.run_criteria_meta.label()
+	fn run_criteria_label(&self) -> Option<&RunCriteriaLabelId> {
+		self.run_criteria_meta.label.as_ref()
 	}
 
-	fn ambiguity_sets(&self) -> &[Box<dyn AmbiguitySetLabel>] {
+	fn ambiguity_sets(&self) -> &[AmbiguitySetLabelId] {
 		&self.meta.ambiguity_sets
 	}
 
@@ -174,21 +177,21 @@ impl From<ParallelSystemDescriptor> for ParallelSystemContainer {
 }
 
 impl GraphNode for ParallelSystemContainer {
-	type Label = Box<dyn SystemLabel>;
+	type Label = SystemLabelId;
 
 	fn name(&self) -> Cow<'static, str> {
 		self.system().name()
 	}
 
-	fn labels(&self) -> &[Box<dyn SystemLabel>] {
+	fn labels(&self) -> &[SystemLabelId] {
 		&self.meta.labels
 	}
 
-	fn before(&self) -> &[Box<dyn SystemLabel>] {
+	fn before(&self) -> &[SystemLabelId] {
 		&self.meta.before
 	}
 
-	fn after(&self) -> &[Box<dyn SystemLabel>] {
+	fn after(&self) -> &[SystemLabelId] {
 		&self.meta.after
 	}
 }
@@ -211,11 +214,11 @@ impl SystemContainer for ParallelSystemContainer {
 		self.run_criteria_meta.set_index(index);
 	}
 
-	fn run_criteria_label(&self) -> Option<&Box<dyn RunCriteriaLabel>> {
-		self.run_criteria_meta.label()
+	fn run_criteria_label(&self) -> Option<&RunCriteriaLabelId> {
+		self.run_criteria_meta.label.as_ref()
 	}
 
-	fn ambiguity_sets(&self) -> &[Box<dyn AmbiguitySetLabel>] {
+	fn ambiguity_sets(&self) -> &[AmbiguitySetLabelId] {
 		&self.meta.ambiguity_sets
 	}
 

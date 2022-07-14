@@ -1,8 +1,8 @@
 use crate::{
 	prelude::World,
 	schedule::{
-		AmbiguitySetLabel, IntoRunCriteria, RunCriteriaDescriptorOrLabel, SystemContainerMeta,
-		SystemLabel,
+		AmbiguitySetLabel, AmbiguitySetLabelId, IntoRunCriteria, RunCriteriaDescriptorOrLabel,
+		SystemContainerMeta, SystemLabel, SystemLabelId,
 	},
 	system::{
 		AsSystemLabel, BoxedSystem, ExclusiveSystem, ExclusiveSystemCoerced, ExclusiveSystemFn,
@@ -195,7 +195,7 @@ impl ParallelSystemDescriptorCoercion<()> for ParallelSystemDescriptor {
 	}
 
 	fn label(mut self, label: impl SystemLabel) -> ParallelSystemDescriptor {
-		self.meta.labels.push(Box::new(label));
+		self.meta.labels.push(label.as_label());
 		self
 	}
 
@@ -203,7 +203,7 @@ impl ParallelSystemDescriptorCoercion<()> for ParallelSystemDescriptor {
 		self
 			.meta
 			.before
-			.push(Box::new(label.as_system_label()));
+			.push(label.as_system_label().as_label());
 		self
 	}
 
@@ -211,12 +211,12 @@ impl ParallelSystemDescriptorCoercion<()> for ParallelSystemDescriptor {
 		self
 			.meta
 			.after
-			.push(Box::new(label.as_system_label()));
+			.push(label.as_system_label().as_label());
 		self
 	}
 
 	fn in_ambiguity_set(mut self, set: impl AmbiguitySetLabel) -> ParallelSystemDescriptor {
-		self.meta.ambiguity_sets.push(Box::new(set));
+		self.meta.ambiguity_sets.push(set.as_label());
 		self
 	}
 }
@@ -352,22 +352,22 @@ impl ExclusiveSystemDescriptorCoercion for ExclusiveSystemDescriptor {
 	}
 
 	fn label(mut self, label: impl SystemLabel) -> ExclusiveSystemDescriptor {
-		self.meta.labels.push(Box::new(label));
+		self.meta.labels.push(label.as_label());
 		self
 	}
 
 	fn before(mut self, label: impl SystemLabel) -> ExclusiveSystemDescriptor {
-		self.meta.before.push(Box::new(label));
+		self.meta.before.push(label.as_label());
 		self
 	}
 
 	fn after(mut self, label: impl SystemLabel) -> ExclusiveSystemDescriptor {
-		self.meta.after.push(Box::new(label));
+		self.meta.after.push(label.as_label());
 		self
 	}
 
 	fn in_ambiguity_set(mut self, set: impl AmbiguitySetLabel) -> ExclusiveSystemDescriptor {
-		self.meta.ambiguity_sets.push(Box::new(set));
+		self.meta.ambiguity_sets.push(set.as_label());
 		self
 	}
 

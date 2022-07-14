@@ -1,8 +1,11 @@
-use crate::schedule::{
-	AmbiguitySetLabel, IntoRunCriteria, IntoSystemDescriptor, RunCriteriaDescriptorOrLabel, State,
-	StateData, SystemContainerMeta, SystemDescriptor, SystemLabel,
+use crate::{
+	schedule::{
+		AmbiguitySetLabel, AmbiguitySetLabelId, IntoRunCriteria, IntoSystemDescriptor,
+		RunCriteriaDescriptorOrLabel, State, StateData, SystemContainerMeta, SystemDescriptor,
+		SystemLabel, SystemLabelId,
+	},
+	system::AsSystemLabel,
 };
-use crate::system::AsSystemLabel;
 
 /// A builder for describing several systems at the same time.
 #[derive(Default)]
@@ -68,7 +71,7 @@ impl SystemSet {
 
 	#[must_use]
 	pub fn in_ambiguity_set(mut self, set: impl AmbiguitySetLabel) -> Self {
-		self.meta.ambiguity_sets.push(Box::new(set));
+		self.meta.ambiguity_sets.push(set.as_label());
 		self
 	}
 
@@ -86,7 +89,7 @@ impl SystemSet {
 
 	#[must_use]
 	pub fn label(mut self, label: impl SystemLabel) -> Self {
-		self.meta.labels.push(Box::new(label));
+		self.meta.labels.push(label.as_label());
 		self
 	}
 
@@ -95,7 +98,7 @@ impl SystemSet {
 		self
 			.meta
 			.before
-			.push(Box::new(label.as_system_label()));
+			.push(label.as_system_label().as_label());
 		self
 	}
 
@@ -104,7 +107,7 @@ impl SystemSet {
 		self
 			.meta
 			.after
-			.push(Box::new(label.as_system_label()));
+			.push(label.as_system_label().as_label());
 		self
 	}
 
