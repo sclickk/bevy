@@ -335,12 +335,7 @@ where
 			return Err(StateError::StateAlreadyQueued);
 		}
 
-		if self.stack.len() == 1 {
-			return Err(StateError::StackEmpty);
-		}
-
-		self.scheduled = Some(ScheduledOperation::Pop);
-		Ok(())
+		self.overwrite_pop()
 	}
 
 	/// Same as [`Self::pop`], but if there is already a next state, it will be overwritten
@@ -360,8 +355,7 @@ where
 			return Err(StateError::StateAlreadyQueued);
 		}
 
-		let state = self.stack.last().unwrap();
-		self.scheduled = Some(ScheduledOperation::Set(state.clone()));
+		self.overwrite_restart();
 		Ok(())
 	}
 
