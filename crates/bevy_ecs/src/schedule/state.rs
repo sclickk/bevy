@@ -432,9 +432,8 @@ impl fmt::Display for StateError {
 
 fn should_run_adapter<T: StateData>(In(cmp_result): In<bool>, state: Res<State<T>>) -> ShouldRun {
 	if state.end_next_loop {
-		return ShouldRun::No;
-	}
-	if cmp_result {
+		ShouldRun::No
+	} else if cmp_result {
 		ShouldRun::YesAndCheckAgain
 	} else {
 		ShouldRun::NoAndCheckAgain
@@ -463,26 +462,22 @@ fn state_cleaner<T: StateData>(
 			));
 		},
 		Some(ScheduledOperation::Replace(next)) => {
-			if state.stack.len() <= 1 {
-				state.transition = Some(StateTransition::ExitingFull(
-					state.stack.last().unwrap().clone(),
-					next,
-				));
-			} else {
-				state.scheduled = Some(ScheduledOperation::Replace(next));
-				match state.transition.take() {
-					Some(StateTransition::ExitingToResume(p, n)) => {
-						state.stack.pop();
-						state.transition = Some(StateTransition::Resuming(p, n));
-					},
-					_ => {
-						state.transition = Some(StateTransition::ExitingToResume(
-							state.stack[state.stack.len() - 1].clone(),
-							state.stack[state.stack.len() - 2].clone(),
-						));
-					},
-				}
-			}
+			state.transition = Some(match state.stack.len() {
+				len if len <= 1 => StateTransition::ExitingFull(state.stack.last().unwrap().clone(), next),
+				len => {
+					state.scheduled = Some(ScheduledOperation::Replace(next));
+					match state.transition.take() {
+						Some(StateTransition::ExitingToResume(p, n)) => {
+							state.stack.pop();
+							StateTransition::Resuming(p, n)
+						},
+						_ => StateTransition::ExitingToResume(
+							state.stack[len - 1].clone(),
+							state.stack[len - 2].clone(),
+						),
+					}
+				},
+			})
 		},
 		Some(ScheduledOperation::Push(next)) => {
 			let last_type_id = state.stack.last().unwrap().clone();
