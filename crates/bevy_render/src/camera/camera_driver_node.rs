@@ -12,8 +12,8 @@ pub struct CameraDriverNode {
 	cameras: QueryState<(Entity, &'static ExtractedCamera)>,
 }
 
-impl CameraDriverNode {
-	pub fn new(world: &mut World) -> Self {
+impl From<&mut World> for CameraDriverNode {
+	fn from(world: &mut World) -> Self {
 		Self {
 			cameras: world.query(),
 		}
