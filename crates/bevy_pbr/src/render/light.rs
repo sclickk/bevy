@@ -1324,14 +1324,6 @@ impl ViewClusterBindings {
 	const MAX_UNIFORM_ITEMS: usize = Self::MAX_OFFSETS / 4;
 	pub const MAX_INDICES: usize = 16384;
 
-	pub fn new(buffer_binding_type: BufferBindingType) -> Self {
-		Self {
-			n_indices: 0,
-			n_offsets: 0,
-			buffers: ViewClusterBuffers::new(buffer_binding_type),
-		}
-	}
-
 	pub fn clear(&mut self) {
 		match &mut self.buffers {
 			ViewClusterBuffers::Uniform {
@@ -1482,6 +1474,16 @@ impl ViewClusterBindings {
 	}
 }
 
+impl From<BufferBindingType> for ViewClusterBindings {
+	fn from(buffer_binding_type: BufferBindingType) -> Self {
+		Self {
+			n_indices: 0,
+			n_offsets: 0,
+			buffers: ViewClusterBuffers::new(buffer_binding_type),
+		}
+	}
+}
+
 pub fn prepare_clusters(
 	mut commands: Commands,
 	render_device: Res<RenderDevice>,
@@ -1504,7 +1506,7 @@ pub fn prepare_clusters(
 	);
 	views.for_each(|(entity, cluster_config, extracted_clusters)| {
 		let mut view_clusters_bindings =
-			ViewClusterBindings::new(mesh_pipeline.clustered_forward_buffer_binding_type);
+			ViewClusterBindings::from(mesh_pipeline.clustered_forward_buffer_binding_type);
 		view_clusters_bindings.clear();
 
 		let mut indices_full = false;
