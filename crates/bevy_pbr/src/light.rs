@@ -818,7 +818,7 @@ pub(crate) fn assign_lights_to_clusters(
 	// collect just the relevant light query data into a persisted vec to avoid reallocating each frame
 	lights.extend(point_lights_query.into_iter().filter_map(
 		|(entity, transform, point_light, visibility)| {
-			(visibility
+			visibility
 				.is_visible
 				.then(|| PointLightAssignmentData {
 					entity,
@@ -827,7 +827,7 @@ pub(crate) fn assign_lights_to_clusters(
 					shadows_enabled: point_light.shadows_enabled,
 					range: point_light.range,
 					spot_light_angle: None,
-				}))
+				})
 		},
 	));
 	lights.extend(spot_lights_query.into_iter().filter_map(
