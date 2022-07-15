@@ -487,7 +487,7 @@ mod test {
 		let mut world = World::default();
 
 		world.insert_resource(Vec::<&'static str>::new());
-		world.insert_resource(State::new(MyState::S1));
+		world.insert_resource(State::from(MyState::S1));
 
 		let mut stage = SystemStage::parallel();
 
@@ -628,7 +628,7 @@ mod test {
 		}
 
 		let mut world = World::new();
-		world.insert_resource(State::new(AppState::Main));
+		world.insert_resource(State::from(AppState::Main));
 		world.insert_resource(false);
 		world.insert_resource("control");
 		let mut stage = SystemStage::parallel().with_system(should_run_once);
@@ -661,7 +661,7 @@ mod test {
 
 		let mut world = World::new();
 		world.insert_resource(Vec::<LoadStatus>::new());
-		world.insert_resource(State::new(LoadState::Load));
+		world.insert_resource(State::from(LoadState::Load));
 
 		let mut stage = SystemStage::parallel();
 		stage.add_system_set(State::<LoadState>::get_driver());
