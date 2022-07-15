@@ -568,7 +568,7 @@ impl ComponentTicks {
 		ticks_since_system > ticks_since_change
 	}
 
-	pub(crate) fn new(change_tick: u32) -> Self {
+	pub(crate) const fn new(change_tick: u32) -> Self {
 		Self {
 			added: change_tick,
 			changed: change_tick,
