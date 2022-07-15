@@ -1,6 +1,5 @@
 use crate::{
 	component::ComponentId,
-	prelude::RunCriteriaLabel,
 	query::Access,
 	schedule::{
 		AmbiguitySetLabelId, ExclusiveSystemDescriptor, GraphNode, ParallelSystemDescriptor,

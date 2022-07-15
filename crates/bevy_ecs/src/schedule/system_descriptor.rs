@@ -1,8 +1,8 @@
 use crate::{
 	prelude::World,
 	schedule::{
-		AmbiguitySetLabel, AmbiguitySetLabelId, IntoRunCriteria, RunCriteriaDescriptorOrLabel,
-		SystemContainerMeta, SystemLabel, SystemLabelId,
+		AmbiguitySetLabel, IntoRunCriteria, RunCriteriaDescriptorOrLabel, SystemContainerMeta,
+		SystemLabel,
 	},
 	system::{
 		AsSystemLabel, BoxedSystem, ExclusiveSystem, ExclusiveSystemCoerced, ExclusiveSystemFn,

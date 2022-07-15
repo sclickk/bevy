@@ -1,8 +1,7 @@
 use crate::{
 	schedule::{
-		AmbiguitySetLabel, AmbiguitySetLabelId, IntoRunCriteria, IntoSystemDescriptor,
-		RunCriteriaDescriptorOrLabel, State, StateData, SystemContainerMeta, SystemDescriptor,
-		SystemLabel, SystemLabelId,
+		AmbiguitySetLabel, IntoRunCriteria, IntoSystemDescriptor, RunCriteriaDescriptorOrLabel, State,
+		StateData, SystemContainerMeta, SystemDescriptor, SystemLabel,
 	},
 	system::AsSystemLabel,
 };
