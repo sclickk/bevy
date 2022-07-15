@@ -416,7 +416,7 @@ impl<Q: WorldQuery, F: WorldQuery> QueryState<Q, F> {
 		}
 
 		// Since we have verified that all entities are present, we can safely unwrap
-		Ok(array_of_results.map(|result| result.unwrap()))
+		Ok(array_of_results.map(Result::unwrap))
 	}
 
 	/// Gets the query results for the given [`World`] and array of [`Entity`], where the last change and
@@ -458,7 +458,7 @@ impl<Q: WorldQuery, F: WorldQuery> QueryState<Q, F> {
 		}
 
 		// Since we have verified that all entities are present, we can safely unwrap
-		Ok(array_of_results.map(|result| result.unwrap()))
+		Ok(array_of_results.map(Result::unwrap))
 	}
 
 	/// Returns an [`Iterator`] over the query results for the given [`World`].
