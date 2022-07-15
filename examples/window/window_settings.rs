@@ -9,7 +9,7 @@ fn main() {
 		title: "I am a window!".to_string(),
 		width: 500.,
 		height: 300.,
-		present_mode: PresentMode::Fifo,
+		present_mode: PresentMode::AutoVsync,
 		..Default::default()
 	});
 	app.add_plugins(DefaultPlugins);

@@ -20,7 +20,7 @@ use bevy::{
 fn main() {
 	let mut app = App::new();
 	app.insert_resource(WindowDescriptor {
-		present_mode: PresentMode::Immediate,
+		present_mode: PresentMode::AutoNoVsync,
 		..Default::default()
 	});
 	app.add_plugins(DefaultPlugins);

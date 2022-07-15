@@ -27,7 +27,7 @@ fn main() {
 	});
 	// Turn off vsync to maximize CPU/GPU usage
 	app.insert_resource(WindowDescriptor {
-		present_mode: PresentMode::Immediate,
+		present_mode: PresentMode::AutoNoVsync,
 		..Default::default()
 	});
 	app.insert_resource(ExampleMode::Game);

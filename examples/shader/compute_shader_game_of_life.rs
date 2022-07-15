@@ -25,7 +25,7 @@ fn main() {
 	app.insert_resource(ClearColor(Color::BLACK));
 	app.insert_resource(WindowDescriptor {
 		// uncomment for unthrottled FPS
-		// present_mode: bevy::window::PresentMode::Immediate,
+		// present_mode: bevy::window::PresentMode::AutoNoVsync,
 		..Default::default()
 	});
 	app.add_plugins(DefaultPlugins);
@@ -233,14 +233,14 @@ impl render_graph::Node for GameOfLifeNode {
 					.get_compute_pipeline(pipeline.init_pipeline)
 					.unwrap();
 				pass.set_pipeline(init_pipeline);
-				pass.dispatch(SIZE.0 / WORKGROUP_SIZE, SIZE.1 / WORKGROUP_SIZE, 1);
+				pass.dispatch_workgroups(SIZE.0 / WORKGROUP_SIZE, SIZE.1 / WORKGROUP_SIZE, 1);
 			},
 			GameOfLifeState::Update => {
 				let update_pipeline = pipeline_cache
 					.get_compute_pipeline(pipeline.update_pipeline)
 					.unwrap();
 				pass.set_pipeline(update_pipeline);
-				pass.dispatch(SIZE.0 / WORKGROUP_SIZE, SIZE.1 / WORKGROUP_SIZE, 1);
+				pass.dispatch_workgroups(SIZE.0 / WORKGROUP_SIZE, SIZE.1 / WORKGROUP_SIZE, 1);
 			},
 		}
 

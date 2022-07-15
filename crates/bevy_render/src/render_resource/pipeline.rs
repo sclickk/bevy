@@ -170,7 +170,7 @@ pub struct ShaderMeta {
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct FragmentState {
 	/// The color state of the render targets.
-	pub targets: Vec<ColorTargetState>,
+	pub targets: Vec<Option<ColorTargetState>>,
 	pub meta: ShaderMeta,
 }
 

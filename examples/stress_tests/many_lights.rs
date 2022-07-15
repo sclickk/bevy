@@ -17,12 +17,12 @@ fn main() {
 		width: 1024.0,
 		height: 768.0,
 		title: "many_lights".to_string(),
-		present_mode: PresentMode::Immediate,
+		present_mode: PresentMode::AutoNoVsync,
 		..Default::default()
 	});
 	app.add_plugins(DefaultPlugins);
-	app.init_plugin::<FrameTimeDiagnosticsPlugin>();
-	app.init_plugin::<LogDiagnosticsPlugin>();
+	app.add_plugin(FrameTimeDiagnosticsPlugin::default());
+	app.add_plugin(LogDiagnosticsPlugin::default());
 	app.add_startup_system(setup);
 	app.add_system(move_camera);
 	app.add_system(print_light_count);

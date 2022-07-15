@@ -76,6 +76,10 @@ impl SpecializedRenderPipeline for UiPipeline {
 		let shader_defs = Vec::new();
 
 		RenderPipelineDescriptor {
+			meta: PipelineDescriptorMeta {
+				label: Some("ui_pipeline".into()),
+				layout: Some(vec![self.view_layout.clone(), self.image_layout.clone()]),
+			},
 			vertex: VertexState {
 				meta: ShaderMeta {
 					shader: super::UI_SHADER_HANDLE.typed::<Shader>(),
@@ -90,16 +94,12 @@ impl SpecializedRenderPipeline for UiPipeline {
 					shader_defs,
 					entry_point: "fragment".into(),
 				},
-				targets: vec![ColorTargetState {
+				targets: vec![Some(ColorTargetState {
 					format: TextureFormat::bevy_default(),
 					blend: Some(BlendState::ALPHA_BLENDING),
 					write_mask: ColorWrites::ALL,
-				}],
+				})],
 			}),
-			meta: PipelineDescriptorMeta {
-				label: Some("ui_pipeline".into()),
-				layout: Some(vec![self.view_layout.clone(), self.image_layout.clone()]),
-			},
 			primitive: PrimitiveState {
 				front_face: FrontFace::Ccw,
 				cull_mode: None,

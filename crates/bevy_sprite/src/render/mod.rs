@@ -140,6 +140,10 @@ impl SpecializedRenderPipeline for SpritePipeline {
 		}
 
 		RenderPipelineDescriptor {
+			meta: PipelineDescriptorMeta {
+				label: Some("sprite_pipeline".into()),
+				layout: Some(vec![self.view_layout.clone(), self.material_layout.clone()]),
+			},
 			vertex: VertexState {
 				meta: ShaderMeta {
 					shader: SPRITE_SHADER_HANDLE.typed::<Shader>(),
@@ -154,16 +158,12 @@ impl SpecializedRenderPipeline for SpritePipeline {
 					shader_defs,
 					entry_point: "fragment".into(),
 				},
-				targets: vec![ColorTargetState {
+				targets: vec![Some(ColorTargetState {
 					format: TextureFormat::bevy_default(),
 					blend: Some(BlendState::ALPHA_BLENDING),
 					write_mask: ColorWrites::ALL,
-				}],
+				})],
 			}),
-			meta: PipelineDescriptorMeta {
-				label: Some("sprite_pipeline".into()),
-				layout: Some(vec![self.view_layout.clone(), self.material_layout.clone()]),
-			},
 			primitive: PrimitiveState {
 				front_face: FrontFace::Ccw,
 				cull_mode: None,

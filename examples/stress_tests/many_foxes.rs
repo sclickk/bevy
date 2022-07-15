@@ -17,7 +17,7 @@ fn main() {
 	let mut app = App::new();
 	app.insert_resource(WindowDescriptor {
 		title: "🦊🦊🦊 Many Foxes! 🦊🦊🦊".to_string(),
-		present_mode: PresentMode::Immediate,
+		present_mode: PresentMode::AutoNoVsync,
 		..Default::default()
 	});
 	app.add_plugins(DefaultPlugins);
