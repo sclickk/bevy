@@ -139,7 +139,7 @@ const EPSILON: f64 = 0.36;
 
 fn fibonacci_spiral_on_sphere(golden_ratio: f64, i: usize, n: usize) -> DVec2 {
 	DVec2::new(
-		2.0 * std::f64::consts::PI * (i as f64 / golden_ratio),
+		std::f64::consts::TAU * (i as f64 / golden_ratio),
 		(1.0 - 2.0 * (i as f64 + EPSILON) / (n as f64 - 1.0 + 2.0 * EPSILON)).acos(),
 	)
 }

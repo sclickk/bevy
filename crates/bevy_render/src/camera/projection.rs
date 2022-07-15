@@ -128,7 +128,7 @@ impl CameraProjection for PerspectiveProjection {
 impl Default for PerspectiveProjection {
 	fn default() -> Self {
 		PerspectiveProjection {
-			fov: std::f32::consts::PI / 4.0,
+			fov: std::f32::consts::FRAC_PI_4,
 			near: 0.1,
 			far: 1000.0,
 			aspect_ratio: 1.0,
