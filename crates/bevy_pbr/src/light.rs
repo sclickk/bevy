@@ -816,36 +816,34 @@ pub(crate) fn assign_lights_to_clusters(
 	global_lights.entities.clear();
 	lights.clear();
 	// collect just the relevant light query data into a persisted vec to avoid reallocating each frame
-	lights.extend(
-		point_lights_query
-			.iter()
-			.filter(|(.., visibility)| visibility.is_visible)
-			.map(
-				|(entity, transform, point_light, _visibility)| PointLightAssignmentData {
+	lights.extend(point_lights_query.into_iter().filter_map(
+		|(entity, transform, point_light, visibility)| {
+			(visibility
+				.is_visible
+				.then(|| PointLightAssignmentData {
 					entity,
 					translation: transform.translation,
 					rotation: Quat::default(),
 					shadows_enabled: point_light.shadows_enabled,
 					range: point_light.range,
 					spot_light_angle: None,
-				},
-			),
-	);
-	lights.extend(
-		spot_lights_query
-			.iter()
-			.filter(|(.., visibility)| visibility.is_visible)
-			.map(
-				|(entity, transform, spot_light, _visibility)| PointLightAssignmentData {
+				}))
+		},
+	));
+	lights.extend(spot_lights_query.into_iter().filter_map(
+		|(entity, transform, spot_light, visibility)| {
+			visibility
+				.is_visible
+				.then(|| PointLightAssignmentData {
 					entity,
 					translation: transform.translation,
 					rotation: transform.rotation,
 					shadows_enabled: spot_light.shadows_enabled,
 					range: spot_light.range,
 					spot_light_angle: Some(spot_light.outer_angle),
-				},
-			),
-	);
+				})
+		},
+	));
 
 	let clustered_forward_buffer_binding_type =
 		render_device.get_supported_read_only_binding_type(CLUSTERED_FORWARD_STORAGE_BUFFER_COUNT);
