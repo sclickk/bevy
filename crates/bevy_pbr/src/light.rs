@@ -1072,6 +1072,7 @@ pub(crate) fn assign_lights_to_clusters(
 		let mut z_planes = Vec::with_capacity(clusters.dimensions.z as usize + 1);
 
 		let x_slices = clusters.dimensions.x as f32;
+		let y_slices = clusters.dimensions.y as f32;
 		if is_orthographic {
 			for x in 0..=clusters.dimensions.x {
 				let x_proportion = x as f32 / x_slices;
@@ -1082,7 +1083,6 @@ pub(crate) fn assign_lights_to_clusters(
 				x_planes.push(Plane::new(normal.extend(d)));
 			}
 
-			let y_slices = clusters.dimensions.y as f32;
 			for y in 0..=clusters.dimensions.y {
 				let y_proportion = 1.0 - y as f32 / y_slices;
 				let y_pos = y_proportion * 2.0 - 1.0;
@@ -1102,7 +1102,6 @@ pub(crate) fn assign_lights_to_clusters(
 				x_planes.push(Plane::new(normal.extend(d)));
 			}
 
-			let y_slices = clusters.dimensions.y as f32;
 			for y in 0..=clusters.dimensions.y {
 				let y_proportion = 1.0 - y as f32 / y_slices;
 				let y_pos = y_proportion * 2.0 - 1.0;
