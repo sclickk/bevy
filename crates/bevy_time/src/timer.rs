@@ -98,13 +98,6 @@ impl Timer {
 		self.stopwatch.elapsed()
 	}
 
-	/// Returns the time elapsed on the timer as a `f32`.
-	/// See also [`Timer::elapsed`](Timer::elapsed).
-	#[inline]
-	pub fn elapsed_secs(&self) -> f32 {
-		self.stopwatch.elapsed_secs()
-	}
-
 	/// Sets the elapsed time of the timer without any other considerations.
 	///
 	/// See also [`Stopwatch::set`](Stopwatch::set).
