@@ -184,9 +184,11 @@ pub fn check_visibility(
 	)>,
 ) {
 	// Reset the computed visibility to false
-	for mut computed_visibility in visible_entity_query.p0().iter_mut() {
-		computed_visibility.is_visible = false;
-	}
+	visible_entity_query
+		.p0()
+		.for_each_mut(|mut computed_visibility| {
+			computed_visibility.is_visible = false;
+		});
 
 	view_query.for_each_mut(|(mut visible_entities, frustum, maybe_view_mask)| {
 		let view_mask = maybe_view_mask.copied().unwrap_or_default();

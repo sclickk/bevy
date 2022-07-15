@@ -68,9 +68,9 @@ pub fn extract_text2d_sprite(
 	text2d_query: Extract<Query<(Entity, &Visibility, &Text, &GlobalTransform, &Text2dSize)>>,
 ) {
 	let scale_factor = windows.scale_factor(WindowId::primary()) as f32;
-	for (entity, visibility, text, transform, calculated_size) in text2d_query.iter() {
+	text2d_query.for_each(|(entity, visibility, text, transform, calculated_size)| {
 		if !visibility.is_visible {
-			continue;
+			return;
 		}
 		let (width, height) = (calculated_size.size.x, calculated_size.size.y);
 
@@ -119,7 +119,7 @@ pub fn extract_text2d_sprite(
 				});
 			}
 		}
-	}
+	});
 }
 
 /// Updates the layout and size information whenever the text or style is changed.

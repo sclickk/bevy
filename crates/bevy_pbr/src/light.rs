@@ -1588,7 +1588,7 @@ pub fn check_light_mesh_visibility(
 		// to prevent holding unneeded memory
 	}
 
-	for visible_lights in visible_point_lights.iter() {
+	visible_point_lights.for_each(|visible_lights| {
 		for light_entity in visible_lights.entities.iter().copied() {
 			// Point lights
 			if let Ok((
@@ -1718,7 +1718,7 @@ pub fn check_light_mesh_visibility(
 				// to prevent holding unneeded memory
 			}
 		}
-	}
+	});
 }
 
 #[cfg(test)]

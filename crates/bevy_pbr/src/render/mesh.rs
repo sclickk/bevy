@@ -131,28 +131,28 @@ pub fn extract_meshes(
 ) {
 	let mut caster_commands = Vec::with_capacity(*prev_caster_commands_len);
 	let mut not_caster_commands = Vec::with_capacity(*prev_not_caster_commands_len);
-	let visible_meshes = meshes_query
-		.iter()
-		.filter(|(_, vis, ..)| vis.is_visible);
-
-	for (entity, _, transform, handle, not_receiver, not_caster) in visible_meshes {
-		let transform = transform.compute_matrix();
-		let shadow_receiver_flags = if not_receiver.is_some() {
-			MeshFlags::empty().bits
-		} else {
-			MeshFlags::SHADOW_RECEIVER.bits
-		};
-		let uniform = MeshUniform {
-			flags: shadow_receiver_flags,
-			transform,
-			inverse_transpose_model: transform.inverse().transpose(),
-		};
-		if not_caster.is_some() {
-			not_caster_commands.push((entity, (handle.clone_weak(), uniform, NotShadowCaster)));
-		} else {
-			caster_commands.push((entity, (handle.clone_weak(), uniform)));
-		}
-	}
+	meshes_query.for_each(
+		|(entity, visibility, transform, handle, not_receiver, not_caster)| {
+			if visibility.is_visible {
+				let transform = transform.compute_matrix();
+				let shadow_receiver_flags = if not_receiver.is_some() {
+					MeshFlags::empty().bits
+				} else {
+					MeshFlags::SHADOW_RECEIVER.bits
+				};
+				let uniform = MeshUniform {
+					flags: shadow_receiver_flags,
+					transform,
+					inverse_transpose_model: transform.inverse().transpose(),
+				};
+				if not_caster.is_some() {
+					not_caster_commands.push((entity, (handle.clone_weak(), uniform, NotShadowCaster)));
+				} else {
+					caster_commands.push((entity, (handle.clone_weak(), uniform)));
+				}
+			}
+		},
+	);
 	*prev_caster_commands_len = caster_commands.len();
 	*prev_not_caster_commands_len = not_caster_commands.len();
 	commands.insert_or_spawn_batch(caster_commands);

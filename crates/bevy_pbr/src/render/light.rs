@@ -772,23 +772,34 @@ pub fn prepare_lights(
 	#[cfg(feature = "webgl")]
 	let max_texture_cubes = 1;
 
-	let point_light_count = point_lights
-		.iter()
-		.filter(|light| light.1.shadows_enabled && light.1.spot_light_angles.is_none())
-		.count();
+	let point_light_count = point_lights.iter().fold(0, |acc, light| {
+		acc
+			+ if light.1.shadows_enabled && light.1.spot_light_angles.is_none() {
+				1
+			} else {
+				0
+			}
+	});
 
 	let point_light_shadow_maps_count = point_light_count.min(max_texture_cubes);
 
 	let directional_shadow_maps_count = directional_lights
 		.iter()
-		.filter(|(_, light)| light.shadows_enabled)
-		.count()
+		.fold(0, |acc, (_, light)| {
+			acc + if light.shadows_enabled { 1 } else { 0 }
+		})
 		.min(max_texture_array_layers);
 
 	let spot_light_shadow_maps_count = point_lights
 		.iter()
-		.filter(|(_, light)| light.shadows_enabled && light.spot_light_angles.is_some())
-		.count()
+		.fold(0, |acc, (_, light)| {
+			acc
+				+ if light.shadows_enabled && light.spot_light_angles.is_some() {
+					1
+				} else {
+					0
+				}
+		})
 		.min(max_texture_array_layers - directional_shadow_maps_count);
 
 	// Sort lights by
@@ -892,7 +903,7 @@ pub fn prepare_lights(
 		.write_buffer(&render_device, &render_queue);
 
 	// set up light data for each view
-	for (entity, extracted_view, clusters) in views.iter() {
+	views.for_each(|(entity, extracted_view, clusters)| {
 		let point_light_depth_texture = texture_cache.get(
 			&render_device,
 			TextureDescriptor {
@@ -950,7 +961,7 @@ pub fn prepare_lights(
 				cluster_factors_zw.y,
 			),
 			cluster_dimensions: clusters.dimensions.extend(n_clusters),
-			n_directional_lights: directional_lights.iter().len() as u32,
+			n_directional_lights: directional_lights.into_iter().len() as u32,
 			// spotlight shadow maps are stored in the directional light array, starting at directional_shadow_maps_count.
 			// the spot lights themselves start in the light array at point_light_count. so to go from light
 			// index to shadow map index, we need to subtract point light shadowmap count and add directional shadowmap count.
@@ -1065,7 +1076,7 @@ pub fn prepare_lights(
 		}
 
 		for (i, (light_entity, light)) in directional_lights
-			.iter()
+			.into_iter()
 			.enumerate()
 			.take(MAX_DIRECTIONAL_LIGHTS)
 		{
@@ -1187,7 +1198,7 @@ pub fn prepare_lights(
 				offset: light_meta.view_gpu_lights.push(gpu_lights),
 			},
 		));
-	}
+	});
 
 	light_meta
 		.view_gpu_lights
@@ -1489,7 +1500,7 @@ pub fn prepare_clusters(
 		mesh_pipeline.clustered_forward_buffer_binding_type,
 		BufferBindingType::Storage { .. }
 	);
-	for (entity, cluster_config, extracted_clusters) in views.iter() {
+	views.for_each(|(entity, cluster_config, extracted_clusters)| {
 		let mut view_clusters_bindings =
 			ViewClusterBindings::new(mesh_pipeline.clustered_forward_buffer_binding_type);
 		view_clusters_bindings.clear();
@@ -1533,7 +1544,7 @@ pub fn prepare_clusters(
 		commands
 			.get_or_spawn(entity)
 			.insert(view_clusters_bindings);
-	}
+	});
 }
 
 pub fn queue_shadow_view_bind_group(
@@ -1569,7 +1580,7 @@ pub fn queue_shadows(
 	directional_light_entities: Query<&VisibleEntities, With<ExtractedDirectionalLight>>,
 	spot_light_entities: Query<&VisibleEntities, With<ExtractedPointLight>>,
 ) {
-	for view_lights in view_lights.iter() {
+	view_lights.for_each(|view_lights| {
 		let draw_shadow_mesh = shadow_draw_functions
 			.read()
 			.get_id::<DrawShadowMesh>()
@@ -1620,7 +1631,7 @@ pub fn queue_shadows(
 				}
 			}
 		}
-	}
+	});
 }
 
 pub struct Shadow {

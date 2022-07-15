@@ -187,14 +187,14 @@ pub fn extract_uinodes(
 	>,
 ) {
 	extracted_uinodes.uinodes.clear();
-	for (uinode, transform, color, image, visibility, clip) in uinode_query.iter() {
+	uinode_query.for_each(|(uinode, transform, color, image, visibility, clip)| {
 		if !visibility.is_visible {
-			continue;
+			return;
 		}
 		let image = image.0.clone_weak();
 		// Skip loading images
 		if !images.contains(&image) {
-			continue;
+			return;
 		}
 		extracted_uinodes.uinodes.push(ExtractedUiNode {
 			transform: transform.compute_matrix(),
@@ -207,7 +207,7 @@ pub fn extract_uinodes(
 			atlas_size: None,
 			clip: clip.map(|clip| clip.clip),
 		});
-	}
+	});
 }
 
 /// The UI camera is "moved back" by this many units (plus the [`UI_CAMERA_TRANSFORM_OFFSET`]) and also has a view
@@ -228,10 +228,10 @@ pub fn extract_default_ui_camera_view<T: Component>(
 	mut commands: Commands,
 	query: Extract<Query<(Entity, &Camera, Option<&UiCameraConfig>), With<T>>>,
 ) {
-	for (entity, camera, camera_ui) in query.iter() {
+	query.for_each(|(entity, camera, camera_ui)| {
 		// ignore cameras with disabled ui
 		if matches!(camera_ui, Some(&UiCameraConfig { show_ui: false, .. })) {
-			continue;
+			return;
 		}
 		if let (Some(logical_size), Some(physical_size)) = (
 			camera.logical_viewport_size(),
@@ -262,7 +262,7 @@ pub fn extract_default_ui_camera_view<T: Component>(
 				RenderPhase::<TransparentUi>::default(),
 			));
 		}
-	}
+	});
 }
 
 pub fn extract_text_uinodes(
@@ -282,13 +282,13 @@ pub fn extract_text_uinodes(
 	>,
 ) {
 	let scale_factor = windows.scale_factor(WindowId::primary()) as f32;
-	for (entity, uinode, transform, text, visibility, clip) in uinode_query.iter() {
+	uinode_query.for_each(|(entity, uinode, transform, text, visibility, clip)| {
 		if !visibility.is_visible {
-			continue;
+			return;
 		}
 		// Skip if size is set to zero (e.g. when a parent is set to `Display::None`)
 		if uinode.size == Vec2::ZERO {
-			continue;
+			return;
 		}
 		if let Some(text_layout) = text_pipeline.get_glyphs(&entity) {
 			let text_glyphs = &text_layout.glyphs;
@@ -322,7 +322,7 @@ pub fn extract_text_uinodes(
 				});
 			}
 		}
-	}
+	});
 }
 
 #[repr(C)]
@@ -538,7 +538,7 @@ pub fn queue_uinodes(
 			.get_id::<DrawUi>()
 			.unwrap();
 		let pipeline = pipelines.specialize(&mut pipeline_cache, &ui_pipeline, UiPipelineKey {});
-		for mut transparent_phase in views.iter_mut() {
+		views.for_each_mut(|mut transparent_phase| {
 			for (entity, batch) in ui_batches.into_iter() {
 				image_bind_groups
 					.values
@@ -567,6 +567,6 @@ pub fn queue_uinodes(
 					sort_key: FloatOrd(batch.z),
 				});
 			}
-		}
+		});
 	}
 }
