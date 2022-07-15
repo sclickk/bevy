@@ -103,15 +103,25 @@ impl ShaderCache {
 			.data
 			.entry(handle.clone_weak())
 			.or_default();
-		let n_asset_imports = shader
-			.imports()
-			.filter(|import| matches!(import, ShaderImport::AssetPath(_)))
-			.count();
+		let n_asset_imports = shader.imports().fold(0, |acc, import| {
+			acc
+				+ if matches!(import, ShaderImport::AssetPath(_)) {
+					1
+				} else {
+					0
+				}
+		});
 		let n_resolved_asset_imports = data
 			.resolved_imports
 			.keys()
-			.filter(|import| matches!(import, ShaderImport::AssetPath(_)))
-			.count();
+			.fold(0, |acc, import| {
+				acc
+					+ if matches!(import, ShaderImport::AssetPath(_)) {
+						1
+					} else {
+						0
+					}
+			});
 		if n_asset_imports != n_resolved_asset_imports {
 			return Err(PipelineCacheError::ShaderImportNotYetAvailable);
 		}
