@@ -382,6 +382,31 @@ impl<'w, 's> Commands<'w, 's> {
 		self.queue.push(InsertResource { resource });
 	}
 
+	/// Removes a resource from the [`World`].
+	///
+	/// See [`World::remove_resource`] for more details.
+	///
+	/// # Example
+	///
+	/// ```
+	/// # use bevy_ecs::prelude::*;
+	/// #
+	/// # struct Scoreboard {
+	/// #     current_score: u32,
+	/// #     high_score: u32,
+	/// # }
+	/// #
+	/// # fn system(mut commands: Commands) {
+	/// commands.remove_resource::<Scoreboard>();
+	/// # }
+	/// # bevy_ecs::system::assert_is_system(system);
+	/// ```
+	pub fn remove_resource<R: Resource>(&mut self) {
+		self.queue.push(RemoveResource::<R> {
+			phantom: PhantomData,
+		});
+	}
+
 	/// Adds a command directly to the command queue.
 	///
 	/// `command` can be a built-in command, custom struct that implements [`Command`] or a closure
