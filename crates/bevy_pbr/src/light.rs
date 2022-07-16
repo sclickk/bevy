@@ -1678,41 +1678,42 @@ pub fn check_light_mesh_visibility(
 					radius: point_light.range,
 				};
 
-				for (
-					entity,
-					visibility,
-					mut computed_visibility,
-					maybe_entity_mask,
-					maybe_aabb,
-					maybe_transform,
-				) in visible_entity_query.iter_mut()
-				{
-					if !visibility.is_visible {
-						continue;
-					}
-
-					let entity_mask = maybe_entity_mask.copied().unwrap_or_default();
-					if !view_mask.intersects(&entity_mask) {
-						continue;
-					}
-
-					// If we have an aabb and transform, do frustum culling
-					if let (Some(aabb), Some(transform)) = (maybe_aabb, maybe_transform) {
-						let model_to_world = transform.compute_matrix();
-						// Do a cheap sphere vs obb test to prune out most meshes outside the sphere of the light
-						if !light_sphere.intersects_obb(aabb, &model_to_world) {
-							continue;
+				visible_entity_query.for_each_mut(
+					|(
+						entity,
+						visibility,
+						mut computed_visibility,
+						maybe_entity_mask,
+						maybe_aabb,
+						maybe_transform,
+					)| {
+						if !visibility.is_visible {
+							return;
 						}
 
-						if frustum.intersects_obb(aabb, &model_to_world, true) {
+						let entity_mask = maybe_entity_mask.copied().unwrap_or_default();
+						if !view_mask.intersects(&entity_mask) {
+							return;
+						}
+
+						// If we have an aabb and transform, do frustum culling
+						if let (Some(aabb), Some(transform)) = (maybe_aabb, maybe_transform) {
+							let model_to_world = transform.compute_matrix();
+							// Do a cheap sphere vs obb test to prune out most meshes outside the sphere of the light
+							if !light_sphere.intersects_obb(aabb, &model_to_world) {
+								return;
+							}
+
+							if frustum.intersects_obb(aabb, &model_to_world, true) {
+								computed_visibility.is_visible = true;
+								visible_entities.entities.push(entity);
+							}
+						} else {
 							computed_visibility.is_visible = true;
 							visible_entities.entities.push(entity);
 						}
-					} else {
-						computed_visibility.is_visible = true;
-						visible_entities.entities.push(entity);
-					}
-				}
+					},
+				);
 
 				// TODO: check for big changes in visible entities len() vs capacity() (ex: 2x) and resize
 				// to prevent holding unneeded memory
