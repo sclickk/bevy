@@ -310,10 +310,10 @@ mod test {
 			.insert(GlobalTransform::default())
 			.with_children(|builder| {
 				child = builder
-					.spawn_bundle((Transform::identity(), GlobalTransform::default()))
+					.spawn_bundle((Transform::IDENTITY, GlobalTransform::default()))
 					.with_children(|builder| {
 						grandchild = builder
-							.spawn_bundle((Transform::identity(), GlobalTransform::default()))
+							.spawn_bundle((Transform::IDENTITY, GlobalTransform::default()))
 							.id();
 					})
 					.id();
@@ -354,11 +354,11 @@ mod test {
 			let mut grandchild = Entity::from_raw(0);
 			let child = world
 				.spawn()
-				.insert_bundle((Transform::identity(), GlobalTransform::default()))
+				.insert_bundle((Transform::IDENTITY, GlobalTransform::default()))
 				.with_children(|builder| {
 					grandchild = builder
 						.spawn()
-						.insert_bundle((Transform::identity(), GlobalTransform::default()))
+						.insert_bundle((Transform::IDENTITY, GlobalTransform::default()))
 						.id();
 				})
 				.id();
