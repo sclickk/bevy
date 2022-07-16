@@ -179,21 +179,21 @@ impl SpecializedRenderPipeline for ColoredMesh2dPipeline {
 					write_mask: ColorWrites::ALL,
 				})],
 			}),
+			multisample: MultisampleState {
+				count: key.msaa_samples(),
+				mask: !0,
+				alpha_to_coverage_enabled: false,
+			},
 			primitive: PrimitiveState {
 				front_face: FrontFace::Ccw,
 				cull_mode: Some(Face::Back),
 				unclipped_depth: false,
 				polygon_mode: PolygonMode::Fill,
 				conservative: false,
-				topology: key.primitive_topology(),
+				topology: key.into(),
 				strip_index_format: None,
 			},
 			depth_stencil: None,
-			multisample: MultisampleState {
-				count: key.msaa_samples(),
-				mask: !0,
-				alpha_to_coverage_enabled: false,
-			},
 		}
 	}
 }
