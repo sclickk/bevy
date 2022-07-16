@@ -434,43 +434,42 @@ struct WorldQueryFieldInfo {
 }
 
 fn read_world_query_field_info(field: &Field) -> WorldQueryFieldInfo {
-	let is_ignored = field
-		.attrs
-		.iter()
-		.find(|attr| {
-			attr
-				.path
-				.get_ident()
-				.map_or(false, |ident| ident == WORLD_QUERY_ATTRIBUTE_NAME)
-		})
-		.map_or(false, |attr| {
-			let mut is_ignored = false;
-			attr
-				.parse_args_with(|input: ParseStream| {
-					if input
-						.parse::<Option<field_attr_keywords::ignore>>()?
-						.is_some()
-					{
-						is_ignored = true;
-					}
-					Ok(())
-				})
-				.unwrap_or_else(|_| panic!("Invalid `{}` attribute format", WORLD_QUERY_ATTRIBUTE_NAME));
+	WorldQueryFieldInfo {
+		is_ignored: field
+			.attrs
+			.iter()
+			.find(|attr| {
+				attr
+					.path
+					.get_ident()
+					.map_or(false, |ident| ident == WORLD_QUERY_ATTRIBUTE_NAME)
+			})
+			.map_or(false, |attr| {
+				let mut is_ignored = false;
+				attr
+					.parse_args_with(|input: ParseStream| {
+						if input
+							.parse::<Option<field_attr_keywords::ignore>>()?
+							.is_some()
+						{
+							is_ignored = true;
+						}
+						Ok(())
+					})
+					.unwrap_or_else(|_| panic!("Invalid `{}` attribute format", WORLD_QUERY_ATTRIBUTE_NAME));
 
-			is_ignored
-		});
-
-	let attrs = field
-		.attrs
-		.iter()
-		.filter(|attr| {
-			attr
-				.path
-				.get_ident()
-				.map_or(true, |ident| ident != WORLD_QUERY_ATTRIBUTE_NAME)
-		})
-		.cloned()
-		.collect();
-
-	WorldQueryFieldInfo { is_ignored, attrs }
+				is_ignored
+			}),
+		attrs: field
+			.attrs
+			.iter()
+			.filter(|attr| {
+				attr
+					.path
+					.get_ident()
+					.map_or(true, |ident| ident != WORLD_QUERY_ATTRIBUTE_NAME)
+			})
+			.cloned()
+			.collect(),
+	}
 }
