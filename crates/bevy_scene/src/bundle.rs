@@ -71,7 +71,7 @@ pub fn scene_spawner(
 				.insert(SceneInstance(new_instance));
 		}
 	}
-	for (entity, dynamic_scene, instance) in &mut dynamic_scene_to_spawn {
+	dynamic_scene_to_spawn.for_each_mut(|(entity, dynamic_scene, instance)| {
 		let new_instance = scene_spawner.spawn_dynamic_as_child(dynamic_scene.clone(), entity);
 		if let Some(mut old_instance) = instance {
 			scene_spawner.despawn_instance(**old_instance);
@@ -81,5 +81,5 @@ pub fn scene_spawner(
 				.entity(entity)
 				.insert(SceneInstance(new_instance));
 		}
-	}
+	});
 }
