@@ -129,7 +129,7 @@ fn queue_wireframes(
 		.get_id::<DrawWireframes>()
 		.unwrap();
 	let msaa_key = MeshPipelineKey::from_msaa_samples(msaa.samples);
-	for (view, visible_entities, mut opaque_phase) in views.iter_mut() {
+	views.for_each_mut(|(view, visible_entities, mut opaque_phase)| {
 		let rangefinder = view.rangefinder3d();
 
 		let add_render_phase =
@@ -169,7 +169,7 @@ fn queue_wireframes(
 				.filter_map(|visible_entity| query.get(*visible_entity).ok())
 				.for_each(add_render_phase);
 		}
-	}
+	});
 }
 
 type DrawWireframes = (
