@@ -22,9 +22,9 @@ pub fn collide(a_pos: Vec3, a_size: Vec2, b_pos: Vec3, b_size: Vec2) -> Option<C
 
 	let cmp_1 = [
 		a.start.x < b.end.x,
-		a.end.x > b.start.x,
+		b.start.x < a.end.x,
 		a.start.y < b.end.y,
-		a.end.y > b.start.y,
+		b.start.y < a.end.y,
 	];
 
 	// check to see if the two rectangles are intersecting
