@@ -10,18 +10,18 @@ use bevy_utils::Duration;
 /// # use bevy_time::*;
 /// use std::time::Duration;
 /// let mut stopwatch = Stopwatch::new();
-/// assert_eq!(stopwatch.elapsed_secs(), 0.0);
+/// assert_eq!(stopwatch.elapsed().as_secs_f32(), 0.0);
 ///
 /// stopwatch.tick(Duration::from_secs_f32(1.0)); // tick one second
-/// assert_eq!(stopwatch.elapsed_secs(), 1.0);
+/// assert_eq!(stopwatch.elapsed().as_secs_f32(), 1.0);
 ///
 /// stopwatch.pause();
 /// stopwatch.tick(Duration::from_secs_f32(1.0)); // paused stopwatches don't tick
-/// assert_eq!(stopwatch.elapsed_secs(), 1.0);
+/// assert_eq!(stopwatch.elapsed().as_secs_f32(), 1.0);
 ///
 /// stopwatch.reset(); // reset the stopwatch
 /// assert!(stopwatch.paused());
-/// assert_eq!(stopwatch.elapsed_secs(), 0.0);
+/// assert_eq!(stopwatch.elapsed().as_secs_f32(), 0.0);
 /// ```
 #[derive(Clone, Debug, Default, Reflect)]
 #[reflect(Default)]
@@ -37,7 +37,7 @@ impl Stopwatch {
 	/// ```
 	/// # use bevy_time::*;
 	/// let stopwatch = Stopwatch::new();
-	/// assert_eq!(stopwatch.elapsed_secs(), 0.0);
+	/// assert_eq!(stopwatch.elapsed().as_secs_f32(), 0.0);
 	/// assert_eq!(stopwatch.paused(), false);
 	/// ```
 	pub fn new() -> Self {
@@ -72,7 +72,7 @@ impl Stopwatch {
 	/// use std::time::Duration;
 	/// let mut stopwatch = Stopwatch::new();
 	/// stopwatch.set_elapsed(Duration::from_secs_f32(1.0));
-	/// assert_eq!(stopwatch.elapsed_secs(), 1.0);
+	/// assert_eq!(stopwatch.elapsed().as_secs_f32(), 1.0);
 	/// ```
 	#[inline]
 	pub fn set_elapsed(&mut self, time: Duration) {
@@ -89,7 +89,7 @@ impl Stopwatch {
 	/// use std::time::Duration;
 	/// let mut stopwatch = Stopwatch::new();
 	/// stopwatch.tick(Duration::from_secs_f32(1.5));
-	/// assert_eq!(stopwatch.elapsed_secs(), 1.5);
+	/// assert_eq!(stopwatch.elapsed().as_secs_f32(), 1.5);
 	/// ```
 	pub fn tick(&mut self, delta: Duration) -> &Self {
 		if !self.paused() {
@@ -109,7 +109,7 @@ impl Stopwatch {
 	/// stopwatch.pause();
 	/// stopwatch.tick(Duration::from_secs_f32(1.5));
 	/// assert!(stopwatch.paused());
-	/// assert_eq!(stopwatch.elapsed_secs(), 0.0);
+	/// assert_eq!(stopwatch.elapsed().as_secs_f32(), 0.0);
 	/// ```
 	#[inline]
 	pub fn pause(&mut self) {
@@ -128,7 +128,7 @@ impl Stopwatch {
 	/// stopwatch.unpause();
 	/// stopwatch.tick(Duration::from_secs_f32(1.0));
 	/// assert!(!stopwatch.paused());
-	/// assert_eq!(stopwatch.elapsed_secs(), 1.0);
+	/// assert_eq!(stopwatch.elapsed().as_secs_f32(), 1.0);
 	/// ```
 	#[inline]
 	pub fn unpause(&mut self) {
@@ -161,7 +161,7 @@ impl Stopwatch {
 	/// let mut stopwatch = Stopwatch::new();
 	/// stopwatch.tick(Duration::from_secs_f32(1.5));
 	/// stopwatch.reset();
-	/// assert_eq!(stopwatch.elapsed_secs(), 0.0);
+	/// assert_eq!(stopwatch.elapsed().as_secs_f32(), 0.0);
 	/// ```
 	#[inline]
 	pub fn reset(&mut self) {

@@ -191,8 +191,8 @@ impl Timer {
 	/// let mut repeating = Timer::from_seconds(1.0, true);
 	/// timer.tick(Duration::from_secs_f32(1.5));
 	/// repeating.tick(Duration::from_secs_f32(1.5));
-	/// assert_eq!(timer.elapsed_secs(), 1.0);
-	/// assert_eq!(repeating.elapsed_secs(), 0.5);
+	/// assert_eq!(timer.elapsed().as_secs_f32(), 1.0);
+	/// assert_eq!(repeating.elapsed().as_secs_f32(), 0.5);
 	/// ```
 	pub fn tick(&mut self, delta: Duration) -> &Self {
 		if self.paused() {
@@ -239,7 +239,7 @@ impl Timer {
 	/// let mut timer = Timer::from_seconds(1.0, false);
 	/// timer.pause();
 	/// timer.tick(Duration::from_secs_f32(0.5));
-	/// assert_eq!(timer.elapsed_secs(), 0.0);
+	/// assert_eq!(timer.elapsed().as_secs_f32(), 0.0);
 	/// ```
 	#[inline]
 	pub fn pause(&mut self) {
@@ -259,7 +259,7 @@ impl Timer {
 	/// timer.tick(Duration::from_secs_f32(0.5));
 	/// timer.unpause();
 	/// timer.tick(Duration::from_secs_f32(0.5));
-	/// assert_eq!(timer.elapsed_secs(), 0.5);
+	/// assert_eq!(timer.elapsed().as_secs_f32(), 0.5);
 	/// ```
 	#[inline]
 	pub fn unpause(&mut self) {
@@ -298,7 +298,7 @@ impl Timer {
 	/// timer.reset();
 	/// assert!(!timer.finished());
 	/// assert!(!timer.just_finished());
-	/// assert_eq!(timer.elapsed_secs(), 0.0);
+	/// assert_eq!(timer.elapsed().as_secs_f32(), 0.0);
 	/// ```
 	pub fn reset(&mut self) {
 		self.stopwatch.reset();
@@ -370,7 +370,7 @@ mod tests {
 		let mut t = Timer::from_seconds(10.0, false);
 		// Tick once, check all attributes
 		t.tick(Duration::from_secs_f32(0.25));
-		assert_eq!(t.elapsed_secs(), 0.25);
+		assert_eq!(t.elapsed().as_secs_f32(), 0.25);
 		assert_eq!(t.duration(), Duration::from_secs_f32(10.0));
 		assert!(!t.finished());
 		assert!(!t.just_finished());
@@ -381,7 +381,7 @@ mod tests {
 		// Ticking while paused changes nothing
 		t.pause();
 		t.tick(Duration::from_secs_f32(500.0));
-		assert_eq!(t.elapsed_secs(), 0.25);
+		assert_eq!(t.elapsed().as_secs_f32(), 0.25);
 		assert_eq!(t.duration(), Duration::from_secs_f32(10.0));
 		assert!(!t.finished());
 		assert!(!t.just_finished());
@@ -392,7 +392,7 @@ mod tests {
 		// Tick past the end and make sure elapsed doesn't go past 0.0 and other things update
 		t.unpause();
 		t.tick(Duration::from_secs_f32(500.0));
-		assert_eq!(t.elapsed_secs(), 10.0);
+		assert_eq!(t.elapsed().as_secs_f32(), 10.0);
 		assert!(t.finished());
 		assert!(t.just_finished());
 		assert_eq!(t.times_finished_this_tick(), 1);
@@ -400,7 +400,7 @@ mod tests {
 		assert_eq!(t.percent_left(), 0.0);
 		// Continuing to tick when finished should only change just_finished
 		t.tick(Duration::from_secs_f32(1.0));
-		assert_eq!(t.elapsed_secs(), 10.0);
+		assert_eq!(t.elapsed().as_secs_f32(), 10.0);
 		assert!(t.finished());
 		assert!(!t.just_finished());
 		assert_eq!(t.times_finished_this_tick(), 0);
@@ -413,7 +413,7 @@ mod tests {
 		let mut t = Timer::from_seconds(2.0, true);
 		// Tick once, check all attributes
 		t.tick(Duration::from_secs_f32(0.75));
-		assert_eq!(t.elapsed_secs(), 0.75);
+		assert_eq!(t.elapsed().as_secs_f32(), 0.75);
 		assert_eq!(t.duration(), Duration::from_secs_f32(2.0));
 		assert!(!t.finished());
 		assert!(!t.just_finished());
@@ -423,7 +423,7 @@ mod tests {
 		assert_eq!(t.percent_left(), 0.625);
 		// Tick past the end and make sure elapsed wraps
 		t.tick(Duration::from_secs_f32(1.5));
-		assert_eq!(t.elapsed_secs(), 0.25);
+		assert_eq!(t.elapsed().as_secs_f32(), 0.25);
 		assert!(t.finished());
 		assert!(t.just_finished());
 		assert_eq!(t.times_finished_this_tick(), 1);
@@ -431,7 +431,7 @@ mod tests {
 		assert_eq!(t.percent_left(), 0.875);
 		// Continuing to tick should turn off both finished & just_finished for repeating timers
 		t.tick(Duration::from_secs_f32(1.0));
-		assert_eq!(t.elapsed_secs(), 1.25);
+		assert_eq!(t.elapsed().as_secs_f32(), 1.25);
 		assert!(!t.finished());
 		assert!(!t.just_finished());
 		assert_eq!(t.times_finished_this_tick(), 0);
@@ -445,7 +445,7 @@ mod tests {
 		assert_eq!(t.times_finished_this_tick(), 0);
 		t.tick(Duration::from_secs_f32(3.5));
 		assert_eq!(t.times_finished_this_tick(), 3);
-		assert_eq!(t.elapsed_secs(), 0.5);
+		assert_eq!(t.elapsed().as_secs_f32(), 0.5);
 		assert!(t.finished());
 		assert!(t.just_finished());
 		t.tick(Duration::from_secs_f32(0.2));
