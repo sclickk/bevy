@@ -832,38 +832,31 @@ impl RenderAsset for Mesh {
 		mesh: Self::ExtractedAsset,
 		render_device: &mut SystemParamItem<Self::Param>,
 	) -> Result<Self::PreparedAsset, PrepareAssetError<Self::ExtractedAsset>> {
-		let vertex_buffer_data = mesh.get_vertex_buffer_data();
-		let vertex_buffer = render_device.create_buffer_with_data(&BufferInitDescriptor {
-			usage: BufferUsages::VERTEX,
-			label: Some("Mesh Vertex Buffer"),
-			contents: &vertex_buffer_data,
-		});
-
-		let buffer_info = mesh.get_index_buffer_bytes().map_or(
-			GpuBufferInfo::NonIndexed {
-				vertex_count: mesh.count_vertices() as u32,
-			},
-			|data| {
-				let i = mesh.indices().unwrap();
-				GpuBufferInfo::Indexed {
-					buffer: render_device.create_buffer_with_data(&BufferInitDescriptor {
-						usage: BufferUsages::INDEX,
-						contents: data,
-						label: Some("Mesh Index Buffer"),
-					}),
-					count: i.len() as u32,
-					index_format: i.into(),
-				}
-			},
-		);
-
-		let mesh_vertex_buffer_layout = mesh.get_mesh_vertex_buffer_layout();
-
 		Ok(GpuMesh {
-			vertex_buffer,
-			buffer_info,
+			vertex_buffer: render_device.create_buffer_with_data(&BufferInitDescriptor {
+				usage: BufferUsages::VERTEX,
+				label: Some("Mesh Vertex Buffer"),
+				contents: &mesh.get_vertex_buffer_data(),
+			}),
+			buffer_info: mesh.get_index_buffer_bytes().map_or(
+				GpuBufferInfo::NonIndexed {
+					vertex_count: mesh.count_vertices() as u32,
+				},
+				|data| {
+					let i = mesh.indices().unwrap();
+					GpuBufferInfo::Indexed {
+						buffer: render_device.create_buffer_with_data(&BufferInitDescriptor {
+							usage: BufferUsages::INDEX,
+							contents: data,
+							label: Some("Mesh Index Buffer"),
+						}),
+						count: i.len() as u32,
+						index_format: i.into(),
+					}
+				},
+			),
+			layout: mesh.get_mesh_vertex_buffer_layout(),
 			primitive_topology: mesh.into(),
-			layout: mesh_vertex_buffer_layout,
 		})
 	}
 }
@@ -1000,13 +993,13 @@ fn generate_tangents_for_mesh(mesh: &Mesh) -> Result<Vec<[f32; 4]>, GenerateTang
 
 #[cfg(test)]
 mod tests {
-	use super::Mesh;
+	use super::{Mesh, MeshVertexAttribute};
 	use wgpu::PrimitiveTopology;
 
 	#[test]
 	#[should_panic]
 	fn panic_invalid_format() {
-		let mut mesh = Mesh::new(PrimitiveTopology::TriangleList);
+		let mut mesh = Mesh::from(PrimitiveTopology::TriangleList);
 		mesh.insert_attribute(MeshVertexAttribute::UV_0, vec![[0.0, 0.0, 0.0]]);
 	}
 }
