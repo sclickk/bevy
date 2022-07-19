@@ -160,7 +160,7 @@ fn prepare_view_uniforms(
 	views: Query<(Entity, &ExtractedView)>,
 ) {
 	view_uniforms.uniforms.clear();
-	views.for_each(|(entity, camera)| {
+	for (entity, camera) in &views {
 		let projection = camera.projection;
 		let inverse_projection = projection.inverse();
 		let view = camera.transform.compute_matrix();
@@ -173,13 +173,13 @@ fn prepare_view_uniforms(
 				inverse_view,
 				projection,
 				inverse_projection,
-				world_position: camera.transform.translation,
+				world_position: camera.transform.translation(),
 				width: camera.width as f32,
 				height: camera.height as f32,
 			}),
 		};
 		commands.entity(entity).insert(view_uniforms);
-	});
+	}
 
 	view_uniforms
 		.uniforms

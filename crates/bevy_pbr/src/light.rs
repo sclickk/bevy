@@ -1,7 +1,7 @@
 use std::collections::HashSet;
 
 use bevy_ecs::prelude::*;
-use bevy_math::{Mat4, Quat, UVec2, UVec3, Vec2, Vec3, Vec3A, Vec3Swizzles, Vec4, Vec4Swizzles};
+use bevy_math::{Mat4, UVec2, UVec3, Vec2, Vec3, Vec3A, Vec3Swizzles, Vec4, Vec4Swizzles};
 use bevy_reflect::prelude::*;
 use bevy_render::{
 	camera::{Camera, CameraProjection, OrthographicProjection},
@@ -10,9 +10,9 @@ use bevy_render::{
 	primitives::{Aabb, CubemapFrusta, Frustum, Plane, Sphere},
 	render_resource::BufferBindingType,
 	renderer::RenderDevice,
-	view::{ComputedVisibility, RenderLayers, Visibility, VisibleEntities},
+	view::{ComputedVisibility, RenderLayers, VisibleEntities},
 };
-use bevy_transform::components::GlobalTransform;
+use bevy_transform::{components::GlobalTransform, prelude::Transform};
 use bevy_utils::tracing::warn;
 
 use crate::{
@@ -763,11 +763,19 @@ pub(crate) fn point_light_order(
 // data required for assigning lights to clusters
 pub(crate) struct PointLightAssignmentData {
 	entity: Entity,
-	translation: Vec3,
-	rotation: Quat,
+	transform: GlobalTransform,
 	range: f32,
 	shadows_enabled: bool,
 	spot_light_angle: Option<f32>,
+}
+
+impl PointLightAssignmentData {
+	pub fn sphere(&self) -> Sphere {
+		Sphere {
+			center: self.transform.translation_vec3a(),
+			radius: self.range,
+		}
+	}
 }
 
 #[derive(Default)]
@@ -801,8 +809,8 @@ pub(crate) fn assign_lights_to_clusters(
 		&mut Clusters,
 		Option<&mut VisiblePointLights>,
 	)>,
-	point_lights_query: Query<(Entity, &GlobalTransform, &PointLight, &Visibility)>,
-	spot_lights_query: Query<(Entity, &GlobalTransform, &SpotLight, &Visibility)>,
+	point_lights_query: Query<(Entity, &GlobalTransform, &PointLight, &ComputedVisibility)>,
+	spot_lights_query: Query<(Entity, &GlobalTransform, &SpotLight, &ComputedVisibility)>,
 	mut lights: Local<Vec<PointLightAssignmentData>>,
 	mut cluster_aabb_spheres: Local<Vec<Option<Sphere>>>,
 	mut max_point_lights_warning_emitted: Local<bool>,
@@ -816,34 +824,34 @@ pub(crate) fn assign_lights_to_clusters(
 	global_lights.entities.clear();
 	lights.clear();
 	// collect just the relevant light query data into a persisted vec to avoid reallocating each frame
-	lights.extend(point_lights_query.into_iter().filter_map(
-		|(entity, transform, point_light, visibility)| {
-			visibility
-				.is_visible
-				.then(|| PointLightAssignmentData {
+	lights.extend(
+		point_lights_query
+			.into_iter()
+			.filter(|(.., visibility)| visibility.is_visible())
+			.map(
+				|(entity, transform, point_light, _visibility)| PointLightAssignmentData {
 					entity,
-					translation: transform.translation,
-					rotation: Quat::default(),
+					transform: GlobalTransform::from_translation(transform.translation()),
 					shadows_enabled: point_light.shadows_enabled,
 					range: point_light.range,
 					spot_light_angle: None,
-				})
-		},
-	));
-	lights.extend(spot_lights_query.into_iter().filter_map(
-		|(entity, transform, spot_light, visibility)| {
-			visibility
-				.is_visible
-				.then(|| PointLightAssignmentData {
+				},
+			),
+	);
+	lights.extend(
+		spot_lights_query
+			.into_iter()
+			.filter(|(.., visibility)| visibility.is_visible())
+			.map(
+				|(entity, transform, spot_light, _visibility)| PointLightAssignmentData {
 					entity,
-					translation: transform.translation,
-					rotation: transform.rotation,
+					transform: *transform,
 					shadows_enabled: spot_light.shadows_enabled,
 					range: spot_light.range,
 					spot_light_angle: Some(spot_light.outer_angle),
-				})
-		},
-	));
+				},
+			),
+	);
 
 	let clustered_forward_buffer_binding_type =
 		render_device.get_supported_read_only_binding_type(CLUSTERED_FORWARD_STORAGE_BUFFER_COUNT);
@@ -878,11 +886,7 @@ pub(crate) fn assign_lights_to_clusters(
 			if lights_in_view_count == MAX_UNIFORM_BUFFER_POINT_LIGHTS + 1 {
 				false
 			} else {
-				let light_sphere = Sphere {
-					center: Vec3A::from(light.translation),
-					radius: light.range,
-				};
-
+				let light_sphere = light.sphere();
 				let light_in_view = frusta
 					.iter()
 					.any(|frustum| frustum.intersects_sphere(&light_sphere, true));
@@ -939,7 +943,9 @@ pub(crate) fn assign_lights_to_clusters(
 				let inverse_view_row_2 = inverse_view_transform.row(2);
 				lights
 					.iter()
-					.map(|light| -inverse_view_row_2.dot(light.translation.extend(1.0)) + light.range)
+					.map(|light| {
+						-inverse_view_row_2.dot(light.transform.translation().extend(1.0)) + light.range
+					})
 					.reduce(f32::max)
 					.unwrap_or(0.0)
 			},
@@ -972,10 +978,7 @@ pub(crate) fn assign_lights_to_clusters(
 		if config.dynamic_resizing() {
 			let mut cluster_index_estimate = 0.0;
 			for light in lights.iter() {
-				let light_sphere = Sphere {
-					center: Vec3A::from(light.translation),
-					radius: light.range,
-				};
+				let light_sphere = light.sphere();
 
 				// Check if the light is within the view frustum
 				if !frustum.intersects_sphere(&light_sphere, true) {
@@ -1123,10 +1126,7 @@ pub(crate) fn assign_lights_to_clusters(
 
 		let mut update_from_light_intersections = |visible_lights: &mut Vec<Entity>| {
 			for light in lights.iter() {
-				let light_sphere = Sphere {
-					center: Vec3A::from(light.translation),
-					radius: light.range,
-				};
+				let light_sphere = light.sphere();
 
 				// Check if the light is within the view frustum
 				if !frustum.intersects_sphere(&light_sphere, true) {
@@ -1175,7 +1175,7 @@ pub(crate) fn assign_lights_to_clusters(
 				let spot_light_dir_sin_cos = light.spot_light_angle.map(|angle| {
 					let (angle_sin, angle_cos) = angle.sin_cos();
 					(
-						(inverse_view_transform * (light.rotation * Vec3::Z).extend(0.0)).truncate(),
+						(inverse_view_transform * light.transform.back().extend(0.0)).truncate(),
 						angle_sin,
 						angle_cos,
 					)
@@ -1397,28 +1397,30 @@ pub fn update_directional_light_frusta(
 			&GlobalTransform,
 			&DirectionalLight,
 			&mut Frustum,
-			&Visibility,
+			&ComputedVisibility,
 		),
 		Or<(Changed<GlobalTransform>, Changed<DirectionalLight>)>,
 	>,
 ) {
-	views.for_each_mut(|(transform, directional_light, mut frustum, visibility)| {
+	for (transform, directional_light, mut frustum, visibility) in &mut views {
 		// The frustum is used for culling meshes to the light for shadow mapping
 		// so if shadow mapping is disabled for this light, then the frustum is
 		// not needed.
-		if directional_light.shadows_enabled && visibility.is_visible {
-			let view_projection = directional_light
-				.shadow_projection
-				.get_projection_matrix()
-				* transform.compute_matrix().inverse();
-			*frustum = Frustum::from_view_projection(
-				&view_projection,
-				&transform.translation,
-				&transform.back(),
-				directional_light.shadow_projection.far(),
-			);
+		if !directional_light.shadows_enabled || !visibility.is_visible() {
+			continue;
 		}
-	});
+
+		let view_projection = directional_light
+			.shadow_projection
+			.get_projection_matrix()
+			* transform.compute_matrix().inverse();
+		*frustum = Frustum::from_view_projection(
+			&view_projection,
+			&transform.translation(),
+			&transform.back(),
+			directional_light.shadow_projection.far(),
+		);
+	}
 }
 
 // NOTE: Run this after assign_lights_to_clusters!
@@ -1432,8 +1434,8 @@ pub fn update_point_light_frusta(
 	let projection =
 		Mat4::perspective_infinite_reverse_rh(std::f32::consts::FRAC_PI_2, 1.0, POINT_LIGHT_NEAR_Z);
 	let view_rotations = CUBE_MAP_FACES
-		.into_iter()
-		.map(|CubeMapFace { target, up }| GlobalTransform::identity().looking_at(target, up))
+		.iter()
+		.map(|CubeMapFace { target, up }| Transform::IDENTITY.looking_at(*target, *up))
 		.collect::<Vec<_>>();
 
 	views.for_each_mut(|(entity, transform, point_light, mut cubemap_frusta)| {
@@ -1449,7 +1451,7 @@ pub fn update_point_light_frusta(
 		// ignore scale because we don't want to effectively scale light radius and range
 		// by applying those as a view transform to shadow map rendering of objects
 		// and ignore rotation because we want the shadow map projections to align with the axes
-		let view_translation = GlobalTransform::from_translation(transform.translation);
+		let view_translation = Transform::from_translation(transform.translation());
 		let view_backward = transform.back();
 
 		for (view_rotation, frustum) in view_rotations
@@ -1461,7 +1463,7 @@ pub fn update_point_light_frusta(
 
 			*frustum = Frustum::from_view_projection(
 				&view_projection,
-				&transform.translation,
+				&transform.translation(),
 				&view_backward,
 				point_light.range,
 			);
@@ -1476,32 +1478,31 @@ pub fn update_spot_light_frusta(
 		Or<(Changed<GlobalTransform>, Changed<SpotLight>)>,
 	>,
 ) {
-	for (entity, transform, spot_light, mut frustum) in views.iter_mut() {
+	views.for_each_mut(|(entity, transform, spot_light, mut frustum)| {
 		// The frusta are used for culling meshes to the light for shadow mapping
 		// so if shadow mapping is disabled for this light, then the frusta are
 		// not needed.
 		// Also, if the light is not relevant for any cluster, it will not be in the
 		// global lights set and so there is no need to update its frusta.
 		if !spot_light.shadows_enabled || !global_lights.entities.contains(&entity) {
-			continue;
+			return;
 		}
-
+	
 		// ignore scale because we don't want to effectively scale light radius and range
 		// by applying those as a view transform to shadow map rendering of objects
-		let view_translation = GlobalTransform::from_translation(transform.translation);
 		let view_backward = transform.back();
-
+	
 		let spot_view = spot_light_view_matrix(transform);
 		let spot_projection = spot_light_projection_matrix(spot_light.outer_angle);
 		let view_projection = spot_projection * spot_view.inverse();
-
+	
 		*frustum = Frustum::from_view_projection(
 			&view_projection,
-			&view_translation.translation,
+			&transform.translation(),
 			&view_backward,
 			spot_light.range,
 		);
-	}
+	});
 }
 
 pub fn check_light_mesh_visibility(
@@ -1526,45 +1527,43 @@ pub fn check_light_mesh_visibility(
 			&Frustum,
 			&mut VisibleEntities,
 			Option<&RenderLayers>,
-			&Visibility,
+			&ComputedVisibility,
 		),
 		Without<SpotLight>,
 	>,
 	mut visible_entity_query: Query<
 		(
 			Entity,
-			&Visibility,
 			&mut ComputedVisibility,
 			Option<&RenderLayers>,
 			Option<&Aabb>,
 			Option<&GlobalTransform>,
 		),
-		Without<NotShadowCaster>,
+		(Without<NotShadowCaster>, Without<DirectionalLight>),
 	>,
 ) {
-	// Directonal lights
-	for (directional_light, frustum, mut visible_entities, maybe_view_mask, visibility) in
-		directional_lights.iter_mut()
+	// Directional lights
+	for (
+		directional_light,
+		frustum,
+		mut visible_entities,
+		maybe_view_mask,
+		light_computed_visibility,
+	) in &mut directional_lights
 	{
 		visible_entities.entities.clear();
 
 		// NOTE: If shadow mapping is disabled for the light then it must have no visible entities
-		if !directional_light.shadows_enabled || !visibility.is_visible {
+		if !directional_light.shadows_enabled || !light_computed_visibility.is_visible() {
 			continue;
 		}
 
 		let view_mask = maybe_view_mask.copied().unwrap_or_default();
 
-		for (
-			entity,
-			visibility,
-			mut computed_visibility,
-			maybe_entity_mask,
-			maybe_aabb,
-			maybe_transform,
-		) in visible_entity_query.iter_mut()
+		for (entity, mut computed_visibility, maybe_entity_mask, maybe_aabb, maybe_transform) in
+			&mut visible_entity_query
 		{
-			if !visibility.is_visible {
+			if !computed_visibility.is_visible_in_hierarchy() {
 				continue;
 			}
 
@@ -1580,7 +1579,7 @@ pub fn check_light_mesh_visibility(
 				}
 			}
 
-			computed_visibility.is_visible = true;
+			computed_visibility.set_visible_in_view();
 			visible_entities.entities.push(entity);
 		}
 
@@ -1610,20 +1609,14 @@ pub fn check_light_mesh_visibility(
 
 				let view_mask = maybe_view_mask.copied().unwrap_or_default();
 				let light_sphere = Sphere {
-					center: Vec3A::from(transform.translation),
+					center: Vec3A::from(transform.translation()),
 					radius: point_light.range,
 				};
 
-				for (
-					entity,
-					visibility,
-					mut computed_visibility,
-					maybe_entity_mask,
-					maybe_aabb,
-					maybe_transform,
-				) in visible_entity_query.iter_mut()
+				for (entity, mut computed_visibility, maybe_entity_mask, maybe_aabb, maybe_transform) in
+					&mut visible_entity_query
 				{
-					if !visibility.is_visible {
+					if !computed_visibility.is_visible_in_hierarchy() {
 						continue;
 					}
 
@@ -1645,12 +1638,12 @@ pub fn check_light_mesh_visibility(
 							.zip(cubemap_visible_entities.iter_mut())
 						{
 							if frustum.intersects_obb(aabb, &model_to_world, true) {
-								computed_visibility.is_visible = true;
+								computed_visibility.set_visible_in_view();
 								visible_entities.entities.push(entity);
 							}
 						}
 					} else {
-						computed_visibility.is_visible = true;
+						computed_visibility.set_visible_in_view();
 						for visible_entities in cubemap_visible_entities.iter_mut() {
 							visible_entities.entities.push(entity);
 						}
@@ -1674,46 +1667,39 @@ pub fn check_light_mesh_visibility(
 
 				let view_mask = maybe_view_mask.copied().unwrap_or_default();
 				let light_sphere = Sphere {
-					center: Vec3A::from(transform.translation),
+					center: Vec3A::from(transform.translation()),
 					radius: point_light.range,
 				};
 
-				visible_entity_query.for_each_mut(
-					|(
-						entity,
-						visibility,
-						mut computed_visibility,
-						maybe_entity_mask,
-						maybe_aabb,
-						maybe_transform,
-					)| {
-						if !visibility.is_visible {
+				for (entity, mut computed_visibility, maybe_entity_mask, maybe_aabb, maybe_transform) in
+					visible_entity_query.iter_mut()
+				{
+					if !computed_visibility.is_visible_in_hierarchy() {
+						continue;
+					}
+
+					let entity_mask = maybe_entity_mask.copied().unwrap_or_default();
+					if !view_mask.intersects(&entity_mask) {
+						return;
+					}
+
+					// If we have an aabb and transform, do frustum culling
+					if let (Some(aabb), Some(transform)) = (maybe_aabb, maybe_transform) {
+						let model_to_world = transform.compute_matrix();
+						// Do a cheap sphere vs obb test to prune out most meshes outside the sphere of the light
+						if !light_sphere.intersects_obb(aabb, &model_to_world) {
 							return;
 						}
 
-						let entity_mask = maybe_entity_mask.copied().unwrap_or_default();
-						if !view_mask.intersects(&entity_mask) {
-							return;
-						}
-
-						// If we have an aabb and transform, do frustum culling
-						if let (Some(aabb), Some(transform)) = (maybe_aabb, maybe_transform) {
-							let model_to_world = transform.compute_matrix();
-							// Do a cheap sphere vs obb test to prune out most meshes outside the sphere of the light
-							if !light_sphere.intersects_obb(aabb, &model_to_world) {
-								return;
-							}
-
-							if frustum.intersects_obb(aabb, &model_to_world, true) {
-								computed_visibility.is_visible = true;
-								visible_entities.entities.push(entity);
-							}
-						} else {
-							computed_visibility.is_visible = true;
+						if frustum.intersects_obb(aabb, &model_to_world, true) {
+							computed_visibility.set_visible_in_view();
 							visible_entities.entities.push(entity);
 						}
-					},
-				);
+					} else {
+						computed_visibility.set_visible_in_view();
+						visible_entities.entities.push(entity);
+					}
+				}
 
 				// TODO: check for big changes in visible entities len() vs capacity() (ex: 2x) and resize
 				// to prevent holding unneeded memory

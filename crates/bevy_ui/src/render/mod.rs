@@ -20,7 +20,7 @@ use bevy_render::{
 	render_resource::*,
 	renderer::{RenderDevice, RenderQueue},
 	texture::Image,
-	view::{ExtractedView, ViewUniforms, Visibility},
+	view::{ComputedVisibility, ExtractedView, ViewUniforms},
 	Extract, RenderApp, RenderStage,
 };
 use bevy_sprite::{Rect, SpriteAssetEvents, TextureAtlas};
@@ -181,14 +181,14 @@ pub fn extract_uinodes(
 			&GlobalTransform,
 			&UiColor,
 			&UiImage,
-			&Visibility,
+			&ComputedVisibility,
 			Option<&CalculatedClip>,
 		)>,
 	>,
 ) {
 	extracted_uinodes.uinodes.clear();
 	uinode_query.for_each(|(uinode, transform, color, image, visibility, clip)| {
-		if !visibility.is_visible {
+		if !visibility.is_visible() {
 			return;
 		}
 		let image = image.0.clone_weak();
@@ -276,53 +276,56 @@ pub fn extract_text_uinodes(
 			&Node,
 			&GlobalTransform,
 			&Text,
-			&Visibility,
+			&ComputedVisibility,
 			Option<&CalculatedClip>,
 		)>,
 	>,
 ) {
 	let scale_factor = windows.scale_factor(WindowId::primary()) as f32;
-	uinode_query.for_each(|(entity, uinode, transform, text, visibility, clip)| {
-		if !visibility.is_visible {
-			return;
-		}
-		// Skip if size is set to zero (e.g. when a parent is set to `Display::None`)
-		if uinode.size == Vec2::ZERO {
-			return;
-		}
-		if let Some(text_layout) = text_pipeline.get_glyphs(&entity) {
-			let text_glyphs = &text_layout.glyphs;
-			let alignment_offset = (uinode.size / -2.0).extend(0.0);
-
-			for text_glyph in text_glyphs {
-				let color = text.sections[text_glyph.section_index]
-					.style
-					.color;
-				let atlas = texture_atlases
-					.get(&text_glyph.atlas_info.texture_atlas)
-					.unwrap();
-				let texture = atlas.texture.clone_weak();
-				let index = text_glyph.atlas_info.glyph_index as usize;
-				let rect = atlas.textures[index];
-				let atlas_size = Some(atlas.size);
-
-				let transform = Mat4::from_rotation_translation(transform.rotation, transform.translation)
-					* Mat4::from_scale(transform.scale / scale_factor)
-					* Mat4::from_translation(
-						alignment_offset * scale_factor + text_glyph.position.extend(0.),
-					);
-
-				extracted_uinodes.uinodes.push(ExtractedUiNode {
-					transform,
-					color,
-					rect,
-					image: texture,
-					atlas_size,
-					clip: clip.map(|clip| clip.clip),
-				});
+	uinode_query.for_each(
+		|(entity, uinode, global_transform, text, visibility, clip)| {
+			if !visibility.is_visible() {
+				return;
 			}
-		}
-	});
+			// Skip if size is set to zero (e.g. when a parent is set to `Display::None`)
+			if uinode.size == Vec2::ZERO {
+				return;
+			}
+			if let Some(text_layout) = text_pipeline.get_glyphs(&entity) {
+				let text_glyphs = &text_layout.glyphs;
+				let alignment_offset = (uinode.size / -2.0).extend(0.0);
+
+				for text_glyph in text_glyphs {
+					let color = text.sections[text_glyph.section_index]
+						.style
+						.color;
+					let atlas = texture_atlases
+						.get(&text_glyph.atlas_info.texture_atlas)
+						.unwrap();
+					let texture = atlas.texture.clone_weak();
+					let index = text_glyph.atlas_info.glyph_index as usize;
+					let rect = atlas.textures[index];
+					let atlas_size = Some(atlas.size);
+
+					// NOTE: Should match `bevy_text::text2d::extract_text2d_sprite`
+					let extracted_transform = global_transform.compute_matrix()
+						* Mat4::from_scale(Vec3::splat(scale_factor.recip()))
+						* Mat4::from_translation(
+							alignment_offset * scale_factor + text_glyph.position.extend(0.),
+						);
+
+					extracted_uinodes.uinodes.push(ExtractedUiNode {
+						transform: extracted_transform,
+						color,
+						rect,
+						image: texture,
+						atlas_size,
+						clip: clip.map(|clip| clip.clip),
+					});
+				}
+			}
+		},
+	);
 }
 
 #[repr(C)]

@@ -16,7 +16,15 @@ lto = "thin"
 
 [workspace]
 exclude = ["benches", "crates/bevy_ecs_compile_fail_tests"]
-members = ["crates/*", "examples/ios", "tools/ci", "tools/spancmp", "tools/build-example-pages", "tools/build-wasm-example", "errors"]
+members = [
+  "crates/*",
+  "examples/ios",
+  "tools/ci",
+  "tools/spancmp",
+  "tools/build-example-pages",
+  "tools/build-wasm-example",
+  "errors",
+]
 
 [features]
 default = [
@@ -281,6 +289,16 @@ path = "examples/3d/lighting.rs"
 [package.metadata.example.lighting]
 name = "Lighting"
 description = "Illustrates various lighting options in a simple scene"
+category = "3D Rendering"
+wasm = true
+
+[[example]]
+name = "lines"
+path = "examples/3d/lines.rs"
+
+[package.metadata.example.lines]
+name = "Lines"
+description = "Create a custom material to draw 3d lines"
 category = "3D Rendering"
 wasm = true
 

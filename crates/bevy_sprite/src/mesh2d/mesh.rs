@@ -127,9 +127,9 @@ pub fn extract_mesh2d(
 	query: Extract<Query<(Entity, &ComputedVisibility, &GlobalTransform, &Mesh2dHandle)>>,
 ) {
 	let mut values = Vec::with_capacity(*previous_len);
-	for (entity, computed_visibility, transform, handle) in query.into_iter() {
-		if !computed_visibility.is_visible {
-			continue;
+	query.for_each(|(entity, computed_visibility, transform, handle)| {
+		if !computed_visibility.is_visible() {
+			return;
 		}
 		let transform = transform.compute_matrix();
 		values.push((
@@ -143,7 +143,7 @@ pub fn extract_mesh2d(
 				},
 			),
 		));
-	}
+	});
 	*previous_len = values.len();
 	commands.insert_or_spawn_batch(values);
 }

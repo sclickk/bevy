@@ -171,7 +171,9 @@ fn print_mesh_count(
 		info!(
 			"Meshes: {} - Visible Meshes {}",
 			sprites.len(),
-			sprites.filter(|(_, cv)| cv.is_visible).count(),
+			sprites
+				.filter(|(_, cv)| cv.is_visible())
+				.count(),
 		);
 	}
 }

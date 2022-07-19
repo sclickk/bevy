@@ -33,9 +33,8 @@ impl Plugin for CorePlugin {
 			.unwrap_or_default()
 			.create_default_pools();
 
-		app
-			.register_type::<Entity>()
-			.register_type::<Name>();
+		app.register_type::<Entity>();
+		app.register_type::<Name>();
 
 		register_rust_types(app);
 		register_math_types(app);
@@ -43,25 +42,24 @@ impl Plugin for CorePlugin {
 }
 
 fn register_rust_types(app: &mut App) {
-	app
-		.register_type::<Range<f32>>()
-		.register_type::<String>()
-		.register_type::<HashSet<String>>()
-		.register_type::<Option<String>>();
+	app.register_type::<Range<f32>>();
+	app.register_type::<String>();
+	app.register_type::<HashSet<String>>();
+	app.register_type::<Option<String>>();
 }
 
 fn register_math_types(app: &mut App) {
-	app
-		.register_type::<bevy_math::IVec2>()
-		.register_type::<bevy_math::IVec3>()
-		.register_type::<bevy_math::IVec4>()
-		.register_type::<bevy_math::UVec2>()
-		.register_type::<bevy_math::UVec3>()
-		.register_type::<bevy_math::UVec4>()
-		.register_type::<bevy_math::Vec2>()
-		.register_type::<bevy_math::Vec3>()
-		.register_type::<bevy_math::Vec4>()
-		.register_type::<bevy_math::Mat3>()
-		.register_type::<bevy_math::Mat4>()
-		.register_type::<bevy_math::Quat>();
+	app.register_type::<bevy_math::IVec2>();
+	app.register_type::<bevy_math::IVec3>();
+	app.register_type::<bevy_math::IVec4>();
+	app.register_type::<bevy_math::UVec2>();
+	app.register_type::<bevy_math::UVec3>();
+	app.register_type::<bevy_math::UVec4>();
+	app.register_type::<bevy_math::Vec2>();
+	app.register_type::<bevy_math::Vec3>();
+	app.register_type::<bevy_math::Vec4>();
+	app.register_type::<bevy_math::Mat2>();
+	app.register_type::<bevy_math::Mat3>();
+	app.register_type::<bevy_math::Mat4>();
+	app.register_type::<bevy_math::Quat>();
 }

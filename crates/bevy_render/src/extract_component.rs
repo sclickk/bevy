@@ -200,7 +200,7 @@ fn extract_visible_components<C: ExtractComponent>(
 ) {
 	let mut values = Vec::with_capacity(*previous_len);
 	query.for_each_mut(|(entity, computed_visibility, query_item)| {
-		if computed_visibility.is_visible {
+		if computed_visibility.is_visible() {
 			values.push((entity, (C::extract_component(query_item),)));
 		}
 	});

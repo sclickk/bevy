@@ -127,7 +127,7 @@ impl Plugin for PbrPlugin {
 		app.register_type::<PointLight>();
 		app.register_type::<SpotLight>();
 		app.add_plugin(MeshRenderPlugin);
-		app.add_plugin(MaterialPlugin::<StandardMaterial>::default());
+		app.init_plugin::<MaterialPlugin<StandardMaterial>>();
 		app.register_type::<AmbientLight>();
 		app.register_type::<DirectionalLightShadowMap>();
 		app.register_type::<PointLightShadowMap>();
@@ -135,7 +135,7 @@ impl Plugin for PbrPlugin {
 		app.init_resource::<GlobalVisiblePointLights>();
 		app.init_resource::<DirectionalLightShadowMap>();
 		app.init_resource::<PointLightShadowMap>();
-		app.add_plugin(ExtractResourcePlugin::<AmbientLight>::default());
+		app.init_plugin::<ExtractResourcePlugin<AmbientLight>>();
 		app.add_system_to_stage(
 			CoreStage::PostUpdate,
 			// NOTE: Clusters need to have been added before update_clusters is run so
@@ -149,6 +149,7 @@ impl Plugin for PbrPlugin {
 			assign_lights_to_clusters
 				.label(SimulationLightSystems::AssignLightsToClusters)
 				.after(TransformSystem::TransformPropagate)
+				.after(VisibilitySystems::CheckVisibility)
 				.after(CameraUpdateSystem)
 				.after(ModifiesWindows),
 		);
@@ -156,6 +157,8 @@ impl Plugin for PbrPlugin {
 			CoreStage::PostUpdate,
 			update_directional_light_frusta
 				.label(SimulationLightSystems::UpdateLightFrusta)
+				// This must run after CheckVisibility because it relies on ComputedVisibility::is_visible()
+				.after(VisibilitySystems::CheckVisibility)
 				.after(TransformSystem::TransformPropagate),
 		);
 		app.add_system_to_stage(
