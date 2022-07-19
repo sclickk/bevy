@@ -2,9 +2,8 @@ use crate::{
 	component::Component,
 	entity::Entity,
 	query::{
-		NopFetch, QueryCombinationIter, QueryEntityError, QueryFetch, QueryItem, QueryIter,
-		QueryManyIter, QuerySingleError, QueryState, ROQueryFetch, ROQueryItem, ReadOnlyWorldQuery,
-		WorldQuery,
+		QueryCombinationIter, QueryEntityError, QueryItem, QueryIter, QueryManyIter, QuerySingleError,
+		QueryState, ROQueryItem, ReadOnlyWorldQuery, WorldQuery,
 	},
 	world::{Mut, World},
 };
@@ -292,14 +291,15 @@ impl<'w, 's, Q: WorldQuery, F: WorldQuery> Query<'w, 's, Q, F> {
 	/// # bevy_ecs::system::assert_is_system(report_names_system);
 	/// ```
 	#[inline]
-	#[deprecated]
-	pub fn iter(&self) -> QueryIter<'_, 's, Q, ROQueryFetch<'_, Q>, F> {
+	pub fn iter(&self) -> QueryIter<'_, 's, Q::ReadOnly, F::ReadOnly> {
 		// SAFETY: system runs without conflicts with other systems.
 		// same-system queries have runtime borrow checks when they conflict
 		unsafe {
-			self
-				.state
-				.iter_unchecked_manual(self.world, self.last_change_tick, self.change_tick)
+			self.state.as_readonly().iter_unchecked_manual(
+				self.world,
+				self.last_change_tick,
+				self.change_tick,
+			)
 		}
 	}
 
@@ -324,8 +324,7 @@ impl<'w, 's, Q: WorldQuery, F: WorldQuery> Query<'w, 's, Q, F> {
 	/// # bevy_ecs::system::assert_is_system(gravity_system);
 	/// ```
 	#[inline]
-	#[deprecated]
-	pub fn iter_mut(&mut self) -> QueryIter<'_, '_, Q, QueryFetch<'_, Q>, F> {
+	pub fn iter_mut(&mut self) -> QueryIter<'_, 's, Q, F> {
 		// SAFETY: system runs without conflicts with other systems.
 		// same-system queries have runtime borrow checks when they conflict
 		unsafe {
@@ -343,15 +342,16 @@ impl<'w, 's, Q: WorldQuery, F: WorldQuery> Query<'w, 's, Q, F> {
 	/// - if `K < N`: all possible `K`-sized combinations of query results, without repetition
 	/// - if `K > N`: empty set (no `K`-sized combinations exist)
 	#[inline]
-	pub fn iter_combinations<const K: usize>(&self) -> QueryCombinationIter<'_, '_, Q, F, K> {
+	pub fn iter_combinations<const K: usize>(
+		&self,
+	) -> QueryCombinationIter<'_, '_, Q::ReadOnly, F::ReadOnly, K> {
 		// SAFETY: system runs without conflicts with other systems.
 		// same-system queries have runtime borrow checks when they conflict
 		unsafe {
-			self.state.iter_combinations_unchecked_manual(
-				self.world,
-				self.last_change_tick,
-				self.change_tick,
-			)
+			self
+				.state
+				.as_readonly()
+				.iter_combinations_unchecked_manual(self.world, self.last_change_tick, self.change_tick)
 		}
 	}
 
@@ -424,19 +424,22 @@ impl<'w, 's, Q: WorldQuery, F: WorldQuery> Query<'w, 's, Q, F> {
 	pub fn iter_many<EntityList: IntoIterator>(
 		&self,
 		entities: EntityList,
-	) -> QueryManyIter<'_, '_, Q, ROQueryFetch<'_, Q>, F, EntityList::IntoIter>
+	) -> QueryManyIter<'_, '_, Q::ReadOnly, F::ReadOnly, EntityList::IntoIter>
 	where
 		EntityList::Item: Borrow<Entity>,
 	{
 		// SAFETY: system runs without conflicts with other systems.
 		// same-system queries have runtime borrow checks when they conflict
 		unsafe {
-			self.state.iter_many_unchecked_manual(
-				entities,
-				self.world,
-				self.last_change_tick,
-				self.change_tick,
-			)
+			self
+				.state
+				.as_readonly()
+				.iter_many_unchecked_manual(
+					entities,
+					self.world,
+					self.last_change_tick,
+					self.change_tick,
+				)
 		}
 	}
 
@@ -447,7 +450,7 @@ impl<'w, 's, Q: WorldQuery, F: WorldQuery> Query<'w, 's, Q, F> {
 	/// This function makes it possible to violate Rust's aliasing guarantees. You must make sure
 	/// this call does not result in multiple mutable references to the same component
 	#[inline]
-	pub unsafe fn iter_unsafe(&'s self) -> QueryIter<'w, 's, Q, QueryFetch<'w, Q>, F> {
+	pub unsafe fn iter_unsafe(&'s self) -> QueryIter<'w, 's, Q, F> {
 		// SEMI-SAFETY: system runs without conflicts with other systems.
 		// same-system queries have runtime borrow checks when they conflict
 		self
@@ -485,7 +488,7 @@ impl<'w, 's, Q: WorldQuery, F: WorldQuery> Query<'w, 's, Q, F> {
 	pub unsafe fn iter_many_unsafe<EntityList: IntoIterator>(
 		&self,
 		entities: EntityList,
-	) -> QueryManyIter<'_, '_, Q, QueryFetch<'_, Q>, F, EntityList::IntoIter>
+	) -> QueryManyIter<'_, '_, Q, F, EntityList::IntoIter>
 	where
 		EntityList::Item: Borrow<Entity>,
 	{
@@ -527,12 +530,8 @@ impl<'w, 's, Q: WorldQuery, F: WorldQuery> Query<'w, 's, Q, F> {
 		unsafe {
 			self
 				.state
-				.for_each_unchecked_manual::<ROQueryFetch<Q>, _>(
-					self.world,
-					f,
-					self.last_change_tick,
-					self.change_tick,
-				);
+				.as_readonly()
+				.for_each_unchecked_manual(self.world, f, self.last_change_tick, self.change_tick);
 		};
 	}
 
@@ -564,12 +563,7 @@ impl<'w, 's, Q: WorldQuery, F: WorldQuery> Query<'w, 's, Q, F> {
 		unsafe {
 			self
 				.state
-				.for_each_unchecked_manual::<QueryFetch<Q>, FN>(
-					self.world,
-					f,
-					self.last_change_tick,
-					self.change_tick,
-				);
+				.for_each_unchecked_manual(self.world, f, self.last_change_tick, self.change_tick);
 		};
 	}
 
@@ -609,7 +603,8 @@ impl<'w, 's, Q: WorldQuery, F: WorldQuery> Query<'w, 's, Q, F> {
 		unsafe {
 			self
 				.state
-				.par_for_each_unchecked_manual::<ROQueryFetch<Q>, _>(
+				.as_readonly()
+				.par_for_each_unchecked_manual(
 					self.world,
 					batch_size,
 					f,
@@ -636,15 +631,13 @@ impl<'w, 's, Q: WorldQuery, F: WorldQuery> Query<'w, 's, Q, F> {
 		// SAFETY: system runs without conflicts with other systems. same-system queries have runtime
 		// borrow checks when they conflict
 		unsafe {
-			self
-				.state
-				.par_for_each_unchecked_manual::<QueryFetch<Q>, FN>(
-					self.world,
-					batch_size,
-					f,
-					self.last_change_tick,
-					self.change_tick,
-				);
+			self.state.par_for_each_unchecked_manual(
+				self.world,
+				batch_size,
+				f,
+				self.last_change_tick,
+				self.change_tick,
+			);
 		};
 	}
 
@@ -733,14 +726,12 @@ impl<'w, 's, Q: WorldQuery, F: WorldQuery> Query<'w, 's, Q, F> {
 		// SAFETY: system runs without conflicts with other systems.
 		// same-system queries have runtime borrow checks when they conflict
 		unsafe {
-			self
-				.state
-				.get_unchecked_manual::<ROQueryFetch<Q>>(
-					self.world,
-					entity,
-					self.last_change_tick,
-					self.change_tick,
-				)
+			self.state.as_readonly().get_unchecked_manual(
+				self.world,
+				entity,
+				self.last_change_tick,
+				self.change_tick,
+			)
 		}
 	}
 
@@ -839,12 +830,7 @@ impl<'w, 's, Q: WorldQuery, F: WorldQuery> Query<'w, 's, Q, F> {
 		unsafe {
 			self
 				.state
-				.get_unchecked_manual::<QueryFetch<Q>>(
-					self.world,
-					entity,
-					self.last_change_tick,
-					self.change_tick,
-				)
+				.get_unchecked_manual(self.world, entity, self.last_change_tick, self.change_tick)
 		}
 	}
 
@@ -934,12 +920,7 @@ impl<'w, 's, Q: WorldQuery, F: WorldQuery> Query<'w, 's, Q, F> {
 		// same-system queries have runtime borrow checks when they conflict
 		self
 			.state
-			.get_unchecked_manual::<QueryFetch<Q>>(
-				self.world,
-				entity,
-				self.last_change_tick,
-				self.change_tick,
-			)
+			.get_unchecked_manual(self.world, entity, self.last_change_tick, self.change_tick)
 	}
 
 	/// Returns a reference to the [`Entity`]'s [`Component`] of the given type.
@@ -1138,11 +1119,8 @@ impl<'w, 's, Q: WorldQuery, F: WorldQuery> Query<'w, 's, Q, F> {
 		unsafe {
 			self
 				.state
-				.get_single_unchecked_manual::<ROQueryFetch<Q>>(
-					self.world,
-					self.last_change_tick,
-					self.change_tick,
-				)
+				.as_readonly()
+				.get_single_unchecked_manual(self.world, self.last_change_tick, self.change_tick)
 		}
 	}
 
@@ -1205,11 +1183,7 @@ impl<'w, 's, Q: WorldQuery, F: WorldQuery> Query<'w, 's, Q, F> {
 		unsafe {
 			self
 				.state
-				.get_single_unchecked_manual::<QueryFetch<Q>>(
-					self.world,
-					self.last_change_tick,
-					self.change_tick,
-				)
+				.get_single_unchecked_manual(self.world, self.last_change_tick, self.change_tick)
 		}
 	}
 
@@ -1268,12 +1242,8 @@ impl<'w, 's, Q: WorldQuery, F: WorldQuery> Query<'w, 's, Q, F> {
 		unsafe {
 			self
 				.state
-				.get_unchecked_manual::<NopFetch<Q::State>>(
-					self.world,
-					entity,
-					self.last_change_tick,
-					self.change_tick,
-				)
+				.as_nop()
+				.get_unchecked_manual(self.world, entity, self.last_change_tick, self.change_tick)
 				.is_ok()
 		}
 	}
@@ -1281,31 +1251,19 @@ impl<'w, 's, Q: WorldQuery, F: WorldQuery> Query<'w, 's, Q, F> {
 
 impl<'w, 's, Q: WorldQuery, F: WorldQuery> IntoIterator for &'w Query<'_, 's, Q, F> {
 	type Item = ROQueryItem<'w, Q>;
-	type IntoIter = QueryIter<'w, 's, Q, ROQueryFetch<'w, Q>, F>;
+	type IntoIter = QueryIter<'w, 's, Q::ReadOnly, F::ReadOnly>;
 
 	fn into_iter(self) -> Self::IntoIter {
-		// SAFE: system runs without conflicts with other systems.
-		// same-system queries have runtime borrow checks when they conflict
-		unsafe {
-			self
-				.state
-				.iter_unchecked_manual(self.world, self.last_change_tick, self.change_tick)
-		}
+		self.iter()
 	}
 }
 
-impl<'w, Q: WorldQuery, F: WorldQuery> IntoIterator for &'w mut Query<'_, '_, Q, F> {
+impl<'w, 's, Q: WorldQuery, F: WorldQuery> IntoIterator for &'w mut Query<'_, 's, Q, F> {
 	type Item = QueryItem<'w, Q>;
-	type IntoIter = QueryIter<'w, 'w, Q, QueryFetch<'w, Q>, F>;
+	type IntoIter = QueryIter<'w, 's, Q, F>;
 
 	fn into_iter(self) -> Self::IntoIter {
-		// SAFE: system runs without conflicts with other systems.
-		// same-system queries have runtime borrow checks when they conflict
-		unsafe {
-			self
-				.state
-				.iter_unchecked_manual(self.world, self.last_change_tick, self.change_tick)
-		}
+		self.iter_mut()
 	}
 }
 
@@ -1382,14 +1340,12 @@ impl<'w, 's, Q: ReadOnlyWorldQuery, F: WorldQuery> Query<'w, 's, Q, F> {
 		// SAFETY: system runs without conflicts with other systems.
 		// same-system queries have runtime borrow checks when they conflict
 		unsafe {
-			self
-				.state
-				.get_unchecked_manual::<ROQueryFetch<'w, Q>>(
-					self.world,
-					entity,
-					self.last_change_tick,
-					self.change_tick,
-				)
+			self.state.as_readonly().get_unchecked_manual(
+				self.world,
+				entity,
+				self.last_change_tick,
+				self.change_tick,
+			)
 		}
 	}
 
@@ -1417,13 +1373,15 @@ impl<'w, 's, Q: ReadOnlyWorldQuery, F: WorldQuery> Query<'w, 's, Q, F> {
 	/// # bevy_ecs::system::assert_is_system(report_names_system);
 	/// ```
 	#[inline]
-	pub fn iter_inner(&'s self) -> QueryIter<'w, 's, Q, ROQueryFetch<'w, Q>, F> {
+	pub fn iter_inner(&'s self) -> QueryIter<'w, 's, Q::ReadOnly, F::ReadOnly> {
 		// SAFETY: system runs without conflicts with other systems.
 		// same-system queries have runtime borrow checks when they conflict
 		unsafe {
-			self
-				.state
-				.iter_unchecked_manual(self.world, self.last_change_tick, self.change_tick)
+			self.state.as_readonly().iter_unchecked_manual(
+				self.world,
+				self.last_change_tick,
+				self.change_tick,
+			)
 		}
 	}
 }
