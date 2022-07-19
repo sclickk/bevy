@@ -1487,15 +1487,15 @@ pub fn update_spot_light_frusta(
 		if !spot_light.shadows_enabled || !global_lights.entities.contains(&entity) {
 			return;
 		}
-	
+
 		// ignore scale because we don't want to effectively scale light radius and range
 		// by applying those as a view transform to shadow map rendering of objects
 		let view_backward = transform.back();
-	
+
 		let spot_view = spot_light_view_matrix(transform);
 		let spot_projection = spot_light_projection_matrix(spot_light.outer_angle);
 		let view_projection = spot_projection * spot_view.inverse();
-	
+
 		*frustum = Frustum::from_view_projection(
 			&view_projection,
 			&transform.translation(),
