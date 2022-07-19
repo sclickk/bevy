@@ -1,4 +1,4 @@
-use crate as bevy_reflect;
+use crate::{self as bevy_reflect, ReflectFromPtr};
 use crate::{
 	map_apply, map_partial_eq, Array, ArrayInfo, ArrayIter, DynamicMap, FromReflect, FromType,
 	GetTypeRegistration, List, ListInfo, Map, MapInfo, MapIter, Reflect, ReflectDeserialize,
@@ -175,6 +175,7 @@ impl<T: FromReflect + for<'de> Deserialize<'de>> GetTypeRegistration for Vec<T> 
 	fn get_type_registration() -> TypeRegistration {
 		let mut registration = TypeRegistration::of::<Vec<T>>();
 		registration.insert::<ReflectDeserialize>(FromType::<Vec<T>>::from_type());
+		registration.insert::<ReflectFromPtr>(FromType::<Vec<T>>::from_type());
 		registration
 	}
 }
@@ -330,8 +331,9 @@ where
 	V: FromReflect + Clone + for<'de> Deserialize<'de>,
 {
 	fn get_type_registration() -> TypeRegistration {
-		let mut registration = TypeRegistration::of::<Self>();
-		registration.insert::<ReflectDeserialize>(FromType::<Self>::from_type());
+		let mut registration = TypeRegistration::of::<HashMap<K, V>>();
+		registration.insert::<ReflectDeserialize>(FromType::<HashMap<K, V>>::from_type());
+		registration.insert::<ReflectFromPtr>(FromType::<HashMap<K, V>>::from_type());
 		registration
 	}
 }
@@ -490,7 +492,7 @@ macro_rules! impl_array_get_type_registration {
 }
 
 impl_array_get_type_registration! {
-	 0  1  2  3  4  5  6  7  8  9
+	0  1  2  3  4  5  6  7  8  9
 	10 11 12 13 14 15 16 17 18 19
 	20 21 22 23 24 25 26 27 28 29
 	30 31 32
@@ -579,6 +581,7 @@ impl GetTypeRegistration for Cow<'static, str> {
 	fn get_type_registration() -> TypeRegistration {
 		let mut registration = TypeRegistration::of::<Cow<'static, str>>();
 		registration.insert::<ReflectDeserialize>(FromType::<Cow<'static, str>>::from_type());
+		registration.insert::<ReflectFromPtr>(FromType::<Cow<'static, str>>::from_type());
 		registration.insert::<ReflectSerialize>(FromType::<Cow<'static, str>>::from_type());
 		registration
 	}
