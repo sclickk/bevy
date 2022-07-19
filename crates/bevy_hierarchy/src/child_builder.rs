@@ -431,7 +431,7 @@ impl<'w> BuildWorldChildren for EntityMut<'w> {
 				.retain(|value| !children.contains(value));
 			children_component
 				.0
-				.extend(children.iter().cloned());
+				.extend(children.into_iter().cloned());
 		} else {
 			self.insert(Children::with(children));
 		}

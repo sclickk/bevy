@@ -1434,8 +1434,8 @@ pub fn update_point_light_frusta(
 	let projection =
 		Mat4::perspective_infinite_reverse_rh(std::f32::consts::FRAC_PI_2, 1.0, POINT_LIGHT_NEAR_Z);
 	let view_rotations = CUBE_MAP_FACES
-		.iter()
-		.map(|CubeMapFace { target, up }| Transform::IDENTITY.looking_at(*target, *up))
+		.into_iter()
+		.map(|CubeMapFace { target, up }| Transform::IDENTITY.looking_at(target, up))
 		.collect::<Vec<_>>();
 
 	views.for_each_mut(|(entity, transform, point_light, mut cubemap_frusta)| {

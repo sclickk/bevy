@@ -121,7 +121,7 @@ pub fn ktx2_buffer_to_image(
 					let (block_width_pixels, block_height_pixels) = (4, 4);
 
 					let transcoder = LowLevelUastcTranscoder::new();
-					for (level, level_data) in levels.iter().enumerate() {
+					for (level, level_data) in levels.into_iter().enumerate() {
 						let slice_parameters = SliceParametersUastc {
 							num_blocks_x: ((original_width + block_width_pixels - 1) / block_width_pixels).max(1),
 							num_blocks_y: ((original_height + block_height_pixels - 1) / block_height_pixels)
