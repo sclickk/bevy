@@ -288,7 +288,7 @@ pub fn flex_node_system(
 	let to_logical = |v| (physical_to_logical_factor * v as f64) as f32;
 
 	// PERF: try doing this incrementally
-	for (entity, mut node, mut transform, parent) in node_transform_query.iter_mut() {
+	node_transform_query.for_each_mut(|(entity, mut node, mut transform, parent)| {
 		let layout = flex_surface.get_layout(entity).unwrap();
 		let new_size = Vec2::new(
 			to_logical(layout.size.width),
@@ -311,5 +311,5 @@ pub fn flex_node_system(
 		if transform.translation != new_position {
 			transform.translation = new_position;
 		}
-	}
+	});
 }
