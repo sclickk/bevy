@@ -299,8 +299,8 @@ pub struct RenderCommandState<P: PhaseItem, C: RenderCommand<P>> {
 	state: SystemState<C::Param>,
 }
 
-impl<P: PhaseItem, C: RenderCommand<P>> RenderCommandState<P, C> {
-	pub fn new(world: &mut World) -> Self {
+impl<P: PhaseItem, C: RenderCommand<P>> From<&mut World> for RenderCommandState<P, C> {
+	fn from(world: &mut World) -> Self {
 		Self {
 			state: SystemState::new(world),
 		}
@@ -342,7 +342,7 @@ impl AddRenderCommand for App {
 	where
 		<C::Param as SystemParam>::Fetch: ReadOnlySystemParamFetch,
 	{
-		let draw_function = RenderCommandState::<P, C>::new(&mut self.world);
+		let draw_function = RenderCommandState::<P, C>::from(&mut self.world);
 		let draw_functions = self
 			.world
 			.get_resource::<DrawFunctions<P>>()
