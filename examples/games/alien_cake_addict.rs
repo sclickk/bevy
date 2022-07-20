@@ -156,26 +156,26 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>, mut game: ResMu
 	// load the scene for the cake
 	game.bonus.handle = asset_server.load("models/AlienCake/cakeBirthday.glb#Scene0");
 
-    // scoreboard
-    commands.spawn_bundle(
-        TextBundle::from_section(
-            "Score:",
-            TextStyle {
-                font: asset_server.load("fonts/FiraSans-Bold.ttf"),
-                font_size: 40.0,
-                color: Color::rgb(0.5, 0.5, 1.0),
-            },
-        )
-        .with_style(Style {
-            position_type: PositionType::Absolute,
-            position: UiRect {
-                top: Val::Px(5.0),
-                left: Val::Px(5.0),
-                ..Default::default()
-            },
-            ..Default::default()
-        }),
-    );
+	// scoreboard
+	commands.spawn_bundle(
+		TextBundle::from_section(
+			"Score:",
+			TextStyle {
+				font: asset_server.load("fonts/FiraSans-Bold.ttf"),
+				font_size: 40.0,
+				color: Color::rgb(0.5, 0.5, 1.0),
+			},
+		)
+		.with_style(Style {
+			position_type: PositionType::Absolute,
+			position: UiRect {
+				top: Val::Px(5.0),
+				left: Val::Px(5.0),
+				..Default::default()
+			},
+			..Default::default()
+		}),
+	);
 }
 
 // remove all entities that are not a camera
@@ -383,25 +383,25 @@ fn gameover_keyboard(mut state: ResMut<State<GameState>>, keyboard_input: Res<In
 
 // display the number of cake eaten before losing
 fn display_score(mut commands: Commands, asset_server: Res<AssetServer>, game: Res<Game>) {
-    commands
-        .spawn_bundle(NodeBundle {
-            style: Style {
-                margin: UiRect::all(Val::Auto),
-                justify_content: JustifyContent::Center,
-                align_items: AlignItems::Center,
-                ..Default::default()
-            },
-            color: Color::NONE.into(),
-            ..Default::default()
-        })
-        .with_children(|parent| {
-            parent.spawn_bundle(TextBundle::from_section(
-                format!("Cake eaten: {}", game.cake_eaten),
-                TextStyle {
-                    font: asset_server.load("fonts/FiraSans-Bold.ttf"),
-                    font_size: 80.0,
-                    color: Color::rgb(0.5, 0.5, 1.0),
-                },
-            ));
-        });
+	commands
+		.spawn_bundle(NodeBundle {
+			style: Style {
+				margin: UiRect::all(Val::Auto),
+				justify_content: JustifyContent::Center,
+				align_items: AlignItems::Center,
+				..Default::default()
+			},
+			color: Color::NONE.into(),
+			..Default::default()
+		})
+		.with_children(|parent| {
+			parent.spawn_bundle(TextBundle::from_section(
+				format!("Cake eaten: {}", game.cake_eaten),
+				TextStyle {
+					font: asset_server.load("fonts/FiraSans-Bold.ttf"),
+					font_size: 80.0,
+					color: Color::rgb(0.5, 0.5, 1.0),
+				},
+			));
+		});
 }

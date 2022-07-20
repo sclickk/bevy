@@ -134,27 +134,30 @@ fn setup_contributor_selection(mut commands: Commands, asset_server: Res<AssetSe
 fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
 	commands.init_bundle::<Camera2dBundle>();
 
-    commands.spawn().insert(ContributorDisplay).insert_bundle(
-        TextBundle::from_sections([
-            TextSection::new(
-                "Contributor showcase",
-                TextStyle {
-                    font: asset_server.load("fonts/FiraSans-Bold.ttf"),
-                    font_size: 60.0,
-                    color: Color::WHITE,
-                },
-            ),
-            TextSection::from_style(TextStyle {
-                font: asset_server.load("fonts/FiraSans-Bold.ttf"),
-                font_size: 60.0,
-                color: Color::WHITE,
-            }),
-        ])
-        .with_style(Style {
-            align_self: AlignSelf::FlexEnd,
-            ..Default::default()
-        }),
-    );
+	commands
+		.spawn()
+		.insert(ContributorDisplay)
+		.insert_bundle(
+			TextBundle::from_sections([
+				TextSection::new(
+					"Contributor showcase",
+					TextStyle {
+						font: asset_server.load("fonts/FiraSans-Bold.ttf"),
+						font_size: 60.0,
+						color: Color::WHITE,
+					},
+				),
+				TextSection::from_style(TextStyle {
+					font: asset_server.load("fonts/FiraSans-Bold.ttf"),
+					font_size: 60.0,
+					color: Color::WHITE,
+				}),
+			])
+			.with_style(Style {
+				align_self: AlignSelf::FlexEnd,
+				..Default::default()
+			}),
+		);
 }
 
 /// Finds the next contributor to display and selects the entity
