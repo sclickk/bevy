@@ -19,7 +19,7 @@ fn main() {
 
 fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
 	// camera
-	commands.init_bundle::<Camera2dBundle>();
+	commands.spawn_bundle(Camera2dBundle::default());
 	// root node
 	commands
 		.spawn_bundle(NodeBundle {
@@ -44,22 +44,20 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
 					..Default::default()
 				})
 				.with_children(|parent| {
-					parent.spawn_bundle(TextBundle {
-						style: Style {
-							align_self: AlignSelf::FlexEnd,
-							..Default::default()
-						},
-						text: Text::with_section(
+					parent.spawn_bundle(
+						TextBundle::from_section(
 							"Example text",
 							TextStyle {
 								font: asset_server.load("fonts/FiraSans-Bold.ttf"),
 								font_size: 30.0,
 								color: Color::WHITE,
 							},
-							Default::default(),
-						),
-						..Default::default()
-					});
+						)
+						.with_style(Style {
+							align_self: AlignSelf::FlexEnd,
+							..Default::default()
+						}),
+					);
 				});
 		});
 }

@@ -45,7 +45,7 @@ fn button_system(
 
 fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
 	// ui camera
-	commands.init_bundle::<Camera2dBundle>();
+	commands.spawn_bundle(Camera2dBundle::default());
 	commands
 		.spawn_bundle(ButtonBundle {
 			style: Style {
@@ -62,17 +62,13 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
 			..Default::default()
 		})
 		.with_children(|parent| {
-			parent.spawn_bundle(TextBundle {
-				text: Text::with_section(
-					"Button",
-					TextStyle {
-						font: asset_server.load("fonts/FiraSans-Bold.ttf"),
-						font_size: 40.0,
-						color: Color::rgb(0.9, 0.9, 0.9),
-					},
-					Default::default(),
-				),
-				..Default::default()
-			});
+			parent.spawn_bundle(TextBundle::from_section(
+				"Button",
+				TextStyle {
+					font: asset_server.load("fonts/FiraSans-Bold.ttf"),
+					font_size: 40.0,
+					color: Color::rgb(0.9, 0.9, 0.9),
+				},
+			));
 		});
 }
