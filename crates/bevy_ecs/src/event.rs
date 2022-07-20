@@ -414,7 +414,7 @@ struct ExactSize<I> {
 	len: usize,
 }
 impl<I> ExactSize<I> {
-	fn new(iter: I, len: usize) -> Self {
+	const fn new(iter: I, len: usize) -> Self {
 		ExactSize { iter, len }
 	}
 }
