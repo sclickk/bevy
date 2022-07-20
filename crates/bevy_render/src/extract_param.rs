@@ -66,9 +66,8 @@ pub struct ExtractState<P: SystemParam> {
 // which is initialized in init()
 unsafe impl<P: SystemParam + 'static> SystemParamState for ExtractState<P> {
 	fn init(world: &mut World, system_meta: &mut SystemMeta) -> Self {
-		let mut main_world = world.resource_mut::<MainWorld>();
 		Self {
-			state: SystemState::new(&mut main_world),
+			state: SystemState::new(&mut world.resource_mut::<MainWorld>()),
 			main_world_state: ResState::init(world, system_meta),
 		}
 	}

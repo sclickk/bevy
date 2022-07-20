@@ -769,7 +769,7 @@ mod tests {
 		world.spawn().insert(B(7));
 
 		let mut system_state: SystemState<(Res<A>, Query<&B>, ParamSet<(Query<&C>, Query<&D>)>)> =
-			SystemState::new(&mut world);
+			SystemState::from(&mut world);
 		let (a, query, _) = system_state.get(&world);
 		assert_eq!(*a, A(42), "returned resource matches initial value");
 		assert_eq!(
@@ -791,7 +791,7 @@ mod tests {
 		world.insert_resource(A(42));
 		world.spawn().insert(B(7));
 
-		let mut system_state: SystemState<(ResMut<A>, Query<&mut B>)> = SystemState::new(&mut world);
+		let mut system_state: SystemState<(ResMut<A>, Query<&mut B>)> = SystemState::from(&mut world);
 
 		// The following line shouldn't compile because the parameters used are not ReadOnlySystemParam
 		// let (a, query) = system_state.get(&world);
@@ -813,7 +813,7 @@ mod tests {
 		let mut world = World::default();
 		let entity = world.spawn().insert(A(1)).id();
 
-		let mut system_state: SystemState<Query<&A, Changed<A>>> = SystemState::new(&mut world);
+		let mut system_state: SystemState<Query<&A, Changed<A>>> = SystemState::from(&mut world);
 		{
 			let query = system_state.get(&world);
 			assert_eq!(*query.single(), A(1));

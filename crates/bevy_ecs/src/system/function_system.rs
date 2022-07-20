@@ -97,7 +97,7 @@ impl SystemMeta {
 ///     EventWriter<MyEvent>,
 ///     Option<ResMut<MyResource>>,
 ///     Query<&MyComponent>,
-///     )> = SystemState::new(&mut world);
+///     )> = SystemState::from(&mut world);
 ///
 /// // Use system_state.get_mut(&mut world) and unpack your system parameters into variables!
 /// // system_state.get(&world) provides read-only versions of your system parameters instead.
@@ -117,7 +117,7 @@ impl SystemMeta {
 /// // Create and store a system state once
 /// let mut world = World::new();
 /// world.init_resource::<Events<MyEvent>>();
-/// let initial_state: SystemState<EventReader<MyEvent>>  = SystemState::new(&mut world);
+/// let initial_state: SystemState<EventReader<MyEvent>>  = SystemState::from(&mut world);
 ///
 /// // The system state is cached in a resource
 /// world.insert_resource(CachedSystemState{event_state: initial_state});
@@ -139,16 +139,9 @@ pub struct SystemState<Param: SystemParam> {
 }
 
 impl<Param: SystemParam> SystemState<Param> {
+	#[deprecated]
 	pub fn new(world: &mut World) -> Self {
-		let mut meta = SystemMeta::new::<Param>();
-		meta.last_change_tick = world.change_tick().wrapping_sub(MAX_CHANGE_AGE);
-		let param_state = <Param::Fetch as SystemParamState>::init(world, &mut meta);
-		Self {
-			meta,
-			param_state,
-			world_id: world.id(),
-			archetype_generation: ArchetypeGeneration::initial(),
-		}
+		Self::from(world)
 	}
 
 	#[inline]
@@ -232,9 +225,23 @@ impl<Param: SystemParam> SystemState<Param> {
 	}
 }
 
+impl<Param: SystemParam> From<&mut World> for SystemState<Param> {
+	fn from(world: &mut World) -> Self {
+		let mut meta = SystemMeta::new::<Param>();
+		meta.last_change_tick = world.change_tick().wrapping_sub(MAX_CHANGE_AGE);
+		let param_state = <Param::Fetch as SystemParamState>::init(world, &mut meta);
+		Self {
+			meta,
+			param_state,
+			world_id: world.id(),
+			archetype_generation: ArchetypeGeneration::initial(),
+		}
+	}
+}
+
 impl<Param: SystemParam> FromWorld for SystemState<Param> {
 	fn from_world(world: &mut World) -> Self {
-		Self::new(world)
+		Self::from(world)
 	}
 }
 

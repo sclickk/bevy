@@ -302,7 +302,7 @@ pub struct RenderCommandState<P: PhaseItem, C: RenderCommand<P>> {
 impl<P: PhaseItem, C: RenderCommand<P>> From<&mut World> for RenderCommandState<P, C> {
 	fn from(world: &mut World) -> Self {
 		Self {
-			state: SystemState::new(world),
+			state: SystemState::from(world),
 		}
 	}
 }
