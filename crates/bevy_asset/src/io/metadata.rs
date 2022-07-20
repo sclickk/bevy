@@ -51,7 +51,7 @@ pub struct Metadata {
 
 impl Metadata {
 	/// Creates new metadata information.
-	pub fn new(file_type: FileType) -> Self {
+	pub const fn new(file_type: FileType) -> Self {
 		Self { file_type }
 	}
 
