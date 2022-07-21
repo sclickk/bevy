@@ -98,11 +98,6 @@ pub struct TrackedRenderPass<'a> {
 }
 
 impl<'a> TrackedRenderPass<'a> {
-	/// Tracks the supplied render pass.
-	pub fn new(pass: RenderPass<'a>) -> Self {
-		Self::from(pass)
-	}
-
 	/// Sets the active [`RenderPipeline`].
 	///
 	/// Subsequent draw calls will exhibit the behavior defined by the `pipeline`.
