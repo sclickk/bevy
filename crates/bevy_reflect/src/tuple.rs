@@ -1,9 +1,8 @@
 use crate::utility::NonGenericTypeInfoCell;
 use crate::{
-	DynamicInfo, FromReflect, FromType, GetTypeRegistration, Reflect, ReflectDeserialize, ReflectMut,
-	ReflectRef, TypeInfo, TypeRegistration, Typed, UnnamedField,
+	DynamicInfo, FromReflect, GetTypeRegistration, Reflect, ReflectMut, ReflectRef, TypeInfo,
+	TypeRegistration, Typed, UnnamedField,
 };
-use serde::Deserialize;
 use std::any::{Any, TypeId};
 use std::fmt::{Debug, Formatter};
 use std::slice::Iter;
@@ -548,13 +547,11 @@ macro_rules! impl_reflect_tuple {
 			}
 		}
 
-		impl<$($name: Reflect + Typed + for<'de> Deserialize<'de>),*> GetTypeRegistration for ($($name,)*) {
-			fn get_type_registration() -> TypeRegistration {
-				let mut registration = TypeRegistration::of::<($($name,)*)>();
-				registration.insert::<ReflectDeserialize>(FromType::<($($name,)*)>::from_type());
-				registration
-			}
-		}
+        impl<$($name: Reflect + Typed),*> GetTypeRegistration for ($($name,)*) {
+            fn get_type_registration() -> TypeRegistration {
+                TypeRegistration::of::<($($name,)*)>()
+            }
+        }
 
 		impl<$($name: FromReflect),*> FromReflect for ($($name,)*)
 		{
