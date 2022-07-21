@@ -15,7 +15,7 @@ pub fn dds_buffer_to_image(
 	supported_compressed_formats
 		.supports(texture_format)
 		.then(|| Image {
-			texture_descriptor: wgpu::TextureDescriptor {
+			texture_descriptor: TextureDescriptor {
 				size: Extent3d {
 					width: dds.get_width(),
 					height: dds.get_height(),
@@ -24,9 +24,8 @@ pub fn dds_buffer_to_image(
 					} else {
 						dds.get_depth()
 					},
-					..Default::default()
-				},
-				format: texture_format,
+				}
+				.physical_size(texture_format),
 				dimension: if dds.get_depth() > 1 {
 					TextureDimension::D3
 				} else if image.is_compressed() || dds.get_height() > 1 {
@@ -34,6 +33,8 @@ pub fn dds_buffer_to_image(
 				} else {
 					TextureDimension::D1
 				},
+				format: texture_format,
+				mip_level_count: dds.get_num_mipmap_levels(),
 				..Default::default()
 			},
 			data: dds.data,
