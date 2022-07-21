@@ -340,7 +340,7 @@ impl<I: SparseSetIndex, V> SparseSet<I, V> {
 
 	#[inline]
 	pub fn is_empty(&self) -> bool {
-		self.dense.len() == 0
+		self.dense.is_empty()
 	}
 
 	#[inline]
