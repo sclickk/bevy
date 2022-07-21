@@ -1,8 +1,8 @@
 build:
-	cargo build --release --examples --features="bevy/dynamic"
+	cargo build --release --examples --all-features
 
 check:
-	cargo check --release --examples --features="bevy/dynamic"
+	cargo check --release --examples --all-features
 
 doc:
-	cargo doc --open --workspace --release --features="bevy/dynamic"
+	cargo doc --open --workspace --release --all-features
