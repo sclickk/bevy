@@ -1,6 +1,6 @@
 use ddsfile::{D3DFormat, Dds, DxgiFormat};
 use std::io::Cursor;
-use wgpu::{Extent3d, TextureDimension, TextureFormat};
+use wgpu::{Extent3d, TextureDimension, TextureFormat, TextureDescriptor};
 
 use super::{CompressedImageFormats, Image, TextureError};
 
