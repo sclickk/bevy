@@ -177,17 +177,18 @@ impl<T: ShaderType + WriteInto> DynamicUniformBuffer<T> {
 	/// allocated does not have enough capacity, a new GPU-side buffer is created.
 	#[inline]
 	pub fn write_buffer(&mut self, device: &RenderDevice, queue: &RenderQueue) {
-		let size = self.scratch.as_ref().len();
+		let contents = self.scratch.as_ref();
+		let size = contents.len();
 
 		if self.capacity < size {
 			self.buffer = Some(device.create_buffer_with_data(&BufferInitDescriptor {
 				label: None,
 				usage: BufferUsages::COPY_DST | BufferUsages::UNIFORM,
-				contents: self.scratch.as_ref(),
+				contents,
 			}));
 			self.capacity = size;
 		} else if let Some(buffer) = &self.buffer {
-			queue.write_buffer(buffer, 0, self.scratch.as_ref());
+			queue.write_buffer(buffer, 0, contents);
 		}
 	}
 

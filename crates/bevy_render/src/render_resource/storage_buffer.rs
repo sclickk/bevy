@@ -89,17 +89,18 @@ impl<T: ShaderType + WriteInto> StorageBuffer<T> {
 	pub fn write_buffer(&mut self, device: &RenderDevice, queue: &RenderQueue) {
 		self.scratch.write(&self.value).unwrap();
 
-		let size = self.scratch.as_ref().len();
+		let contents = self.scratch.as_ref();
+		let size = contents.len();
 
 		if self.capacity < size {
 			self.buffer = Some(device.create_buffer_with_data(&BufferInitDescriptor {
 				label: None,
 				usage: BufferUsages::COPY_DST | BufferUsages::STORAGE,
-				contents: self.scratch.as_ref(),
+				contents,
 			}));
 			self.capacity = size;
 		} else if let Some(buffer) = &self.buffer {
-			queue.write_buffer(buffer, 0, self.scratch.as_ref());
+			queue.write_buffer(buffer, 0, contents);
 		}
 	}
 }
@@ -177,17 +178,18 @@ impl<T: ShaderType + WriteInto> DynamicStorageBuffer<T> {
 
 	#[inline]
 	pub fn write_buffer(&mut self, device: &RenderDevice, queue: &RenderQueue) {
-		let size = self.scratch.as_ref().len();
+		let contents = self.scratch.as_ref();
+		let size = contents.len();
 
 		if self.capacity < size {
 			self.buffer = Some(device.create_buffer_with_data(&BufferInitDescriptor {
 				label: None,
 				usage: BufferUsages::COPY_DST | BufferUsages::STORAGE,
-				contents: self.scratch.as_ref(),
+				contents,
 			}));
 			self.capacity = size;
 		} else if let Some(buffer) = &self.buffer {
-			queue.write_buffer(buffer, 0, self.scratch.as_ref());
+			queue.write_buffer(buffer, 0, contents);
 		}
 	}
 
