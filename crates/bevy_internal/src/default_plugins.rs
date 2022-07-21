@@ -36,7 +36,7 @@ impl PluginGroup for DefaultPlugins {
 		group.init::<bevy_window::WindowPlugin>();
 		group.init::<bevy_asset::AssetPlugin>();
 		#[cfg(feature = "debug_asset_server")]
-		group.init::<bevy_asset::debug_asset_server>();
+		group.init::<bevy_asset::debug_asset_server::DebugAssetServerPlugin>();
 		group.init::<bevy_scene::ScenePlugin>();
 
 		#[cfg(feature = "bevy_winit")]
