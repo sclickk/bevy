@@ -109,7 +109,7 @@ pub fn ui_focus_system(
 		|camera_ui| matches!(camera_ui, Some(&UiCameraConfig { show_ui: false, .. }));
 
 	let cursor_position = camera
-		.iter()
+		.into_iter()
 		.filter(|(_, camera_ui)| !is_ui_disabled(*camera_ui))
 		.filter_map(|(camera, _)| {
 			if let RenderTarget::Window(window_id) = camera.target {

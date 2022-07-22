@@ -385,7 +385,7 @@ fn visibility_propagate_system(
 		// reset "view" visibility here ... if this entity should be drawn a future system should set this to true
 		computed_visibility.is_visible_in_view = false;
 		if let Some(children) = children {
-			for child in children.iter() {
+			for child in children.into_iter() {
 				let _ = propagate_recursive(
 					computed_visibility.is_visible_in_hierarchy,
 					&mut visibility_query,
@@ -420,7 +420,11 @@ fn propagate_recursive(
 		computed_visibility.is_visible_in_hierarchy
 	};
 
-	for child in children_query.get(entity).map_err(drop)?.iter() {
+	for child in children_query
+		.get(entity)
+		.map_err(drop)?
+		.into_iter()
+	{
 		let _ = propagate_recursive(is_visible, visibility_query, children_query, *child, entity);
 	}
 	Ok(())
