@@ -382,81 +382,81 @@ pub(crate) fn impl_value(
 
 	let (impl_generics, ty_generics, where_clause) = generics.split_for_impl();
 	TokenStream::from(quote! {
-	#get_type_registration_impl
+		#get_type_registration_impl
 
-	#typed_impl
+		#typed_impl
 
-				impl #impl_generics #bevy_reflect_path::Reflect for #type_name #ty_generics #where_clause  {
-						#[inline]
-						fn type_name(&self) -> &str {
-								std::any::type_name::<Self>()
-						}
-
-		#[inline]
-		fn get_type_info(&self) -> &'static #bevy_reflect_path::TypeInfo {
-			<Self as #bevy_reflect_path::Typed>::type_info()
-		}
-
-						#[inline]
-						fn into_any(self: Box<Self>) -> Box<dyn std::any::Any> {
-								self
-						}
-
-						#[inline]
-						fn as_any(&self) -> &dyn std::any::Any {
-								self
-						}
-
-						#[inline]
-						fn as_any_mut(&mut self) -> &mut dyn std::any::Any {
-								self
-						}
-
-		#[inline]
-		fn as_reflect(&self) -> &dyn #bevy_reflect_path::Reflect {
-			self
-		}
-
-		#[inline]
-		fn as_reflect_mut(&mut self) -> &mut dyn #bevy_reflect_path::Reflect {
-			self
-		}
-
-		#[inline]
-		fn clone_value(&self) -> Box<dyn #bevy_reflect_path::Reflect> {
-			Box::new(self.clone())
-		}
-
-						#[inline]
-						fn apply(&mut self, value: &dyn #bevy_reflect_path::Reflect) {
-								let value = value.as_any();
-								if let Some(value) = value.downcast_ref::<Self>() {
-										*self = value.clone();
-								} else {
-										panic!("Value is not {}.", std::any::type_name::<Self>());
-								}
-						}
-
-		#[inline]
-		fn set(&mut self, value: Box<dyn #bevy_reflect_path::Reflect>) -> Result<(), Box<dyn #bevy_reflect_path::Reflect>> {
-			*self = value.take()?;
-			Ok(())
-		}
-
-		fn reflect_ref(&self) -> #bevy_reflect_path::ReflectRef {
-			#bevy_reflect_path::ReflectRef::Value(self)
-		}
-
-		fn reflect_mut(&mut self) -> #bevy_reflect_path::ReflectMut {
-			#bevy_reflect_path::ReflectMut::Value(self)
-		}
-
-		#hash_fn
-
-		#partial_eq_fn
-
-					#debug_fn
+		impl #impl_generics #bevy_reflect_path::Reflect for #type_name #ty_generics #where_clause  {
+			#[inline]
+			fn type_name(&self) -> &str {
+				std::any::type_name::<Self>()
 			}
+
+			#[inline]
+			fn get_type_info(&self) -> &'static #bevy_reflect_path::TypeInfo {
+				<Self as #bevy_reflect_path::Typed>::type_info()
+			}
+
+			#[inline]
+			fn into_any(self: Box<Self>) -> Box<dyn std::any::Any> {
+				self
+			}
+
+			#[inline]
+			fn as_any(&self) -> &dyn std::any::Any {
+				self
+			}
+
+			#[inline]
+			fn as_any_mut(&mut self) -> &mut dyn std::any::Any {
+				self
+			}
+
+			#[inline]
+			fn as_reflect(&self) -> &dyn #bevy_reflect_path::Reflect {
+				self
+			}
+
+			#[inline]
+			fn as_reflect_mut(&mut self) -> &mut dyn #bevy_reflect_path::Reflect {
+				self
+			}
+
+			#[inline]
+			fn clone_value(&self) -> Box<dyn #bevy_reflect_path::Reflect> {
+				Box::new(self.clone())
+			}
+
+			#[inline]
+			fn apply(&mut self, value: &dyn #bevy_reflect_path::Reflect) {
+				let value = value.as_any();
+				if let Some(value) = value.downcast_ref::<Self>() {
+					*self = value.clone();
+				} else {
+					panic!("Value is not {}.", std::any::type_name::<Self>());
+				}
+			}
+
+			#[inline]
+			fn set(&mut self, value: Box<dyn #bevy_reflect_path::Reflect>) -> Result<(), Box<dyn #bevy_reflect_path::Reflect>> {
+				*self = value.take()?;
+				Ok(())
+			}
+
+			fn reflect_ref(&self) -> #bevy_reflect_path::ReflectRef {
+				#bevy_reflect_path::ReflectRef::Value(self)
+			}
+
+			fn reflect_mut(&mut self) -> #bevy_reflect_path::ReflectMut {
+				#bevy_reflect_path::ReflectMut::Value(self)
+			}
+
+			#hash_fn
+
+			#partial_eq_fn
+
+						#debug_fn
+		}
 	})
 }
 
