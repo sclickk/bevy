@@ -102,14 +102,14 @@ impl<T: Pod> BufferVec<T> {
 	/// Before queuing the write, a [`reserve`](crate::render_resource::BufferVec::reserve) operation
 	/// is executed.
 	pub fn write_buffer(&mut self, device: &RenderDevice, queue: &RenderQueue) {
-		if self.values.is_empty() {
-			return;
-		}
-		self.reserve(self.values.len(), device);
-		if let Some(buffer) = &self.buffer {
-			let range = 0..self.item_size * self.values.len();
-			let bytes: &[u8] = cast_slice(&self.values);
-			queue.write_buffer(buffer, 0, &bytes[range]);
+		let size = self.values.len();
+		if size > 0 {
+			self.reserve(size, device);
+			if let Some(buffer) = &self.buffer {
+				let range = 0..self.item_size * size;
+				let bytes: &[u8] = cast_slice(&self.values);
+				queue.write_buffer(buffer, 0, &bytes[range]);
+			}
 		}
 	}
 
