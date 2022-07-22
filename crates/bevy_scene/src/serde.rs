@@ -195,16 +195,13 @@ impl<'a, 'de> Visitor<'de> for SceneEntityVisitor<'a> {
 			}
 		}
 
-		let entity = id
-			.as_ref()
-			.ok_or(Error::missing_field(ENTITY_FIELD_ENTITY))?;
-
-		let components = components
-			.take()
-			.ok_or(Error::missing_field(ENTITY_FIELD_COMPONENTS))?;
 		Ok(DynamicEntity {
-			entity: *entity,
-			components,
+			entity: *id
+				.as_ref()
+				.ok_or(Error::missing_field(ENTITY_FIELD_ENTITY))?,
+			components: components
+				.take()
+				.ok_or(Error::missing_field(ENTITY_FIELD_COMPONENTS))?,
 		})
 	}
 }
