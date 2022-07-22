@@ -17,7 +17,8 @@ lto = "thin"
 [workspace]
 exclude = ["benches", "crates/bevy_ecs_compile_fail_tests"]
 members = [
-  "crates/*",
+  "crates/bevy_*",
+  "crates/common/*",
   "examples/ios",
   "tools/ci",
   "tools/spancmp",
