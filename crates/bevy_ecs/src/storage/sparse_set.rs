@@ -46,7 +46,7 @@ impl<I: SparseSetIndex, V> SparseArray<I, V> {
 		self
 			.values
 			.get(index)
-			.map(|v| v.is_some())
+			.map(Option::is_some)
 			.unwrap_or(false)
 	}
 
@@ -56,7 +56,7 @@ impl<I: SparseSetIndex, V> SparseArray<I, V> {
 		self
 			.values
 			.get(index)
-			.map(|v| v.as_ref())
+			.map(Option::as_ref)
 			.unwrap_or(None)
 	}
 
@@ -66,7 +66,7 @@ impl<I: SparseSetIndex, V> SparseArray<I, V> {
 		self
 			.values
 			.get_mut(index)
-			.map(|v| v.as_mut())
+			.map(Option::as_mut)
 			.unwrap_or(None)
 	}
 
@@ -76,7 +76,7 @@ impl<I: SparseSetIndex, V> SparseArray<I, V> {
 		self
 			.values
 			.get_mut(index)
-			.and_then(|value| value.take())
+			.and_then(Option::take)
 	}
 
 	pub fn clear(&mut self) {
