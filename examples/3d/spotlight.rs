@@ -139,7 +139,7 @@ fn movement(
 	time: Res<Time>,
 	mut query: Query<&mut Transform, With<Movable>>,
 ) {
-	for mut transform in query.iter_mut() {
+	query.for_each_mut(|mut transform| {
 		let mut direction = Vec3::ZERO;
 		if input.pressed(KeyCode::Up) {
 			direction.z -= 1.0;
@@ -161,5 +161,5 @@ fn movement(
 		}
 
 		transform.translation += time.delta_seconds() * 2.0 * direction;
-	}
+	});
 }

@@ -250,9 +250,9 @@ pub fn extract_sprites(
 	>,
 ) {
 	extracted_sprites.sprites.clear();
-	for (entity, visibility, sprite, transform, handle) in sprite_query.iter() {
+	sprite_query.for_each(|(entity, visibility, sprite, transform, handle)| {
 		if !visibility.is_visible() {
-			continue;
+			return;
 		}
 		// PERF: we don't check in this function that the `Image` asset is ready, since it should be in most cases and hashing the handle is expensive
 		extracted_sprites
@@ -271,31 +271,34 @@ pub fn extract_sprites(
 				image_handle_id: handle.id,
 				anchor: sprite.anchor.as_vec(),
 			});
-	}
-	for (entity, visibility, atlas_sprite, transform, texture_atlas_handle) in atlas_query.iter() {
-		if !visibility.is_visible() {
-			continue;
-		}
-		if let Some(texture_atlas) = texture_atlases.get(texture_atlas_handle) {
-			let rect = Some(texture_atlas.textures[atlas_sprite.index as usize]);
-			extracted_sprites
-				.sprites
-				.alloc()
-				.init(ExtractedSprite {
-					entity,
-					color: atlas_sprite.color,
-					transform: *transform,
-					// Select the area in the texture atlas
-					rect,
-					// Pass the custom size
-					custom_size: atlas_sprite.custom_size,
-					flip_x: atlas_sprite.flip_x,
-					flip_y: atlas_sprite.flip_y,
-					image_handle_id: texture_atlas.texture.id,
-					anchor: atlas_sprite.anchor.as_vec(),
-				});
-		}
-	}
+	});
+
+	atlas_query.for_each(
+		|(entity, visibility, atlas_sprite, transform, texture_atlas_handle)| {
+			if !visibility.is_visible() {
+				return;
+			}
+			if let Some(texture_atlas) = texture_atlases.get(texture_atlas_handle) {
+				let rect = Some(texture_atlas.textures[atlas_sprite.index as usize]);
+				extracted_sprites
+					.sprites
+					.alloc()
+					.init(ExtractedSprite {
+						entity,
+						color: atlas_sprite.color,
+						transform: *transform,
+						// Select the area in the texture atlas
+						rect,
+						// Pass the custom size
+						custom_size: atlas_sprite.custom_size,
+						flip_x: atlas_sprite.flip_x,
+						flip_y: atlas_sprite.flip_y,
+						image_handle_id: texture_atlas.texture.id,
+						anchor: atlas_sprite.anchor.as_vec(),
+					});
+			}
+		},
+	);
 }
 
 #[repr(C)]
