@@ -254,19 +254,19 @@ pub fn flex_node_system(
 		query: Query<(Entity, &Style, Option<&CalculatedSize>), F>,
 	) {
 		// update changed nodes
-		for (entity, style, calculated_size) in query.into_iter() {
+		query.for_each(|(entity, style, calculated_size)| {
 			// TODO: remove node from old hierarchy if its root has changed
 			if let Some(calculated_size) = calculated_size {
 				flex_surface.upsert_leaf(entity, style, *calculated_size, scaling_factor);
 			} else {
 				flex_surface.upsert_node(entity, style, scaling_factor);
 			}
-		}
+		});
 	}
 
-	for (entity, style, calculated_size) in changed_size_query.into_iter() {
+	changed_size_query.for_each(|(entity, style, calculated_size)| {
 		flex_surface.upsert_leaf(entity, style, *calculated_size, logical_to_physical_factor);
-	}
+	});
 
 	// TODO: handle removed nodes
 
