@@ -12,9 +12,9 @@ const FONT_SIZE: f32 = 7.0;
 fn main() {
 	let mut app = App::new();
 	app.insert_resource(WindowDescriptor {
-			present_mode: PresentMode::Immediate,
-			..Default::default()
-		});
+		present_mode: PresentMode::Immediate,
+		..Default::default()
+	});
 	app.add_plugins(DefaultPlugins);
 	app.init_plugin::<FrameTimeDiagnosticsPlugin>();
 	app.init_plugin::<LogDiagnosticsPlugin>();
