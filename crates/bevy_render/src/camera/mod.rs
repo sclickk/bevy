@@ -2,10 +2,12 @@
 mod camera;
 mod camera_driver_node;
 mod projection;
+mod viewport;
 
 pub use camera::*;
 pub use camera_driver_node::*;
 pub use projection::*;
+pub use viewport::*;
 
 use crate::{
 	primitives::Aabb,
