@@ -638,7 +638,36 @@ impl VertexAttributeValues {
 
 	/// Returns `true` if there are no vertices in this [`VertexAttributeValues`].
 	pub fn is_empty(&self) -> bool {
-		self.len() == 0
+		match *self {
+			VertexAttributeValues::Float32(ref values) => values.is_empty(),
+			VertexAttributeValues::Sint32(ref values) => values.is_empty(),
+			VertexAttributeValues::Uint32(ref values) => values.is_empty(),
+			VertexAttributeValues::Float32x2(ref values) => values.is_empty(),
+			VertexAttributeValues::Sint32x2(ref values) => values.is_empty(),
+			VertexAttributeValues::Uint32x2(ref values) => values.is_empty(),
+			VertexAttributeValues::Float32x3(ref values) => values.is_empty(),
+			VertexAttributeValues::Sint32x3(ref values) => values.is_empty(),
+			VertexAttributeValues::Uint32x3(ref values) => values.is_empty(),
+			VertexAttributeValues::Float32x4(ref values) => values.is_empty(),
+			VertexAttributeValues::Sint32x4(ref values) => values.is_empty(),
+			VertexAttributeValues::Uint32x4(ref values) => values.is_empty(),
+			VertexAttributeValues::Sint16x2(ref values) => values.is_empty(),
+			VertexAttributeValues::Snorm16x2(ref values) => values.is_empty(),
+			VertexAttributeValues::Uint16x2(ref values) => values.is_empty(),
+			VertexAttributeValues::Unorm16x2(ref values) => values.is_empty(),
+			VertexAttributeValues::Sint16x4(ref values) => values.is_empty(),
+			VertexAttributeValues::Snorm16x4(ref values) => values.is_empty(),
+			VertexAttributeValues::Uint16x4(ref values) => values.is_empty(),
+			VertexAttributeValues::Unorm16x4(ref values) => values.is_empty(),
+			VertexAttributeValues::Sint8x2(ref values) => values.is_empty(),
+			VertexAttributeValues::Snorm8x2(ref values) => values.is_empty(),
+			VertexAttributeValues::Uint8x2(ref values) => values.is_empty(),
+			VertexAttributeValues::Unorm8x2(ref values) => values.is_empty(),
+			VertexAttributeValues::Sint8x4(ref values) => values.is_empty(),
+			VertexAttributeValues::Snorm8x4(ref values) => values.is_empty(),
+			VertexAttributeValues::Uint8x4(ref values) => values.is_empty(),
+			VertexAttributeValues::Unorm8x4(ref values) => values.is_empty(),
+		}
 	}
 
 	/// Returns the values as float triples if possible.

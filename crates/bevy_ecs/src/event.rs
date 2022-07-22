@@ -238,7 +238,7 @@ impl<'w, 's, E: Event> EventReader<'w, 's, E> {
 	/// # bevy_ecs::system::assert_is_system(play_collision_sound);
 	/// ```
 	pub fn is_empty(&self) -> bool {
-		self.len() == 0
+		self.reader.is_empty(&self.events)
 	}
 
 	/// Consumes the iterator.
@@ -528,7 +528,7 @@ impl<E: Event> Events<E> {
 	/// Returns true if there are no events in this collection.
 	#[inline]
 	pub fn is_empty(&self) -> bool {
-		self.len() == 0
+		self.events_a.is_empty() && self.events_b.is_empty()
 	}
 
 	/// Creates a draining iterator that removes all events.
