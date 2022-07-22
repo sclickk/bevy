@@ -309,6 +309,7 @@ impl<'w, 's, Q: WorldQuery, F: WorldQuery> Query<'w, 's, Q, F> {
 	/// # bevy_ecs::system::assert_is_system(report_names_system);
 	/// ```
 	#[inline]
+	#[deprecated]
 	pub fn iter(&self) -> QueryIter<'_, 's, Q::ReadOnly, F::ReadOnly> {
 		// SAFETY: system runs without conflicts with other systems.
 		// same-system queries have runtime borrow checks when they conflict
@@ -342,6 +343,7 @@ impl<'w, 's, Q: WorldQuery, F: WorldQuery> Query<'w, 's, Q, F> {
 	/// # bevy_ecs::system::assert_is_system(gravity_system);
 	/// ```
 	#[inline]
+	#[deprecated]
 	pub fn iter_mut(&mut self) -> QueryIter<'_, 's, Q, F> {
 		// SAFETY: system runs without conflicts with other systems.
 		// same-system queries have runtime borrow checks when they conflict
