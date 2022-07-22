@@ -848,10 +848,12 @@ pub fn prepare_lights(
 		)
 	});
 
-	if global_light_meta.entity_to_index.capacity() < point_lights.len() {
+	let point_lights_len = point_lights.len();
+
+	if global_light_meta.entity_to_index.capacity() < point_lights_len {
 		global_light_meta
 			.entity_to_index
-			.reserve(point_lights.len());
+			.reserve(point_lights_len);
 	}
 
 	let mut gpu_point_lights = Vec::new();
