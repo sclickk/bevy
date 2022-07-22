@@ -206,8 +206,10 @@ fn assert_component_access_compatibility(
 		})
 		.collect::<Vec<&str>>();
 	let accesses = conflicting_components.join(", ");
-	panic!("error[B0001]: Query<{}, {}> in system {} accesses component(s) {} in a way that conflicts with a previous system parameter. Consider using `Without<T>` to create disjoint Queries or merging conflicting Queries into a `ParamSet`.",
-           query_type, filter_type, system_name, accesses);
+	panic!(
+		"error[B0001]: Query<{}, {}> in system {} accesses component(s) {} in a way that conflicts with a previous system parameter. Consider using `Without<T>` to create disjoint Queries or merging conflicting Queries into a `ParamSet`.",
+		query_type, filter_type, system_name, accesses
+	);
 }
 
 pub struct ParamSet<'w, 's, T: SystemParam> {
@@ -321,11 +323,11 @@ unsafe impl<T: Resource> SystemParamState for ResState<T> {
 			.component_access_set
 			.combined_access_mut();
 		assert!(
-            !combined_access.has_write(component_id),
-            "error[B0002]: Res<{}> in system {} conflicts with a previous ResMut<{0}> access. Consider removing the duplicate access.",
-            std::any::type_name::<T>(),
-            system_meta.name,
-        );
+			!combined_access.has_write(component_id),
+			"error[B0002]: Res<{}> in system {} conflicts with a previous ResMut<{0}> access. Consider removing the duplicate access.",
+			std::any::type_name::<T>(),
+			system_meta.name,
+		);
 		combined_access.add_read(component_id);
 
 		let resource_archetype = world.archetypes.resource();
@@ -1305,55 +1307,55 @@ impl<'w, 's> SystemParamFetch<'w, 's> for SystemChangeTickState {
 }
 
 macro_rules! impl_system_param_tuple {
-    ($($param: ident),*) => {
-        impl<$($param: SystemParam),*> SystemParam for ($($param,)*) {
-            type Fetch = ($($param::Fetch,)*);
-        }
+	($($param: ident),*) => {
+		impl<$($param: SystemParam),*> SystemParam for ($($param,)*) {
+			type Fetch = ($($param::Fetch,)*);
+		}
 
-        // SAFETY: tuple consists only of ReadOnlySystemParamFetches
-        unsafe impl<$($param: ReadOnlySystemParamFetch),*> ReadOnlySystemParamFetch for ($($param,)*) {}
+		// SAFETY: tuple consists only of ReadOnlySystemParamFetches
+		unsafe impl<$($param: ReadOnlySystemParamFetch),*> ReadOnlySystemParamFetch for ($($param,)*) {}
 
-        #[allow(unused_variables)]
-        #[allow(non_snake_case)]
-        impl<'w, 's, $($param: SystemParamFetch<'w, 's>),*> SystemParamFetch<'w, 's> for ($($param,)*) {
-            type Item = ($($param::Item,)*);
+		#[allow(unused_variables)]
+		#[allow(non_snake_case)]
+		impl<'w, 's, $($param: SystemParamFetch<'w, 's>),*> SystemParamFetch<'w, 's> for ($($param,)*) {
+			type Item = ($($param::Item,)*);
 
-            #[inline]
-            #[allow(clippy::unused_unit)]
-            unsafe fn get_param(
-                state: &'s mut Self,
-                system_meta: &SystemMeta,
-                world: &'w World,
-                change_tick: u32,
-            ) -> Self::Item {
+			#[inline]
+			#[allow(clippy::unused_unit)]
+			unsafe fn get_param(
+				state: &'s mut Self,
+				system_meta: &SystemMeta,
+				world: &'w World,
+				change_tick: u32,
+			) -> Self::Item {
 
-                let ($($param,)*) = state;
-                ($($param::get_param($param, system_meta, world, change_tick),)*)
-            }
-        }
+				let ($($param,)*) = state;
+				($($param::get_param($param, system_meta, world, change_tick),)*)
+			}
+		}
 
-        // SAFETY: implementors of each `SystemParamState` in the tuple have validated their impls
-        #[allow(clippy::undocumented_unsafe_blocks)] // false positive by clippy
-        #[allow(non_snake_case)]
-        unsafe impl<$($param: SystemParamState),*> SystemParamState for ($($param,)*) {
-            #[inline]
-            fn init(_world: &mut World, _system_meta: &mut SystemMeta) -> Self {
-                (($($param::init(_world, _system_meta),)*))
-            }
+		// SAFETY: implementors of each `SystemParamState` in the tuple have validated their impls
+		#[allow(clippy::undocumented_unsafe_blocks)] // false positive by clippy
+		#[allow(non_snake_case)]
+		unsafe impl<$($param: SystemParamState),*> SystemParamState for ($($param,)*) {
+			#[inline]
+			fn init(_world: &mut World, _system_meta: &mut SystemMeta) -> Self {
+				(($($param::init(_world, _system_meta),)*))
+			}
 
-            #[inline]
-            fn new_archetype(&mut self, _archetype: &Archetype, _system_meta: &mut SystemMeta) {
-                let ($($param,)*) = self;
-                $($param.new_archetype(_archetype, _system_meta);)*
-            }
+			#[inline]
+			fn new_archetype(&mut self, _archetype: &Archetype, _system_meta: &mut SystemMeta) {
+				let ($($param,)*) = self;
+				$($param.new_archetype(_archetype, _system_meta);)*
+			}
 
-            #[inline]
-            fn apply(&mut self, _world: &mut World) {
-                let ($($param,)*) = self;
-                $($param.apply(_world);)*
-            }
-        }
-    };
+			#[inline]
+			fn apply(&mut self, _world: &mut World) {
+				let ($($param,)*) = self;
+				$($param.apply(_world);)*
+			}
+		}
+	};
 }
 
 all_tuples!(impl_system_param_tuple, 0, 16, P);
