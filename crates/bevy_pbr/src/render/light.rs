@@ -249,32 +249,24 @@ impl FromWorld for ShadowPipeline {
 		});
 
 		let mesh_pipeline = world.resource::<MeshPipeline>();
-		let skinned_mesh_layout = mesh_pipeline.skinned_mesh_layout.clone();
+
+		let sampler_descriptor = SamplerDescriptor {
+			address_mode_u: AddressMode::ClampToEdge,
+			address_mode_v: AddressMode::ClampToEdge,
+			address_mode_w: AddressMode::ClampToEdge,
+			mag_filter: FilterMode::Linear,
+			min_filter: FilterMode::Linear,
+			mipmap_filter: FilterMode::Nearest,
+			compare: Some(CompareFunction::GreaterEqual),
+			..Default::default()
+		};
 
 		ShadowPipeline {
 			view_layout,
 			mesh_layout: mesh_pipeline.mesh_layout.clone(),
-			skinned_mesh_layout,
-			point_light_sampler: render_device.create_sampler(&SamplerDescriptor {
-				address_mode_u: AddressMode::ClampToEdge,
-				address_mode_v: AddressMode::ClampToEdge,
-				address_mode_w: AddressMode::ClampToEdge,
-				mag_filter: FilterMode::Linear,
-				min_filter: FilterMode::Linear,
-				mipmap_filter: FilterMode::Nearest,
-				compare: Some(CompareFunction::GreaterEqual),
-				..Default::default()
-			}),
-			directional_light_sampler: render_device.create_sampler(&SamplerDescriptor {
-				address_mode_u: AddressMode::ClampToEdge,
-				address_mode_v: AddressMode::ClampToEdge,
-				address_mode_w: AddressMode::ClampToEdge,
-				mag_filter: FilterMode::Linear,
-				min_filter: FilterMode::Linear,
-				mipmap_filter: FilterMode::Nearest,
-				compare: Some(CompareFunction::GreaterEqual),
-				..Default::default()
-			}),
+			skinned_mesh_layout: mesh_pipeline.skinned_mesh_layout.clone(),
+			point_light_sampler: render_device.create_sampler(&sampler_descriptor),
+			directional_light_sampler: render_device.create_sampler(&sampler_descriptor),
 		}
 	}
 }
