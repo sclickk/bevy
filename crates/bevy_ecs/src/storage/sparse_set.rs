@@ -122,7 +122,7 @@ impl ComponentSparseSet {
 
 	#[inline]
 	pub fn is_empty(&self) -> bool {
-		self.dense.len() == 0
+		self.dense.is_empty()
 	}
 
 	/// Inserts the `entity` key and component `value` pair into this sparse
