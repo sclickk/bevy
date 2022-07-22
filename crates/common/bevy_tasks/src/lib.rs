@@ -17,6 +17,9 @@ mod single_threaded_task_pool;
 #[cfg(target_arch = "wasm32")]
 pub use single_threaded_task_pool::{Scope, TaskPool, TaskPoolBuilder};
 
+mod task_pool_options;
+pub use task_pool_options::DefaultTaskPoolOptions;
+
 mod usages;
 pub use usages::{AsyncComputeTaskPool, ComputeTaskPool, IoTaskPool};
 

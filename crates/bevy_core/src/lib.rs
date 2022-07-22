@@ -2,21 +2,20 @@
 //! This crate provides core functionality for Bevy Engine.
 
 mod name;
-mod task_pool_options;
 
 pub use bytemuck::{bytes_of, cast_slice, Pod, Zeroable};
 pub use name::*;
-pub use task_pool_options::*;
 
 pub mod prelude {
 	//! The Bevy Core Prelude.
 	#[doc(hidden)]
-	pub use crate::{DefaultTaskPoolOptions, Name};
+	pub use crate::Name;
 }
 
 use bevy_app::prelude::*;
 use bevy_ecs::entity::Entity;
 use bevy_utils::HashSet;
+use bevy_tasks::DefaultTaskPoolOptions;
 use std::ops::Range;
 
 /// Adds core functionality to Apps.
