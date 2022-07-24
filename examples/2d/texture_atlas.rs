@@ -9,9 +9,9 @@ fn main() {
 	app.insert_resource(ImageSettings::default_nearest()); // prevents blurry sprites
 	app.add_plugins(DefaultPlugins);
 	app.add_state(AppState::Setup);
-	app.add_system_set(SystemSet::on_enter(AppState::Setup).with_system(load_textures));
-	app.add_system_set(SystemSet::on_update(AppState::Setup).with_system(check_textures));
-	app.add_system_set(SystemSet::on_enter(AppState::Finished).with_system(setup));
+	app.add_system_set(SystemSet::when_enter(AppState::Setup, load_textures));
+	app.add_system_set(SystemSet::when_update(AppState::Setup, check_textures));
+	app.add_system_set(SystemSet::when_enter(AppState::Finished, setup));
 	app.run();
 }
 

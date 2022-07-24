@@ -35,17 +35,19 @@ fn main() {
 	app.add_state(AppState::MainMenu);
 	app.add_startup_system(setup_system);
 	app.add_system(print_text_system);
-	app.add_system_set(
-		SystemSet::on_update(AppState::MainMenu).with_system(transition_to_in_game_system),
-	);
+	app.add_system_set(SystemSet::when_update(
+		AppState::MainMenu,
+		transition_to_in_game_system,
+	));
 	// add the cleanup systems
 	app.add_system_set(
 		// Pass in the types your system should operate on using the ::<T> (turbofish) syntax
-		SystemSet::on_exit(AppState::MainMenu).with_system(cleanup_system::<MenuClose>),
+		SystemSet::when_exit(AppState::MainMenu, cleanup_system::<MenuClose>),
 	);
-	app.add_system_set(
-		SystemSet::on_exit(AppState::InGame).with_system(cleanup_system::<LevelUnload>),
-	);
+	app.add_system_set(SystemSet::when_exit(
+		AppState::InGame,
+		cleanup_system::<LevelUnload>,
+	));
 	app.run();
 }
 

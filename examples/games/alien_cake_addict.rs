@@ -22,7 +22,7 @@ fn main() {
 	app.add_plugins(DefaultPlugins);
 	app.add_state(GameState::Playing);
 	app.add_startup_system(setup_cameras);
-	app.add_system_set(SystemSet::on_enter(GameState::Playing).with_system(setup));
+	app.add_system_set(SystemSet::when_enter(GameState::Playing, setup));
 	app.add_system_set(
 		SystemSet::on_update(GameState::Playing)
 			.with_system(move_player)
@@ -30,10 +30,13 @@ fn main() {
 			.with_system(rotate_bonus)
 			.with_system(scoreboard_system),
 	);
-	app.add_system_set(SystemSet::on_exit(GameState::Playing).with_system(teardown));
-	app.add_system_set(SystemSet::on_enter(GameState::GameOver).with_system(display_score));
-	app.add_system_set(SystemSet::on_update(GameState::GameOver).with_system(gameover_keyboard));
-	app.add_system_set(SystemSet::on_exit(GameState::GameOver).with_system(teardown));
+	app.add_system_set(SystemSet::when_exit(GameState::Playing, teardown));
+	app.add_system_set(SystemSet::when_enter(GameState::GameOver, display_score));
+	app.add_system_set(SystemSet::when_update(
+		GameState::GameOver,
+		gameover_keyboard,
+	));
+	app.add_system_set(SystemSet::when_exit(GameState::GameOver, teardown));
 	app.add_system_set(
 		SystemSet::new()
 			.with_run_criteria(FixedTimestep::step(5.0))

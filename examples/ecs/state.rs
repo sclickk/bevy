@@ -8,10 +8,10 @@ fn main() {
 	app.add_plugins(DefaultPlugins);
 	app.add_state(AppState::Menu);
 	app.add_startup_system(setup);
-	app.add_system_set(SystemSet::on_enter(AppState::Menu).with_system(setup_menu));
-	app.add_system_set(SystemSet::on_update(AppState::Menu).with_system(menu));
-	app.add_system_set(SystemSet::on_exit(AppState::Menu).with_system(cleanup_menu));
-	app.add_system_set(SystemSet::on_enter(AppState::InGame).with_system(setup_game));
+	app.add_system_set(SystemSet::when_enter(AppState::Menu, setup_menu));
+	app.add_system_set(SystemSet::when_update(AppState::Menu, menu));
+	app.add_system_set(SystemSet::when_exit(AppState::Menu, cleanup_menu));
+	app.add_system_set(SystemSet::when_enter(AppState::InGame, setup_game));
 	app.add_system_set(
 		SystemSet::on_update(AppState::InGame)
 			.with_system(movement)

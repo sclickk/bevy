@@ -68,6 +68,68 @@ impl SystemSet {
 		Self::new().with_run_criteria(State::<T>::on_resume(s))
 	}
 
+	/// Short for `SystemSet::on_update(state).with_system(system)`
+	pub fn when_update<T, Params>(state: T, system: impl IntoSystemDescriptor<Params>) -> SystemSet
+	where
+		T: StateData,
+	{
+		Self::on_update(state).with_system(system)
+	}
+
+	/// Short for `SystemSet::on_inactive_update(state).with_system(system)`
+	pub fn when_inactive_update<T, Params>(
+		state: T,
+		system: impl IntoSystemDescriptor<Params>,
+	) -> SystemSet
+	where
+		T: StateData,
+	{
+		Self::on_inactive_update(state).with_system(system)
+	}
+
+	/// Short for `SystemSet::on_in_stack_update(state).with_system(system)`
+	pub fn when_in_stack_update<T, Params>(
+		state: T,
+		system: impl IntoSystemDescriptor<Params>,
+	) -> SystemSet
+	where
+		T: StateData,
+	{
+		Self::on_in_stack_update(state).with_system(system)
+	}
+
+	/// Short for `SystemSet::on_enter(state).with_system(system)`
+	pub fn when_enter<T, Params>(state: T, system: impl IntoSystemDescriptor<Params>) -> SystemSet
+	where
+		T: StateData,
+	{
+		Self::on_enter(state).with_system(system)
+	}
+
+	/// Short for `SystemSet::on_exit(state).with_system(system)`
+	pub fn when_exit<T, Params>(state: T, system: impl IntoSystemDescriptor<Params>) -> SystemSet
+	where
+		T: StateData,
+	{
+		Self::on_exit(state).with_system(system)
+	}
+
+	/// Short for `SystemSet::on_pause(state).with_system(system)`
+	pub fn when_pause<T, Params>(state: T, system: impl IntoSystemDescriptor<Params>) -> SystemSet
+	where
+		T: StateData,
+	{
+		Self::on_pause(state).with_system(system)
+	}
+
+	/// Short for `SystemSet::on_resume(state).with_system(system)`
+	pub fn when_resume<T, Params>(state: T, system: impl IntoSystemDescriptor<Params>) -> SystemSet
+	where
+		T: StateData,
+	{
+		Self::on_resume(state).with_system(system)
+	}
+
 	#[must_use]
 	pub fn in_ambiguity_set(mut self, set: impl AmbiguitySetLabel) -> Self {
 		self.meta.ambiguity_sets.push(set.as_label());
