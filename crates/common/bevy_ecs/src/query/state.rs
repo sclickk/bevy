@@ -148,10 +148,10 @@ impl<Q: WorldQuery, F: WorldQuery> QueryState<Q, F> {
 	#[inline]
 	pub fn validate_world(&self, world: &World) {
 		assert!(
-            world.id() == self.world_id,
-            "Attempted to use {} with a mismatched World. QueryStates can only be used with the World they were created from.",
-                std::any::type_name::<Self>(),
-        );
+			world.id() == self.world_id,
+			"Attempted to use {} with a mismatched World. QueryStates can only be used with the World they were created from.",
+			std::any::type_name::<Self>(),
+		);
 	}
 
 	/// Creates a new [`Archetype`].

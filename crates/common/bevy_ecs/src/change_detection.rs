@@ -68,95 +68,95 @@ pub trait DetectChanges {
 }
 
 macro_rules! change_detection_impl {
-    ($name:ident < $( $generics:tt ),+ >, $target:ty, $($traits:ident)?) => {
-        impl<$($generics),* $(: $traits)?> DetectChanges for $name<$($generics),*> {
-            #[inline]
-            fn is_added(&self) -> bool {
-                self.ticks
-                    .component_ticks
-                    .is_added(self.ticks.last_change_tick, self.ticks.change_tick)
-            }
+	($name:ident < $( $generics:tt ),+ >, $target:ty, $($traits:ident)?) => {
+		impl<$($generics),* $(: $traits)?> DetectChanges for $name<$($generics),*> {
+			#[inline]
+			fn is_added(&self) -> bool {
+				self.ticks
+				.component_ticks
+				.is_added(self.ticks.last_change_tick, self.ticks.change_tick)
+			}
 
-            #[inline]
-            fn is_changed(&self) -> bool {
-                self.ticks
-                    .component_ticks
-                    .is_changed(self.ticks.last_change_tick, self.ticks.change_tick)
-            }
+			#[inline]
+			fn is_changed(&self) -> bool {
+				self.ticks
+				.component_ticks
+				.is_changed(self.ticks.last_change_tick, self.ticks.change_tick)
+			}
 
-            #[inline]
-            fn set_changed(&mut self) {
-                self.ticks
-                    .component_ticks
-                    .set_changed(self.ticks.change_tick);
-            }
+			#[inline]
+			fn set_changed(&mut self) {
+				self.ticks
+				.component_ticks
+				.set_changed(self.ticks.change_tick);
+			}
 
-            #[inline]
-            fn last_changed(&self) -> u32 {
-                self.ticks.last_change_tick
-            }
-        }
+			#[inline]
+			fn last_changed(&self) -> u32 {
+				self.ticks.last_change_tick
+			}
+		}
 
-        impl<$($generics),* $(: $traits)?> Deref for $name<$($generics),*> {
-            type Target = $target;
+		impl<$($generics),* $(: $traits)?> Deref for $name<$($generics),*> {
+			type Target = $target;
 
-            #[inline]
-            fn deref(&self) -> &Self::Target {
-                self.value
-            }
-        }
+			#[inline]
+			fn deref(&self) -> &Self::Target {
+				self.value
+			}
+		}
 
-        impl<$($generics),* $(: $traits)?> DerefMut for $name<$($generics),*> {
-            #[inline]
-            fn deref_mut(&mut self) -> &mut Self::Target {
-                self.set_changed();
-                self.value
-            }
-        }
+		impl<$($generics),* $(: $traits)?> DerefMut for $name<$($generics),*> {
+			#[inline]
+			fn deref_mut(&mut self) -> &mut Self::Target {
+				self.set_changed();
+				self.value
+			}
+		}
 
-        impl<$($generics),* $(: $traits)?> AsRef<$target> for $name<$($generics),*> {
-            #[inline]
-            fn as_ref(&self) -> &$target {
-                self.deref()
-            }
-        }
+		impl<$($generics),* $(: $traits)?> AsRef<$target> for $name<$($generics),*> {
+			#[inline]
+			fn as_ref(&self) -> &$target {
+				self.deref()
+			}
+		}
 
-        impl<$($generics),* $(: $traits)?> AsMut<$target> for $name<$($generics),*> {
-            #[inline]
-            fn as_mut(&mut self) -> &mut $target {
-                self.deref_mut()
-            }
-        }
-    };
+		impl<$($generics),* $(: $traits)?> AsMut<$target> for $name<$($generics),*> {
+			#[inline]
+			fn as_mut(&mut self) -> &mut $target {
+				self.deref_mut()
+			}
+		}
+	};
 }
 
 macro_rules! impl_into_inner {
-    ($name:ident < $( $generics:tt ),+ >, $target:ty, $($traits:ident)?) => {
-        impl<$($generics),* $(: $traits)?> $name<$($generics),*> {
-            /// Consume `self` and return a mutable reference to the
-            /// contained value while marking `self` as "changed".
-            #[inline]
-            pub fn into_inner(mut self) -> &'a mut $target {
-                self.set_changed();
-                self.value
-            }
-        }
-    };
+	($name:ident < $( $generics:tt ),+ >, $target:ty, $($traits:ident)?) => {
+		impl<$($generics),* $(: $traits)?> $name<$($generics),*> {
+			/// Consume `self` and return a mutable reference to the
+			/// contained value while marking `self` as "changed".
+			#[inline]
+			pub fn into_inner(mut self) -> &'a mut $target {
+				self.set_changed();
+				self.value
+			}
+		}
+	};
 }
 
 macro_rules! impl_debug {
-    ($name:ident < $( $generics:tt ),+ >, $($traits:ident)?) => {
-        impl<$($generics),* $(: $traits)?> std::fmt::Debug for $name<$($generics),*>
-            where T: std::fmt::Debug
-        {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                f.debug_tuple(stringify!($name))
-                    .field(self.value)
-                    .finish()
-            }
-        }
+	($name:ident < $( $generics:tt ),+ >, $($traits:ident)?) => {
+		impl<$($generics),* $(: $traits)?> std::fmt::Debug for $name<$($generics),*>
+		where T: std::fmt::Debug
+		{
+			fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+				f.debug_tuple(stringify!($name))
+				.field(self.value)
+				.finish()
+			}
+		}
 
-    };
+	};
 }
 
 pub(crate) struct Ticks<'a> {

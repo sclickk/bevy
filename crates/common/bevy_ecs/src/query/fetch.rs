@@ -734,10 +734,10 @@ unsafe impl<'w, T: Component> Fetch<'w> for ReadFetch<'w, T> {
 
 	fn update_component_access(state: &Self::State, access: &mut FilteredAccess<ComponentId>) {
 		assert!(
-            !access.access().has_write(state.component_id),
-            "&{} conflicts with a previous access in this query. Shared access cannot coincide with exclusive access.",
-                std::any::type_name::<T>(),
-        );
+			!access.access().has_write(state.component_id),
+			"&{} conflicts with a previous access in this query. Shared access cannot coincide with exclusive access.",
+			std::any::type_name::<T>(),
+		);
 		access.add_read(state.component_id);
 	}
 
@@ -919,10 +919,10 @@ unsafe impl<'w, T: Component> Fetch<'w> for WriteFetch<'w, T> {
 
 	fn update_component_access(state: &Self::State, access: &mut FilteredAccess<ComponentId>) {
 		assert!(
-            !access.access().has_read(state.component_id),
-            "&mut {} conflicts with a previous access in this query. Mutable component access must be unique.",
-                std::any::type_name::<T>(),
-        );
+			!access.access().has_read(state.component_id),
+			"&mut {} conflicts with a previous access in this query. Mutable component access must be unique.",
+			std::any::type_name::<T>(),
+		);
 		access.add_write(state.component_id);
 	}
 
@@ -1326,10 +1326,10 @@ unsafe impl<'w, T: Component> Fetch<'w> for ChangeTrackersFetch<'w, T> {
 
 	fn update_component_access(state: &Self::State, access: &mut FilteredAccess<ComponentId>) {
 		assert!(
-            !access.access().has_write(state.component_id),
-            "ChangeTrackers<{}> conflicts with a previous access in this query. Shared access cannot coincide with exclusive access.",
-                std::any::type_name::<T>()
-        );
+			!access.access().has_write(state.component_id),
+			"ChangeTrackers<{}> conflicts with a previous access in this query. Shared access cannot coincide with exclusive access.",
+			std::any::type_name::<T>()
+		);
 		access.add_read(state.component_id);
 	}
 
@@ -1345,115 +1345,115 @@ unsafe impl<'w, T: Component> Fetch<'w> for ChangeTrackersFetch<'w, T> {
 }
 
 macro_rules! impl_tuple_fetch {
-    ($(($name: ident, $state: ident)),*) => {
-        #[allow(unused_variables)]
-        #[allow(non_snake_case)]
-        impl<'w, $($name: WorldQueryGats<'w>),*> WorldQueryGats<'w> for ($($name,)*) {
-            type Fetch = ($($name::Fetch,)*);
-            type _State = ($($name::_State,)*);
-        }
+	($(($name: ident, $state: ident)),*) => {
+		#[allow(unused_variables)]
+		#[allow(non_snake_case)]
+		impl<'w, $($name: WorldQueryGats<'w>),*> WorldQueryGats<'w> for ($($name,)*) {
+			type Fetch = ($($name::Fetch,)*);
+			type _State = ($($name::_State,)*);
+		}
 
-        #[allow(non_snake_case)]
-        // SAFETY: update_component_access and update_archetype_component_access are called for each item in the tuple
-        unsafe impl<'w, $($name: Fetch<'w>),*> Fetch<'w> for ($($name,)*) {
-            type Item = ($($name::Item,)*);
-            type State = ($($name::State,)*);
+		#[allow(non_snake_case)]
+		// SAFETY: update_component_access and update_archetype_component_access are called for each item in the tuple
+		unsafe impl<'w, $($name: Fetch<'w>),*> Fetch<'w> for ($($name,)*) {
+			type Item = ($($name::Item,)*);
+			type State = ($($name::State,)*);
 
-            #[allow(clippy::unused_unit)]
-            unsafe fn init(_world: &'w World, state: &Self::State, _last_change_tick: u32, _change_tick: u32) -> Self {
-                let ($($name,)*) = state;
-                ($($name::init(_world, $name, _last_change_tick, _change_tick),)*)
-            }
+			#[allow(clippy::unused_unit)]
+			unsafe fn init(_world: &'w World, state: &Self::State, _last_change_tick: u32, _change_tick: u32) -> Self {
+				let ($($name,)*) = state;
+				($($name::init(_world, $name, _last_change_tick, _change_tick),)*)
+			}
 
-            const IS_DENSE: bool = true $(&& $name::IS_DENSE)*;
+			const IS_DENSE: bool = true $(&& $name::IS_DENSE)*;
 
-            const IS_ARCHETYPAL: bool = true $(&& $name::IS_ARCHETYPAL)*;
+			const IS_ARCHETYPAL: bool = true $(&& $name::IS_ARCHETYPAL)*;
 
-            #[inline]
-            unsafe fn set_archetype(&mut self, _state: &Self::State, _archetype: &'w Archetype, _tables: &'w Tables) {
-                let ($($name,)*) = self;
-                let ($($state,)*) = _state;
-                $($name.set_archetype($state, _archetype, _tables);)*
-            }
+			#[inline]
+			unsafe fn set_archetype(&mut self, _state: &Self::State, _archetype: &'w Archetype, _tables: &'w Tables) {
+				let ($($name,)*) = self;
+				let ($($state,)*) = _state;
+				$($name.set_archetype($state, _archetype, _tables);)*
+			}
 
-            #[inline]
-            unsafe fn set_table(&mut self, _state: &Self::State, _table: &'w Table) {
-                let ($($name,)*) = self;
-                let ($($state,)*) = _state;
-                $($name.set_table($state, _table);)*
-            }
+			#[inline]
+			unsafe fn set_table(&mut self, _state: &Self::State, _table: &'w Table) {
+				let ($($name,)*) = self;
+				let ($($state,)*) = _state;
+				$($name.set_table($state, _table);)*
+			}
 
-            #[inline]
-            #[allow(clippy::unused_unit)]
-            unsafe fn table_fetch(&mut self, _table_row: usize) -> Self::Item {
-                let ($($name,)*) = self;
-                ($($name.table_fetch(_table_row),)*)
-            }
+			#[inline]
+			#[allow(clippy::unused_unit)]
+			unsafe fn table_fetch(&mut self, _table_row: usize) -> Self::Item {
+				let ($($name,)*) = self;
+				($($name.table_fetch(_table_row),)*)
+			}
 
-            #[inline]
-            #[allow(clippy::unused_unit)]
-            unsafe fn archetype_fetch(&mut self, _archetype_index: usize) -> Self::Item {
-                let ($($name,)*) = self;
-                ($($name.archetype_fetch(_archetype_index),)*)
-            }
+			#[inline]
+			#[allow(clippy::unused_unit)]
+			unsafe fn archetype_fetch(&mut self, _archetype_index: usize) -> Self::Item {
+				let ($($name,)*) = self;
+				($($name.archetype_fetch(_archetype_index),)*)
+			}
 
-            #[allow(unused_variables)]
-            #[inline]
-            unsafe fn table_filter_fetch(&mut self, table_row: usize) -> bool {
-                let ($($name,)*) = self;
-                true $(&& $name.table_filter_fetch(table_row))*
-            }
+			#[allow(unused_variables)]
+			#[inline]
+			unsafe fn table_filter_fetch(&mut self, table_row: usize) -> bool {
+				let ($($name,)*) = self;
+				true $(&& $name.table_filter_fetch(table_row))*
+			}
 
-            #[allow(unused_variables)]
-            #[inline]
-            unsafe fn archetype_filter_fetch(&mut self, archetype_index: usize) -> bool {
-                let ($($name,)*) = self;
-                true $(&& $name.archetype_filter_fetch(archetype_index))*
-            }
+			#[allow(unused_variables)]
+			#[inline]
+			unsafe fn archetype_filter_fetch(&mut self, archetype_index: usize) -> bool {
+				let ($($name,)*) = self;
+				true $(&& $name.archetype_filter_fetch(archetype_index))*
+			}
 
-            fn update_component_access(state: &Self::State, _access: &mut FilteredAccess<ComponentId>) {
-                let ($($name,)*) = state;
-                $($name::update_component_access($name, _access);)*
-            }
+			fn update_component_access(state: &Self::State, _access: &mut FilteredAccess<ComponentId>) {
+				let ($($name,)*) = state;
+				$($name::update_component_access($name, _access);)*
+			}
 
-            fn update_archetype_component_access(state: &Self::State, _archetype: &Archetype, _access: &mut Access<ArchetypeComponentId>) {
-                let ($($name,)*) = state;
-                $($name::update_archetype_component_access($name, _archetype, _access);)*
-            }
-        }
+			fn update_archetype_component_access(state: &Self::State, _archetype: &Archetype, _access: &mut Access<ArchetypeComponentId>) {
+				let ($($name,)*) = state;
+				$($name::update_archetype_component_access($name, _archetype, _access);)*
+			}
+		}
 
-        #[allow(non_snake_case)]
-        #[allow(clippy::unused_unit)]
-        impl<$($name: FetchState),*> FetchState for ($($name,)*) {
-            fn init(_world: &mut World) -> Self {
-                ($($name::init(_world),)*)
-            }
+		#[allow(non_snake_case)]
+		#[allow(clippy::unused_unit)]
+		impl<$($name: FetchState),*> FetchState for ($($name,)*) {
+			fn init(_world: &mut World) -> Self {
+				($($name::init(_world),)*)
+			}
 
-            fn matches_component_set(&self, _set_contains_id: &impl Fn(ComponentId) -> bool) -> bool {
-                let ($($name,)*) = self;
-                true $(&& $name.matches_component_set(_set_contains_id))*
-            }
-        }
+			fn matches_component_set(&self, _set_contains_id: &impl Fn(ComponentId) -> bool) -> bool {
+				let ($($name,)*) = self;
+				true $(&& $name.matches_component_set(_set_contains_id))*
+			}
+		}
 
-        #[allow(non_snake_case)]
-        #[allow(clippy::unused_unit)]
-        // SAFETY: defers to soundness `$name: WorldQuery` impl
-        unsafe impl<$($name: WorldQuery),*> WorldQuery for ($($name,)*) {
-            type ReadOnly = ($($name::ReadOnly,)*);
-            type State = ($($name::State,)*);
+		#[allow(non_snake_case)]
+		#[allow(clippy::unused_unit)]
+		// SAFETY: defers to soundness `$name: WorldQuery` impl
+		unsafe impl<$($name: WorldQuery),*> WorldQuery for ($($name,)*) {
+			type ReadOnly = ($($name::ReadOnly,)*);
+			type State = ($($name::State,)*);
 
-            fn shrink<'wlong: 'wshort, 'wshort>(item: QueryItem<'wlong, Self>) -> QueryItem<'wshort, Self> {
-                let ($($name,)*) = item;
-                ($(
-                    $name::shrink($name),
-                )*)
-            }
-        }
+			fn shrink<'wlong: 'wshort, 'wshort>(item: QueryItem<'wlong, Self>) -> QueryItem<'wshort, Self> {
+				let ($($name,)*) = item;
+				($(
+					$name::shrink($name),
+				)*)
+			}
+		}
 
-        /// SAFETY: each item in the tuple is read only
-        unsafe impl<$($name: ReadOnlyWorldQuery),*> ReadOnlyWorldQuery for ($($name,)*) {}
+		/// SAFETY: each item in the tuple is read only
+		unsafe impl<$($name: ReadOnlyWorldQuery),*> ReadOnlyWorldQuery for ($($name,)*) {}
 
-    };
+	};
 }
 
 /// The `AnyOf` query parameter fetches entities with any of the component types included in T.
@@ -1465,147 +1465,147 @@ macro_rules! impl_tuple_fetch {
 pub struct AnyOf<T>(T);
 
 macro_rules! impl_anytuple_fetch {
-    ($(($name: ident, $state: ident)),*) => {
-        #[allow(unused_variables)]
-        #[allow(non_snake_case)]
-        impl<'w, $($name: WorldQueryGats<'w>),*> WorldQueryGats<'w> for AnyOf<($($name,)*)> {
-            type Fetch = AnyOf<($(($name::Fetch, bool),)*)>;
-            type _State = AnyOf<($($name::_State,)*)>;
-        }
+	($(($name: ident, $state: ident)),*) => {
+		#[allow(unused_variables)]
+		#[allow(non_snake_case)]
+		impl<'w, $($name: WorldQueryGats<'w>),*> WorldQueryGats<'w> for AnyOf<($($name,)*)> {
+			type Fetch = AnyOf<($(($name::Fetch, bool),)*)>;
+			type _State = AnyOf<($($name::_State,)*)>;
+		}
 
-        #[allow(non_snake_case)]
-        // SAFETY: update_component_access and update_archetype_component_access are called for each item in the tuple
-        unsafe impl<'w, $($name: Fetch<'w>),*> Fetch<'w> for AnyOf<($(($name, bool),)*)> {
-            type Item = ($(Option<$name::Item>,)*);
-            type State = AnyOf<($($name::State,)*)>;
+		#[allow(non_snake_case)]
+		// SAFETY: update_component_access and update_archetype_component_access are called for each item in the tuple
+		unsafe impl<'w, $($name: Fetch<'w>),*> Fetch<'w> for AnyOf<($(($name, bool),)*)> {
+			type Item = ($(Option<$name::Item>,)*);
+			type State = AnyOf<($($name::State,)*)>;
 
-            #[allow(clippy::unused_unit)]
-            unsafe fn init(_world: &'w World, state: &Self::State, _last_change_tick: u32, _change_tick: u32) -> Self {
-                let ($($name,)*) = &state.0;
-                AnyOf(($(($name::init(_world, $name, _last_change_tick, _change_tick), false),)*))
-            }
+			#[allow(clippy::unused_unit)]
+			unsafe fn init(_world: &'w World, state: &Self::State, _last_change_tick: u32, _change_tick: u32) -> Self {
+				let ($($name,)*) = &state.0;
+				AnyOf(($(($name::init(_world, $name, _last_change_tick, _change_tick), false),)*))
+			}
 
-            const IS_DENSE: bool = true $(&& $name::IS_DENSE)*;
+			const IS_DENSE: bool = true $(&& $name::IS_DENSE)*;
 
-            const IS_ARCHETYPAL: bool = true $(&& $name::IS_ARCHETYPAL)*;
+			const IS_ARCHETYPAL: bool = true $(&& $name::IS_ARCHETYPAL)*;
 
-            #[inline]
-            unsafe fn set_archetype(&mut self, _state: &Self::State, _archetype: &'w Archetype, _tables: &'w Tables) {
-                let ($($name,)*) = &mut self.0;
-                let ($($state,)*) = &_state.0;
-                $(
-                    $name.1 = $state.matches_component_set(&|id| _archetype.contains(id));
-                    if $name.1 {
-                        $name.0.set_archetype($state, _archetype, _tables);
-                    }
-                )*
-            }
+			#[inline]
+			unsafe fn set_archetype(&mut self, _state: &Self::State, _archetype: &'w Archetype, _tables: &'w Tables) {
+				let ($($name,)*) = &mut self.0;
+				let ($($state,)*) = &_state.0;
+				$(
+					$name.1 = $state.matches_component_set(&|id| _archetype.contains(id));
+					if $name.1 {
+						$name.0.set_archetype($state, _archetype, _tables);
+					}
+				)*
+			}
 
-            #[inline]
-            unsafe fn set_table(&mut self, _state: &Self::State, _table: &'w Table) {
-                let ($($name,)*) = &mut self.0;
-                let ($($state,)*) = &_state.0;
-                $(
-                    $name.1 = $state.matches_component_set(&|id| _table.has_column(id));
-                    if $name.1 {
-                        $name.0.set_table($state, _table);
-                    }
-                )*
-            }
+			#[inline]
+			unsafe fn set_table(&mut self, _state: &Self::State, _table: &'w Table) {
+				let ($($name,)*) = &mut self.0;
+				let ($($state,)*) = &_state.0;
+				$(
+					$name.1 = $state.matches_component_set(&|id| _table.has_column(id));
+					if $name.1 {
+						$name.0.set_table($state, _table);
+					}
+				)*
+			}
 
-            #[inline]
-            #[allow(clippy::unused_unit)]
-            unsafe fn table_fetch(&mut self, _table_row: usize) -> Self::Item {
-                let ($($name,)*) = &mut self.0;
-                ($(
-                    $name.1.then(|| $name.0.table_fetch(_table_row)),
-                )*)
-            }
+			#[inline]
+			#[allow(clippy::unused_unit)]
+			unsafe fn table_fetch(&mut self, _table_row: usize) -> Self::Item {
+				let ($($name,)*) = &mut self.0;
+				($(
+					$name.1.then(|| $name.0.table_fetch(_table_row)),
+				)*)
+			}
 
-            #[inline]
-            #[allow(clippy::unused_unit)]
-            unsafe fn archetype_fetch(&mut self, _archetype_index: usize) -> Self::Item {
-                let ($($name,)*) = &mut self.0;
-                ($(
-                    $name.1.then(|| $name.0.archetype_fetch(_archetype_index)),
-                )*)
-            }
+			#[inline]
+			#[allow(clippy::unused_unit)]
+			unsafe fn archetype_fetch(&mut self, _archetype_index: usize) -> Self::Item {
+				let ($($name,)*) = &mut self.0;
+				($(
+					$name.1.then(|| $name.0.archetype_fetch(_archetype_index)),
+				)*)
+			}
 
-            fn update_component_access(state: &Self::State, _access: &mut FilteredAccess<ComponentId>) {
-                let ($($name,)*) = &state.0;
+			fn update_component_access(state: &Self::State, _access: &mut FilteredAccess<ComponentId>) {
+				let ($($name,)*) = &state.0;
 
-                // We do not unconditionally add `$name`'s `with`/`without` accesses to `_access`
-                // as this would be unsound. For example the following two queries should conflict:
-                // - Query<(AnyOf<(&A, ())>, &mut B)>
-                // - Query<&mut B, Without<A>>
-                //
-                // If we were to unconditionally add `$name`'s `with`/`without` accesses then `AnyOf<(&A, ())>`
-                // would have a `With<A>` access which is incorrect as this `WorldQuery` will match entities that
-                // do not have the `A` component. This is the same logic as the `Or<...>: WorldQuery` impl.
-                //
-                // The correct thing to do here is to only add a `with`/`without` access to `_access` if all
-                // `$name` params have that `with`/`without` access. More jargony put- we add the intersection
-                // of all `with`/`without` accesses of the `$name` params to `_access`.
-                let mut _intersected_access = _access.clone();
-                let mut _not_first = false;
-                $(
-                    if _not_first {
-                        let mut intermediate = _access.clone();
-                        $name::update_component_access($name, &mut intermediate);
-                        _intersected_access.extend_intersect_filter(&intermediate);
-                        _intersected_access.extend_access(&intermediate);
-                    } else {
+				// We do not unconditionally add `$name`'s `with`/`without` accesses to `_access`
+				// as this would be unsound. For example the following two queries should conflict:
+				// - Query<(AnyOf<(&A, ())>, &mut B)>
+				// - Query<&mut B, Without<A>>
+				//
+				// If we were to unconditionally add `$name`'s `with`/`without` accesses then `AnyOf<(&A, ())>`
+				// would have a `With<A>` access which is incorrect as this `WorldQuery` will match entities that
+				// do not have the `A` component. This is the same logic as the `Or<...>: WorldQuery` impl.
+				//
+				// The correct thing to do here is to only add a `with`/`without` access to `_access` if all
+				// `$name` params have that `with`/`without` access. More jargony put- we add the intersection
+				// of all `with`/`without` accesses of the `$name` params to `_access`.
+				let mut _intersected_access = _access.clone();
+				let mut _not_first = false;
+				$(
+					if _not_first {
+						let mut intermediate = _access.clone();
+						$name::update_component_access($name, &mut intermediate);
+						_intersected_access.extend_intersect_filter(&intermediate);
+						_intersected_access.extend_access(&intermediate);
+					} else {
 
-                        $name::update_component_access($name, &mut _intersected_access);
-                        _not_first = true;
-                    }
-                )*
+						$name::update_component_access($name, &mut _intersected_access);
+						_not_first = true;
+					}
+				)*
 
-                *_access = _intersected_access;
-            }
+				*_access = _intersected_access;
+			}
 
-            fn update_archetype_component_access(state: &Self::State, _archetype: &Archetype, _access: &mut Access<ArchetypeComponentId>) {
-                let ($($name,)*) = &state.0;
-                $(
-                    if $name.matches_component_set(&|id| _archetype.contains(id)) {
-                        $name::update_archetype_component_access($name, _archetype, _access);
-                    }
-                )*
-            }
-        }
+			fn update_archetype_component_access(state: &Self::State, _archetype: &Archetype, _access: &mut Access<ArchetypeComponentId>) {
+				let ($($name,)*) = &state.0;
+				$(
+					if $name.matches_component_set(&|id| _archetype.contains(id)) {
+						$name::update_archetype_component_access($name, _archetype, _access);
+					}
+				)*
+			}
+		}
 
-        #[allow(non_snake_case)]
-        #[allow(clippy::unused_unit)]
-        impl<$($name: FetchState),*> FetchState for AnyOf<($($name,)*)> {
-            fn init(_world: &mut World) -> Self {
-                AnyOf(($($name::init(_world),)*))
-            }
+		#[allow(non_snake_case)]
+		#[allow(clippy::unused_unit)]
+		impl<$($name: FetchState),*> FetchState for AnyOf<($($name,)*)> {
+			fn init(_world: &mut World) -> Self {
+				AnyOf(($($name::init(_world),)*))
+			}
 
-            fn matches_component_set(&self, _set_contains_id: &impl Fn(ComponentId) -> bool) -> bool {
-                let ($($name,)*) = &self.0;
-                false $(|| $name.matches_component_set(_set_contains_id))*
-            }
-        }
+			fn matches_component_set(&self, _set_contains_id: &impl Fn(ComponentId) -> bool) -> bool {
+				let ($($name,)*) = &self.0;
+				false $(|| $name.matches_component_set(_set_contains_id))*
+			}
+		}
 
-        #[allow(non_snake_case)]
-        #[allow(clippy::unused_unit)]
-        // SAFETY: defers to soundness of `$name: WorldQuery` impl
-        unsafe impl<$($name: WorldQuery),*> WorldQuery for AnyOf<($($name,)*)> {
-            type ReadOnly = AnyOf<($($name::ReadOnly,)*)>;
-            type State = AnyOf<($($name::State,)*)>;
+		#[allow(non_snake_case)]
+		#[allow(clippy::unused_unit)]
+		// SAFETY: defers to soundness of `$name: WorldQuery` impl
+		unsafe impl<$($name: WorldQuery),*> WorldQuery for AnyOf<($($name,)*)> {
+			type ReadOnly = AnyOf<($($name::ReadOnly,)*)>;
+			type State = AnyOf<($($name::State,)*)>;
 
-            fn shrink<'wlong: 'wshort, 'wshort>(item: QueryItem<'wlong, Self>) -> QueryItem<'wshort, Self> {
-                let ($($name,)*) = item;
-                ($(
-                    $name.map($name::shrink),
-                )*)
-            }
-        }
+			fn shrink<'wlong: 'wshort, 'wshort>(item: QueryItem<'wlong, Self>) -> QueryItem<'wshort, Self> {
+				let ($($name,)*) = item;
+				($(
+					$name.map($name::shrink),
+				)*)
+			}
+		}
 
-        /// SAFETY: each item in the tuple is read only
-        unsafe impl<$($name: ReadOnlyWorldQuery),*> ReadOnlyWorldQuery for AnyOf<($($name,)*)> {}
+		/// SAFETY: each item in the tuple is read only
+		unsafe impl<$($name: ReadOnlyWorldQuery),*> ReadOnlyWorldQuery for AnyOf<($($name,)*)> {}
 
-    };
+	};
 }
 
 all_tuples!(impl_tuple_fetch, 0, 15, F, S);
