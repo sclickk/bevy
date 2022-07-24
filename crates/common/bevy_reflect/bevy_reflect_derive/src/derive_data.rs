@@ -46,7 +46,76 @@ pub(crate) struct ReflectDeriveData<'a> {
 }
 
 impl<'a> ReflectDeriveData<'a> {
-	pub fn from_input(input: &'a DeriveInput) -> Result<Self, syn::Error> {
+	/// Get an iterator over the active fields
+	pub fn active_fields(&self) -> impl Iterator<Item = &StructField<'a>> {
+		self
+			.fields
+			.iter()
+			.filter(|field| !field.attrs.ignore)
+	}
+
+	/// Get an iterator over the ignored fields
+	pub fn ignored_fields(&self) -> impl Iterator<Item = &StructField<'a>> {
+		self
+			.fields
+			.iter()
+			.filter(|field| field.attrs.ignore)
+	}
+
+	/// Get a collection of all active types
+	pub fn active_types(&self) -> Vec<syn::Type> {
+		self
+			.active_fields()
+			.map(|field| field.data.ty.clone())
+			.collect::<Vec<_>>()
+	}
+
+	/// The [`DeriveType`] of this struct.
+	pub fn derive_type(&self) -> &DeriveType {
+		&self.derive_type
+	}
+
+	/// The registered reflect traits on this struct.
+	pub fn traits(&self) -> &ReflectTraits {
+		&self.traits
+	}
+
+	/// The name of this struct.
+	pub fn type_name(&self) -> &'a Ident {
+		self.type_name
+	}
+
+	/// The generics associated with this struct.
+	pub fn generics(&self) -> &'a Generics {
+		self.generics
+	}
+
+	/// The complete set of fields in this struct.
+	#[allow(dead_code)]
+	pub fn fields(&self) -> &[StructField<'a>] {
+		&self.fields
+	}
+
+	/// The cached `bevy_reflect` path.
+	pub fn bevy_reflect_path(&self) -> &Path {
+		&self.bevy_reflect_path
+	}
+
+	/// Returns the `GetTypeRegistration` impl as a `TokenStream`.
+	pub fn get_type_registration(&self) -> proc_macro2::TokenStream {
+		crate::registration::impl_get_type_registration(
+			self.type_name,
+			&self.bevy_reflect_path,
+			self.traits.idents(),
+			self.generics,
+		)
+	}
+}
+
+impl<'a> TryFrom<&'a DeriveInput> for ReflectDeriveData<'a> {
+	type Error = syn::Error;
+
+	fn try_from(input: &'a DeriveInput) -> Result<Self, Self::Error> {
 		let mut output = Self {
 			type_name: &input.ident,
 			derive_type: DeriveType::Value,
@@ -139,70 +208,5 @@ impl<'a> ReflectDeriveData<'a> {
 		}
 
 		Ok(output)
-	}
-
-	/// Get an iterator over the active fields
-	pub fn active_fields(&self) -> impl Iterator<Item = &StructField<'a>> {
-		self
-			.fields
-			.iter()
-			.filter(|field| !field.attrs.ignore)
-	}
-
-	/// Get an iterator over the ignored fields
-	pub fn ignored_fields(&self) -> impl Iterator<Item = &StructField<'a>> {
-		self
-			.fields
-			.iter()
-			.filter(|field| field.attrs.ignore)
-	}
-
-	/// Get a collection of all active types
-	pub fn active_types(&self) -> Vec<syn::Type> {
-		self
-			.active_fields()
-			.map(|field| field.data.ty.clone())
-			.collect::<Vec<_>>()
-	}
-
-	/// The [`DeriveType`] of this struct.
-	pub fn derive_type(&self) -> &DeriveType {
-		&self.derive_type
-	}
-
-	/// The registered reflect traits on this struct.
-	pub fn traits(&self) -> &ReflectTraits {
-		&self.traits
-	}
-
-	/// The name of this struct.
-	pub fn type_name(&self) -> &'a Ident {
-		self.type_name
-	}
-
-	/// The generics associated with this struct.
-	pub fn generics(&self) -> &'a Generics {
-		self.generics
-	}
-
-	/// The complete set of fields in this struct.
-	#[allow(dead_code)]
-	pub fn fields(&self) -> &[StructField<'a>] {
-		&self.fields
-	}
-
-	/// The cached `bevy_reflect` path.
-	pub fn bevy_reflect_path(&self) -> &Path {
-		&self.bevy_reflect_path
-	}
-
-	/// Returns the `GetTypeRegistration` impl as a `TokenStream`.
-	pub fn get_type_registration(&self) -> proc_macro2::TokenStream {
-		crate::registration::impl_get_type_registration(
-			self.type_name,
-			&self.bevy_reflect_path,
-			self.traits.idents(),
-			self.generics,
-		)
 	}
 }

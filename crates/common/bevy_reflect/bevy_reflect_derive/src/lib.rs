@@ -39,7 +39,7 @@ pub(crate) static REFLECT_VALUE_ATTRIBUTE_NAME: &str = "reflect_value";
 pub fn derive_reflect(input: TokenStream) -> TokenStream {
 	let ast = parse_macro_input!(input as DeriveInput);
 
-	let derive_data = match ReflectDeriveData::from_input(&ast) {
+	let derive_data = match ReflectDeriveData::try_from(&ast) {
 		Ok(data) => data,
 		Err(err) => return err.into_compile_error().into(),
 	};
@@ -68,7 +68,7 @@ pub fn derive_reflect(input: TokenStream) -> TokenStream {
 pub fn derive_from_reflect(input: TokenStream) -> TokenStream {
 	let ast = parse_macro_input!(input as DeriveInput);
 
-	let derive_data = match ReflectDeriveData::from_input(&ast) {
+	let derive_data = match ReflectDeriveData::try_from(&ast) {
 		Ok(data) => data,
 		Err(err) => return err.into_compile_error().into(),
 	};
@@ -149,7 +149,7 @@ pub fn impl_reflect_value(input: TokenStream) -> TokenStream {
 #[proc_macro]
 pub fn impl_reflect_struct(input: TokenStream) -> TokenStream {
 	let ast = parse_macro_input!(input as DeriveInput);
-	let derive_data = match ReflectDeriveData::from_input(&ast) {
+	let derive_data = match ReflectDeriveData::try_from(&ast) {
 		Ok(data) => data,
 		Err(err) => return err.into_compile_error().into(),
 	};
