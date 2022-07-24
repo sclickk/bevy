@@ -1,5 +1,5 @@
-use bevy_reflect::prelude::*;
 use bevy_math::UVec2;
+use bevy_reflect::prelude::*;
 use serde::{Deserialize, Serialize};
 use std::ops::Range;
 

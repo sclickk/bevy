@@ -14,8 +14,8 @@ pub mod prelude {
 
 use bevy_app::prelude::*;
 use bevy_ecs::entity::Entity;
-use bevy_utils::HashSet;
 use bevy_tasks::DefaultTaskPoolOptions;
+use bevy_utils::HashSet;
 use std::ops::Range;
 
 /// Adds core functionality to Apps.
