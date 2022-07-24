@@ -738,27 +738,28 @@ fn find_ambiguities(systems: &[impl SystemContainer]) -> Vec<(usize, usize, Vec<
 		let len = ambiguity_set_labels.len();
 		ambiguity_set_labels.entry(set).or_insert(len);
 	}
-	let mut all_ambiguity_sets = Vec::<FixedBitSet>::with_capacity(systems.len());
-	let mut all_dependencies = Vec::<FixedBitSet>::with_capacity(systems.len());
-	let mut all_dependants = Vec::<FixedBitSet>::with_capacity(systems.len());
+	let systems_len = systems.len();
+	let mut all_ambiguity_sets = Vec::<FixedBitSet>::with_capacity(systems_len);
+	let mut all_dependencies = Vec::<FixedBitSet>::with_capacity(systems_len);
+	let mut all_dependants = Vec::<FixedBitSet>::with_capacity(systems_len);
 	for (index, container) in systems.iter().enumerate() {
 		let mut ambiguity_sets = FixedBitSet::with_capacity(ambiguity_set_labels.len());
 		for set in container.ambiguity_sets() {
 			ambiguity_sets.insert(ambiguity_set_labels[set]);
 		}
 		all_ambiguity_sets.push(ambiguity_sets);
-		let mut dependencies = FixedBitSet::with_capacity(systems.len());
+		let mut dependencies = FixedBitSet::with_capacity(systems_len);
 		for &dependency in container.dependencies() {
 			dependencies.union_with(&all_dependencies[dependency]);
 			dependencies.insert(dependency);
 			all_dependants[dependency].insert(index);
 		}
 
-		all_dependants.push(FixedBitSet::with_capacity(systems.len()));
+		all_dependants.push(FixedBitSet::with_capacity(systems_len));
 		all_dependencies.push(dependencies);
 	}
-	for index in (0..systems.len()).rev() {
-		let mut dependants = FixedBitSet::with_capacity(systems.len());
+	for index in (0..systems_len).rev() {
+		let mut dependants = FixedBitSet::with_capacity(systems_len);
 		for dependant in all_dependants[index].ones() {
 			dependants.union_with(&all_dependants[dependant]);
 			dependants.insert(dependant);
@@ -770,7 +771,7 @@ fn find_ambiguities(systems: &[impl SystemContainer]) -> Vec<(usize, usize, Vec<
 		.zip(all_dependants.drain(..))
 		.enumerate()
 		.map(|(index, (dependencies, dependants))| {
-			let mut relations = FixedBitSet::with_capacity(systems.len());
+			let mut relations = FixedBitSet::with_capacity(systems_len);
 			relations.union_with(&dependencies);
 			relations.union_with(&dependants);
 			relations.insert(index);
@@ -778,8 +779,8 @@ fn find_ambiguities(systems: &[impl SystemContainer]) -> Vec<(usize, usize, Vec<
 		})
 		.collect::<Vec<FixedBitSet>>();
 	let mut ambiguities = Vec::new();
-	let full_bitset: FixedBitSet = (0..systems.len()).collect();
-	let mut processed = FixedBitSet::with_capacity(systems.len());
+	let full_bitset: FixedBitSet = (0..systems_len).collect();
+	let mut processed = FixedBitSet::with_capacity(systems_len);
 	for (index_a, relations) in all_relations.drain(..).enumerate() {
 		// TODO: prove that `.take(index_a)` would be correct here, and uncomment it if so.
 		for index_b in full_bitset.difference(&relations)
