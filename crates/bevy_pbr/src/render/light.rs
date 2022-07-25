@@ -790,16 +790,16 @@ pub fn prepare_lights(
 	#[cfg(feature = "webgl")]
 	let max_texture_cubes = 1;
 
-	let point_light_count = point_lights.iter().fold(0, |acc, light| {
-		acc
-			+ if light.1.shadows_enabled && light.1.spot_light_angles.is_none() {
-				1
-			} else {
-				0
-			}
-	});
+	let point_light_count = point_lights
+		.iter()
+		.filter(|light| light.1.spot_light_angles.is_none())
+		.count();
 
-	let point_light_shadow_maps_count = point_light_count.min(max_texture_cubes);
+	let point_light_shadow_maps_count = point_lights
+		.iter()
+		.filter(|light| light.1.shadows_enabled && light.1.spot_light_angles.is_none())
+		.count()
+		.min(max_texture_cubes);
 
 	let directional_shadow_maps_count = directional_lights
 		.iter()
@@ -972,6 +972,7 @@ pub fn prepare_lights(
 			is_orthographic,
 		);
 
+
 		let n_clusters = clusters.dimensions.x * clusters.dimensions.y * clusters.dimensions.z;
 		let mut gpu_lights = GpuLights {
 			directional_lights: [GpuDirectionalLight::default(); MAX_DIRECTIONAL_LIGHTS],
@@ -991,13 +992,14 @@ pub fn prepare_lights(
 			spot_light_shadowmap_offset: directional_shadow_maps_count as i32 - point_light_count as i32,
 		};
 
+
 	// TODO: this should select lights based on relevance to the view instead of the first ones that show up in a query
 	for &(light_entity, light) in point_lights
 			.iter()
 			// Lights are sorted, shadow enabled lights are first
 			.take(point_light_shadow_maps_count)
 			.filter(|(_, light)| light.shadows_enabled)
-	{
+		{
 			let light_index = *global_light_meta
 					.entity_to_index
 					.get(&light_entity)
@@ -1050,8 +1052,8 @@ pub fn prepare_lights(
 			}
 		}
 
-	// spot lights
-	for (light_index, &(light_entity, light)) in point_lights
+		// spot lights
+		for (light_index, &(light_entity, light)) in point_lights
 			.iter()
 			.skip(point_light_count)
 			.take(spot_light_shadow_maps_count)
@@ -1061,7 +1063,7 @@ pub fn prepare_lights(
 			let spot_view_transform = spot_view_matrix.into();
 
 			let angle = light.spot_light_angles.expect("lights should be sorted so that \
-							[point_light_shadow_maps_count..point_light_shadow_maps_count + spot_light_shadow_maps_count] are spot lights").1;
+			[point_light_shadow_maps_count..point_light_shadow_maps_count + spot_light_shadow_maps_count] are spot lights").1;
 			let spot_projection = spot_light_projection_matrix(angle);
 
 			let depth_texture_view = directional_light_depth_texture
