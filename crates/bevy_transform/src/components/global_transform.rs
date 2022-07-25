@@ -30,19 +30,19 @@ use bevy_reflect::Reflect;
 pub struct GlobalTransform(Affine3A);
 
 macro_rules! impl_local_axis {
-    ($pos_name: ident, $neg_name: ident, $axis: ident) => {
-        #[doc=std::concat!("Return the local ", std::stringify!($pos_name), " vector (", std::stringify!($axis) ,").")]
-        #[inline]
-        pub fn $pos_name(&self) -> Vec3 {
-            (self.0.matrix3 * Vec3::$axis).normalize()
-        }
+	($pos_name: ident, $neg_name: ident, $axis: ident) => {
+		#[doc=std::concat!("Return the local ", std::stringify!($pos_name), " vector (", std::stringify!($axis) ,").")]
+		#[inline]
+		pub fn $pos_name(&self) -> Vec3 {
+			(self.0.matrix3 * Vec3::$axis).normalize()
+		}
 
-        #[doc=std::concat!("Return the local ", std::stringify!($neg_name), " vector (-", std::stringify!($axis) ,").")]
-        #[inline]
-        pub fn $neg_name(&self) -> Vec3 {
-            -self.$pos_name()
-        }
-    };
+		#[doc=std::concat!("Return the local ", std::stringify!($neg_name), " vector (-", std::stringify!($axis) ,").")]
+		#[inline]
+		pub fn $neg_name(&self) -> Vec3 {
+			-self.$pos_name()
+		}
+	};
 }
 
 impl GlobalTransform {

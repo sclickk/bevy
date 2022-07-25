@@ -991,21 +991,21 @@ pub fn prepare_lights(
 			spot_light_shadowmap_offset: directional_shadow_maps_count as i32 - point_light_count as i32,
 		};
 
-        // TODO: this should select lights based on relevance to the view instead of the first ones that show up in a query
-        for &(light_entity, light) in point_lights
-            .iter()
-            // Lights are sorted, shadow enabled lights are first
-            .take(point_light_shadow_maps_count)
-            .filter(|(_, light)| light.shadows_enabled)
-        {
-            let light_index = *global_light_meta
-                .entity_to_index
-                .get(&light_entity)
-                .unwrap();
-            // ignore scale because we don't want to effectively scale light radius and range
-            // by applying those as a view transform to shadow map rendering of objects
-            // and ignore rotation because we want the shadow map projections to align with the axes
-            let view_translation = GlobalTransform::from_translation(light.transform.translation());
+	// TODO: this should select lights based on relevance to the view instead of the first ones that show up in a query
+	for &(light_entity, light) in point_lights
+			.iter()
+			// Lights are sorted, shadow enabled lights are first
+			.take(point_light_shadow_maps_count)
+			.filter(|(_, light)| light.shadows_enabled)
+	{
+			let light_index = *global_light_meta
+					.entity_to_index
+					.get(&light_entity)
+					.unwrap();
+			// ignore scale because we don't want to effectively scale light radius and range
+			// by applying those as a view transform to shadow map rendering of objects
+			// and ignore rotation because we want the shadow map projections to align with the axes
+			let view_translation = GlobalTransform::from_translation(light.transform.translation());
 
 			for (face_index, view_rotation) in cube_face_rotations.iter().enumerate() {
 				let depth_texture_view =
@@ -1050,15 +1050,15 @@ pub fn prepare_lights(
 			}
 		}
 
-        // spot lights
-        for (light_index, &(light_entity, light)) in point_lights
-            .iter()
-            .skip(point_light_count)
-            .take(spot_light_shadow_maps_count)
-            .enumerate()
-        {
-            let spot_view_matrix = spot_light_view_matrix(&light.transform);
-            let spot_view_transform = spot_view_matrix.into();
+	// spot lights
+	for (light_index, &(light_entity, light)) in point_lights
+			.iter()
+			.skip(point_light_count)
+			.take(spot_light_shadow_maps_count)
+			.enumerate()
+		{
+			let spot_view_matrix = spot_light_view_matrix(&light.transform);
+			let spot_view_transform = spot_view_matrix.into();
 
 			let angle = light.spot_light_angles.expect("lights should be sorted so that \
 							[point_light_shadow_maps_count..point_light_shadow_maps_count + spot_light_shadow_maps_count] are spot lights").1;
@@ -1155,57 +1155,59 @@ pub fn prepare_lights(
 						array_layer_count: NonZeroU32::new(1),
 					});
 
-                let view_light_entity = commands
-                    .spawn()
-                    .insert_bundle((
-                        ShadowView {
-                            depth_texture_view,
-                            pass_name: format!("shadow pass directional light {}", i),
-                        },
-                        ExtractedView {
-                            width: directional_light_shadow_map.size as u32,
-                            height: directional_light_shadow_map.size as u32,
-                            transform: GlobalTransform::from(view.inverse()),
-                            projection,
-                        },
-                        RenderPhase::<Shadow>::default(),
-                        LightEntity::Directional { light_entity },
-                    ))
-                    .id();
-                view_lights.push(view_light_entity);
-            }
-        }
-        let point_light_depth_texture_view =
-            point_light_depth_texture
-                .texture
-                .create_view(&TextureViewDescriptor {
-                    label: Some("point_light_shadow_map_array_texture_view"),
-                    format: None,
-                    #[cfg(not(feature = "webgl"))]
-                    dimension: Some(TextureViewDimension::CubeArray),
-                    #[cfg(feature = "webgl")]
-                    dimension: Some(TextureViewDimension::Cube),
-                    aspect: TextureAspect::All,
-                    base_mip_level: 0,
-                    mip_level_count: None,
-                    base_array_layer: 0,
-                    array_layer_count: None,
-                });
-        let directional_light_depth_texture_view = directional_light_depth_texture
-            .texture
-            .create_view(&TextureViewDescriptor {
-                label: Some("directional_light_shadow_map_array_texture_view"),
-                format: None,
-                #[cfg(not(feature = "webgl"))]
-                dimension: Some(TextureViewDimension::D2Array),
-                #[cfg(feature = "webgl")]
-                dimension: Some(TextureViewDimension::D2),
-                aspect: TextureAspect::All,
-                base_mip_level: 0,
-                mip_level_count: None,
-                base_array_layer: 0,
-                array_layer_count: None,
-            });
+					let view_light_entity = commands
+						.spawn()
+						.insert_bundle((
+							ShadowView {
+								depth_texture_view,
+								pass_name: format!("shadow pass directional light {}", i),
+							},
+							ExtractedView {
+								width: directional_light_shadow_map.size as u32,
+								height: directional_light_shadow_map.size as u32,
+								transform: GlobalTransform::from(view.inverse()),
+								projection,
+							},
+							RenderPhase::<Shadow>::default(),
+							LightEntity::Directional { light_entity },
+						))
+						.id();
+				view_lights.push(view_light_entity);
+			}
+		}
+
+		let point_light_depth_texture_view =
+			point_light_depth_texture
+				.texture
+				.create_view(&TextureViewDescriptor {
+					label: Some("point_light_shadow_map_array_texture_view"),
+					format: None,
+					#[cfg(not(feature = "webgl"))]
+					dimension: Some(TextureViewDimension::CubeArray),
+					#[cfg(feature = "webgl")]
+					dimension: Some(TextureViewDimension::Cube),
+					aspect: TextureAspect::All,
+					base_mip_level: 0,
+					mip_level_count: None,
+					base_array_layer: 0,
+					array_layer_count: None,
+				});
+
+		let directional_light_depth_texture_view = directional_light_depth_texture
+			.texture
+			.create_view(&TextureViewDescriptor {
+				label: Some("directional_light_shadow_map_array_texture_view"),
+				format: None,
+				#[cfg(not(feature = "webgl"))]
+				dimension: Some(TextureViewDimension::D2Array),
+				#[cfg(feature = "webgl")]
+				dimension: Some(TextureViewDimension::D2),
+				aspect: TextureAspect::All,
+				base_mip_level: 0,
+				mip_level_count: None,
+				base_array_layer: 0,
+				array_layer_count: None,
+			});
 
 		commands.entity(entity).insert_bundle((
 			ViewShadowBindings {

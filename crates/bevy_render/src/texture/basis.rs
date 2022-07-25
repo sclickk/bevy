@@ -66,23 +66,23 @@ pub fn basis_buffer_to_image(
 					|| image_info.m_orig_height != image0_info.m_orig_height)
 			{
 				return Err(TextureError::UnsupportedTextureFormat(format!(
-                    "Basis file with multiple 2D textures with different sizes not supported. Image {} {}x{}, image 0 {}x{}",
-                    image_index,
-                    image_info.m_orig_width,
-                    image_info.m_orig_height,
-                    image0_info.m_orig_width,
-                    image0_info.m_orig_height,
-                )));
+					"Basis file with multiple 2D textures with different sizes not supported. Image {} {}x{}, image 0 {}x{}",
+					image_index,
+					image_info.m_orig_width,
+					image_info.m_orig_height,
+					image0_info.m_orig_width,
+					image0_info.m_orig_height,
+				)));
 			}
 		}
 		let mip_level_count = transcoder.image_level_count(buffer, image_index);
 		if mip_level_count != image0_mip_level_count {
 			return Err(TextureError::InvalidData(format!(
-                "Array or volume texture has inconsistent number of mip levels. Image {} has {} but image 0 has {}",
-                image_index,
-                mip_level_count,
-                image0_mip_level_count,
-            )));
+				"Array or volume texture has inconsistent number of mip levels. Image {} has {} but image 0 has {}",
+				image_index,
+				mip_level_count,
+				image0_mip_level_count,
+			)));
 		}
 		for level_index in 0..mip_level_count {
 			let mut data = transcoder

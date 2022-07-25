@@ -455,7 +455,7 @@ pub(crate) fn impl_value(
 
 			#partial_eq_fn
 
-						#debug_fn
+			#debug_fn
 		}
 	})
 }
