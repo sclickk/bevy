@@ -92,7 +92,7 @@ fn set_camera_viewports(
 	// so then each camera always takes up half the screen.
 	// A resize_event is sent when the window is first created, allowing us to reuse this system for initial setup.
 	for resize_event in resize_events.iter() {
-		if resize_event.id == WindowId::primary() {
+		if resize_event.id == WindowId::PRIMARY {
 			let window = windows.primary();
 			let mut left_camera = left_camera.single_mut();
 			left_camera.viewport = Some(Viewport {

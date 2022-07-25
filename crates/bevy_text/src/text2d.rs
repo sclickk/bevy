@@ -80,7 +80,7 @@ pub fn extract_text2d_sprite(
 		)>,
 	>,
 ) {
-	let scale_factor = windows.scale_factor(WindowId::primary()) as f32;
+	let scale_factor = windows.scale_factor(WindowId::PRIMARY) as f32;
 
 	for (entity, computed_visibility, text, text_transform, calculated_size) in text2d_query.iter() {
 		if !computed_visibility.is_visible() {
@@ -159,7 +159,7 @@ pub fn update_text2d_layout(
 ) {
 	// We need to consume the entire iterator, hence `last`
 	let factor_changed = scale_factor_changed.iter().last().is_some();
-	let scale_factor = windows.scale_factor(WindowId::primary());
+	let scale_factor = windows.scale_factor(WindowId::PRIMARY);
 
 	text_query.for_each_mut(
 		|(entity, text_changed, text, maybe_bounds, mut calculated_size)| {

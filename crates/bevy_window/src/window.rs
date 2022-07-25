@@ -54,17 +54,17 @@ pub enum PresentMode {
 }
 
 impl WindowId {
+	/// The [`WindowId`] for the primary window.
+	pub const PRIMARY: WindowId = WindowId(Uuid::from_u128(0));
+
 	/// Creates a new [`WindowId`].
 	pub fn new() -> Self {
 		WindowId(Uuid::new_v4())
 	}
-	/// The [`WindowId`] for the primary window.
-	pub fn primary() -> Self {
-		WindowId(Uuid::from_u128(0))
-	}
+
 	/// Get whether or not this [`WindowId`] is for the primary window.
 	pub fn is_primary(&self) -> bool {
-		*self == WindowId::primary()
+		*self == Self::PRIMARY
 	}
 }
 
@@ -85,7 +85,7 @@ impl fmt::Display for WindowId {
 
 impl Default for WindowId {
 	fn default() -> Self {
-		WindowId::primary()
+		WindowId::PRIMARY
 	}
 }
 

@@ -25,7 +25,7 @@ impl Windows {
 
 	/// Get a reference to the primary [`Window`].
 	pub fn get_primary(&self) -> Option<&Window> {
-		self.get(WindowId::primary())
+		self.get(WindowId::PRIMARY)
 	}
 
 	/// Get a reference to the primary [`Window`].
@@ -41,7 +41,7 @@ impl Windows {
 
 	/// Get a mutable reference to the primary [`Window`].
 	pub fn get_primary_mut(&mut self) -> Option<&mut Window> {
-		self.get_mut(WindowId::primary())
+		self.get_mut(WindowId::PRIMARY)
 	}
 
 	/// Get a mutable reference to the primary [`Window`].

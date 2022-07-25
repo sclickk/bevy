@@ -52,7 +52,7 @@ pub fn text_system(
 		Query<(&Text, &Style, &mut CalculatedSize)>,
 	)>,
 ) {
-	let scale_factor = windows.scale_factor(WindowId::primary());
+	let scale_factor = windows.scale_factor(WindowId::PRIMARY);
 
 	let inv_scale_factor = 1. / scale_factor;
 

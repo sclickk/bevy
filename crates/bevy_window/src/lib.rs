@@ -100,7 +100,7 @@ impl Plugin for WindowPlugin {
 				.unwrap_or_default();
 			let mut create_window_event = app.world.resource_mut::<Events<CreateWindow>>();
 			create_window_event.send(CreateWindow {
-				id: WindowId::primary(),
+				id: WindowId::PRIMARY,
 				descriptor: window_descriptor,
 			});
 		}

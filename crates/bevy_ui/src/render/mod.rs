@@ -281,7 +281,7 @@ pub fn extract_text_uinodes(
 		)>,
 	>,
 ) {
-	let scale_factor = windows.scale_factor(WindowId::primary()) as f32;
+	let scale_factor = windows.scale_factor(WindowId::PRIMARY) as f32;
 	uinode_query.for_each(
 		|(entity, uinode, global_transform, text, visibility, clip)| {
 			if !visibility.is_visible() {
