@@ -13,6 +13,7 @@ repository = "https://github.com/bevyengine/bevy"
 
 [profile.release]
 lto = "thin"
+codegen-units = 1
 
 [workspace]
 exclude = ["benches", "crates/bevy_ecs_compile_fail_tests"]
