@@ -3,18 +3,20 @@ pub mod shape;
 
 mod conversions;
 
+mod plugin;
+
+pub use plugin::*;
+
 pub mod skinning;
 
 pub use wgpu::PrimitiveTopology;
 
 use crate::{
 	primitives::Aabb,
-	render_asset::{PrepareAssetError, RenderAsset, RenderAssetPlugin},
+	render_asset::{PrepareAssetError, RenderAsset},
 	render_resource::{Buffer, VertexBufferLayout},
 	renderer::RenderDevice,
 };
-use bevy_app::{App, Plugin};
-use bevy_asset::AddAsset;
 use bevy_core::cast_slice;
 use bevy_derive::EnumVariantMeta;
 use bevy_ecs::system::{lifetimeless::SRes, SystemParamItem};
@@ -1025,18 +1027,6 @@ fn generate_tangents_for_mesh(mesh: &Mesh) -> Result<Vec<[f32; 4]>, GenerateTang
 			mikktspace_mesh.tangents
 		})
 		.ok_or(GenerateTangentsError::MikktspaceError)
-}
-
-/// Adds the [`Mesh`] as an asset and makes sure that they are extracted and prepared for the GPU.
-pub struct MeshPlugin;
-
-impl Plugin for MeshPlugin {
-	fn build(&self, app: &mut App) {
-		app.add_asset::<Mesh>();
-		app.add_asset::<skinning::SkinnedMeshInverseBindposes>();
-		app.register_type::<skinning::SkinnedMesh>();
-		app.init_plugin::<RenderAssetPlugin<Mesh>>();
-	}
 }
 
 #[cfg(test)]
