@@ -575,9 +575,18 @@ impl ComponentTicks {
 		}
 	}
 
+	fn check_tick(last_change_tick: &mut u32, change_tick: u32) {
+		let age = change_tick.wrapping_sub(*last_change_tick);
+		// This comparison assumes that `age` has not overflowed `u32::MAX` before, which will be true
+		// so long as this check always runs before that can happen.
+		if age > MAX_CHANGE_AGE {
+			*last_change_tick = change_tick.wrapping_sub(MAX_CHANGE_AGE);
+		}
+	}
+
 	pub(crate) fn check_ticks(&mut self, change_tick: u32) {
-		check_tick(&mut self.added, change_tick);
-		check_tick(&mut self.changed, change_tick);
+		Self::check_tick(&mut self.added, change_tick);
+		Self::check_tick(&mut self.changed, change_tick);
 	}
 
 	/// Manually sets the change tick.
@@ -597,14 +606,5 @@ impl ComponentTicks {
 	#[inline]
 	pub fn set_changed(&mut self, change_tick: u32) {
 		self.changed = change_tick;
-	}
-}
-
-fn check_tick(last_change_tick: &mut u32, change_tick: u32) {
-	let age = change_tick.wrapping_sub(*last_change_tick);
-	// This comparison assumes that `age` has not overflowed `u32::MAX` before, which will be true
-	// so long as this check always runs before that can happen.
-	if age > MAX_CHANGE_AGE {
-		*last_change_tick = change_tick.wrapping_sub(MAX_CHANGE_AGE);
 	}
 }
