@@ -1,8 +1,9 @@
 use crate::{
 	point_light_order, AmbientLight, Clusters, CubemapVisibleEntities, DirectionalLight,
-	DirectionalLightShadowMap, DrawMesh, GlobalVisiblePointLights, MeshPipeline, NotShadowCaster,
-	PointLight, PointLightShadowMap, SetMeshBindGroup, SpotLight, VisiblePointLights,
-	SHADOW_SHADER_HANDLE,
+	DirectionalLightFlags, DirectionalLightShadowMap, DrawMesh, ExtractedDirectionalLight,
+	ExtractedPointLight, GlobalVisiblePointLights, GpuDirectionalLight, GpuPointLight,
+	GpuPointLights, MeshPipeline, NotShadowCaster, PointLight, PointLightFlags, PointLightShadowMap,
+	SetMeshBindGroup, SpotLight, VisiblePointLights, SHADOW_SHADER_HANDLE,
 };
 use bevy_asset::Handle;
 use bevy_core_pipeline::core_3d::Transparent3d;
@@ -46,156 +47,6 @@ pub enum RenderLightSystems {
 	PrepareClusters,
 	PrepareLights,
 	QueueShadows,
-}
-
-#[derive(Component)]
-pub struct ExtractedPointLight {
-	color: Color,
-	/// luminous intensity in lumens per steradian
-	intensity: f32,
-	range: f32,
-	radius: f32,
-	transform: GlobalTransform,
-	shadows_enabled: bool,
-	shadow_depth_bias: f32,
-	shadow_normal_bias: f32,
-	spot_light_angles: Option<(f32, f32)>,
-}
-
-#[derive(Component)]
-pub struct ExtractedDirectionalLight {
-	color: Color,
-	illuminance: f32,
-	direction: Vec3,
-	projection: Mat4,
-	shadows_enabled: bool,
-	shadow_depth_bias: f32,
-	shadow_normal_bias: f32,
-}
-
-#[derive(Copy, Clone, ShaderType, Default, Debug)]
-pub struct GpuPointLight {
-	// For point lights: the lower-right 2x2 values of the projection matrix [2][2] [2][3] [3][2] [3][3]
-	// For spot lights: 2 components of the direction (x,z), spot_scale and spot_offset
-	light_custom_data: Vec4,
-	color_inverse_square_range: Vec4,
-	position_radius: Vec4,
-	flags: u32,
-	shadow_depth_bias: f32,
-	shadow_normal_bias: f32,
-	spot_light_tan_angle: f32,
-}
-
-#[derive(ShaderType)]
-pub struct GpuPointLightsUniform {
-	data: Box<[GpuPointLight; MAX_UNIFORM_BUFFER_POINT_LIGHTS]>,
-}
-
-impl Default for GpuPointLightsUniform {
-	fn default() -> Self {
-		Self {
-			data: Box::new([GpuPointLight::default(); MAX_UNIFORM_BUFFER_POINT_LIGHTS]),
-		}
-	}
-}
-
-#[derive(ShaderType, Default)]
-pub struct GpuPointLightsStorage {
-	#[size(runtime)]
-	data: Vec<GpuPointLight>,
-}
-
-pub enum GpuPointLights {
-	Uniform(UniformBuffer<GpuPointLightsUniform>),
-	Storage(StorageBuffer<GpuPointLightsStorage>),
-}
-
-impl GpuPointLights {
-	fn uniform() -> Self {
-		Self::Uniform(UniformBuffer::default())
-	}
-
-	fn storage() -> Self {
-		Self::Storage(StorageBuffer::default())
-	}
-
-	fn set(&mut self, mut lights: Vec<GpuPointLight>) {
-		match self {
-			GpuPointLights::Uniform(buffer) => {
-				let len = lights
-					.len()
-					.min(MAX_UNIFORM_BUFFER_POINT_LIGHTS);
-				let src = &lights[..len];
-				let dst = &mut buffer.get_mut().data[..len];
-				dst.copy_from_slice(src);
-			},
-			GpuPointLights::Storage(buffer) => {
-				buffer.get_mut().data.clear();
-				buffer.get_mut().data.append(&mut lights);
-			},
-		}
-	}
-
-	fn write_buffer(&mut self, render_device: &RenderDevice, render_queue: &RenderQueue) {
-		match self {
-			GpuPointLights::Uniform(buffer) => buffer.write_buffer(render_device, render_queue),
-			GpuPointLights::Storage(buffer) => buffer.write_buffer(render_device, render_queue),
-		}
-	}
-
-	pub fn binding(&self) -> Option<BindingResource> {
-		match self {
-			GpuPointLights::Uniform(buffer) => buffer.binding(),
-			GpuPointLights::Storage(buffer) => buffer.binding(),
-		}
-	}
-
-	pub fn min_size(buffer_binding_type: BufferBindingType) -> NonZeroU64 {
-		match buffer_binding_type {
-			BufferBindingType::Storage { .. } => GpuPointLightsStorage::min_size(),
-			BufferBindingType::Uniform => GpuPointLightsUniform::min_size(),
-		}
-	}
-}
-
-impl From<BufferBindingType> for GpuPointLights {
-	fn from(buffer_binding_type: BufferBindingType) -> Self {
-		match buffer_binding_type {
-			BufferBindingType::Storage { .. } => Self::storage(),
-			BufferBindingType::Uniform => Self::uniform(),
-		}
-	}
-}
-
-// NOTE: These must match the bit flags in bevy_pbr2/src/render/pbr.frag!
-bitflags::bitflags! {
-	#[repr(transparent)]
-	struct PointLightFlags: u32 {
-			const SHADOWS_ENABLED            = (1 << 0);
-			const SPOT_LIGHT_Y_NEGATIVE      = (1 << 1);
-			const NONE                       = 0;
-			const UNINITIALIZED              = 0xFFFF;
-	}
-}
-
-#[derive(Copy, Clone, ShaderType, Default, Debug)]
-pub struct GpuDirectionalLight {
-	view_projection: Mat4,
-	color: Vec4,
-	dir_to_light: Vec3,
-	flags: u32,
-	shadow_depth_bias: f32,
-	shadow_normal_bias: f32,
-}
-
-// NOTE: These must match the bit flags in bevy_pbr2/src/render/pbr.frag!
-bitflags::bitflags! {
-	#[repr(transparent)]
-	struct DirectionalLightFlags: u32 {
-			const SHADOWS_ENABLED            = (1 << 0);
-			const NONE                       = 0;
-			const UNINITIALIZED              = 0xFFFF;
-	}
 }
 
 #[derive(Copy, Clone, Debug, ShaderType)]
@@ -908,7 +759,7 @@ pub fn prepare_lights(
 				.transform
 				.translation()
 				.extend(light.radius),
-			flags: flags.bits,
+			flags: flags.bits(),
 			shadow_depth_bias: light.shadow_depth_bias,
 			shadow_normal_bias: light.shadow_normal_bias,
 			spot_light_tan_angle,
@@ -1138,7 +989,7 @@ pub fn prepare_lights(
 				dir_to_light,
 				// NOTE: * view is correct, it should not be view.inverse() here
 				view_projection: projection * view,
-				flags: flags.bits,
+				flags: flags.bits(),
 				shadow_depth_bias: light.shadow_depth_bias,
 				shadow_normal_bias: light.shadow_normal_bias,
 			};

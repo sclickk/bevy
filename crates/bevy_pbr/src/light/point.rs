@@ -1,12 +1,17 @@
-use std::collections::HashSet;
+use std::{collections::HashSet, num::NonZeroU64};
 
 use bevy_ecs::prelude::*;
+use bevy_math::Vec4;
 use bevy_reflect::prelude::*;
 use bevy_render::{
 	color::Color,
 	primitives::Sphere,
+	render_resource::{BindingResource, BufferBindingType, ShaderType, StorageBuffer, UniformBuffer},
+	renderer::{RenderDevice, RenderQueue},
 };
-use bevy_transform::{components::GlobalTransform};
+use bevy_transform::components::GlobalTransform;
+
+use crate::MAX_UNIFORM_BUFFER_POINT_LIGHTS;
 
 /// A light that emits light in all directions from a central point.
 ///
@@ -129,5 +134,124 @@ impl GlobalVisiblePointLights {
 	#[inline]
 	pub fn contains(&self, entity: Entity) -> bool {
 		self.entities.contains(&entity)
+	}
+}
+
+#[derive(Component)]
+pub struct ExtractedPointLight {
+	pub(crate) color: Color,
+	/// luminous intensity in lumens per steradian
+	pub(crate) intensity: f32,
+	pub(crate) range: f32,
+	pub(crate) radius: f32,
+	pub(crate) transform: GlobalTransform,
+	pub(crate) shadows_enabled: bool,
+	pub(crate) shadow_depth_bias: f32,
+	pub(crate) shadow_normal_bias: f32,
+	pub(crate) spot_light_angles: Option<(f32, f32)>,
+}
+
+#[derive(Copy, Clone, ShaderType, Default, Debug)]
+pub struct GpuPointLight {
+	// For point lights: the lower-right 2x2 values of the projection matrix [2][2] [2][3] [3][2] [3][3]
+	// For spot lights: 2 components of the direction (x,z), spot_scale and spot_offset
+	pub(crate) light_custom_data: Vec4,
+	pub(crate) color_inverse_square_range: Vec4,
+	pub(crate) position_radius: Vec4,
+	pub(crate) flags: u32,
+	pub(crate) shadow_depth_bias: f32,
+	pub(crate) shadow_normal_bias: f32,
+	pub(crate) spot_light_tan_angle: f32,
+}
+
+#[derive(ShaderType)]
+pub struct GpuPointLightsUniform {
+	data: Box<[GpuPointLight; MAX_UNIFORM_BUFFER_POINT_LIGHTS]>,
+}
+
+impl Default for GpuPointLightsUniform {
+	fn default() -> Self {
+		Self {
+			data: Box::new([GpuPointLight::default(); MAX_UNIFORM_BUFFER_POINT_LIGHTS]),
+		}
+	}
+}
+
+#[derive(ShaderType, Default)]
+pub struct GpuPointLightsStorage {
+	#[size(runtime)]
+	data: Vec<GpuPointLight>,
+}
+
+pub enum GpuPointLights {
+	Uniform(UniformBuffer<GpuPointLightsUniform>),
+	Storage(StorageBuffer<GpuPointLightsStorage>),
+}
+
+impl GpuPointLights {
+	fn uniform() -> Self {
+		Self::Uniform(UniformBuffer::default())
+	}
+
+	fn storage() -> Self {
+		Self::Storage(StorageBuffer::default())
+	}
+
+	pub(crate) fn set(&mut self, mut lights: Vec<GpuPointLight>) {
+		match self {
+			GpuPointLights::Uniform(buffer) => {
+				let len = lights
+					.len()
+					.min(MAX_UNIFORM_BUFFER_POINT_LIGHTS);
+				let src = &lights[..len];
+				let dst = &mut buffer.get_mut().data[..len];
+				dst.copy_from_slice(src);
+			},
+			GpuPointLights::Storage(buffer) => {
+				buffer.get_mut().data.clear();
+				buffer.get_mut().data.append(&mut lights);
+			},
+		}
+	}
+
+	pub(crate) fn write_buffer(&mut self, render_device: &RenderDevice, render_queue: &RenderQueue) {
+		match self {
+			GpuPointLights::Uniform(buffer) => buffer.write_buffer(render_device, render_queue),
+			GpuPointLights::Storage(buffer) => buffer.write_buffer(render_device, render_queue),
+		}
+	}
+
+	pub fn binding(&self) -> Option<BindingResource> {
+		match self {
+			GpuPointLights::Uniform(buffer) => buffer.binding(),
+			GpuPointLights::Storage(buffer) => buffer.binding(),
+		}
+	}
+
+	pub fn min_size(buffer_binding_type: BufferBindingType) -> NonZeroU64 {
+		match buffer_binding_type {
+			BufferBindingType::Storage { .. } => GpuPointLightsStorage::min_size(),
+			BufferBindingType::Uniform => GpuPointLightsUniform::min_size(),
+		}
+	}
+}
+
+impl From<BufferBindingType> for GpuPointLights {
+	fn from(buffer_binding_type: BufferBindingType) -> Self {
+		match buffer_binding_type {
+			BufferBindingType::Storage { .. } => Self::storage(),
+			BufferBindingType::Uniform => Self::uniform(),
+		}
+	}
+}
+
+// NOTE: These must match the bit flags in bevy_pbr2/src/render/pbr.frag!
+bitflags::bitflags! {
+	#[repr(transparent)]
+	pub(crate) struct PointLightFlags: u32 {
+		const SHADOWS_ENABLED       = (1 << 0);
+		const SPOT_LIGHT_Y_NEGATIVE = (1 << 1);
+		const NONE                  = 0;
+		const UNINITIALIZED         = 0xFFFF;
 	}
 }

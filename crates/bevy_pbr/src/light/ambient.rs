@@ -1,9 +1,6 @@
 use bevy_ecs::prelude::*;
 use bevy_reflect::prelude::*;
-use bevy_render::{
-	color::Color,
-	extract_resource::ExtractResource,
-};
+use bevy_render::{color::Color, extract_resource::ExtractResource};
 
 /// An ambient light, which lights the entire scene equally.
 #[derive(Clone, Debug, ExtractResource, Reflect)]

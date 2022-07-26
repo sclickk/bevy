@@ -1,9 +1,7 @@
 use bevy_ecs::prelude::*;
+use bevy_math::{Mat4, Vec3, Vec4};
 use bevy_reflect::prelude::*;
-use bevy_render::{
-	camera::OrthographicProjection,
-	color::Color,
-};
+use bevy_render::{camera::OrthographicProjection, color::Color, render_resource::ShaderType};
 
 /// A Directional light.
 ///
@@ -84,5 +82,36 @@ impl Default for DirectionalLightShadowMap {
 		return Self { size: 2048 };
 		#[cfg(not(feature = "webgl"))]
 		return Self { size: 4096 };
+	}
+}
+
+#[derive(Component)]
+pub struct ExtractedDirectionalLight {
+	pub(crate) color: Color,
+	pub(crate) illuminance: f32,
+	pub(crate) direction: Vec3,
+	pub(crate) projection: Mat4,
+	pub(crate) shadows_enabled: bool,
+	pub(crate) shadow_depth_bias: f32,
+	pub(crate) shadow_normal_bias: f32,
+}
+
+#[derive(Copy, Clone, ShaderType, Default, Debug)]
+pub struct GpuDirectionalLight {
+	pub(crate) view_projection: Mat4,
+	pub(crate) color: Vec4,
+	pub(crate) dir_to_light: Vec3,
+	pub(crate) flags: u32,
+	pub(crate) shadow_depth_bias: f32,
+	pub(crate) shadow_normal_bias: f32,
+}
+
+// NOTE: These must match the bit flags in bevy_pbr2/src/render/pbr.frag!
+bitflags::bitflags! {
+	#[repr(transparent)]
+	pub(crate) struct DirectionalLightFlags: u32 {
+			const SHADOWS_ENABLED = (1 << 0);
+			const NONE            = 0;
+			const UNINITIALIZED   = 0xFFFF;
 	}
 }
