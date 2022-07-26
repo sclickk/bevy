@@ -3,10 +3,10 @@
 use bevy::prelude::*;
 
 fn main() {
-	App::new()
-		.add_plugins(DefaultPlugins)
-		.add_system(grab_mouse)
-		.run();
+	let mut app = App::new();
+	app.add_plugins(DefaultPlugins);
+	app.add_system(grab_mouse);
+	app.run();
 }
 
 // This system grabs the mouse when the left mouse button is pressed

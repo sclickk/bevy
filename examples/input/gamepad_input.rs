@@ -3,10 +3,10 @@
 use bevy::{input::gamepad::GamepadButton, prelude::*};
 
 fn main() {
-	App::new()
-		.add_plugins(DefaultPlugins)
-		.add_system(gamepad_system)
-		.run();
+	let mut app = App::new();
+	app.add_plugins(DefaultPlugins);
+	app.add_system(gamepad_system);
+	app.run();
 }
 
 fn gamepad_system(

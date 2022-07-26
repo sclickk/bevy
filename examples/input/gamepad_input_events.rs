@@ -6,10 +6,10 @@ use bevy::{
 };
 
 fn main() {
-	App::new()
-		.add_plugins(DefaultPlugins)
-		.add_system(gamepad_events)
-		.run();
+	let mut app = App::new();
+	app.add_plugins(DefaultPlugins);
+	app.add_system(gamepad_events);
+	app.run();
 }
 
 fn gamepad_events(mut gamepad_event: EventReader<GamepadEvent>) {

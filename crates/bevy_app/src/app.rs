@@ -323,9 +323,8 @@ impl App {
 	/// #
 	/// app.add_system(my_system);
 	/// ```
-	pub fn add_system<Params>(&mut self, system: impl IntoSystemDescriptor<Params>) -> &mut Self {
+	pub fn add_system<Params>(&mut self, system: impl IntoSystemDescriptor<Params>) {
 		self.add_system_to_stage(CoreStage::Update, system);
-		self
 	}
 
 	/// Adds a [`SystemSet`] to the [update stage](Self::add_default_stages).
@@ -527,11 +526,11 @@ impl App {
 	/// Each stage that uses `State<T>` for system run criteria needs a driver. If you need to use
 	/// your state in a different stage, consider using [`Self::add_state_to_stage`] or manually
 	/// adding [`State::get_driver`] to additional stages you need it in.
-	pub fn add_state<T>(&mut self, initial: T) -> &mut Self
+	pub fn add_state<T>(&mut self, initial: T)
 	where
 		T: StateData,
 	{
-		self.add_state_to_stage(CoreStage::Update, initial)
+		self.add_state_to_stage(CoreStage::Update, initial);
 	}
 
 	/// Adds a new [`State`] with the given `initial` value.
@@ -539,13 +538,12 @@ impl App {
 	/// Each stage that uses `State<T>` for system run criteria needs a driver. If you need to use
 	/// your state in more than one stage, consider manually adding [`State::get_driver`] to the
 	/// stages you need it in.
-	pub fn add_state_to_stage<T>(&mut self, stage: impl StageLabel, initial: T) -> &mut Self
+	pub fn add_state_to_stage<T>(&mut self, stage: impl StageLabel, initial: T)
 	where
 		T: StateData,
 	{
 		self.insert_resource(State::from(initial));
 		self.add_system_set_to_stage(stage, State::<T>::get_driver());
-		self
 	}
 
 	/// Adds utility stages to the [`Schedule`], giving it a standardized structure.
@@ -583,7 +581,7 @@ impl App {
 	/// #
 	/// let app = App::empty().add_default_stages();
 	/// ```
-	pub fn add_default_stages(&mut self) -> &mut Self {
+	pub fn add_default_stages(&mut self) {
 		self.add_stage(CoreStage::First, SystemStage::parallel());
 		self.add_stage(
 			StartupSchedule,
@@ -597,7 +595,6 @@ impl App {
 		self.add_stage(CoreStage::Update, SystemStage::parallel());
 		self.add_stage(CoreStage::PostUpdate, SystemStage::parallel());
 		self.add_stage(CoreStage::Last, SystemStage::parallel());
-		self
 	}
 
 	/// Setup the application to manage events of type `T`.
@@ -623,9 +620,8 @@ impl App {
 		T: Event,
 	{
 		if !self.world.contains_resource::<Events<T>>() {
-			self
-				.init_resource::<Events<T>>()
-				.add_system_to_stage(CoreStage::First, Events::<T>::update_system);
+			self.init_resource::<Events<T>>();
+			self.add_system_to_stage(CoreStage::First, Events::<T>::update_system);
 		}
 	}
 
@@ -701,9 +697,8 @@ impl App {
 	/// App::new()
 	///     .init_resource::<MyCounter>();
 	/// ```
-	pub fn init_resource<R: Resource + FromWorld>(&mut self) -> &mut Self {
+	pub fn init_resource<R: Resource + FromWorld>(&mut self) {
 		self.world.init_resource::<R>();
-		self
 	}
 
 	/// Initialize a non-send [`Resource`] with standard starting values by adding it to the [`World`].
@@ -767,13 +762,12 @@ impl App {
 	/// # }
 	/// App::new().add_plugin(bevy_log::LogPlugin::default());
 	/// ```
-	pub fn add_plugin<T>(&mut self, plugin: T) -> &mut Self
+	pub fn add_plugin<T>(&mut self, plugin: T)
 	where
 		T: Plugin,
 	{
 		debug!("added plugin: {}", plugin.name());
 		plugin.build(self);
-		self
 	}
 
 	/// Alternatyive to add_plugin(default());
@@ -801,11 +795,10 @@ impl App {
 	/// App::new()
 	///     .add_plugins(MinimalPlugins);
 	/// ```
-	pub fn add_plugins<T: PluginGroup>(&mut self, mut group: T) -> &mut Self {
+	pub fn add_plugins<T: PluginGroup>(&mut self, mut group: T) {
 		let mut plugin_group_builder = PluginGroupBuilder::default();
 		group.build(&mut plugin_group_builder);
 		plugin_group_builder.finish(self);
-		self
 	}
 
 	/// Adds a group of [`Plugin`]s with an initializer method.
@@ -847,7 +840,7 @@ impl App {
 	///             group.add_before::<bevy_log::LogPlugin, _>(MyOwnPlugin)
 	///         });
 	/// ```
-	pub fn add_plugins_with<T, F>(&mut self, mut group: T, func: F) -> &mut Self
+	pub fn add_plugins_with<T, F>(&mut self, mut group: T, func: F)
 	where
 		T: PluginGroup,
 		F: FnOnce(&mut PluginGroupBuilder) -> &mut PluginGroupBuilder,
@@ -856,7 +849,6 @@ impl App {
 		group.build(&mut plugin_group_builder);
 		func(&mut plugin_group_builder);
 		plugin_group_builder.finish(self);
-		self
 	}
 	/// Registers the type `T` in the [`TypeRegistry`](bevy_reflect::TypeRegistry) resource,
 	/// adding reflect data as specified in the [`Reflect`](bevy_reflect::Reflect) derive:
@@ -867,14 +859,11 @@ impl App {
 	///
 	/// See [`bevy_reflect::TypeRegistry::register`].
 	#[cfg(feature = "bevy_reflect")]
-	pub fn register_type<T: bevy_reflect::GetTypeRegistration>(&mut self) -> &mut Self {
-		{
-			let registry = self
-				.world
-				.resource_mut::<bevy_reflect::TypeRegistryArc>();
-			registry.write().register::<T>();
-		}
-		self
+	pub fn register_type<T: bevy_reflect::GetTypeRegistration>(&mut self) {
+		let registry = self
+			.world
+			.resource_mut::<bevy_reflect::TypeRegistryArc>();
+		registry.write().register::<T>();
 	}
 
 	/// Adds the type data `D` to type `T` in the [`TypeRegistry`](bevy_reflect::TypeRegistry) resource.
@@ -902,14 +891,13 @@ impl App {
 		D: bevy_reflect::TypeData + bevy_reflect::FromType<T>,
 	>(
 		&mut self,
-	) -> &mut Self {
+	) {
 		{
 			let registry = self
 				.world
 				.resource_mut::<bevy_reflect::TypeRegistryArc>();
 			registry.write().register_type_data::<T, D>();
 		}
-		self
 	}
 
 	/// Adds an [`App`] as a child of the current one.
@@ -922,7 +910,7 @@ impl App {
 		label: impl AppLabel,
 		app: App,
 		sub_app_runner: impl Fn(&mut World, &mut App) + 'static,
-	) -> &mut Self {
+	) {
 		self.sub_apps.insert(
 			label.as_label(),
 			SubApp {
@@ -930,7 +918,6 @@ impl App {
 				runner: Box::new(sub_app_runner),
 			},
 		);
-		self
 	}
 
 	/// Retrieves a `SubApp` stored inside this [`App`].

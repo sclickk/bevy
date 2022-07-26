@@ -3,15 +3,15 @@
 use bevy::prelude::*;
 
 fn main() {
-	App::new()
-		// Uncomment this to override the default log settings:
-		// .insert_resource(bevy::log::LogSettings {
-		//     level: bevy::log::Level::TRACE,
-		//     filter: "wgpu=warn,bevy_ecs=info".to_string(),
-		// })
-		.add_plugins(DefaultPlugins)
-		.add_system(log_system)
-		.run();
+	let mut app = App::new();
+	// Uncomment this to override the default log settings:
+	// app.insert_resource(bevy::log::LogSettings {
+	//     level: bevy::log::Level::TRACE,
+	//     filter: "wgpu=warn,bevy_ecs=info".to_string(),
+	// })
+	app.add_plugins(DefaultPlugins);
+	app.add_system(log_system);
+	app.run();
 }
 
 fn log_system() {

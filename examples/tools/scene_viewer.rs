@@ -67,9 +67,10 @@ Controls:
 	app.add_system(camera_tracker);
 
 	#[cfg(feature = "animation")]
-	app
-		.add_system(start_animation)
-		.add_system(keyboard_animation_control);
+	{
+		app.add_system(start_animation);
+		app.add_system(keyboard_animation_control);
+	}
 
 	app.run();
 }

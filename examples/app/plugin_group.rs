@@ -4,18 +4,18 @@
 use bevy::{app::PluginGroupBuilder, prelude::*};
 
 fn main() {
-	App::new()
-		// Two PluginGroups that are included with bevy are DefaultPlugins and MinimalPlugins
-		.add_plugins(DefaultPlugins)
-		// Adding a plugin group adds all plugins in the group by default
-		.add_plugins(HelloWorldPlugins)
-		// You can also modify a PluginGroup (such as disabling plugins) like this:
-		// .add_plugins_with(HelloWorldPlugins, |group| {
-		//     group
-		//         .disable::<PrintWorldPlugin>()
-		//         .add_before::<PrintHelloPlugin,
-		// _>(bevy::diagnostic::LogDiagnosticsPlugin::default()) })
-		.run();
+	let mut app = App::new();
+	// Two PluginGroups that are included with bevy are DefaultPlugins and MinimalPlugins
+	app.add_plugins(DefaultPlugins);
+	// Adding a plugin group adds all plugins in the group by default
+	app.add_plugins(HelloWorldPlugins);
+	// You can also modify a PluginGroup (such as disabling plugins) like this:
+	// .add_plugins_with(HelloWorldPlugins, |group| {
+	//     group
+	//         .disable::<PrintWorldPlugin>()
+	//         .add_before::<PrintHelloPlugin,
+	// _>(bevy::diagnostic::LogDiagnosticsPlugin::default()) })
+	app.run();
 }
 
 /// A group of plugins that produce the "hello world" behavior

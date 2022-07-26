@@ -3,10 +3,10 @@
 use bevy::{input::touch::*, prelude::*};
 
 fn main() {
-	App::new()
-		.add_plugins(DefaultPlugins)
-		.add_system(touch_event_system)
-		.run();
+	let mut app = App::new();
+	app.add_plugins(DefaultPlugins);
+	app.add_system(touch_event_system);
+	app.run();
 }
 
 fn touch_event_system(mut touch_events: EventReader<TouchInput>) {

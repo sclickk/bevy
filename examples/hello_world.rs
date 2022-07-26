@@ -1,7 +1,9 @@
 use bevy::prelude::*;
 
 fn main() {
-	App::new().add_system(hello_world_system).run();
+	let mut app = App::new();
+	app.add_system(hello_world_system);
+	app.run();
 }
 
 fn hello_world_system() {

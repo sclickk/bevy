@@ -4,13 +4,13 @@ use bevy::prelude::*;
 use bevy::winit::WinitPlugin;
 
 fn main() {
-	App::new()
-		.add_plugins_with(DefaultPlugins, |group| {
-			group.disable::<WinitPlugin>();
-			group
-		})
-		.add_system(setup_system)
-		.run();
+	let mut app = App::new();
+	app.add_plugins_with(DefaultPlugins, |group| {
+		group.disable::<WinitPlugin>();
+		group
+	});
+	app.add_system(setup_system);
+	app.run();
 }
 
 fn setup_system(mut commands: Commands) {

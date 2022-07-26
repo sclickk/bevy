@@ -301,14 +301,13 @@ impl Plugin for RenderPlugin {
 			});
 		}
 
-		app
-			.add_plugin(WindowRenderPlugin)
-			.add_plugin(CameraPlugin)
-			.add_plugin(ViewPlugin)
-			.add_plugin(MeshPlugin)
-			// NOTE: Load this after renderer initialization so that it knows about the supported
-			// compressed texture formats
-			.add_plugin(ImagePlugin);
+		app.add_plugin(WindowRenderPlugin);
+		app.add_plugin(CameraPlugin);
+		app.add_plugin(ViewPlugin);
+		app.add_plugin(MeshPlugin);
+		// NOTE: Load this after renderer initialization so that it knows about the supported
+		// compressed texture formats
+		app.add_plugin(ImagePlugin);
 	}
 }
 

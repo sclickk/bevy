@@ -3,10 +3,10 @@
 use bevy::prelude::*;
 
 fn main() {
-	App::new()
-		.add_plugins(DefaultPlugins)
-		.add_system(mouse_click_system)
-		.run();
+	let mut app = App::new();
+	app.add_plugins(DefaultPlugins);
+	app.add_system(mouse_click_system);
+	app.run();
 }
 
 // This system prints messages when you press or release the left mouse button:

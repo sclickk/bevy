@@ -7,10 +7,10 @@ use bevy::{
 };
 
 fn main() {
-	App::new()
-		.add_plugins(DefaultPlugins)
-		.add_system(print_mouse_events_system)
-		.run();
+	let mut app = App::new();
+	app.add_plugins(DefaultPlugins);
+	app.add_system(print_mouse_events_system);
+	app.run();
 }
 
 /// This system prints out all mouse events as they come in

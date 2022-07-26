@@ -6,10 +6,10 @@ use bevy::{
 };
 
 fn main() {
-	App::new()
-		.add_plugins(DefaultPlugins)
-		.add_system(keyboard_input_system)
-		.run();
+	let mut app = App::new();
+	app.add_plugins(DefaultPlugins);
+	app.add_system(keyboard_input_system);
+	app.run();
 }
 
 /// This system prints when `Ctrl + Shift + A` is pressed
