@@ -254,7 +254,7 @@ pub fn prepare_core_3d_depth_textures(
 							sample_count: msaa.samples,
 							dimension: TextureDimension::D2,
 							format: TextureFormat::Depth24Plus, /* PERF: vulkan docs recommend using 24
-							                                     	* bit depth for better performance */
+							                                    	* bit depth for better performance */
 							usage: TextureUsages::RENDER_ATTACHMENT,
 						},
 					)

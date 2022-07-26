@@ -98,37 +98,37 @@ pub unsafe trait Bundle: Send + Sync + 'static {
 }
 
 macro_rules! tuple_impl {
-    ($($name: ident),*) => {
-        // SAFETY:
-        // - `Bundle::component_ids` returns the `ComponentId`s for each component type in the
-        // bundle, in the exact order that `Bundle::get_components` is called.
-        // - `Bundle::from_components` calls `func` exactly once for each `ComponentId` returned by `Bundle::component_ids`.
-        unsafe impl<$($name: Component),*> Bundle for ($($name,)*) {
-            #[allow(unused_variables)]
-            fn component_ids(components: &mut Components, storages: &mut Storages) -> Vec<ComponentId> {
-                vec![$(components.init_component::<$name>(storages)),*]
-            }
+	($($name: ident),*) => {
+		// SAFETY:
+		// - `Bundle::component_ids` returns the `ComponentId`s for each component type in the
+		// bundle, in the exact order that `Bundle::get_components` is called.
+		// - `Bundle::from_components` calls `func` exactly once for each `ComponentId` returned by `Bundle::component_ids`.
+		unsafe impl<$($name: Component),*> Bundle for ($($name,)*) {
+			#[allow(unused_variables)]
+			fn component_ids(components: &mut Components, storages: &mut Storages) -> Vec<ComponentId> {
+				vec![$(components.init_component::<$name>(storages)),*]
+			}
 
-            #[allow(unused_variables, unused_mut)]
-            #[allow(clippy::unused_unit)]
-            unsafe fn from_components<T, F>(ctx: &mut T, mut func: F) -> Self
-            where
-                F: FnMut(&mut T) -> OwningPtr<'_>
-            {
-                #[allow(non_snake_case)]
-                ($(func(ctx).read::<$name>(),)*)
-            }
+			#[allow(unused_variables, unused_mut)]
+			#[allow(clippy::unused_unit)]
+			unsafe fn from_components<T, F>(ctx: &mut T, mut func: F) -> Self
+			where
+			F: FnMut(&mut T) -> OwningPtr<'_>
+			{
+				#[allow(non_snake_case)]
+				($(func(ctx).read::<$name>(),)*)
+			}
 
-            #[allow(unused_variables, unused_mut)]
-            fn get_components(self, mut func: impl FnMut(OwningPtr<'_>)) {
-                #[allow(non_snake_case)]
-                let ($(mut $name,)*) = self;
-                $(
-                    OwningPtr::make($name, &mut func);
-                )*
-            }
-        }
-    }
+			#[allow(unused_variables, unused_mut)]
+			fn get_components(self, mut func: impl FnMut(OwningPtr<'_>)) {
+				#[allow(non_snake_case)]
+				let ($(mut $name,)*) = self;
+				$(
+					OwningPtr::make($name, &mut func);
+				)*
+			}
+		}
+	}
 }
 
 all_tuples!(tuple_impl, 0, 15, C);
