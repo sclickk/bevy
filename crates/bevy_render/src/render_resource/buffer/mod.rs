@@ -1,3 +1,9 @@
+mod storage;
+pub use storage::*;
+
+mod uniform;
+pub use uniform::*;
+
 // use crate::render_resource::ShaderType;
 use bevy_utils::Uuid;
 use std::{
