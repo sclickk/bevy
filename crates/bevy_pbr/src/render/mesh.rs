@@ -638,7 +638,7 @@ impl SpecializedMeshPipeline for MeshPipeline {
 				strip_index_format: None,
 			},
 			depth_stencil: Some(DepthStencilState {
-				format: TextureFormat::Depth32Float,
+				format: TextureFormat::Depth24Plus,
 				depth_write_enabled,
 				depth_compare: CompareFunction::Greater,
 				stencil: StencilState {

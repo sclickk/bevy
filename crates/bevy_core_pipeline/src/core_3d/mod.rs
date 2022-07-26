@@ -253,7 +253,7 @@ pub fn prepare_core_3d_depth_textures(
 							mip_level_count: 1,
 							sample_count: msaa.samples,
 							dimension: TextureDimension::D2,
-							format: TextureFormat::Depth32Float, /* PERF: vulkan docs recommend using 24
+							format: TextureFormat::Depth24Plus, /* PERF: vulkan docs recommend using 24
 							                                     	* bit depth for better performance */
 							usage: TextureUsages::RENDER_ATTACHMENT,
 						},

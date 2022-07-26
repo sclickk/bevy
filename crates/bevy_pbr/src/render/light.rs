@@ -67,7 +67,8 @@ pub struct GpuLights {
 // NOTE: this must be kept in sync with the same constants in pbr.frag
 pub const MAX_UNIFORM_BUFFER_POINT_LIGHTS: usize = 256;
 pub const MAX_DIRECTIONAL_LIGHTS: usize = 1;
-pub const SHADOW_FORMAT: TextureFormat = TextureFormat::Depth32Float;
+pub const SHADOW_FORMAT: TextureFormat = TextureFormat::Depth24Plus;
+pub const SHADOW_STENCIL_FORMAT: TextureFormat = TextureFormat::Depth24Plus;
 
 pub struct ShadowPipeline {
 	pub view_layout: BindGroupLayout,
@@ -205,7 +206,7 @@ impl SpecializedMeshPipeline for ShadowPipeline {
 				conservative: false,
 			},
 			depth_stencil: Some(DepthStencilState {
-				format: SHADOW_FORMAT,
+				format: SHADOW_STENCIL_FORMAT,
 				depth_write_enabled: true,
 				depth_compare: CompareFunction::GreaterEqual,
 				stencil: StencilState {
