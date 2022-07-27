@@ -26,7 +26,7 @@ pub(crate) struct ReflectValueDef {
 
 impl Parse for ReflectValueDef {
 	fn parse(input: ParseStream) -> syn::Result<Self> {
-		let type_ident = input.parse::<Ident>()?;
+		let type_name = input.parse::<Ident>()?;
 		let generics = input.parse::<Generics>()?;
 		let mut lookahead = input.lookahead1();
 		let mut where_clause = None;
@@ -43,7 +43,7 @@ impl Parse for ReflectValueDef {
 		}
 
 		Ok(ReflectValueDef {
-			type_name: type_ident,
+			type_name,
 			generics: Generics {
 				where_clause,
 				..generics
