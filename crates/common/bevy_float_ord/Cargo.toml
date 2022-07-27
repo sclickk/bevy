@@ -1,0 +1,11 @@
+[package]
+name = "bevy_float_ord"
+version = "0.8.0-dev"
+edition = "2021"
+description = "A wrapper for floats that implements [`Ord`], [`Eq`], and [`Hash`] traits."
+homepage = "https://bevyengine.org"
+repository = "https://github.com/bevyengine/bevy"
+license = "MIT OR Apache-2.0"
+keywords = ["bevy", "no_std"]
+
+[dependencies]

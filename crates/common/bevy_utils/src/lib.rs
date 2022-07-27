@@ -4,11 +4,9 @@ pub mod futures;
 pub mod label;
 mod short_names;
 pub use short_names::get_short_name;
-
-mod float_ord;
+pub use bevy_float_ord::*;
 
 pub use ahash::AHasher;
-pub use float_ord::*;
 pub use hashbrown;
 pub use instant::{Duration, Instant};
 pub use tracing;

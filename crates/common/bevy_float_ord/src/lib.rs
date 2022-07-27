@@ -1,4 +1,6 @@
-use std::{
+#![no_std]
+
+use core::{
 	cmp::Ordering,
 	hash::{Hash, Hasher},
 	ops::Neg,
