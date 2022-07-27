@@ -19,25 +19,20 @@ pub struct FloatOrd(pub f32);
 #[allow(clippy::derive_ord_xor_partial_ord)]
 impl Ord for FloatOrd {
 	fn cmp(&self, other: &Self) -> Ordering {
-		self.0.partial_cmp(&other.0).unwrap_or_else(|| {
-			if self.0.is_nan() && !other.0.is_nan() {
-				Ordering::Less
-			} else if !self.0.is_nan() && other.0.is_nan() {
-				Ordering::Greater
-			} else {
-				Ordering::Equal
-			}
-		})
+		self
+			.0
+			.partial_cmp(&other.0)
+			.unwrap_or_else(|| match (self.0.is_nan(), other.0.is_nan()) {
+				(true, false) => Ordering::Less,
+				(false, true) => Ordering::Greater,
+				_ => Ordering::Equal,
+			})
 	}
 }
 
 impl PartialEq for FloatOrd {
 	fn eq(&self, other: &Self) -> bool {
-		if self.0.is_nan() && other.0.is_nan() {
-			true
-		} else {
-			self.0 == other.0
-		}
+		(self.0.is_nan() && other.0.is_nan()) || (self.0 == other.0)
 	}
 }
 
@@ -45,15 +40,15 @@ impl Eq for FloatOrd {}
 
 impl Hash for FloatOrd {
 	fn hash<H: Hasher>(&self, state: &mut H) {
-		if self.0.is_nan() {
+		state.write(&f32::to_ne_bytes(if self.0.is_nan() {
 			// Ensure all NaN representations hash to the same value
-			state.write(&f32::to_ne_bytes(f32::NAN));
+			f32::NAN
 		} else if self.0 == 0.0 {
 			// Ensure both zeroes hash to the same value
-			state.write(&f32::to_ne_bytes(0.0f32));
+			0.0f32
 		} else {
-			state.write(&f32::to_ne_bytes(self.0));
-		}
+			self.0
+		}));
 	}
 }
 
