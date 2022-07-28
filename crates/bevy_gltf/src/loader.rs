@@ -9,8 +9,8 @@ use bevy_hierarchy::{BuildWorldChildren, WorldChildBuilder};
 use bevy_log::warn;
 use bevy_math::{Mat4, Vec3};
 use bevy_pbr::{
-	DirectionalLight, DirectionalLightBundle, PbrBundle, PointLight, PointLightBundle,
-	SpotLight, SpotLightBundle, StandardMaterial,
+	DirectionalLight, DirectionalLightBundle, PbrBundle, PointLight, PointLightBundle, SpotLight,
+	SpotLightBundle, StandardMaterial,
 };
 use bevy_render::{
 	camera::{
