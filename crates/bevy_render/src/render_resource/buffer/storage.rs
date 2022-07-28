@@ -1,7 +1,9 @@
 #![allow(clippy::doc_markdown)]
 
-use super::Buffer;
-use crate::renderer::{RenderDevice, RenderQueue};
+use crate::{
+	render_resource::{Buffer, BufferLabel},
+	renderer::{RenderDevice, RenderQueue},
+};
 use encase::{
 	internal::WriteInto, DynamicStorageBuffer as DynamicStorageBufferWrapper, ShaderType,
 	StorageBuffer as StorageBufferWrapper,
@@ -32,8 +34,7 @@ pub struct StorageBuffer<T: ShaderType> {
 	scratch: StorageBufferWrapper<Vec<u8>>,
 	buffer: Option<Buffer>,
 	capacity: usize,
-	label: Option<String>,
-	label_changed: bool,
+	label: BufferLabel,
 }
 
 impl<T: ShaderType> From<T> for StorageBuffer<T> {
@@ -43,8 +44,7 @@ impl<T: ShaderType> From<T> for StorageBuffer<T> {
 			scratch: StorageBufferWrapper::new(Vec::new()),
 			buffer: None,
 			capacity: 0,
-			label: None,
-			label_changed: false,
+			label: BufferLabel::default(),
 		}
 	}
 }
@@ -56,8 +56,7 @@ impl<T: ShaderType + Default> Default for StorageBuffer<T> {
 			scratch: StorageBufferWrapper::new(Vec::new()),
 			buffer: None,
 			capacity: 0,
-			label: None,
-			label_changed: false,
+			label: BufferLabel::default(),
 		}
 	}
 }
@@ -86,21 +85,6 @@ impl<T: ShaderType + WriteInto> StorageBuffer<T> {
 	pub fn get_mut(&mut self) -> &mut T {
 		&mut self.value
 	}
-
-	pub fn set_label(&mut self, label: Option<&str>) {
-		let label = label.map(str::to_string);
-
-		if label != self.label {
-			self.label_changed = true;
-		}
-
-		self.label = label;
-	}
-
-	pub fn get_label(&self) -> Option<&str> {
-		self.label.as_deref()
-	}
-
 	/// Queues writing of data from system RAM to VRAM using the [`RenderDevice`](crate::renderer::RenderDevice)
 	/// and the provided [`RenderQueue`](crate::renderer::RenderQueue).
 	///
@@ -112,14 +96,14 @@ impl<T: ShaderType + WriteInto> StorageBuffer<T> {
 		let contents = self.scratch.as_ref();
 		let size = contents.len();
 
-		if self.capacity < size || self.label_changed {
+		if self.capacity < size || self.label.changed {
 			self.buffer = Some(device.create_buffer_with_data(&BufferInitDescriptor {
-				label: self.label.as_deref(),
+				label: self.label.get(),
 				usage: BufferUsages::COPY_DST | BufferUsages::STORAGE,
 				contents,
 			}));
 			self.capacity = size;
-			self.label_changed = false;
+			self.label.changed = false;
 		} else if let Some(buffer) = &self.buffer {
 			queue.write_buffer(buffer, 0, contents);
 		}
@@ -152,8 +136,7 @@ pub struct DynamicStorageBuffer<T: ShaderType> {
 	scratch: DynamicStorageBufferWrapper<Vec<u8>>,
 	buffer: Option<Buffer>,
 	capacity: usize,
-	label: Option<String>,
-	label_changed: bool,
+	label: BufferLabel,
 }
 
 impl<T: ShaderType> Default for DynamicStorageBuffer<T> {
@@ -163,8 +146,7 @@ impl<T: ShaderType> Default for DynamicStorageBuffer<T> {
 			scratch: DynamicStorageBufferWrapper::new(Vec::new()),
 			buffer: None,
 			capacity: 0,
-			label: None,
-			label_changed: false,
+			label: BufferLabel::default(),
 		}
 	}
 }
@@ -201,28 +183,14 @@ impl<T: ShaderType + WriteInto> DynamicStorageBuffer<T> {
 		offset
 	}
 
-	pub fn set_label(&mut self, label: Option<&str>) {
-		let label = label.map(str::to_string);
-
-		if label != self.label {
-			self.label_changed = true;
-		}
-
-		self.label = label;
-	}
-
-	pub fn get_label(&self) -> Option<&str> {
-		self.label.as_deref()
-	}
-
 	#[inline]
 	pub fn write_buffer(&mut self, device: &RenderDevice, queue: &RenderQueue) {
 		let contents = self.scratch.as_ref();
 		let size = contents.len();
 
-		if self.capacity < size || self.label_changed {
+		if self.capacity < size || self.label.changed {
 			self.buffer = Some(device.create_buffer_with_data(&BufferInitDescriptor {
-				label: self.label.as_deref(),
+				label: self.label.get(),
 				usage: BufferUsages::COPY_DST | BufferUsages::STORAGE,
 				contents,
 			}));

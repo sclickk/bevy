@@ -1,5 +1,5 @@
 use crate::{
-	render_resource::Buffer,
+	render_resource::{Buffer, BufferLabel},
 	renderer::{RenderDevice, RenderQueue},
 };
 use encase::{
@@ -31,8 +31,7 @@ pub struct UniformBuffer<T: ShaderType> {
 	value: T,
 	scratch: UniformBufferWrapper<Vec<u8>>,
 	buffer: Option<Buffer>,
-	label: Option<String>,
-	label_changed: bool,
+	label: BufferLabel,
 }
 
 impl<T: ShaderType> From<T> for UniformBuffer<T> {
@@ -41,8 +40,7 @@ impl<T: ShaderType> From<T> for UniformBuffer<T> {
 			value,
 			scratch: UniformBufferWrapper::new(Vec::new()),
 			buffer: None,
-			label: None,
-			label_changed: false,
+			label: BufferLabel::default(),
 		}
 	}
 }
@@ -53,8 +51,7 @@ impl<T: ShaderType + Default> Default for UniformBuffer<T> {
 			value: T::default(),
 			scratch: UniformBufferWrapper::new(Vec::new()),
 			buffer: None,
-			label: None,
-			label_changed: false,
+			label: BufferLabel::default(),
 		}
 	}
 }
@@ -85,20 +82,6 @@ impl<T: ShaderType + WriteInto> UniformBuffer<T> {
 		&mut self.value
 	}
 
-	pub fn set_label(&mut self, label: Option<&str>) {
-		let label = label.map(str::to_string);
-
-		if label != self.label {
-			self.label_changed = true;
-		}
-
-		self.label = label;
-	}
-
-	pub fn get_label(&self) -> Option<&str> {
-		self.label.as_deref()
-	}
-
 	/// Queues writing of data from system RAM to VRAM using the [`RenderDevice`](crate::renderer::RenderDevice)
 	/// and the provided [`RenderQueue`](crate::renderer::RenderQueue), if a GPU-side backing buffer already exists.
 	///
@@ -107,13 +90,13 @@ impl<T: ShaderType + WriteInto> UniformBuffer<T> {
 	pub fn write_buffer(&mut self, device: &RenderDevice, queue: &RenderQueue) {
 		self.scratch.write(&self.value).unwrap();
 
-		if self.label_changed || self.buffer.is_none() {
+		if self.label.changed || self.buffer.is_none() {
 			self.buffer = Some(device.create_buffer_with_data(&BufferInitDescriptor {
-				label: self.label.as_deref(),
+				label: self.label.get(),
 				usage: BufferUsages::COPY_DST | BufferUsages::UNIFORM,
 				contents: self.scratch.as_ref(),
 			}));
-			self.label_changed = false;
+			self.label.changed = false;
 		} else if let Some(buffer) = &self.buffer {
 			queue.write_buffer(buffer, 0, self.scratch.as_ref());
 		}
@@ -144,8 +127,7 @@ pub struct DynamicUniformBuffer<T: ShaderType> {
 	scratch: DynamicUniformBufferWrapper<Vec<u8>>,
 	buffer: Option<Buffer>,
 	capacity: usize,
-	label: Option<String>,
-	label_changed: bool,
+	label: BufferLabel,
 }
 
 impl<T: ShaderType> Default for DynamicUniformBuffer<T> {
@@ -155,8 +137,7 @@ impl<T: ShaderType> Default for DynamicUniformBuffer<T> {
 			scratch: DynamicUniformBufferWrapper::new(Vec::new()),
 			buffer: None,
 			capacity: 0,
-			label: None,
-			label_changed: false,
+			label: BufferLabel::default(),
 		}
 	}
 }
@@ -194,20 +175,6 @@ impl<T: ShaderType + WriteInto> DynamicUniformBuffer<T> {
 		offset
 	}
 
-	pub fn set_label(&mut self, label: Option<&str>) {
-		let label = label.map(str::to_string);
-
-		if label != self.label {
-			self.label_changed = true;
-		}
-
-		self.label = label;
-	}
-
-	pub fn get_label(&self) -> Option<&str> {
-		self.label.as_deref()
-	}
-
 	/// Queues writing of data from system RAM to VRAM using the [`RenderDevice`](crate::renderer::RenderDevice)
 	/// and the provided [`RenderQueue`](crate::renderer::RenderQueue).
 	///
@@ -218,14 +185,14 @@ impl<T: ShaderType + WriteInto> DynamicUniformBuffer<T> {
 		let contents = self.scratch.as_ref();
 		let size = contents.len();
 
-		if self.capacity < size || self.label_changed {
+		if self.capacity < size || self.label.changed {
 			self.buffer = Some(device.create_buffer_with_data(&BufferInitDescriptor {
-				label: self.label.as_deref(),
+				label: self.label.get(),
 				usage: BufferUsages::COPY_DST | BufferUsages::UNIFORM,
 				contents,
 			}));
 			self.capacity = size;
-			self.label_changed = false;
+			self.label.changed = false;
 		} else if let Some(buffer) = &self.buffer {
 			queue.write_buffer(buffer, 0, contents);
 		}

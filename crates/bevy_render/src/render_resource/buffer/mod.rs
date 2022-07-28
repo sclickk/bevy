@@ -1,3 +1,6 @@
+mod label;
+pub use label::*;
+
 mod storage;
 pub use storage::*;
 
