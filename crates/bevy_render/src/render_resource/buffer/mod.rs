@@ -1,3 +1,6 @@
+mod buffer_vec;
+pub use buffer_vec::*;
+
 mod label;
 pub use label::*;
 
