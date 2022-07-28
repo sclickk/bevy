@@ -2,6 +2,9 @@
 use bevy_animation::AnimationClip;
 use bevy_utils::HashMap;
 
+mod conversions;
+pub use conversions::*;
+
 mod loader;
 pub use loader::*;
 
