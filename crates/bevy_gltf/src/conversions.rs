@@ -10,6 +10,7 @@ use gltf::{mesh::Mode, texture::WrappingMode, Material};
 use crate::GltfError;
 
 /// Maps the texture address mode form glTF to wgpu.
+#[inline]
 pub(crate) fn texture_address_mode(gltf_address_mode: &gltf::texture::WrappingMode) -> AddressMode {
 	match gltf_address_mode {
 		WrappingMode::ClampToEdge => AddressMode::ClampToEdge,
@@ -19,6 +20,7 @@ pub(crate) fn texture_address_mode(gltf_address_mode: &gltf::texture::WrappingMo
 }
 
 /// Maps the `primitive_topology` form glTF to `wgpu`.
+#[inline]
 pub(crate) fn get_primitive_topology(mode: Mode) -> Result<PrimitiveTopology, GltfError> {
 	match mode {
 		Mode::Points => Ok(PrimitiveTopology::PointList),
@@ -30,6 +32,7 @@ pub(crate) fn get_primitive_topology(mode: Mode) -> Result<PrimitiveTopology, Gl
 	}
 }
 
+#[inline]
 pub(crate) fn alpha_mode(material: &Material) -> AlphaMode {
 	match material.alpha_mode() {
 		gltf::material::AlphaMode::Opaque => AlphaMode::Opaque,
