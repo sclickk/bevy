@@ -1,6 +1,9 @@
 use anyhow::Result;
 use bevy_pbr::AlphaMode;
-use bevy_render::render_resource::{AddressMode, PrimitiveTopology};
+use bevy_render::{
+	camera::{Projection, OrthographicProjection, PerspectiveProjection, ScalingMode},
+	render_resource::{AddressMode, PrimitiveTopology},
+};
 
 use gltf::{mesh::Mode, texture::WrappingMode, Material};
 
@@ -32,5 +35,31 @@ pub(crate) fn alpha_mode(material: &Material) -> AlphaMode {
 		gltf::material::AlphaMode::Opaque => AlphaMode::Opaque,
 		gltf::material::AlphaMode::Mask => AlphaMode::Mask(material.alpha_cutoff().unwrap_or(0.5)),
 		gltf::material::AlphaMode::Blend => AlphaMode::Blend,
+	}
+}
+
+#[inline]
+pub(crate) fn camera_projection(projection: &gltf::camera::Projection) -> Projection {
+	match projection {
+		gltf::camera::Projection::Orthographic(orthographic) => {
+			let orthographic_projection: OrthographicProjection = OrthographicProjection {
+				far: orthographic.zfar(),
+				near: orthographic.znear(),
+				scaling_mode: ScalingMode::FixedHorizontal(1.0),
+				scale: orthographic.xmag(),
+				..Default::default()
+			};
+
+			Projection::Orthographic(orthographic_projection)
+		},
+		gltf::camera::Projection::Perspective(perspective) => {
+			let perspective_projection: PerspectiveProjection = PerspectiveProjection {
+				fov: perspective.yfov(),
+				near: perspective.znear(),
+				far: perspective.zfar().unwrap_or_default(),
+				aspect_ratio: perspective.aspect_ratio().unwrap_or_default(),
+			};
+			Projection::Perspective(perspective_projection)
+		},
 	}
 }

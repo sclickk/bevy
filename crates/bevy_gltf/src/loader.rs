@@ -732,28 +732,7 @@ fn load_node(
 
 	// create camera node
 	if let Some(camera) = gltf_node.camera() {
-		let projection = match camera.projection() {
-			gltf::camera::Projection::Orthographic(orthographic) => {
-				let orthographic_projection: OrthographicProjection = OrthographicProjection {
-					far: orthographic.zfar(),
-					near: orthographic.znear(),
-					scaling_mode: ScalingMode::FixedHorizontal(1.0),
-					scale: orthographic.xmag(),
-					..Default::default()
-				};
-
-				Projection::Orthographic(orthographic_projection)
-			},
-			gltf::camera::Projection::Perspective(perspective) => {
-				let perspective_projection: PerspectiveProjection = PerspectiveProjection {
-					fov: perspective.yfov(),
-					near: perspective.znear(),
-					far: perspective.zfar().unwrap_or_default(),
-					aspect_ratio: perspective.aspect_ratio().unwrap_or_default(),
-				};
-				Projection::Perspective(perspective_projection)
-			},
-		};
+		let projection = camera_projection(&camera.projection());
 
 		node.insert_bundle((
 			projection,
