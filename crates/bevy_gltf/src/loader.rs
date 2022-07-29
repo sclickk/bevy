@@ -734,29 +734,23 @@ fn load_node(
 	if let Some(camera) = gltf_node.camera() {
 		let projection = match camera.projection() {
 			gltf::camera::Projection::Orthographic(orthographic) => {
-				let xmag = orthographic.xmag();
 				let orthographic_projection: OrthographicProjection = OrthographicProjection {
 					far: orthographic.zfar(),
 					near: orthographic.znear(),
 					scaling_mode: ScalingMode::FixedHorizontal(1.0),
-					scale: xmag,
+					scale: orthographic.xmag(),
 					..Default::default()
 				};
 
 				Projection::Orthographic(orthographic_projection)
 			},
 			gltf::camera::Projection::Perspective(perspective) => {
-				let mut perspective_projection: PerspectiveProjection = PerspectiveProjection {
+				let perspective_projection: PerspectiveProjection = PerspectiveProjection {
 					fov: perspective.yfov(),
 					near: perspective.znear(),
-					..Default::default()
+					far: perspective.zfar().unwrap_or_default(),
+					aspect_ratio: perspective.aspect_ratio().unwrap_or_default(),
 				};
-				if let Some(zfar) = perspective.zfar() {
-					perspective_projection.far = zfar;
-				}
-				if let Some(aspect_ratio) = perspective.aspect_ratio() {
-					perspective_projection.aspect_ratio = aspect_ratio;
-				}
 				Projection::Perspective(perspective_projection)
 			},
 		};
