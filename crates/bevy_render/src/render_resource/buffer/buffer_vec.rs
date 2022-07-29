@@ -71,6 +71,7 @@ impl<T: Pod> BufferVec<T> {
 		self.values.is_empty()
 	}
 
+	#[inline]
 	pub fn push(&mut self, value: T) -> usize {
 		let index = self.values.len();
 		self.values.alloc().init(value);
