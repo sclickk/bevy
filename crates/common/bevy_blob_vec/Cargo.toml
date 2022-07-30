@@ -1,0 +1,12 @@
+[package]
+name = "bevy_blob_vec"
+version = "0.8.0-dev"
+edition = "2021"
+description = "A flat, type-erased data storage type"
+homepage = "https://bevyengine.org"
+repository = "https://github.com/bevyengine/bevy"
+license = "MIT OR Apache-2.0"
+keywords = ["bevy", "no_std"]
+
+[dependencies]
+bevy_ptr = { path = "../bevy_ptr", version = "0.8.0-dev" }
