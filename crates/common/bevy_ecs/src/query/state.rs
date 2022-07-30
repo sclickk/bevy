@@ -420,11 +420,10 @@ impl<Q: WorldQuery, F: WorldQuery> QueryState<Q, F> {
 
 		fetch.set_archetype(&self.fetch_state, archetype, &world.storages().tables);
 		filter.set_archetype(&self.filter_state, archetype, &world.storages().tables);
-		if filter.archetype_filter_fetch(location.index) {
-			Ok(fetch.archetype_fetch(location.index))
-		} else {
-			Err(QueryEntityError::QueryDoesNotMatch(entity))
-		}
+		filter
+			.archetype_filter_fetch(location.index)
+			.then(|| fetch.archetype_fetch(location.index))
+			.ok_or(QueryEntityError::QueryDoesNotMatch(entity))
 	}
 
 	/// Gets the read-only query results for the given [`World`] and array of [`Entity`], where the last change and
@@ -921,11 +920,9 @@ impl<Q: WorldQuery, F: WorldQuery> QueryState<Q, F> {
 				filter.set_table(&self.filter_state, table);
 
 				for table_index in 0..table.len() {
-					if !filter.table_filter_fetch(table_index) {
-						continue;
+					if filter.table_filter_fetch(table_index) {
+						func(fetch.table_fetch(table_index));
 					}
-					let item = fetch.table_fetch(table_index);
-					func(item);
 				}
 			}
 		} else {
@@ -936,10 +933,9 @@ impl<Q: WorldQuery, F: WorldQuery> QueryState<Q, F> {
 				filter.set_archetype(&self.filter_state, archetype, tables);
 
 				for archetype_index in 0..archetype.len() {
-					if !filter.archetype_filter_fetch(archetype_index) {
-						continue;
+					if filter.archetype_filter_fetch(archetype_index) {
+						func(fetch.archetype_fetch(archetype_index));
 					}
-					func(fetch.archetype_fetch(archetype_index));
 				}
 			}
 		}
@@ -999,11 +995,9 @@ impl<Q: WorldQuery, F: WorldQuery> QueryState<Q, F> {
 							fetch.set_table(&self.fetch_state, table);
 							filter.set_table(&self.filter_state, table);
 							for table_index in offset..offset + len {
-								if !filter.table_filter_fetch(table_index) {
-									continue;
+								if filter.table_filter_fetch(table_index) {
+									func(fetch.table_fetch(table_index));
 								}
-								let item = fetch.table_fetch(table_index);
-								func(item);
 							}
 						};
 						#[cfg(feature = "trace")]
@@ -1046,10 +1040,9 @@ impl<Q: WorldQuery, F: WorldQuery> QueryState<Q, F> {
 							filter.set_archetype(&self.filter_state, archetype, tables);
 
 							for archetype_index in offset..offset + len {
-								if !filter.archetype_filter_fetch(archetype_index) {
-									continue;
+								if filter.archetype_filter_fetch(archetype_index) {
+									func(fetch.archetype_fetch(archetype_index));
 								}
-								func(fetch.archetype_fetch(archetype_index));
 							}
 						};
 
