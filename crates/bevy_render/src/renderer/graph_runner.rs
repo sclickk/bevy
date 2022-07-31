@@ -58,12 +58,7 @@ impl RenderGraphRunner {
 		queue: &wgpu::Queue,
 		world: &World,
 	) -> Result<(), RenderGraphRunnerError> {
-		let command_encoder =
-			render_device.create_command_encoder(&wgpu::CommandEncoderDescriptor::default());
-		let mut render_context = RenderContext {
-			render_device,
-			command_encoder,
-		};
+		let mut render_context = RenderContext::from(render_device);
 
 		Self::run_graph(graph, None, &mut render_context, world, &[])?;
 		{

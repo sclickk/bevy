@@ -261,3 +261,13 @@ pub struct RenderContext {
 	pub render_device: RenderDevice,
 	pub command_encoder: CommandEncoder,
 }
+
+impl From<RenderDevice> for RenderContext {
+	fn from(render_device: RenderDevice) -> Self {
+		Self {
+			command_encoder: render_device
+				.create_command_encoder(&wgpu::CommandEncoderDescriptor::default()),
+			render_device,
+		}
+	}
+}
