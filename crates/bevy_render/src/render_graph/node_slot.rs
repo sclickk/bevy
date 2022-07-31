@@ -76,14 +76,12 @@ pub enum SlotType {
 
 impl fmt::Display for SlotType {
 	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-		let s = match self {
+		f.write_str(match self {
 			SlotType::Buffer => "Buffer",
 			SlotType::TextureView => "TextureView",
 			SlotType::Sampler => "Sampler",
 			SlotType::Entity => "Entity",
-		};
-
-		f.write_str(s)
+		})
 	}
 }
 
