@@ -1,6 +1,7 @@
 #[warn(missing_docs)]
 mod cursor;
 mod event;
+mod plugin;
 mod raw_window_handle;
 mod system;
 mod window;
@@ -9,6 +10,7 @@ mod windows;
 pub use crate::raw_window_handle::*;
 pub use cursor::*;
 pub use event::*;
+pub use plugin::*;
 pub use system::*;
 pub use window::*;
 pub use windows::*;
@@ -21,8 +23,7 @@ pub mod prelude {
 	};
 }
 
-use bevy_app::prelude::*;
-use bevy_ecs::{event::Events, schedule::SystemLabel};
+use bevy_ecs::schedule::SystemLabel;
 
 /// The configuration information for the [`WindowPlugin`].
 ///
@@ -59,57 +60,6 @@ impl Default for WindowSettings {
 			add_primary_window: true,
 			exit_on_all_closed: true,
 			close_when_requested: true,
-		}
-	}
-}
-
-/// A [`Plugin`] that defines an interface for windowing support in Bevy.
-#[derive(Default)]
-pub struct WindowPlugin;
-
-impl Plugin for WindowPlugin {
-	fn build(&self, app: &mut App) {
-		app.add_event::<WindowResized>();
-		app.add_event::<CreateWindow>();
-		app.add_event::<WindowCreated>();
-		app.add_event::<WindowClosed>();
-		app.add_event::<WindowCloseRequested>();
-		app.add_event::<RequestRedraw>();
-		app.add_event::<CursorMoved>();
-		app.add_event::<CursorEntered>();
-		app.add_event::<CursorLeft>();
-		app.add_event::<ReceivedCharacter>();
-		app.add_event::<WindowFocused>();
-		app.add_event::<WindowScaleFactorChanged>();
-		app.add_event::<WindowBackendScaleFactorChanged>();
-		app.add_event::<FileDragAndDrop>();
-		app.add_event::<WindowMoved>();
-		app.init_resource::<Windows>();
-
-		let settings = app
-			.world
-			.get_resource::<WindowSettings>()
-			.cloned()
-			.unwrap_or_default();
-
-		if settings.add_primary_window {
-			let window_descriptor = app
-				.world
-				.get_resource::<WindowDescriptor>()
-				.cloned()
-				.unwrap_or_default();
-			let mut create_window_event = app.world.resource_mut::<Events<CreateWindow>>();
-			create_window_event.send(CreateWindow {
-				id: WindowId::PRIMARY,
-				descriptor: window_descriptor,
-			});
-		}
-
-		if settings.exit_on_all_closed {
-			app.add_system(exit_on_all_closed);
-		}
-		if settings.close_when_requested {
-			app.add_system(close_when_requested);
 		}
 	}
 }
