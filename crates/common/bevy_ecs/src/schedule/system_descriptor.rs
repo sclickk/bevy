@@ -81,7 +81,7 @@ impl IntoSystemDescriptor<()> for SystemDescriptor {
 
 impl Into<SystemDescriptor> for BoxedSystem<(), ()> {
 	fn into(self) -> SystemDescriptor {
-		new_parallel_descriptor(self).into()
+		ParallelSystemDescriptor::from(self).into()
 	}
 }
 
@@ -254,23 +254,23 @@ impl ParallelSystemDescriptorCoercion<()> for BoxedSystem<(), ()> {
 		self,
 		run_criteria: impl IntoRunCriteria<Marker>,
 	) -> ParallelSystemDescriptor {
-		new_parallel_descriptor(self).with_run_criteria(run_criteria)
+		ParallelSystemDescriptor::from(self).with_run_criteria(run_criteria)
 	}
 
 	fn label(self, label: impl SystemLabel) -> ParallelSystemDescriptor {
-		new_parallel_descriptor(self).label(label)
+		ParallelSystemDescriptor::from(self).label(label)
 	}
 
 	fn before<Marker>(self, label: impl AsSystemLabel<Marker>) -> ParallelSystemDescriptor {
-		new_parallel_descriptor(self).before(label)
+		ParallelSystemDescriptor::from(self).before(label)
 	}
 
 	fn after<Marker>(self, label: impl AsSystemLabel<Marker>) -> ParallelSystemDescriptor {
-		new_parallel_descriptor(self).after(label)
+		ParallelSystemDescriptor::from(self).after(label)
 	}
 
 	fn in_ambiguity_set(self, set: impl AmbiguitySetLabel) -> ParallelSystemDescriptor {
-		new_parallel_descriptor(self).in_ambiguity_set(set)
+		ParallelSystemDescriptor::from(self).in_ambiguity_set(set)
 	}
 }
 
