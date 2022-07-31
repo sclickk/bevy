@@ -1,4 +1,5 @@
-use bevy_macro_utils::{get_lit_bool, get_lit_str, BevyManifest, Symbol};
+use bevy_macro_utils::{get_lit_bool, get_lit_str, Symbol};
+use bevy_manifest::BevyManifest;
 use proc_macro::TokenStream;
 use proc_macro2::{Ident, Span};
 use quote::{quote, ToTokens};

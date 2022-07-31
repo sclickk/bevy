@@ -1,6 +1,6 @@
 extern crate proc_macro;
 
-use bevy_macro_utils::BevyManifest;
+use bevy_manifest::BevyManifest;
 use quote::quote;
 use syn::*;
 use uuid::Uuid;

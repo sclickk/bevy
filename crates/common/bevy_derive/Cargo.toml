@@ -12,6 +12,7 @@ keywords = ["bevy"]
 proc-macro = true
 
 [dependencies]
+bevy_manifest = { path = "../bevy_manifest", version = "0.8.0" }
 bevy_macro_utils = { path = "../bevy_macro_utils", version = "0.8.0" }
 
 quote = "1.0"

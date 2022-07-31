@@ -1,4 +1,4 @@
-use bevy_macro_utils::BevyManifest;
+use bevy_manifest::BevyManifest;
 use encase_derive_impl::{implement, syn};
 
 const BEVY: &str = "bevy";

@@ -1,7 +1,7 @@
 mod as_bind_group;
 mod extract_resource;
 
-use bevy_macro_utils::BevyManifest;
+use bevy_manifest::BevyManifest;
 use proc_macro::TokenStream;
 use syn::{parse_macro_input, DeriveInput};
 

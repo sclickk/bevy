@@ -1,4 +1,4 @@
-use bevy_macro_utils::BevyManifest;
+use bevy_manifest::BevyManifest;
 use proc_macro::TokenStream;
 use quote::quote;
 use syn::{parse::Parse, parse_macro_input, Attribute, ItemTrait, Token};
