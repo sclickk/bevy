@@ -10,7 +10,6 @@ pub use symbol::*;
 
 use proc_macro::TokenStream;
 use quote::{quote, quote_spanned};
-use std::{env, path::PathBuf};
 use syn::spanned::Spanned;
 
 /// Derive a label trait
