@@ -63,13 +63,12 @@ impl Plugin for UiPlugin {
 		app.register_type::<Interaction>();
 		app.register_type::<JustifyContent>();
 		app.register_type::<Node>();
-		// NOTE: used by Style::aspect_ratio
+		// NOTE: used by Style::aspect_ratio;
 		app.register_type::<Option<f32>>();
 		app.register_type::<Overflow>();
 		app.register_type::<PositionType>();
-		app.register_type::<Size<f32>>();
-		app.register_type::<Size<Val>>();
-		app.register_type::<UiRect<Val>>();
+		app.register_type::<Size>();
+		app.register_type::<UiRect>();
 		app.register_type::<Style>();
 		app.register_type::<UiColor>();
 		app.register_type::<UiImage>();
