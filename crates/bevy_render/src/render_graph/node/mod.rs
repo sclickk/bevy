@@ -1,7 +1,9 @@
+mod slot;
+pub use slot::*;
+
 use crate::{
 	render_graph::{
 		Edge, InputSlotError, OutputSlotError, RenderGraphContext, RenderGraphError, RunSubGraphError,
-		SlotInfo, SlotInfos, SlotType, SlotValue,
 	},
 	renderer::RenderContext,
 };
