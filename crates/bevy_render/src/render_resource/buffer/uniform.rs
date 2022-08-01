@@ -70,14 +70,17 @@ impl<T: ShaderType + WriteInto> UniformBuffer<T> {
 	}
 
 	/// Set the data the buffer stores.
+	#[inline]
 	pub fn set(&mut self, value: T) {
 		self.value = value;
 	}
 
+	#[inline]
 	pub fn get(&self) -> &T {
 		&self.value
 	}
 
+	#[inline]
 	pub fn get_mut(&mut self) -> &mut T {
 		&mut self.value
 	}

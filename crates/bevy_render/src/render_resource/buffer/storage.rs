@@ -74,14 +74,17 @@ impl<T: ShaderType + WriteInto> StorageBuffer<T> {
 		))
 	}
 
+	#[inline]
 	pub fn set(&mut self, value: T) {
 		self.value = value;
 	}
 
+	#[inline]
 	pub fn get(&self) -> &T {
 		&self.value
 	}
 
+	#[inline]
 	pub fn get_mut(&mut self) -> &mut T {
 		&mut self.value
 	}
