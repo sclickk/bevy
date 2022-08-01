@@ -1,7 +1,7 @@
 mod graph_runner;
 mod render_device;
 
-use bevy_utils::tracing::{error, info, info_span};
+use bevy_log::{error, info, info_span};
 pub use graph_runner::*;
 pub use render_device::*;
 

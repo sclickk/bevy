@@ -4,7 +4,8 @@ use crate::{
 };
 
 use bevy_asset::Handle;
-use bevy_utils::{tracing::error, HashMap};
+use bevy_log::error;
+use bevy_utils::HashMap;
 use regex::Regex;
 use std::{borrow::Cow, collections::HashSet, ops::Deref};
 use thiserror::Error;

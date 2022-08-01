@@ -6,7 +6,8 @@ use crate::{
 };
 use bevy_app::{App, Plugin};
 use bevy_ecs::prelude::*;
-use bevy_utils::{tracing::debug, HashMap, HashSet};
+use bevy_log::debug;
+use bevy_utils::{HashMap, HashSet};
 use bevy_window::{PresentMode, RawWindowHandleWrapper, WindowClosed, WindowId, Windows};
 use std::ops::{Deref, DerefMut};
 use wgpu::TextureFormat;

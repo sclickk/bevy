@@ -6,7 +6,7 @@ use crate::{
 		ShaderStages,
 	},
 };
-use bevy_utils::tracing::trace;
+use bevy_log::trace;
 use std::ops::Range;
 use wgpu::{IndexFormat, RenderPass};
 

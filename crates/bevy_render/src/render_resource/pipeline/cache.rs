@@ -11,7 +11,8 @@ use crate::{
 use bevy_asset::{AssetEvent, Assets, Handle};
 use bevy_ecs::event::EventReader;
 use bevy_ecs::system::{Res, ResMut};
-use bevy_utils::{tracing::error, Entry, HashMap, HashSet};
+use bevy_log::error;
+use bevy_utils::{Entry, HashMap, HashSet};
 use std::{hash::Hash, iter::FusedIterator, mem, ops::Deref, sync::Arc};
 use thiserror::Error;
 use wgpu::{

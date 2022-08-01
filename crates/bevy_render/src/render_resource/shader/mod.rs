@@ -2,8 +2,9 @@ mod processor;
 pub use processor::*;
 
 use bevy_asset::{AssetLoader, AssetPath, Handle, LoadContext, LoadedAsset};
+use bevy_log::error;
 use bevy_reflect::{TypeUuid, Uuid};
-use bevy_utils::{tracing::error, BoxedFuture, HashMap};
+use bevy_utils::{BoxedFuture, HashMap};
 use naga::back::wgsl::WriterFlags;
 use naga::valid::Capabilities;
 use naga::{valid::ModuleInfo, Module};

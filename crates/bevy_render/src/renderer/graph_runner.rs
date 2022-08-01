@@ -1,6 +1,6 @@
 use bevy_ecs::world::World;
 #[cfg(feature = "trace")]
-use bevy_utils::tracing::info_span;
+use bevy_log::info_span;
 use bevy_utils::HashMap;
 use smallvec::{smallvec, SmallVec};
 #[cfg(feature = "trace")]
