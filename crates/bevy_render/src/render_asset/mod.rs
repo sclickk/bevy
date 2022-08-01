@@ -1,12 +1,13 @@
-use crate::{Extract, RenderApp, RenderStage};
-use bevy_app::{App, Plugin};
+mod plugin;
+pub use plugin::*;
+
+use crate::Extract;
 use bevy_asset::{Asset, AssetEvent, Assets, Handle};
 use bevy_ecs::{
 	prelude::*,
 	system::{StaticSystemParam, SystemParam, SystemParamItem},
 };
 use bevy_utils::{HashMap, HashSet};
-use std::marker::PhantomData;
 
 pub enum PrepareAssetError<E: Send + Sync + 'static> {
 	RetryNextUpdate(E),
@@ -47,58 +48,6 @@ pub enum PrepareAssetLabel {
 	PostAssetPrepare,
 }
 
-/// This plugin extracts the changed assets from the "app world" into the "render world"
-/// and prepares them for the GPU. They can then be accessed from the [`RenderAssets`] resource.
-///
-/// Therefore it sets up the [`RenderStage::Extract`](crate::RenderStage::Extract) and
-/// [`RenderStage::Prepare`](crate::RenderStage::Prepare) steps for the specified [`RenderAsset`].
-pub struct RenderAssetPlugin<A: RenderAsset> {
-	prepare_asset_label: PrepareAssetLabel,
-	phantom: PhantomData<fn() -> A>,
-}
-
-impl<A: RenderAsset> RenderAssetPlugin<A> {
-	pub fn with_prepare_asset_label(prepare_asset_label: PrepareAssetLabel) -> Self {
-		Self {
-			prepare_asset_label,
-			phantom: PhantomData,
-		}
-	}
-}
-
-impl<A: RenderAsset> Default for RenderAssetPlugin<A> {
-	fn default() -> Self {
-		Self {
-			prepare_asset_label: Default::default(),
-			phantom: PhantomData,
-		}
-	}
-}
-
-impl<A: RenderAsset> Plugin for RenderAssetPlugin<A> {
-	fn build(&self, app: &mut App) {
-		if let Ok(render_app) = app.get_sub_app_mut(RenderApp) {
-			let prepare_asset_system = prepare_assets::<A>.label(self.prepare_asset_label.clone());
-
-			let prepare_asset_system = match self.prepare_asset_label {
-				PrepareAssetLabel::PreAssetPrepare => prepare_asset_system,
-				PrepareAssetLabel::AssetPrepare => {
-					prepare_asset_system.after(PrepareAssetLabel::PreAssetPrepare)
-				},
-				PrepareAssetLabel::PostAssetPrepare => {
-					prepare_asset_system.after(PrepareAssetLabel::AssetPrepare)
-				},
-			};
-
-			render_app.init_resource::<ExtractedAssets<A>>();
-			render_app.init_resource::<RenderAssets<A>>();
-			render_app.init_resource::<PrepareNextFrameAssets<A>>();
-			render_app.add_system_to_stage(RenderStage::Extract, extract_render_asset::<A>);
-			render_app.add_system_to_stage(RenderStage::Prepare, prepare_asset_system);
-		}
-	}
-}
-
 /// Temporarily stores the extracted and removed assets of the current frame.
 pub struct ExtractedAssets<A: RenderAsset> {
 	extracted: Vec<(Handle<A>, A::ExtractedAsset)>,
@@ -120,7 +69,7 @@ pub type RenderAssets<A> = HashMap<Handle<A>, <A as RenderAsset>::PreparedAsset>
 
 /// This system extracts all crated or modified assets of the corresponding [`RenderAsset`] type
 /// into the "render world".
-fn extract_render_asset<A: RenderAsset>(
+pub(crate) fn extract_render_asset<A: RenderAsset>(
 	mut commands: Commands,
 	mut events: Extract<EventReader<AssetEvent<A>>>,
 	assets: Extract<Res<Assets<A>>>,
@@ -165,7 +114,7 @@ impl<A: RenderAsset> Default for PrepareNextFrameAssets<A> {
 
 /// This system prepares all assets of the corresponding [`RenderAsset`] type
 /// which where extracted this frame for the GPU.
-fn prepare_assets<R: RenderAsset>(
+pub(crate) fn prepare_assets<R: RenderAsset>(
 	mut extracted_assets: ResMut<ExtractedAssets<R>>,
 	mut render_assets: ResMut<RenderAssets<R>>,
 	mut prepare_next_frame: ResMut<PrepareNextFrameAssets<R>>,
@@ -173,6 +122,8 @@ fn prepare_assets<R: RenderAsset>(
 ) {
 	let mut param = param.into_inner();
 	let mut queued_assets = std::mem::take(&mut prepare_next_frame.assets);
+	// TODO: Code duplication here!
+
 	for (handle, extracted_asset) in queued_assets.drain(..) {
 		match R::prepare_asset(extracted_asset, &mut param) {
 			Ok(prepared) => {
