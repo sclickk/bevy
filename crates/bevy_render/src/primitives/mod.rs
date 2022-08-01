@@ -23,7 +23,7 @@ impl Aabb {
 
 	/// Calculate the relative radius of the AABB with respect to a plane
 	#[inline]
-	pub fn relative_radius(&self, p_normal: &Vec3A, axes: &[Vec3A]) -> f32 {
+	pub fn relative_radius(&self, p_normal: &Vec3A, axes: &[Vec3A; 3]) -> f32 {
 		// NOTE: dot products on Vec3A use SIMD and even with the overhead of conversion are net faster than Vec3
 		let half_extents = self.half_extents;
 		Vec3A::new(
