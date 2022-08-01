@@ -1,10 +1,13 @@
+mod layout;
+pub use layout::*;
+
 pub use bevy_render_macros::AsBindGroup;
 use encase::ShaderType;
 
 use crate::{
 	prelude::Image,
 	render_asset::RenderAssets,
-	render_resource::{BindGroupLayout, Buffer, Sampler, TextureView},
+	render_resource::{Buffer, Sampler, TextureView},
 	renderer::RenderDevice,
 	texture::FallbackImage,
 };

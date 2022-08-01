@@ -1,12 +1,10 @@
 mod bind_group;
-mod bind_group_layout;
 mod buffer;
 mod pipeline;
 mod shader;
 mod texture;
 
 pub use bind_group::*;
-pub use bind_group_layout::*;
 pub use buffer::*;
 pub use pipeline::*;
 pub use shader::*;
