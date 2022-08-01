@@ -139,11 +139,11 @@ impl VertexBufferLayout {
 	) -> Self {
 		let mut offset = 0;
 		let mut attributes = Vec::new();
-		for (shader_location, format) in vertex_formats.into_iter().enumerate() {
+		for (shader_location, format) in (0u32..).zip(vertex_formats.into_iter()) {
 			attributes.push(VertexAttribute {
 				format,
 				offset,
-				shader_location: shader_location as u32,
+				shader_location,
 			});
 			offset += format.size();
 		}
