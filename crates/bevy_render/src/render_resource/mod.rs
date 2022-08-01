@@ -2,8 +2,6 @@ mod bind_group;
 mod bind_group_layout;
 mod buffer;
 mod pipeline;
-mod pipeline_cache;
-mod pipeline_specializer;
 mod shader;
 mod texture;
 
@@ -11,8 +9,6 @@ pub use bind_group::*;
 pub use bind_group_layout::*;
 pub use buffer::*;
 pub use pipeline::*;
-pub use pipeline_cache::*;
-pub use pipeline_specializer::*;
 pub use shader::*;
 pub use texture::*;
 
