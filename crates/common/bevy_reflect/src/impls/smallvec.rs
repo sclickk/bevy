@@ -1,7 +1,7 @@
 use smallvec::SmallVec;
 use std::any::Any;
 
-use crate::utility::GenericTypeInfoCell;
+use crate::type_info_cell::GenericTypeInfoCell;
 use crate::{
 	Array, ArrayIter, FromReflect, List, ListInfo, Reflect, ReflectMut, ReflectRef, TypeInfo, Typed,
 };

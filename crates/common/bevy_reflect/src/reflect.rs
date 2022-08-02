@@ -7,7 +7,7 @@ use std::{
 	fmt::Debug,
 };
 
-use crate::utility::NonGenericTypeInfoCell;
+use crate::type_info_cell::NonGenericTypeInfoCell;
 pub use bevy_utils::AHasher as ReflectHasher;
 
 /// An immutable enumeration of "kinds" of reflected type.

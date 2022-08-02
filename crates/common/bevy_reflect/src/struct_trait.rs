@@ -1,4 +1,4 @@
-use crate::utility::NonGenericTypeInfoCell;
+use crate::type_info_cell::NonGenericTypeInfoCell;
 use crate::{DynamicInfo, NamedField, Reflect, ReflectMut, ReflectRef, TypeInfo, Typed};
 use bevy_utils::{Entry, HashMap};
 use std::fmt::{Debug, Formatter};

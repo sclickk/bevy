@@ -470,14 +470,14 @@ fn impl_typed(
 
 	let static_generator = if is_generic {
 		quote! {
-			static CELL: #bevy_reflect_path::utility::GenericTypeInfoCell = #bevy_reflect_path::utility::GenericTypeInfoCell::new();
+			static CELL: #bevy_reflect_path::type_info_cell::GenericTypeInfoCell = #bevy_reflect_path::type_info_cell::GenericTypeInfoCell::new();
 			CELL.get_or_insert::<Self, _>(|| {
 				#generator
 			})
 		}
 	} else {
 		quote! {
-			static CELL: #bevy_reflect_path::utility::NonGenericTypeInfoCell = #bevy_reflect_path::utility::NonGenericTypeInfoCell::new();
+			static CELL: #bevy_reflect_path::type_info_cell::NonGenericTypeInfoCell = #bevy_reflect_path::type_info_cell::NonGenericTypeInfoCell::new();
 			CELL.get_or_set(|| {
 				#generator
 			})

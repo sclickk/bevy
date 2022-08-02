@@ -1,4 +1,4 @@
-use crate::utility::NonGenericTypeInfoCell;
+use crate::type_info_cell::NonGenericTypeInfoCell;
 use crate::{DynamicInfo, Reflect, ReflectMut, ReflectRef, TypeInfo, Typed, UnnamedField};
 use std::any::{Any, TypeId};
 use std::fmt::{Debug, Formatter};

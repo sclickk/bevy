@@ -5,7 +5,7 @@ use crate::{
 	ReflectMut, ReflectRef, ReflectSerialize, TypeInfo, TypeRegistration, Typed, ValueInfo,
 };
 
-use crate::utility::{GenericTypeInfoCell, NonGenericTypeInfoCell};
+use crate::type_info_cell::{GenericTypeInfoCell, NonGenericTypeInfoCell};
 use bevy_reflect_derive::{impl_from_reflect_value, impl_reflect_value};
 use bevy_utils::{Duration, HashMap, HashSet, Instant};
 use std::{

@@ -1,5 +1,5 @@
 use crate::{
-	utility::NonGenericTypeInfoCell, DynamicInfo, Reflect, ReflectMut, ReflectRef, TypeInfo, Typed,
+	type_info_cell::NonGenericTypeInfoCell, DynamicInfo, Reflect, ReflectMut, ReflectRef, TypeInfo, Typed,
 };
 use std::{
 	any::{Any, TypeId},

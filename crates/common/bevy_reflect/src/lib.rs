@@ -10,6 +10,7 @@ mod struct_trait;
 mod tuple;
 mod tuple_struct;
 mod type_info;
+pub mod type_info_cell;
 mod type_registry;
 mod type_uuid;
 mod impls {
@@ -28,7 +29,6 @@ mod impls {
 
 pub mod serde;
 pub mod std_traits;
-pub mod utility;
 
 pub mod prelude {
 	pub use crate::std_traits::*;
@@ -50,6 +50,7 @@ pub use struct_trait::*;
 pub use tuple::*;
 pub use tuple_struct::*;
 pub use type_info::*;
+pub use type_info_cell::*;
 pub use type_registry::*;
 pub use type_uuid::*;
 

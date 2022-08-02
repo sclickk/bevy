@@ -1,7 +1,7 @@
 use std::any::{Any, TypeId};
 use std::fmt::{Debug, Formatter};
 
-use crate::utility::NonGenericTypeInfoCell;
+use crate::type_info_cell::NonGenericTypeInfoCell;
 use crate::{
 	Array, ArrayIter, DynamicArray, DynamicInfo, FromReflect, Reflect, ReflectMut, ReflectRef,
 	TypeInfo, Typed,

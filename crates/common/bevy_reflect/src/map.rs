@@ -4,7 +4,7 @@ use std::hash::Hash;
 
 use bevy_utils::{Entry, HashMap};
 
-use crate::utility::NonGenericTypeInfoCell;
+use crate::type_info_cell::NonGenericTypeInfoCell;
 use crate::{DynamicInfo, Reflect, ReflectMut, ReflectRef, TypeInfo, Typed};
 
 /// An ordered mapping between [`Reflect`] values.
