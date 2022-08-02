@@ -6,7 +6,7 @@ description = "A collection of utils for Bevy Engine"
 homepage = "https://bevyengine.org"
 repository = "https://github.com/bevyengine/bevy"
 license = "MIT OR Apache-2.0"
-keywords = ["bevy"]
+keywords = ["bevy", "no_std"]
 
 [dependencies]
 bevy_float_ord = { path = "../bevy_float_ord", version = "0.8.0-dev" }

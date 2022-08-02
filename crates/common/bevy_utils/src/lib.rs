@@ -1,3 +1,7 @@
+#![no_std]
+
+extern crate alloc;
+
 pub mod prelude {}
 
 pub mod futures;
@@ -14,7 +18,7 @@ pub use uuid::Uuid;
 
 use ahash::RandomState;
 use hashbrown::hash_map::RawEntryMut;
-use std::{
+use core::{
 	fmt::Debug,
 	future::Future,
 	hash::{BuildHasher, Hash, Hasher},
@@ -22,6 +26,8 @@ use std::{
 	ops::Deref,
 	pin::Pin,
 };
+
+use alloc::boxed::Box;
 
 #[cfg(not(target_arch = "wasm32"))]
 pub type BoxedFuture<'a, T> = Pin<Box<dyn Future<Output = T> + Send + 'a>>;
@@ -35,7 +41,7 @@ pub type Entry<'a, K, V> = hashbrown::hash_map::Entry<'a, K, V, RandomState>;
 #[derive(Debug, Clone, Default)]
 pub struct FixedState;
 
-impl std::hash::BuildHasher for FixedState {
+impl core::hash::BuildHasher for FixedState {
 	type Hasher = AHasher;
 
 	#[inline]
@@ -134,7 +140,7 @@ impl<V: PartialEq, H> PartialEq for Hashed<V, H> {
 }
 
 impl<V: Debug, H> Debug for Hashed<V, H> {
-	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+	fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
 		f.debug_struct("Hashed")
 			.field("hash", &self.hash)
 			.field("value", &self.value)
