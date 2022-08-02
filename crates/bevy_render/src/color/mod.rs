@@ -284,23 +284,6 @@ impl Color {
 		}
 	}
 
-	/// New `Color` from sRGB colorspace.
-	pub fn rgb_u8(r: u8, g: u8, b: u8) -> Color {
-		Color::rgba_u8(r, g, b, u8::MAX)
-	}
-
-	// Float operations in const fn are not stable yet
-	// see https://github.com/rust-lang/rust/issues/57241
-	/// New `Color` from sRGB colorspace.
-	pub fn rgba_u8(r: u8, g: u8, b: u8, a: u8) -> Color {
-		Color::rgba(
-			r as f32 / u8::MAX as f32,
-			g as f32 / u8::MAX as f32,
-			b as f32 / u8::MAX as f32,
-			a as f32 / u8::MAX as f32,
-		)
-	}
-
 	/// Get red in sRGB colorspace.
 	pub fn r(&self) -> f32 {
 		match self.as_rgba() {
