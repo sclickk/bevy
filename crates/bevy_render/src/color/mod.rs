@@ -336,6 +336,16 @@ impl Color {
 		)
 	}
 
+	/// Set red in sRGB colorspace.
+	pub fn set_r(&mut self, r: f32) -> &mut Self {
+		*self = self.as_rgba();
+		match self {
+			Color::Rgba { red, .. } => *red = r,
+			_ => unreachable!(),
+		}
+		self
+	}
+
 	/// Set green in sRGB colorspace.
 	pub fn set_g(&mut self, g: f32) -> &mut Self {
 		*self = self.as_rgba();

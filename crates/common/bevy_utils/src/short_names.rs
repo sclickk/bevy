@@ -3,7 +3,7 @@ use alloc::string::String;
 /// Shortens a type name to remove all module paths.
 ///
 /// The short name of a type is its full name as returned by
-/// [`std::any::type_name`], but with the prefix of all paths removed. For
+/// [`core::any::type_name`], but with the prefix of all paths removed. For
 /// example, the short name of `alloc::vec::Vec<core::option::Option<u32>>`
 /// would be `Vec<Option<u32>>`.
 pub fn get_short_name(full_name: &str) -> String {
@@ -21,7 +21,7 @@ pub fn get_short_name(full_name: &str) -> String {
 
 		// Collapse everything up to the next special character,
 		// then skip over it
-		if let Some(special_character_index) = rest_of_string.find(|c: char| {
+		index = if let Some(special_character_index) = rest_of_string.find(|c: char| {
 			(c == ' ')
 				|| (c == '<')
 				|| (c == '>')
@@ -40,11 +40,11 @@ pub fn get_short_name(full_name: &str) -> String {
 			let special_character = &rest_of_string[special_character_index..=special_character_index];
 			parsed_name.push_str(special_character);
 			// Move the index just past the special character
-			index += special_character_index + 1;
+			index + special_character_index + 1
 		} else {
 			// If there are no special characters left, we're done!
 			parsed_name += collapse_type_name(rest_of_string);
-			index = end_of_string;
+			end_of_string
 		}
 	}
 	parsed_name
@@ -58,6 +58,7 @@ fn collapse_type_name(string: &str) -> &str {
 #[cfg(test)]
 mod name_formatting_tests {
 	use super::get_short_name;
+	use alloc::string::ToString;
 
 	#[test]
 	fn trivial() {
