@@ -16,35 +16,35 @@ use thiserror::Error;
 pub enum Color {
 	/// sRGBA color
 	Rgba {
-		/// Red component. [0.0, 1.0]
+		/// Red channel. [0.0, 1.0]
 		red: f32,
-		/// Green component. [0.0, 1.0]
+		/// Green channel. [0.0, 1.0]
 		green: f32,
-		/// Blue component. [0.0, 1.0]
+		/// Blue channel. [0.0, 1.0]
 		blue: f32,
-		/// Alpha component. [0.0, 1.0]
+		/// Alpha channel. [0.0, 1.0]
 		alpha: f32,
 	},
 	/// RGBA color in the Linear sRGB colorspace (often colloquially referred to as "linear", "RGB", or "linear RGB").
 	RgbaLinear {
-		/// Red component. [0.0, 1.0]
+		/// Red channel. [0.0, 1.0]
 		red: f32,
-		/// Green component. [0.0, 1.0]
+		/// Green channel. [0.0, 1.0]
 		green: f32,
-		/// Blue component. [0.0, 1.0]
+		/// Blue channel. [0.0, 1.0]
 		blue: f32,
-		/// Alpha component. [0.0, 1.0]
+		/// Alpha channel. [0.0, 1.0]
 		alpha: f32,
 	},
 	/// HSL (hue, saturation, lightness) color with an alpha channel
 	Hsla {
-		/// Hue component. [0.0, 360.0]
+		/// Hue channel. [0.0, 360.0]
 		hue: f32,
-		/// Saturation component. [0.0, 1.0]
+		/// Saturation channel. [0.0, 1.0]
 		saturation: f32,
-		/// Lightness component. [0.0, 1.0]
+		/// Lightness channel. [0.0, 1.0]
 		lightness: f32,
-		/// Alpha component. [0.0, 1.0]
+		/// Alpha channel. [0.0, 1.0]
 		alpha: f32,
 	},
 }
@@ -128,11 +128,35 @@ impl Color {
 	pub const YELLOW_GREEN: Color = Color::rgb(0.6, 0.8, 0.2);
 
 	/// New `Color` from sRGB colorspace.
+	///
+	/// # Arguments
+	///
+	/// * `r` - Red channel. [0.0, 1.0]
+	/// * `g` - Green channel. [0.0, 1.0]
+	/// * `b` - Blue channel. [0.0, 1.0]
+	///
+	/// See also [`Color::rgba`], [`Color::rgb_u8`], [`Color::hex`].
+	///
 	pub const fn rgb(r: f32, g: f32, b: f32) -> Color {
-		Self::rgba(r, g, b, 1.0)
+		Color::Rgba {
+			red: r,
+			green: g,
+			blue: b,
+			alpha: 1.0,
+		}
 	}
 
 	/// New `Color` from sRGB colorspace.
+	///
+	/// # Arguments
+	///
+	/// * `r` - Red channel. [0.0, 1.0]
+	/// * `g` - Green channel. [0.0, 1.0]
+	/// * `b` - Blue channel. [0.0, 1.0]
+	/// * `a` - Alpha channel. [0.0, 1.0]
+	///
+	/// See also [`Color::rgb`], [`Color::rgba_u8`], [`Color::hex`].
+	///
 	pub const fn rgba(r: f32, g: f32, b: f32, a: f32) -> Color {
 		Color::Rgba {
 			red: r,
@@ -143,11 +167,35 @@ impl Color {
 	}
 
 	/// New `Color` from linear RGB colorspace.
+	///
+	/// # Arguments
+	///
+	/// * `r` - Red channel. [0.0, 1.0]
+	/// * `g` - Green channel. [0.0, 1.0]
+	/// * `b` - Blue channel. [0.0, 1.0]
+	///
+	/// See also [`Color::rgb`], [`Color::rgba_linear`].
+	///
 	pub const fn rgb_linear(r: f32, g: f32, b: f32) -> Color {
-		Self::rgba_linear(r, g, b, 1.0)
+		Color::RgbaLinear {
+			red: r,
+			green: g,
+			blue: b,
+			alpha: 1.0,
+		}
 	}
 
 	/// New `Color` from linear RGB colorspace.
+	///
+	/// # Arguments
+	///
+	/// * `r` - Red channel. [0.0, 1.0]
+	/// * `g` - Green channel. [0.0, 1.0]
+	/// * `b` - Blue channel. [0.0, 1.0]
+	/// * `a` - Alpha channel. [0.0, 1.0]
+	///
+	/// See also [`Color::rgba`], [`Color::rgb_linear`].
+	///
 	pub const fn rgba_linear(r: f32, g: f32, b: f32, a: f32) -> Color {
 		Color::RgbaLinear {
 			red: r,
@@ -158,11 +206,35 @@ impl Color {
 	}
 
 	/// New `Color` with HSL representation in sRGB colorspace.
+	///
+	/// # Arguments
+	///
+	/// * `hue` - Hue channel. [0.0, 360.0]
+	/// * `saturation` - Saturation channel. [0.0, 1.0]
+	/// * `lightness` - Lightness channel. [0.0, 1.0]
+	///
+	/// See also [`Color::hsla`].
+	///
 	pub const fn hsl(hue: f32, saturation: f32, lightness: f32) -> Color {
-		Self::hsla(hue, saturation, lightness, 1.0)
+		Color::Hsla {
+			hue,
+			saturation,
+			lightness,
+			alpha: 1.0,
+		}
 	}
 
 	/// New `Color` with HSL representation in sRGB colorspace.
+	///
+	/// # Arguments
+	///
+	/// * `hue` - Hue channel. [0.0, 360.0]
+	/// * `saturation` - Saturation channel. [0.0, 1.0]
+	/// * `lightness` - Lightness channel. [0.0, 1.0]
+	/// * `alpha` - Alpha channel. [0.0, 1.0]
+	///
+	/// See also [`Color::hsl`].
+	///
 	pub const fn hsla(hue: f32, saturation: f32, lightness: f32, alpha: f32) -> Color {
 		Color::Hsla {
 			hue,
@@ -173,6 +245,15 @@ impl Color {
 	}
 
 	/// New `Color` from sRGB colorspace.
+	///
+	/// # Examples
+	///
+	/// ```
+	/// # use bevy_render::color::Color;
+	/// let color = Color::hex("FF00FF").unwrap(); // fuchsia
+	/// let color = Color::hex("FF00FF7F").unwrap(); // partially transparent fuchsia
+	/// ```
+	///
 	pub fn hex<T: AsRef<str>>(hex: T) -> Result<Color, HexColorError> {
 		let hex = hex.as_ref();
 
@@ -236,22 +317,40 @@ impl Color {
 		}
 	}
 
-	/// Get blue in sRGB colorspace.
-	pub fn b(&self) -> f32 {
-		match self.as_rgba() {
-			Color::Rgba { blue, .. } => blue,
-			_ => unreachable!(),
-		}
+	/// New `Color` from sRGB colorspace.
+	///
+	/// # Arguments
+	///
+	/// * `r` - Red channel. [0, 255]
+	/// * `g` - Green channel. [0, 255]
+	/// * `b` - Blue channel. [0, 255]
+	///
+	/// See also [`Color::rgb`], [`Color::rgba_u8`], [`Color::hex`].
+	///
+	pub fn rgb_u8(r: u8, g: u8, b: u8) -> Color {
+		Color::rgba_u8(r, g, b, u8::MAX)
 	}
 
-	/// Set red in sRGB colorspace.
-	pub fn set_r(&mut self, r: f32) -> &mut Self {
-		*self = self.as_rgba();
-		match self {
-			Color::Rgba { red, .. } => *red = r,
-			_ => unreachable!(),
-		}
-		self
+	// Float operations in const fn are not stable yet
+	// see https://github.com/rust-lang/rust/issues/57241
+	/// New `Color` from sRGB colorspace.
+	///
+	/// # Arguments
+	///
+	/// * `r` - Red channel. [0, 255]
+	/// * `g` - Green channel. [0, 255]
+	/// * `b` - Blue channel. [0, 255]
+	/// * `a` - Alpha channel. [0, 255]
+	///
+	/// See also [`Color::rgba`], [`Color::rgb_u8`], [`Color::hex`].
+	///
+	pub fn rgba_u8(r: u8, g: u8, b: u8, a: u8) -> Color {
+		Color::rgba(
+			r as f32 / u8::MAX as f32,
+			g as f32 / u8::MAX as f32,
+			b as f32 / u8::MAX as f32,
+			a as f32 / u8::MAX as f32,
+		)
 	}
 
 	/// Set green in sRGB colorspace.
