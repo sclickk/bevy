@@ -199,7 +199,6 @@ impl Plugin for RenderPlugin {
 			render_app.insert_resource(adapter_info);
 			render_app.insert_resource(pipeline_cache);
 			render_app.insert_resource(asset_server);
-			//  render_app.init_resource::<RenderGraph>();
 			let (sender, receiver) = bevy_time::create_time_channels();
 			app.insert_resource(receiver);
 			render_app.insert_resource(sender);
