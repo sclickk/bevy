@@ -1,14 +1,20 @@
 use bevy_ecs::prelude::*;
 use bevy_math::{Mat4, Vec3, Vec4};
 use bevy_reflect::prelude::*;
-use bevy_render::{camera::OrthographicProjection, color::Color, render_resource::ShaderType};
+use bevy_render::{
+	camera::OrthographicProjection, color::Color, prelude::Visibility, primitives::Frustum,
+	render_resource::ShaderType, view::VisibleEntities,
+};
+use bevy_transform::components::{GlobalTransform, Transform};
+
+use crate::light::ComputedVisibility;
 
 /// A Directional light.
 ///
 /// Directional lights don't exist in reality but they are a good
 /// approximation for light sources VERY far away, like the sun or
 /// the moon.
-/// 
+///
 /// The light shines along the forward direction of the entity's transform. With a default transform
 /// this would be along the negative-Z axis.
 ///
@@ -117,4 +123,18 @@ bitflags::bitflags! {
 			const NONE            = 0;
 			const UNINITIALIZED   = 0xFFFF;
 	}
+}
+
+/// A component bundle for [`DirectionalLight`] entities.
+#[derive(Debug, Bundle, Default)]
+pub struct DirectionalLightBundle {
+	pub directional_light: DirectionalLight,
+	pub frustum: Frustum,
+	pub visible_entities: VisibleEntities,
+	pub transform: Transform,
+	pub global_transform: GlobalTransform,
+	/// Enables or disables the light
+	pub visibility: Visibility,
+	/// Algorithmically-computed indication of whether an entity is visible and should be extracted for rendering
+	pub computed_visibility: ComputedVisibility,
 }

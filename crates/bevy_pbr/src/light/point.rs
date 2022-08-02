@@ -8,10 +8,11 @@ use bevy_render::{
 	primitives::Sphere,
 	render_resource::{BindingResource, BufferBindingType, ShaderType, StorageBuffer, UniformBuffer},
 	renderer::{RenderDevice, RenderQueue},
+	view::visibility::{ComputedVisibility, Visibility},
 };
-use bevy_transform::components::GlobalTransform;
+use bevy_transform::components::{GlobalTransform, Transform};
 
-use crate::MAX_UNIFORM_BUFFER_POINT_LIGHTS;
+use crate::{light::CubemapFrusta, CubemapVisibleEntities, MAX_UNIFORM_BUFFER_POINT_LIGHTS};
 
 /// A light that emits light in all directions from a central point.
 ///
@@ -63,6 +64,20 @@ impl Default for PointLight {
 impl PointLight {
 	pub const DEFAULT_SHADOW_DEPTH_BIAS: f32 = 0.02;
 	pub const DEFAULT_SHADOW_NORMAL_BIAS: f32 = 0.6;
+}
+
+/// A component bundle for [`PointLight`] entities.
+#[derive(Debug, Bundle, Default)]
+pub struct PointLightBundle {
+	pub point_light: PointLight,
+	pub cubemap_visible_entities: CubemapVisibleEntities,
+	pub cubemap_frusta: CubemapFrusta,
+	pub transform: Transform,
+	pub global_transform: GlobalTransform,
+	/// Enables or disables the light
+	pub visibility: Visibility,
+	/// Algorithmically-computed indication of whether an entity is visible and should be extracted for rendering
+	pub computed_visibility: ComputedVisibility,
 }
 
 #[derive(Clone, Debug, Reflect)]

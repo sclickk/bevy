@@ -1,6 +1,14 @@
 use bevy_ecs::prelude::*;
 use bevy_reflect::prelude::*;
-use bevy_render::color::Color;
+use bevy_render::{
+	color::Color,
+	primitives::Frustum,
+	view::{
+		visibility::{ComputedVisibility, Visibility},
+		VisibleEntities,
+	},
+};
+use bevy_transform::components::{GlobalTransform, Transform};
 
 /// A light that emits light in a given direction from a central point.
 /// Behaves like a point light in a perfectly absorbant housing that
@@ -53,4 +61,18 @@ impl Default for SpotLight {
 			outer_angle: std::f32::consts::FRAC_PI_4,
 		}
 	}
+}
+
+/// A component bundle for spot light entities
+#[derive(Debug, Bundle, Default)]
+pub struct SpotLightBundle {
+	pub spot_light: SpotLight,
+	pub visible_entities: VisibleEntities,
+	pub frustum: Frustum,
+	pub transform: Transform,
+	pub global_transform: GlobalTransform,
+	/// Enables or disables the light
+	pub visibility: Visibility,
+	/// Algorithmically-computed indication of whether an entity is visible and should be extracted for rendering
+	pub computed_visibility: ComputedVisibility,
 }
