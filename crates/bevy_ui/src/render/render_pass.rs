@@ -4,6 +4,7 @@ use bevy_ecs::{
 	prelude::*,
 	system::{lifetimeless::*, SystemParamItem},
 };
+use bevy_float_ord::FloatOrd;
 use bevy_render::{
 	render_graph::*,
 	render_phase::*,
@@ -13,7 +14,6 @@ use bevy_render::{
 	renderer::*,
 	view::*,
 };
-use bevy_utils::FloatOrd;
 
 pub struct UiPassNode {
 	ui_view_query: QueryState<

@@ -22,6 +22,7 @@ bevy_app = { path = "../bevy_app", version = "0.8.0-dev" }
 bevy_asset = { path = "../bevy_asset", version = "0.8.0-dev" }
 bevy_derive = { path = "../common/bevy_derive", version = "0.8.0-dev" }
 bevy_ecs = { path = "../common/bevy_ecs", version = "0.8.0-dev" }
+bevy_float_ord = { path = "../common/bevy_float_ord", version = "0.8.0-dev" }
 bevy_reflect = { path = "../common/bevy_reflect", version = "0.8.0-dev" }
 bevy_render = { path = "../bevy_render", version = "0.8.0-dev" }
 bevy_transform = { path = "../bevy_transform", version = "0.8.0-dev" }

@@ -16,6 +16,7 @@ pub use main_pass_2d_node::*;
 
 use bevy_app::{App, Plugin};
 use bevy_ecs::prelude::*;
+use bevy_float_ord::FloatOrd;
 use bevy_render::{
 	camera::Camera,
 	extract_component::ExtractComponentPlugin,
@@ -27,7 +28,6 @@ use bevy_render::{
 	render_resource::CachedRenderPipelineId,
 	Extract, RenderApp, RenderStage,
 };
-use bevy_utils::FloatOrd;
 use std::ops::Range;
 
 pub struct Core2dPlugin;

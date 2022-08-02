@@ -115,6 +115,11 @@ pub mod core_pipeline {
 	pub use bevy_core_pipeline::*;
 }
 
+pub mod float_ord {
+	//! A wrapper for floats that implements [`Ord`], [`Eq`], and [`Hash`] traits.
+	pub use bevy_float_ord::*;
+}
+
 #[cfg(feature = "bevy_gilrs")]
 pub mod gilrs {
 	//! Bevy interface with `GilRs` - "Game Input Library for Rust" - to handle gamepad inputs.

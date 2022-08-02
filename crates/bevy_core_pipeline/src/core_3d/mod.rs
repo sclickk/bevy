@@ -18,6 +18,7 @@ pub use main_pass_3d_node::*;
 
 use bevy_app::{App, Plugin};
 use bevy_ecs::prelude::*;
+use bevy_float_ord::FloatOrd;
 use bevy_render::{
 	camera::{Camera, ExtractedCamera},
 	extract_component::ExtractComponentPlugin,
@@ -36,7 +37,7 @@ use bevy_render::{
 	view::ViewDepthTexture,
 	Extract, RenderApp, RenderStage,
 };
-use bevy_utils::{FloatOrd, HashMap};
+use bevy_utils::HashMap;
 
 pub struct Core3dPlugin;
 

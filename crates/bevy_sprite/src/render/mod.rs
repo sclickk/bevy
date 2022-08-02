@@ -10,6 +10,7 @@ use bevy_ecs::{
 	prelude::*,
 	system::{lifetimeless::*, SystemParamItem},
 };
+use bevy_float_ord::FloatOrd;
 use bevy_math::Vec2;
 use bevy_reflect::Uuid;
 use bevy_render::{
@@ -26,7 +27,6 @@ use bevy_render::{
 	Extract,
 };
 use bevy_transform::components::GlobalTransform;
-use bevy_utils::FloatOrd;
 use bevy_utils::HashMap;
 use bytemuck::{Pod, Zeroable};
 use copyless::VecHelper;
