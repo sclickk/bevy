@@ -1,3 +1,6 @@
+#![no_std]
+
+extern crate alloc;
 extern crate proc_macro;
 
 mod attrs;
@@ -8,6 +11,7 @@ pub use attrs::*;
 pub use shape::*;
 pub use symbol::*;
 
+use alloc::{format, string::ToString};
 use proc_macro::TokenStream;
 use quote::{quote, quote_spanned};
 use syn::spanned::Spanned;

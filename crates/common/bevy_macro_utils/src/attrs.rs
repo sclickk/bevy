@@ -1,6 +1,7 @@
 use syn::DeriveInput;
 
 use crate::symbol::Symbol;
+use alloc::{format, vec::Vec};
 
 pub fn parse_attrs(ast: &DeriveInput, attr_name: Symbol) -> syn::Result<Vec<syn::NestedMeta>> {
 	let mut list = Vec::new();
