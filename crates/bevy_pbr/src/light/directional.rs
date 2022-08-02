@@ -8,6 +8,9 @@ use bevy_render::{camera::OrthographicProjection, color::Color, render_resource:
 /// Directional lights don't exist in reality but they are a good
 /// approximation for light sources VERY far away, like the sun or
 /// the moon.
+/// 
+/// The light shines along the forward direction of the entity's transform. With a default transform
+/// this would be along the negative-Z axis.
 ///
 /// Valid values for `illuminance` are:
 ///
