@@ -13,9 +13,9 @@ mod task_pool;
 pub use task_pool::{Scope, TaskPool, TaskPoolBuilder};
 
 #[cfg(target_arch = "wasm32")]
-mod single_threaded_task_pool;
+mod task_pool_wasm;
 #[cfg(target_arch = "wasm32")]
-pub use single_threaded_task_pool::{Scope, TaskPool, TaskPoolBuilder};
+pub use task_pool_wasm::{Scope, TaskPool, TaskPoolBuilder};
 
 mod task_pool_options;
 pub use task_pool_options::DefaultTaskPoolOptions;
