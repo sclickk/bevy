@@ -11,6 +11,7 @@ use bevy_ecs::{
 	prelude::*,
 	system::{lifetimeless::*, SystemParamItem},
 };
+use bevy_float_ord::FloatOrd;
 use bevy_math::{Mat4, UVec3, UVec4, Vec2, Vec3, Vec3Swizzles, Vec4, Vec4Swizzles};
 use bevy_render::{
 	camera::{Camera, CameraProjection},
@@ -33,7 +34,6 @@ use bevy_render::{
 	Extract,
 };
 use bevy_transform::{components::GlobalTransform, prelude::Transform};
-use bevy_utils::FloatOrd;
 use bevy_utils::{
 	tracing::{error, warn},
 	HashMap,

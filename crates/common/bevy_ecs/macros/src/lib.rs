@@ -4,7 +4,8 @@ mod component;
 mod fetch;
 
 use crate::fetch::derive_world_query_impl;
-use bevy_macro_utils::{derive_label, get_named_struct_fields, BevyManifest};
+use bevy_macro_utils::{derive_label, get_named_struct_fields};
+use bevy_manifest::BevyManifest;
 use proc_macro::TokenStream;
 use proc_macro2::Span;
 use quote::{format_ident, quote};

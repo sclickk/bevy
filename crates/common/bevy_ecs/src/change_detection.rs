@@ -1,6 +1,7 @@
 //! Types that detect when their internal data mutate.
 
-use crate::{component::ComponentTicks, ptr::PtrMut, system::Resource};
+use crate::{component::ComponentTicks, system::Resource};
+use bevy_ptr::PtrMut;
 #[cfg(feature = "bevy_reflect")]
 use bevy_reflect::Reflect;
 use std::ops::{Deref, DerefMut};

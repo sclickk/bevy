@@ -1,6 +1,7 @@
-use std::fmt::{self, Display};
+use core::fmt::{self, Display};
 use syn::{Ident, Path};
 
+// TODO: Deprecate!
 #[derive(Copy, Clone)]
 pub struct Symbol(pub &'static str);
 
