@@ -5,6 +5,7 @@ use bevy::{
 	ecs::schedule::SystemSet,
 	prelude::*,
 	time::FixedTimestep,
+	window::WindowDescriptor,
 };
 use rand::Rng;
 
@@ -17,6 +18,11 @@ enum GameState {
 fn main() {
 	let mut app = App::new();
 	app.init_resource::<Game>();
+	app.insert_resource(WindowDescriptor {
+		width: 1920.,
+		height: 1080.,
+		..Default::default()
+	});
 	app.init_plugin::<LogDiagnosticsPlugin>();
 	app.init_plugin::<FrameTimeDiagnosticsPlugin>();
 	app.add_plugins(DefaultPlugins);
