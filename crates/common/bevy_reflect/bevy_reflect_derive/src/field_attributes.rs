@@ -9,8 +9,8 @@ use quote::ToTokens;
 use syn::spanned::Spanned;
 use syn::{Attribute, Lit, Meta, NestedMeta};
 
-pub(crate) static IGNORE_ATTR: &str = "ignore";
-pub(crate) static DEFAULT_ATTR: &str = "default";
+pub(crate) const IGNORE_ATTR: &str = "ignore";
+pub(crate) const DEFAULT_ATTR: &str = "default";
 
 /// A container for attributes defined on a reflected type's field.
 #[derive(Default)]
