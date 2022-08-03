@@ -876,8 +876,8 @@ impl Default for WindowDescriptor {
 	fn default() -> Self {
 		WindowDescriptor {
 			title: "app".to_string(),
-			width: 1280.,
-			height: 720.,
+			width: 1024.,
+			height: 768.,
 			position: WindowPosition::Automatic,
 			resize_constraints: WindowResizeConstraints::default(),
 			scale_factor_override: None,
