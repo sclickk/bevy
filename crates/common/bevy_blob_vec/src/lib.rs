@@ -4,11 +4,7 @@ extern crate alloc;
 
 use alloc::alloc::{handle_alloc_error, Layout};
 
-use core::{
-	cell::UnsafeCell,
-	num::NonZeroUsize,
-	ptr::NonNull,
-};
+use core::{cell::UnsafeCell, num::NonZeroUsize, ptr::NonNull};
 
 use bevy_ptr::{OwningPtr, Ptr, PtrMut};
 
