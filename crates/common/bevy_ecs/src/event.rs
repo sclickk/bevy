@@ -398,6 +398,7 @@ impl<E: Event> ManualEventReader<E> {
 }
 
 trait IteratorExt {
+	// TODO: Deprecate!
 	fn with_exact_size(self, len: usize) -> ExactSize<Self>
 	where
 		Self: Sized,

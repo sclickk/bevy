@@ -854,8 +854,9 @@ unsafe fn remove_bundle_from_archetype(
 
 fn sorted_remove<T: Eq + Ord + Copy>(source: &mut Vec<T>, remove: &[T]) {
 	let mut remove_index = 0;
+	let remove_len = remove.len();
 	source.retain(|value| {
-		while remove_index < remove.len() && *value > remove[remove_index] {
+		while remove_index < remove_len && *value > remove[remove_index] {
 			remove_index += 1;
 		}
 

@@ -469,11 +469,8 @@ pub(crate) fn assign_lights_to_clusters(
 			continue;
 		};
 
-		let mut requested_cluster_dimensions = config.dimensions_for_screen_size(screen_size);
-
 		let view_transform = camera_transform.compute_matrix();
 		let inverse_view_transform = view_transform.inverse();
-		let is_orthographic = camera.projection_matrix().w_axis.w == 1.0;
 
 		let far_z = match config.far_z_mode() {
 			ClusterFarZMode::MaxLightRange => {
@@ -488,6 +485,10 @@ pub(crate) fn assign_lights_to_clusters(
 			},
 			ClusterFarZMode::Constant(far) => far,
 		};
+
+		let is_orthographic = camera.projection_matrix().w_axis.w == 1.0;
+		let mut requested_cluster_dimensions = config.dimensions_for_screen_size(screen_size);
+
 		let first_slice_depth = match (is_orthographic, requested_cluster_dimensions.z) {
 			(true, _) => {
 				// NOTE: Based on glam's Mat4::orthographic_rh(), as used to calculate the orthographic projection
@@ -635,20 +636,20 @@ pub(crate) fn assign_lights_to_clusters(
 			for x in 0..=clusters.dimensions.x {
 				let x_proportion = x as f32 / x_slices;
 				let x_pos = x_proportion * 2.0 - 1.0;
-				let nb = clip_to_view(inverse_projection, Vec4::new(x_pos, -1.0, 1.0, 1.0)).xyz();
-				let nt = clip_to_view(inverse_projection, Vec4::new(x_pos, 1.0, 1.0, 1.0)).xyz();
-				let normal = nb.cross(nt);
-				let d = nb.dot(normal);
+				let n_bottom = clip_to_view(inverse_projection, Vec4::new(x_pos, -1.0, 1.0, 1.0)).xyz();
+				let n_top = clip_to_view(inverse_projection, Vec4::new(x_pos, 1.0, 1.0, 1.0)).xyz();
+				let normal = n_bottom.cross(n_top);
+				let d = n_bottom.dot(normal);
 				x_planes.push(Plane::new(normal.extend(d)));
 			}
 
 			for y in 0..=clusters.dimensions.y {
 				let y_proportion = 1.0 - y as f32 / y_slices;
 				let y_pos = y_proportion * 2.0 - 1.0;
-				let nl = clip_to_view(inverse_projection, Vec4::new(-1.0, y_pos, 1.0, 1.0)).xyz();
-				let nr = clip_to_view(inverse_projection, Vec4::new(1.0, y_pos, 1.0, 1.0)).xyz();
-				let normal = nr.cross(nl);
-				let d = nr.dot(normal);
+				let n_left = clip_to_view(inverse_projection, Vec4::new(-1.0, y_pos, 1.0, 1.0)).xyz();
+				let n_right = clip_to_view(inverse_projection, Vec4::new(1.0, y_pos, 1.0, 1.0)).xyz();
+				let normal = n_right.cross(n_left);
+				let d = n_right.dot(normal);
 				y_planes.push(Plane::new(normal.extend(d)));
 			}
 		}
@@ -836,12 +837,16 @@ pub(crate) fn assign_lights_to_clusters(
 
 								let distance_closest_point =
 									(angle_cos * (spot_light_dist_sq - v1_len * v1_len).sqrt()) - v1_len * angle_sin;
-								let angle_cull = distance_closest_point > cluster_aabb_sphere.radius;
+								// let angle_cull = ;
 
-								let front_cull = v1_len > cluster_aabb_sphere.radius + light.range;
-								let back_cull = v1_len < -cluster_aabb_sphere.radius;
+								// let front_cull = ;
+								// let back_cull = ;
 
-								if !angle_cull && !front_cull && !back_cull {
+								if !(distance_closest_point > cluster_aabb_sphere.radius) // angle cull
+									&& !(v1_len > cluster_aabb_sphere.radius + light.range) // front cull
+									&& !(v1_len < -cluster_aabb_sphere.radius)
+								{
+									// back cull
 									// this cluster is affected by the spot light
 									clusters.lights[cluster_index]
 										.entities

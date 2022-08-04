@@ -13,10 +13,7 @@ use bevy_pbr::{
 	SpotLightBundle, StandardMaterial,
 };
 use bevy_render::{
-	camera::{
-		Camera, CameraRenderGraph, OrthographicProjection, PerspectiveProjection, Projection,
-		ScalingMode,
-	},
+	camera::{Camera, CameraRenderGraph},
 	color::Color,
 	mesh::{
 		skinning::{SkinnedMesh, SkinnedMeshInverseBindposes},
@@ -682,6 +679,8 @@ fn load_material(material: &Material, load_context: &mut LoadContext) -> Handle<
 		let path = AssetPath::new_ref(load_context.path(), Some(&label));
 		load_context.get_handle(path)
 	});
+
+	// material.occlusion_texture().unwrap().strength();
 
 	let double_sided = material.double_sided();
 

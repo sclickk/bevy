@@ -950,18 +950,14 @@ impl Stage for SystemStage {
 						ShouldRun::No => (),
 						ShouldRun::Yes => criteria.should_run = ShouldRun::No,
 						ShouldRun::YesAndCheckAgain | ShouldRun::NoAndCheckAgain => {
-							match &mut criteria.inner {
-								RunCriteriaInner::Single(system) => {
-									criteria.should_run = system.run((), world);
-								},
+							criteria.should_run = match &mut criteria.inner {
+								RunCriteriaInner::Single(system) => system.run((), world),
 								RunCriteriaInner::Piped {
 									input: parent,
 									system,
 									..
-								} => {
-									criteria.should_run = system.run(run_criteria[*parent].should_run, world);
-								},
-							}
+								} => system.run(run_criteria[*parent].should_run, world),
+							};
 							match criteria.should_run {
 								ShouldRun::Yes | ShouldRun::YesAndCheckAgain | ShouldRun::NoAndCheckAgain => {
 									run_system_loop = true;

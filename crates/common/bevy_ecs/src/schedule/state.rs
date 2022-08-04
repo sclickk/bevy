@@ -435,9 +435,10 @@ fn state_cleaner<T: StateData>(
 			state.transition = Some(StateTransition::Pausing(last_type_id, next));
 		},
 		Some(ScheduledOperation::Pop) => {
+			let len = state.stack.len();
 			state.transition = Some(StateTransition::ExitingToResume(
-				state.stack[state.stack.len() - 1].clone(),
-				state.stack[state.stack.len() - 2].clone(),
+				state.stack[len - 1].clone(),
+				state.stack[len - 2].clone(),
 			));
 		},
 		None => match state.transition.take() {

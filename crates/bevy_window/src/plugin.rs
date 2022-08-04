@@ -42,18 +42,19 @@ impl Plugin for WindowPlugin {
 			.unwrap_or_default();
 
 		if settings.add_primary_window {
-			let window_descriptor = app
-				.world
-				.get_resource::<WindowDescriptor>()
-				.cloned()
-				.unwrap_or_default();
+			let event = CreateWindow {
+				id: WindowId::PRIMARY,
+				descriptor: app
+					.world
+					.get_resource::<WindowDescriptor>()
+					.cloned()
+					.unwrap_or_default(),
+			};
+
 			app
 				.world
 				.resource_mut::<Events<CreateWindow>>()
-				.send(CreateWindow {
-					id: WindowId::PRIMARY,
-					descriptor: window_descriptor,
-				});
+				.send(event);
 		}
 
 		if settings.exit_on_all_closed {

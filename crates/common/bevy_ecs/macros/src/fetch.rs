@@ -16,14 +16,14 @@ struct FetchStructAttributes {
 	pub derive_args: Punctuated<syn::NestedMeta, syn::token::Comma>,
 }
 
-static MUTABLE_ATTRIBUTE_NAME: &str = "mutable";
-static DERIVE_ATTRIBUTE_NAME: &str = "derive";
+const MUTABLE_ATTRIBUTE_NAME: &str = "mutable";
+const DERIVE_ATTRIBUTE_NAME: &str = "derive";
 
 mod field_attr_keywords {
 	syn::custom_keyword!(ignore);
 }
 
-pub static WORLD_QUERY_ATTRIBUTE_NAME: &str = "world_query";
+pub const WORLD_QUERY_ATTRIBUTE_NAME: &str = "world_query";
 
 pub fn derive_world_query_impl(ast: DeriveInput) -> TokenStream {
 	let visibility = ast.vis;

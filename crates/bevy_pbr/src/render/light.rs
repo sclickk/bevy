@@ -952,6 +952,17 @@ pub fn prepare_lights(
 			view_lights.push(view_light_entity);
 		}
 
+		// convert from illuminance (lux) to candelas
+		//
+		// exposure is hard coded at the moment but should be replaced
+		// by values coming from the camera
+		// see: https://google.github.io/filament/Filament.html#imagingpipeline/physicallybasedcamera/exposuresettings
+		const APERTURE: f32 = 4.0;
+		const SHUTTER_SPEED: f32 = 1.0 / 250.0;
+		const SENSITIVITY: f32 = 100.0;
+		let ev100 = f32::log2(APERTURE * APERTURE / SHUTTER_SPEED) - f32::log2(SENSITIVITY / 100.0);
+		let exposure = 1.0 / (f32::powf(2.0, ev100) * 1.2);
+
 		for (i, (light_entity, light)) in directional_lights
 			.into_iter()
 			.enumerate()
@@ -960,16 +971,6 @@ pub fn prepare_lights(
 			// direction is negated to be ready for N.L
 			let dir_to_light = -light.direction;
 
-			// convert from illuminance (lux) to candelas
-			//
-			// exposure is hard coded at the moment but should be replaced
-			// by values coming from the camera
-			// see: https://google.github.io/filament/Filament.html#imagingpipeline/physicallybasedcamera/exposuresettings
-			const APERTURE: f32 = 4.0;
-			const SHUTTER_SPEED: f32 = 1.0 / 250.0;
-			const SENSITIVITY: f32 = 100.0;
-			let ev100 = f32::log2(APERTURE * APERTURE / SHUTTER_SPEED) - f32::log2(SENSITIVITY / 100.0);
-			let exposure = 1.0 / (f32::powf(2.0, ev100) * 1.2);
 			let intensity = light.illuminance * exposure;
 
 			// NOTE: A directional light seems to have to have an eye position on the line along the direction of the light
@@ -996,36 +997,34 @@ pub fn prepare_lights(
 			};
 
 			if light.shadows_enabled {
-				let depth_texture_view = directional_light_depth_texture
-					.texture
-					.create_view(&TextureViewDescriptor {
-						label: Some("directional_light_shadow_map_texture_view"),
-						format: None,
-						dimension: Some(TextureViewDimension::D2),
-						aspect: TextureAspect::All,
-						base_mip_level: 0,
-						mip_level_count: None,
-						base_array_layer: i as u32,
-						array_layer_count: NonZeroU32::new(1),
-					});
-
-					let view_light_entity = commands
-						.spawn()
-						.insert_bundle((
-							ShadowView {
-								depth_texture_view,
-								pass_name: format!("shadow pass directional light {}", i),
-							},
-							ExtractedView {
-								width: directional_light_shadow_map.size as u32,
-								height: directional_light_shadow_map.size as u32,
-								transform: GlobalTransform::from(view.inverse()),
-								projection,
-							},
-							RenderPhase::<Shadow>::default(),
-							LightEntity::Directional { light_entity },
-						))
-						.id();
+				let view_light_entity = commands
+					.spawn()
+					.insert_bundle((
+						ShadowView {
+							depth_texture_view: directional_light_depth_texture
+							.texture
+							.create_view(&TextureViewDescriptor {
+								label: Some("directional_light_shadow_map_texture_view"),
+								format: None,
+								dimension: Some(TextureViewDimension::D2),
+								aspect: TextureAspect::All,
+								base_mip_level: 0,
+								mip_level_count: None,
+								base_array_layer: i as u32,
+								array_layer_count: NonZeroU32::new(1),
+							}),
+							pass_name: format!("shadow pass directional light {}", i),
+						},
+						ExtractedView {
+							width: directional_light_shadow_map.size as u32,
+							height: directional_light_shadow_map.size as u32,
+							transform: GlobalTransform::from(view.inverse()),
+							projection,
+						},
+						RenderPhase::<Shadow>::default(),
+						LightEntity::Directional { light_entity },
+					))
+					.id();
 				view_lights.push(view_light_entity);
 			}
 		}

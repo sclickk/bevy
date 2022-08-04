@@ -1,7 +1,7 @@
 use wgpu::PrimitiveTopology;
 
 use crate::mesh::{Indices, Mesh, MeshVertexAttribute};
-use std::f32::consts::PI;
+use std::f32::consts::{FRAC_PI_2, PI, TAU};
 
 /// A sphere made of sectors and stacks.
 #[allow(clippy::upper_case_acronyms)]
@@ -31,8 +31,8 @@ impl From<UVSphere> for Mesh {
 
 		let sectors = sphere.sectors as f32;
 		let stacks = sphere.stacks as f32;
-		let length_inv = 1. / sphere.radius;
-		let sector_step = 2. * PI / sectors;
+		let length_inv = sphere.radius.recip();
+		let sector_step = TAU / sectors;
 		let stack_step = PI / stacks;
 
 		let mut vertices: Vec<[f32; 3]> = Vec::with_capacity(sphere.stacks * sphere.sectors);
@@ -41,18 +41,20 @@ impl From<UVSphere> for Mesh {
 		let mut indices: Vec<u32> = Vec::with_capacity(sphere.stacks * sphere.sectors * 2 * 3);
 
 		for i in 0..sphere.stacks + 1 {
-			let stack_angle = PI / 2. - (i as f32) * stack_step;
+			let i = i as f32;
+			let stack_angle = FRAC_PI_2 - i * stack_step;
 			let xy = sphere.radius * stack_angle.cos();
 			let z = sphere.radius * stack_angle.sin();
 
 			for j in 0..sphere.sectors + 1 {
-				let sector_angle = (j as f32) * sector_step;
+				let j = j as f32;
+				let sector_angle = j * sector_step;
 				let x = xy * sector_angle.cos();
 				let y = xy * sector_angle.sin();
 
 				vertices.push([x, y, z]);
 				normals.push([x * length_inv, y * length_inv, z * length_inv]);
-				uvs.push([(j as f32) / sectors, (i as f32) / stacks]);
+				uvs.push([j / sectors, i / stacks]);
 			}
 		}
 

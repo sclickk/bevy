@@ -1,0 +1,13 @@
+* Use Query's `for_each` and `for_each_mut` methods in more areas.
+* Use `into_iter` instead of `iter` where it can be used,
+* Impl `IntoIterator` and `Index` for more items.
+* use `contains` instead of `enumerate find` where possible
+* use `filter_map` instead of `filter` and `map` where applicable.
+* Code duplication everywhere!
+    `last_change_tick` and `change_tick` are used everywehre in the engine for
+    all sorts of types. Maybe use something like `TickTracker`?
+
+* use `map_or`
+* lots of unidiomatic `unwrap` usages.
+* some examples are too slow/could be optimized better (80fps on `breakout` with ryzen apu!?!?)
+* fix up mikktspace/upstream crate https://github.com/gltf-rs/mikktspace

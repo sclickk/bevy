@@ -1,11 +1,16 @@
 //! Illustrates different lights of various types and colors, some static, some moving over
 //! a simple scene.
 
-use bevy::prelude::*;
+use bevy::{
+	diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin},
+	prelude::*,
+};
 
 fn main() {
 	let mut app = App::new();
 	app.add_plugins(DefaultPlugins);
+	app.init_plugin::<LogDiagnosticsPlugin>();
+	app.init_plugin::<FrameTimeDiagnosticsPlugin>();
 	app.add_startup_system(setup);
 	app.add_system(movement);
 	app.add_system(animate_light_direction);

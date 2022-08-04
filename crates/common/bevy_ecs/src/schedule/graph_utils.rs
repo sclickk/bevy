@@ -1,3 +1,5 @@
+// TODO: MOVE INTO bevy_utils!
+
 use bevy_utils::{tracing::warn, HashMap, HashSet};
 use fixedbitset::FixedBitSet;
 use std::{borrow::Cow, fmt::Debug, hash::Hash};
@@ -23,6 +25,7 @@ where
 	Node::Label: Debug + Clone + Eq + Hash,
 {
 	let mut labels = HashMap::<Node::Label, FixedBitSet>::default();
+	let nodes_len = nodes.len();
 	for (label, index) in nodes
 		.iter()
 		.enumerate()
@@ -35,11 +38,11 @@ where
 		}) {
 		labels
 			.entry(label)
-			.or_insert_with(|| FixedBitSet::with_capacity(nodes.len()))
+			.or_insert_with(|| FixedBitSet::with_capacity(nodes_len))
 			.insert(index);
 	}
-	let mut graph = HashMap::with_capacity_and_hasher(nodes.len(), Default::default());
-	for (index, node) in nodes.iter().enumerate() {
+	let mut graph = HashMap::with_capacity_and_hasher(nodes_len, Default::default());
+	for (index, node) in nodes.into_iter().enumerate() {
 		let dependencies = graph
 			.entry(index)
 			.or_insert_with(HashMap::default);

@@ -81,7 +81,7 @@ pub fn all_tuples(input: TokenStream) -> TokenStream {
 	})
 }
 
-static BUNDLE_ATTRIBUTE_NAME: &str = "bundle";
+const BUNDLE_ATTRIBUTE_NAME: &str = "bundle";
 
 #[proc_macro_derive(Bundle, attributes(bundle))]
 pub fn derive_bundle(input: TokenStream) -> TokenStream {
@@ -294,7 +294,7 @@ struct SystemParamFieldAttributes {
 	pub ignore: bool,
 }
 
-static SYSTEM_PARAM_ATTRIBUTE_NAME: &str = "system_param";
+const SYSTEM_PARAM_ATTRIBUTE_NAME: &str = "system_param";
 
 /// Implement `SystemParam` to use a struct as a parameter in a system
 #[proc_macro_derive(SystemParam, attributes(system_param))]

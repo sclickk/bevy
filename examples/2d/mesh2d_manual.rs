@@ -5,6 +5,7 @@
 
 use bevy::{
 	core_pipeline::core_2d::Transparent2d,
+	float_ord::FloatOrd,
 	prelude::*,
 	reflect::TypeUuid,
 	render::{
@@ -25,7 +26,6 @@ use bevy::{
 		DrawMesh2d, Mesh2dHandle, Mesh2dPipeline, Mesh2dPipelineKey, Mesh2dUniform, SetMesh2dBindGroup,
 		SetMesh2dViewBindGroup,
 	},
-	utils::FloatOrd,
 };
 
 fn main() {
@@ -296,12 +296,11 @@ pub fn extract_colored_mesh2d(
 	query: Extract<Query<(Entity, &ComputedVisibility), With<ColoredMesh2d>>>,
 ) {
 	let mut values = Vec::with_capacity(*previous_len);
-	for (entity, computed_visibility) in query.iter() {
-		if !computed_visibility.is_visible() {
-			continue;
+	query.for_each(|(entity, computed_visibility)| {
+		if computed_visibility.is_visible() {
+			values.push((entity, (ColoredMesh2d,)));
 		}
-		values.push((entity, (ColoredMesh2d,)));
-	}
+	});
 	*previous_len = values.len();
 	commands.insert_or_spawn_batch(values);
 }

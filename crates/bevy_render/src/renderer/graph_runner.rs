@@ -187,7 +187,7 @@ impl RenderGraphRunner {
 						.run(&mut context, render_context, world)?;
 				}
 
-				for run_sub_graph in context.finish() {
+				for run_sub_graph in context.finish().into_iter() {
 					let sub_graph = graph
 						.get_sub_graph(&run_sub_graph.name)
 						.expect("sub graph exists because it was validated when queued.");

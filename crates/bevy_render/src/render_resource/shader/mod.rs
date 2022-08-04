@@ -4,15 +4,13 @@ pub use processor::*;
 use bevy_asset::{AssetLoader, AssetPath, Handle, LoadContext, LoadedAsset};
 use bevy_log::error;
 use bevy_reflect::{TypeUuid, Uuid};
-use bevy_utils::{BoxedFuture, HashMap};
+use bevy_utils::BoxedFuture;
 use naga::back::wgsl::WriterFlags;
 use naga::valid::Capabilities;
 use naga::{valid::ModuleInfo, Module};
 use once_cell::sync::Lazy;
 use regex::Regex;
-use std::{
-	borrow::Cow, collections::HashSet, marker::Copy, ops::Deref, path::PathBuf, str::FromStr,
-};
+use std::{borrow::Cow, marker::Copy, path::PathBuf, str::FromStr};
 use thiserror::Error;
 use wgpu::Features;
 use wgpu::{util::make_spirv, ShaderModuleDescriptor, ShaderSource};

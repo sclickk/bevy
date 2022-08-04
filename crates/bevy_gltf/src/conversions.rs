@@ -1,7 +1,7 @@
 use anyhow::Result;
 use bevy_pbr::AlphaMode;
 use bevy_render::{
-	camera::{Projection, OrthographicProjection, PerspectiveProjection, ScalingMode},
+	camera::{OrthographicProjection, PerspectiveProjection, Projection, ScalingMode},
 	render_resource::{AddressMode, PrimitiveTopology},
 };
 

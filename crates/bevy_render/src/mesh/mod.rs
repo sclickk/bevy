@@ -22,9 +22,10 @@ use crate::{
 use bevy_core::cast_slice;
 use bevy_derive::EnumVariantMeta;
 use bevy_ecs::system::{lifetimeless::SRes, SystemParamItem};
+use bevy_log::error;
 use bevy_math::*;
 use bevy_reflect::TypeUuid;
-use bevy_utils::{tracing::error, Hashed};
+use bevy_utils::Hashed;
 use std::{collections::BTreeMap, hash::Hash};
 use thiserror::Error;
 use wgpu::{
@@ -333,8 +334,7 @@ impl Mesh {
 
 		let normals: Vec<_> = positions
 			.chunks_exact(3)
-			.map(|p| face_normal(p[0], p[1], p[2]))
-			.flat_map(|normal| [normal; 3])
+			.flat_map(|p| [face_normal(p[0], p[1], p[2]); 3])
 			.collect();
 
 		self.insert_attribute(MeshVertexAttribute::NORMAL, normals);
